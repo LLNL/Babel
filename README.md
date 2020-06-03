@@ -22,7 +22,7 @@
 
 Babel is a language interoperability tool intended for use by
 the high-performance scientific computing community.  Developed
-by the Components project ( https://github.com/llnl/Babel )
+by the Components project ( https://software.llnl.gov/Babel/ )
 at Lawrence Livermore National Laboratory, Babel supports the
 Scientific Interface Definition Language (SIDL) for the language-
 independent declaration of interfaces associated with scientific
@@ -44,9 +44,8 @@ Babel including features, outstanding issues, and future work.
 
 If you have any questions or concerns with the installation
 process or usage of Babel, feel free to contact the project team
-at components@llnl.gov .  To report bugs or suggest feature
-enhancements, please submit a report in the bug database or send email to
-babel-bugs@cca-forum.org .
+at components@llnl.gov .  This project is no longer funded, so
+it's mainly of historical interest.
 
 
 ### Overview for the Impatient
@@ -99,6 +98,8 @@ Java.
 The Babel compiler has been successfully run on the platform/
 compiler pairs listed below.
 
+Platform          | Compiler
+------------------|--------------------------------------
 Linux             | Intel Compiler Suite 12.1 (icc & ifc)
 Linux             | GCC 4.6.2
 Linux             | PGI 10.9
@@ -129,6 +130,8 @@ associated with this release, relative to the top
 level of the installation directory, and a brief
 description of the contents of each:
 
+Directory               | Explanation
+------------------------|-----------------------------------
 bin/                    | The Babel compiler
 compiler/               | The compiler source
 doc/                    | Supplemental documentation
@@ -293,13 +296,14 @@ explored for incorporation into subsequent releases:
 * Data Redistribution
 * Expanded interface contract specification and enforcement capabilities
 
-
-=== Further Information
+### Further Information
 
 The following files are available at the top of the
 release directory structure provide additional information
 on the Babel release:
 
+File      | Description
+----------|-----------------------------------------------------
 BUGS      | Lists known bugs
 COPYRIGHT | Lawrence Livermore National Security, LLC notice
 INSTALL   | Provides installation instructions
