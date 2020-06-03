@@ -310,7 +310,7 @@ README    | This file
 ./doc/papers and ./doc/talks subdirectories including the
 outdated specification (./doc/papers/specification.ps).
 More recent papers and talks can be found at our web site
-at our github page https://github.com/llnl/Babel/
+at our project page https://software.llnl.gov/Babel/
 
 Additional documentation including a tutorial, command
 line arguments, SIDL grammar, and crash courses on SIDL
