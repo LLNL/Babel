@@ -1,0 +1,25 @@
+# Garden of Eden 
+# A configuration of ON and OFF cells that can only occur in generation 0. 
+# (The "Garden of Eden" term was first used in connection with cellular automata by 
+# John W. Tukey, many years before Life.) It was known from the start that there are 
+# Gardens of Eden in Life, 
+# because of a theorem by Edward Moore that guarantees their existence in a wide class of 
+# cellular automata. Explicit examples have since been constructed, the first by Roger Banks,
+# et al. at MIT in 1971. This example was 9 × 33. In 1974 J. Hardouin-Duparc, et al. 
+# produced a 6 × 122 example. The following shows a 14 × 14 example (with 143 ON cells) 
+# by Achim Flammenkamp (1991 or 1992). --Life Lexicon
+
+	**.*.*.*.**.*.
+	*.***.***.**.*
+	****.***.**.*.
+	***.*.*.*.****
+	.***.*.***.**.
+	*******.****.*
+	.*.*.********.
+	*.***.**.*.*.*
+	******.******.
+	*.**.*****.*.*
+	***.*********.
+	.***.*.*.*.***
+	***.*.*.*.**.*
+	*.************

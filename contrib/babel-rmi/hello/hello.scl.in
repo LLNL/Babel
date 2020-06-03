@@ -1,0 +1,6 @@
+<?xml version="1.0" ?>
+<scl>
+  <library uri="@DIR@/.libs/libhello.so" scope="global" resolution="now">
+    <class name="hello.World" desc="ior/impl" />
+  </library>
+</scl>

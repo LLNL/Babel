@@ -1,0 +1,331 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+   File:        sidl.dtd
+   Package:     SIDL XML
+   Revision:    @(#) $Id: sidl.dtd 7188 2011-09-27 18:38:42Z adrian $
+   Description: DTD for the SIDL XML database representation
+
+   Copyright (c) 2000-2007, The Regents of the University of Calfornia.
+   Produced at the Lawrence Livermore National Laboratory.
+   Written by the Components Team <components@llnl.gov>
+   UCRL-CODE-2002-054
+   All rights reserved.
+
+   This file is part of Babel. For more information, see
+   http://www.llnl.gov/CASC/components/. Please read the COPYRIGHT file
+   for Our Notice and the LICENSE file for the GNU Lesser General Public
+   License.
+
+   This program is free software; you can redistribute it and/or modify it
+   under the terms of the GNU Lesser General Public License (as published by
+   the Free Software Foundation) version 2.1 dated February 1999.
+
+   This program is distributed in the hope that it will be useful, but
+   WITHOUT ANY WARRANTY; without even the IMPLIED WARRANTY OF
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the terms and
+   conditions of the GNU Lesser General Public License for more details.
+
+   You should have received a copy of the GNU Lesser General Public License
+   along with this program; if not, write to the Free Software Foundation,
+   Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+
+   This file describes the DTD for a SIDL symbol represented in XML format.
+   The root element is <Symbol>.
+
+   PUBLIC ID "-//CCA//sidl Symbol DTD v1.3//EN"
+-->
+
+<!--
+   Symbol Element
+
+   Symbol is the root element for all SIDL XML schema.  The Symbol contains a
+   SymbolName (fully qualified symbol name and version), Metadata, Comment,
+   and one of Class, Enumeration, Interface, or Package.
+-->
+
+<!ENTITY % symbols "Class | Enumeration | Interface | Package | Struct">
+<!ELEMENT Symbol (SymbolName, Metadata, Comment, (%symbols;))>
+
+<!--
+   SymbolName Element
+
+   A SymbolName represents a fully qualified symbol name along with its
+   version.  It is of the form:
+
+   <SymbolName name="sidl.SomeName" version="1.3.4"/>
+-->
+
+<!ELEMENT SymbolName EMPTY>
+<!ATTLIST SymbolName name     CDATA #REQUIRED
+                     version  CDATA #REQUIRED>
+
+<!--
+   Metadata Element
+
+   The Metadata element contains any useful descriptive data about the symbol.
+   The time and date of creation is required, but all other information is
+   optional.  The date and time must follow the ISO-8601 standard.  The
+   entries in the metadata element are (key,value) pairs.
+-->
+
+<!ELEMENT Metadata (MetadataEntry)*>
+<!ATTLIST Metadata date CDATA #REQUIRED>
+
+<!ELEMENT MetadataEntry EMPTY>
+<!ATTLIST MetadataEntry key   CDATA #REQUIRED
+                        value CDATA #REQUIRED>
+
+<!--
+   Comment Element
+
+   Comment elements support a very simple HTML description using the
+   html-lite.dtd HTML subset.  See html-lite.dtd for more details.
+-->
+
+<!ENTITY % html-lite PUBLIC "-//CCA//sidl HTML DTD v1.0//EN" "html-lite.dtd">
+%html-lite;
+
+<!ELEMENT Comment %html-block;>
+
+<!--
+   Package Element
+
+   The Package element contains the symbols that exist within a package.
+   In the PackageSymbol element, note that the name is relative to the
+   package (thus, sidl.Class is represented by Class within package sidl).
+
+   A true final attribute indicates that this package is not reentrant. It
+   defaults to true to handle old XML files. In previous versions, all
+   packages were non-reentrant.
+-->
+
+<!ELEMENT Package (Attributes?, PackageSymbol)*>
+
+<!ELEMENT Attributes (Attribute)* >
+
+<!ELEMENT Attribute EMPTY>
+<!ATTLIST Attribute name CDATA          #REQUIRED
+		    value CDATA         #IMPLIED>
+
+<!--
+If the version attribute isn't provided, the symbol has the same version
+as the containing package. This is to provide backward compatibility with
+previous released versions of the DTD. Someday the version may become
+REQUIRED, so always include it.
+-->
+<!ELEMENT PackageSymbol EMPTY>
+<!ATTLIST PackageSymbol name CDATA                               #REQUIRED
+                        type (class | enum| interface | package | struct) #REQUIRED
+                        version CDATA                            #IMPLIED>
+
+<!ELEMENT Struct (Attributes?, StructItem*) >
+
+<!ELEMENT StructItem (Type) >
+<!ATTLIST StructItem name CDATA					#REQUIRED>
+
+<!--
+   Enumeration Element
+
+   The Enumeration element consists of a collection of Enumerator elements
+   that describe a relative symbol name, its integer value, and whether the
+   value was assigned by the parser or in the SIDL input file.
+-->
+
+<!ELEMENT Enumeration (Attributes?, Enumerator+) >
+
+<!ELEMENT Enumerator (Comment)?>
+<!ATTLIST Enumerator name     CDATA          #REQUIRED
+                     value    CDATA          #REQUIRED
+                     fromuser (false | true) #REQUIRED>
+
+<!--
+   Class Element
+
+   The Class element consists of a class extended by this class, a block
+   of interfaces implemented by this class, and a block of methods declared
+   or defined by this class.  The methods block does not include methods
+   declared or defined by parents.  The elements AllParentInterfaces and
+   AllParentClasses include all parents of this class.
+-->
+
+<!ELEMENT Class (Attributes?, Extends, ImplementsBlock,
+                 AllParentClasses, AllParentInterfaces,
+                 MethodsBlock, Contract?)>
+
+<!ELEMENT Extends (SymbolName)?>
+
+<!ELEMENT ImplementsBlock (SymbolName)*>
+
+<!--
+   Interface Element
+
+   The Interface element consists of a block of interfaces that this
+   interface extends (element ExtendsBlock) and a block of methods
+   declared by this interface (element MethodsBlock).  The methods block
+   element contains only those methods declared or re-declared by this
+   interface and does not include all those methods defined by the
+   parent interfaces.  The AllParentInterfaces element block includes
+   all parent interfaces that this interface extends.
+-->
+
+<!ELEMENT Interface (Attributes?, ExtendsBlock, AllParentInterfaces,
+                     MethodsBlock, Contract?)>
+
+<!ELEMENT ExtendsBlock (SymbolName)*>
+
+<!--
+   AllParentClasses and AllParentInterfaces Elements
+
+   These elements define a collection of zero or more SymbolName elements
+   that are the parent classes and parent interfaces of a class or interface.
+-->
+
+<!ELEMENT AllParentClasses (SymbolName)*>
+
+<!ELEMENT AllParentInterfaces (SymbolName)*>
+
+<!--
+   MethodsBlock Element
+
+   The MethodsBlock element defines a collection of zero or more methods
+   that belong to a SIDL interface or class.
+-->
+
+<!ELEMENT MethodsBlock (Method)*>
+
+<!--
+   Method Element
+
+   The Method element defines the signature for a single method in a class or
+   interface.  The name of the method is obtained from the shortname.  If
+   method name overloading is not supported, the extension is appended to the
+   short name to build the method name.
+-->
+
+<!ELEMENT Method (Attributes?, Comment, Type, ArgumentList, ThrowsList, ImplicitThrowsList, From?, Contract?)>
+<!ATTLIST Method shortname     CDATA                                #REQUIRED
+                 extension     CDATA                                #REQUIRED>
+
+<!ELEMENT ArgumentList (Argument)*>
+
+<!ELEMENT ThrowsList (SymbolName)*>
+
+<!ELEMENT ImplicitThrowsList (SymbolName)*>
+
+<!ELEMENT From EMPTY >
+<!ATTLIST From parentname    CDATA      #REQUIRED
+               parentversion CDATA	#REQUIRED
+               shortname     CDATA      #REQUIRED
+               extension     CDATA      #IMPLIED >
+
+<!ELEMENT Contract (Assertion)*>
+
+<!--
+   Argument Element
+
+   The SIDL Argument element defines a SIDL method argument.
+-->
+
+<!ELEMENT Argument (Attributes?, Type)>
+<!ATTLIST Argument mode (in | inout | out) #REQUIRED
+                   name CDATA              #REQUIRED>
+
+<!--
+   Type Element
+
+   The Type element describes a SIDL type, which may be a built-in type
+   such as boolean or int, an array, or a user-defined symbol.  If the
+   type description is a primitive type, then no sub-elements are allowed.
+   If the type is a symbol, then the single sub-element must be a symbol
+   name.  If the type is an array, then the single sub-element must be
+   an array element
+-->
+
+<!ENTITY % simpletypes "boolean | char | double | float | integer | long | string" >
+<!ELEMENT Type (SymbolName | Array)?>
+<!ATTLIST Type type (void | %simpletypes; | fcomplex | dcomplex | opaque | symbol  | array    ) #REQUIRED>
+
+<!ELEMENT Index (Expression)+>
+
+<!ELEMENT Array (Type?,Index?)>
+<!ATTLIST Array order (unspecified | column-major | row-major) #REQUIRED
+                dim   CDATA "0" >
+
+<!--
+   Assertion Element
+
+   The SIDL Assertion element defines a SIDL assertion.
+-->
+<!ELEMENT Assertion (Comment, Expression)>
+<!ATTLIST Assertion tag  CDATA                                 #REQUIRED
+                    type ( invariant | require     | require_else
+                         | ensure    | ensure_then )           #REQUIRED>
+
+<!--
+   Expression Element
+
+   The SIDL Assertion Expression element defines a valid assertion expression.
+-->
+<!ELEMENT Expression ( BinaryExpression | ComplexNumber | MethodCall
+                              | Terminal | UnaryExpression)>
+<!ATTLIST Expression parens (true | false)              "false">
+
+<!--
+   BinaryExpression Element
+
+   The SIDL Binary Expression element defines a binary assertion expression.
+-->
+<!ELEMENT BinaryExpression (Expression, Expression)>
+<!ATTLIST BinaryExpression op ( and          | divide        | equals
+                              | expon        | greater_than  | greater_equal
+                              | iff          | implies       | less_equal
+                              | less_greater | less_than     | minus
+                              | modulus      | multiply      | not_equal
+                              | or           | plus          | power
+                              | remainder    | shift_left    | shift_right
+                              | xor          | bit-and       | bit-or
+                              | bit-xor
+                              )                              #REQUIRED>
+
+<!--
+   ComplexNumber Element
+
+   The  Complex Number element defines a complex number assertion expression.
+-->
+<!ELEMENT ComplexNumber EMPTY>
+<!ATTLIST ComplexNumber type      (float | double)         #REQUIRED
+                        real      CDATA                    #REQUIRED
+                        imaginary CDATA                    #REQUIRED>
+
+<!--
+   MethodCall Element
+
+   The SIDL Method Call element defines a method call assertion expression.
+   Note that any arguments must be within the scope of the assertion.  For
+   invariants, expressions can only contain literals (i.e., NO state or
+   attributes).  For methods, expressions can also contain any arguments
+   that are being passed to the method.
+-->
+<!ELEMENT MethodCall (Expression*)>
+<!ATTLIST MethodCall name CDATA                            #REQUIRED>
+
+<!--
+   Terminal Element
+
+   The  Simple Expression element defines expressions that do not have
+   operators; namely, identifiers and literals.  Note the only valid literals
+   are boolean, character, double, float, integer, and string and identifiers
+   are symbols.
+-->
+<!ELEMENT Terminal EMPTY >
+<!ATTLIST Terminal etype ( identifier | %simpletypes; )  #REQUIRED
+                       value CDATA                    #REQUIRED>
+
+<!--
+   UnaryExpression Element
+
+   The SIDL Unary Expression element defines a unary assertion expression.
+-->
+<!ELEMENT UnaryExpression (Expression)>
+<!ATTLIST UnaryExpression op  (complement | is | minus | not | plus )
+                                                          #REQUIRED>

@@ -1,0 +1,387 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN"
+            "http://www.w3.org/TR/REC-html40/loose.dtd">
+<HTML>
+<HEAD>
+<TITLE>Babel 
+Users' Guide
+</TITLE>
+
+<META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<META name="GENERATOR" content="hevea 1.10">
+<LINK rel="stylesheet" type="text/css" href="index.css">
+</HEAD>
+<BODY >
+<!--HEVEA command line is: /usr/bin/hevea -fix -O -o ./html/users_guide/index.html users_guide -->
+<!--HACHA command line is: /usr/bin/hacha -tocbis ./html/users_guide/index.html -o ./html/users_guide/index-multipage.html -->
+<HR SIZE=2><DIV CLASS="flushright">
+<FONT SIZE=7>Babel<BR>
+Users’ Guide</FONT></DIV><HR SIZE=2><DIV CLASS="center">
+<FONT SIZE=5> <BR>
+ 
+<SPAN STYLE="font-variant:small-caps">Tamara Dahlgren  Dietmar Ebner 
+  Thomas Epperly<BR>
+ Gary Kumfert   James Leek 
+  Adrian Prantl</SPAN><BR>
+ </FONT><FONT SIZE=4><I>Center For Applied Scientific Computing<BR>
+ Lawrence Livermore National Laboratory<BR>
+ P.O. Box 808<BR>
+ Livermore, California, USA<BR>
+</I></FONT></DIV><DIV CLASS="center">
+</DIV><P>
+
+  </P><P><BR>
+<BR>
+<BR>
+<BR>
+<BR>
+<BR>
+<BR>
+<BR>
+<BR>
+<BR>
+<BR>
+<BR>
+</P><P>
+<FONT SIZE=5><B>Disclaimer</B></FONT><BR>
+</P><P>This work was performed under the auspices of the U. S. Department of
+Energy by Lawrence Livermore National Laboratory in part under
+Contract W-7405-Eng-48 and in part under Contract DE-AC52-07NA27344.<BR>
+
+This document was prepared as an account of work sponsored by an 
+agency of the United States Government. Neither the United States
+Government nor the University of California nor any of their 
+employees, makes any warranty, express or implied, or assumes 
+any legal liability or responsibility for the accuracy, completeness, 
+or usefulness of any information, apparatus, product, or process 
+disclosed, or represents that its use would not infringe privately 
+owned rights. Reference herein to any specific commercial product, 
+process, or service by trade name, trademark, manufacturer, or 
+otherwise, does not necessarily constitute or imply its endorsement, 
+recommendation, or favoring by the United States Government or the 
+University of California. The views and opinions of authors 
+expressed herein do not necessarily state or reflect those of the 
+United States Government or the University of California, and shall 
+not be used for advertising or product endorsement purposes.</P><P><BR>
+<BR>
+<BR>
+
+</P><DIV CLASS="center">
+<FONT SIZE=5><B>Release Information</B></FONT><BR>
+
+<TABLE CELLSPACING=6 CELLPADDING=0><TR><TD ALIGN=left NOWRAP>Babel Users’ Guide (this document)</TD><TD ALIGN=right NOWRAP>UCRL-SM-230026</TD></TR>
+<TR><TD ALIGN=left NOWRAP>Babel Source Code (associated software)</TD><TD ALIGN=right NOWRAP>UCRL-CODE-2002-054</TD></TR>
+</TABLE>
+</DIV><UL>
+<LI><A HREF="index001.html">Preface</A>
+<UL>
+<LI><A HREF="index001.html#toc1">Babel in a Nutshell</A>
+</LI><LI><A HREF="index001.html#toc2">Scope of this Manual</A>
+</LI><LI><A HREF="index001.html#toc3">Getting the Software</A>
+</LI><LI><A HREF="index001.html#toc4">Conventions</A>
+</LI><LI><A HREF="index001.html#toc5">We Appreciate Your Feedback</A>
+</LI><LI><A HREF="index001.html#toc6">Acknowledgments</A>
+</LI><LI><A HREF="index001.html#toc7">Software Notices</A>
+</LI></UL>
+</LI><LI><A HREF="index002.html">Contents</A>
+</LI><LI><A HREF="index003.html">Introduction</A>
+<UL>
+<LI><A HREF="index003.html#toc8">Babel Facilitates Language Interoperability</A>
+</LI><LI><A HREF="index003.html#toc9">Scientific Interface Definition Language (SIDL)</A>
+</LI><LI><A HREF="index003.html#toc10">Benefits to Customers</A>
+</LI><LI><A HREF="index003.html#toc11">Beyond Babel’s Scope</A>
+</LI><LI><A HREF="index003.html#toc12">Summary</A>
+</LI><LI><A HREF="index003.html#toc13">Organization</A>
+</LI></UL>
+</LI></UL>
+<TABLE CLASS="center"><TR><TD><H1 CLASS="part"><A NAME="htoc9">Part I</A><BR>
+Foundations</H1></TD></TR>
+</TABLE><P><A NAME="p:foundations"></A></P><UL>
+<LI><A HREF="index005.html">Installation</A>
+<UL>
+<LI><A HREF="index005.html#toc14">Simple Installation</A>
+</LI><LI><A HREF="index005.html#toc15">External Software
+Requirements</A>
+</LI></UL>
+</LI><LI><A HREF="index006.html">Basic Babel Code Generation</A>
+<UL>
+<LI><A HREF="index006.html#toc16">Babel is a Compiler</A>
+</LI><LI><A HREF="index006.html#toc17">Command Line Options</A>
+</LI></UL>
+</LI><LI><A HREF="index007.html">Hello World Tutorial</A>
+<UL>
+<LI><A HREF="index007.html#toc18">Introduction</A>
+</LI><LI><A HREF="index007.html#toc19">Minimal Makefiles</A>
+</LI><LI><A HREF="index007.html#toc20">Portable Makefiles: using <TT>babel-config</TT></A>
+</LI><LI><A HREF="index007.html#toc21">Final Remarks</A>
+</LI></UL>
+</LI><LI><A HREF="index008.html">SIDL Basics</A>
+<UL>
+<LI><A HREF="index008.html#toc22">Introduction</A>
+</LI><LI><A HREF="index008.html#toc23">SIDL Files</A>
+</LI><LI><A HREF="index008.html#toc24">Fundamental Types</A>
+</LI><LI><A HREF="index008.html#toc25">Arrays</A>
+</LI><LI><A HREF="index008.html#toc26">Interface Contracts</A>
+</LI><LI><A HREF="index008.html#toc27">SIDL Runtime</A>
+</LI><LI><A HREF="index008.html#toc28">Objects</A>
+</LI><LI><A HREF="index008.html#toc29">XML Repositories</A>
+</LI></UL>
+</LI><LI><A HREF="index009.html">Upgrade Notes</A>
+<UL>
+<LI><A HREF="index009.html#toc30">Upgrading from Babel 1.0 to 1.4</A>
+</LI></UL>
+</LI></UL>
+<TABLE CLASS="center"><TR><TD><H1 CLASS="part"><A NAME="htoc32">Part II</A><BR>
+Supported Language Bindings</H1></TD></TR>
+</TABLE><P><A NAME="p:supported_langs"></A></P><UL>
+<LI><A HREF="index010.html">C Bindings</A>
+<UL>
+<LI><A HREF="index010.html#toc31">Introduction</A>
+</LI><LI><A HREF="index010.html#toc32">Basics</A>
+</LI><LI><A HREF="index010.html#toc33">Client-side</A>
+</LI><LI><A HREF="index010.html#toc34">Implementation-side</A>
+</LI></UL>
+</LI><LI><A HREF="index011.html">C++ Bindings</A>
+<UL>
+<LI><A HREF="index011.html#toc35">Introduction</A>
+</LI><LI><A HREF="index011.html#toc36">Basics</A>
+</LI><LI><A HREF="index011.html#toc37">Client-side</A>
+</LI><LI><A HREF="index011.html#toc38">Implementation-side</A>
+</LI></UL>
+</LI><LI><A HREF="index012.html">FORTRAN 77 Bindings</A>
+<UL>
+<LI><A HREF="index012.html#toc39">Introduction</A>
+</LI><LI><A HREF="index012.html#toc40">Basics</A>
+</LI><LI><A HREF="index012.html#toc41">Client-side</A>
+</LI><LI><A HREF="index012.html#toc42">Implementation-side</A>
+</LI></UL>
+</LI><LI><A HREF="index013.html">Fortran 90/95 Bindings</A>
+<UL>
+<LI><A HREF="index013.html#toc43">Introduction</A>
+</LI><LI><A HREF="index013.html#toc44">Basics</A>
+</LI><LI><A HREF="index013.html#toc45">Client-side</A>
+</LI><LI><A HREF="index013.html#toc46">Implementation-side</A>
+</LI></UL>
+</LI><LI><A HREF="index014.html">Fortran 2003/2008 Bindings</A>
+<UL>
+<LI><A HREF="index014.html#toc47">Introduction</A>
+</LI><LI><A HREF="index014.html#toc48">Basics</A>
+</LI><LI><A HREF="index014.html#toc49">Client-side</A>
+</LI><LI><A HREF="index014.html#toc50">Implementation-side</A>
+</LI></UL>
+</LI><LI><A HREF="index015.html">Java Bindings</A>
+<UL>
+<LI><A HREF="index015.html#toc51">Introduction</A>
+</LI><LI><A HREF="index015.html#toc52">Basics</A>
+</LI><LI><A HREF="index015.html#toc53">Client-side</A>
+</LI><LI><A HREF="index015.html#toc54">Implementation-side</A>
+</LI></UL>
+</LI><LI><A HREF="index016.html">Python Bindings</A>
+<UL>
+<LI><A HREF="index016.html#toc55">Introduction</A>
+</LI><LI><A HREF="index016.html#toc56">Basics</A>
+</LI><LI><A HREF="index016.html#toc57">Client-side</A>
+</LI><LI><A HREF="index016.html#toc58">Implementation-side</A>
+</LI></UL>
+</LI><LI><A HREF="index017.html">SIDL Backend</A>
+<UL>
+<LI><A HREF="index017.html#toc59">Introduction</A>
+</LI><LI><A HREF="index017.html#toc60">Purpose</A>
+</LI><LI><A HREF="index017.html#toc61">Generated versus Original SIDL files</A>
+</LI><LI><A HREF="index017.html#toc62">XML File Comparison</A>
+</LI><LI><A HREF="index017.html#toc63">Babel Command Line Options</A>
+</LI></UL>
+</LI><LI><A HREF="index018.html">XML Backend</A>
+<UL>
+<LI><A HREF="index018.html#toc64">Introduction</A>
+</LI><LI><A HREF="index018.html#toc65">Purpose</A>
+</LI><LI><A HREF="index018.html#toc66">Basic Structure</A>
+</LI><LI><A HREF="index018.html#toc67">Command Line Options</A>
+</LI></UL>
+</LI><LI><A HREF="index019.html">HTML Interface Documentation</A>
+<UL>
+<LI><A HREF="index019.html#toc68">Introduction</A>
+</LI></UL>
+</LI></UL>
+<TABLE CLASS="center"><TR><TD><H1 CLASS="part"><A NAME="htoc81">Part III</A><BR>
+Advanced Topics</H1></TD></TR>
+</TABLE><UL>
+<LI><A HREF="index020.html">Remote Method Invocation</A>
+<UL>
+<LI><A HREF="index020.html#toc69">What is RMI?</A>
+</LI><LI><A HREF="index020.html#toc70">Babel RMI Concepts</A>
+</LI><LI><A HREF="index020.html#toc71">Babel RMI Usage</A>
+</LI><LI><A HREF="index020.html#toc72">Babel Object Servers</A>
+</LI><LI><A HREF="index020.html#toc73">Non-Blocking Babel RMI</A>
+</LI></UL>
+</LI><LI><A HREF="index021.html">Building Portable Polyglot Software</A>
+<UL>
+<LI><A HREF="index021.html#toc74">Layout of Generated Files</A>
+</LI><LI><A HREF="index021.html#toc75">Grouping compiled assets into Libraries</A>
+</LI><LI><A HREF="index021.html#toc76">Dynamic vs. Static Linking</A>
+</LI><LI><A HREF="index021.html#toc77">SIDL Library Issues</A>
+</LI><LI><A HREF="index021.html#toc78">Language Bindings for the <TT>sidl</TT> Package</A>
+</LI><LI><A HREF="index021.html#toc79">SCL Files for Dynamic Loading</A>
+</LI><LI><A HREF="index021.html#toc80">Deployment of Babel-Enabled Libraries</A>
+</LI></UL>
+</LI><LI><A HREF="index022.html">Creating Objects with Pre-Initialized State</A>
+<UL>
+<LI><A HREF="index022.html#toc81">Introduction to the Backdoor Initializer</A>
+</LI><LI><A HREF="index022.html#toc82">Motivation</A>
+</LI><LI><A HREF="index022.html#toc83">Example</A>
+</LI><LI><A HREF="index022.html#toc84">The Backdoor Initializer in C</A>
+</LI><LI><A HREF="index022.html#toc85">The Backdoor Initializer in <SPAN STYLE="font-variant:small-caps">fortran 77</SPAN></A>
+</LI><LI><A HREF="index022.html#toc86">The Backdoor Initializer in Fortran 90/95</A>
+</LI><LI><A HREF="index022.html#toc87">The Backdoor Initializer in C++</A>
+</LI><LI><A HREF="index022.html#toc88">The Backdoor Initializer in Java</A>
+</LI><LI><A HREF="index022.html#toc89">The Backdoor Initializer in Python</A>
+</LI></UL>
+</LI><LI><A HREF="index023.html">Interface Contracts</A>
+<UL>
+<LI><A HREF="index023.html#toc90">Introduction</A>
+</LI><LI><A HREF="index023.html#toc91">Specifications</A>
+</LI><LI><A HREF="index023.html#toc92">Enforcement</A>
+</LI><LI><A HREF="index023.html#toc93">Summary</A>
+</LI></UL>
+</LI><LI><A HREF="index024.html">Troubleshooting</A>
+<UL>
+<LI><A HREF="index024.html#toc94">Introduction</A>
+</LI><LI><A HREF="index024.html#toc95">Common Errors</A>
+</LI><LI><A HREF="index024.html#toc96">Common Warnings</A>
+</LI></UL>
+</LI><LI><A HREF="index025.html">Lessons Learned</A>
+<UL>
+<LI><A HREF="index025.html#toc97">Introduction</A>
+</LI><LI><A HREF="index025.html#toc98">Compilation Consistency is Key</A>
+</LI></UL>
+</LI></UL>
+<TABLE CLASS="center"><TR><TD><H1 CLASS="part"><A NAME="htoc118">Part IV</A><BR>
+Appendices</H1></TD></TR>
+</TABLE><P><A NAME="p:appendices"></A>
+</P><UL>
+<LI><A HREF="index026.html">Reserved Words</A>
+<UL>
+<LI><A HREF="index026.html#toc99">Introduction</A>
+</LI><LI><A HREF="index026.html#toc100">Reserved Words</A>
+</LI><LI><A HREF="index026.html#toc101">Suggested Things To Avoid</A>
+</LI></UL>
+</LI><LI><A HREF="index027.html">SIDL Grammar</A>
+<UL>
+<LI><A HREF="index027.html#toc102">Introduction</A>
+</LI><LI><A HREF="index027.html#toc103">Backus-Naur Form</A>
+</LI></UL>
+</LI><LI><A HREF="index028.html">Extensible Markup Language (XML)</A>
+<UL>
+<LI><A HREF="index028.html#toc104">Introduction</A>
+</LI><LI><A HREF="index028.html#toc105">SIDL Document Type Declaration (DTD)</A>
+</LI></UL>
+</LI><LI><A HREF="index029.html">Glossary</A>
+<UL>
+<LI><A HREF="index029.html#toc106">abstract</A>
+</LI><LI><A HREF="index029.html#toc107">array</A>
+</LI><LI><A HREF="index029.html#toc108">BLAS</A>
+</LI><LI><A HREF="index029.html#toc109">Babel Object Server</A>
+</LI><LI><A HREF="index029.html#toc110">BNF</A>
+</LI><LI><A HREF="index029.html#toc111">bool</A>
+</LI><LI><A HREF="index029.html#toc112">borrowed arrays</A>
+</LI><LI><A HREF="index029.html#toc113">CCA</A>
+</LI><LI><A HREF="index029.html#toc114">char</A>
+</LI><LI><A HREF="index029.html#toc115">class</A>
+</LI><LI><A HREF="index029.html#toc116">concrete class</A>
+</LI><LI><A HREF="index029.html#toc117">COM</A>
+</LI><LI><A HREF="index029.html#toc118">component</A>
+</LI><LI><A HREF="index029.html#toc119">component architecture</A>
+</LI><LI><A HREF="index029.html#toc120">copy</A>
+</LI><LI><A HREF="index029.html#toc121">CORBA</A>
+</LI><LI><A HREF="index029.html#toc122">dcomplex</A>
+</LI><LI><A HREF="index029.html#toc123">dense</A>
+</LI><LI><A HREF="index029.html#toc124">developer</A>
+</LI><LI><A HREF="index029.html#toc125">DLL</A>
+</LI><LI><A HREF="index029.html#toc126">double</A>
+</LI><LI><A HREF="index029.html#toc127">DTD</A>
+</LI><LI><A HREF="index029.html#toc128">dynamic linking</A>
+</LI><LI><A HREF="index029.html#toc129">enum</A>
+</LI><LI><A HREF="index029.html#toc130">enumeration</A>
+</LI><LI><A HREF="index029.html#toc131">exception</A>
+</LI><LI><A HREF="index029.html#toc132">extends</A>
+</LI><LI><A HREF="index029.html#toc133">external stubs</A>
+</LI><LI><A HREF="index029.html#toc134">external types</A>
+</LI><LI><A HREF="index029.html#toc135">fcomplex</A>
+</LI><LI><A HREF="index029.html#toc136">final</A>
+</LI><LI><A HREF="index029.html#toc137">float</A>
+</LI><LI><A HREF="index029.html#toc138">full name</A>
+</LI><LI><A HREF="index029.html#toc139">fundamental types</A>
+</LI><LI><A HREF="index029.html#toc140">glue</A>
+</LI><LI><A HREF="index029.html#toc141">HTML</A>
+</LI><LI><A HREF="index029.html#toc142">implementation</A>
+</LI><LI><A HREF="index029.html#toc143">implements</A>
+</LI><LI><A HREF="index029.html#toc144">implements-all</A>
+</LI><LI><A HREF="index029.html#toc145">import</A>
+</LI><LI><A HREF="index029.html#toc146">in</A>
+</LI><LI><A HREF="index029.html#toc147">independent arrays</A>
+</LI><LI><A HREF="index029.html#toc148">inheritance</A>
+</LI><LI><A HREF="index029.html#toc149">inout</A>
+</LI><LI><A HREF="index029.html#toc150">instance method</A>
+</LI><LI><A HREF="index029.html#toc151">int</A>
+</LI><LI><A HREF="index029.html#toc152">int32_t and int64_t</A>
+</LI><LI><A HREF="index029.html#toc153">interface</A>
+</LI><LI><A HREF="index029.html#toc154">interprocess</A>
+</LI><LI><A HREF="index029.html#toc155">IOR</A>
+</LI><LI><A HREF="index029.html#toc156">JNI</A>
+</LI><LI><A HREF="index029.html#toc157">language interoperability</A>
+</LI><LI><A HREF="index029.html#toc158">local</A>
+</LI><LI><A HREF="index029.html#toc159">long</A>
+</LI><LI><A HREF="index029.html#toc160">method</A>
+</LI><LI><A HREF="index029.html#toc161">namespace</A>
+</LI><LI><A HREF="index029.html#toc162">nonblocking</A>
+</LI><LI><A HREF="index029.html#toc163">non-strided</A>
+</LI><LI><A HREF="index029.html#toc164">Object model</A>
+</LI><LI><A HREF="index029.html#toc165">OMG</A>
+</LI><LI><A HREF="index029.html#toc166">oneway</A>
+</LI><LI><A HREF="index029.html#toc167">opaque</A>
+</LI><LI><A HREF="index029.html#toc168">out</A>
+</LI><LI><A HREF="index029.html#toc169">package</A>
+</LI><LI><A HREF="index029.html#toc170">pass-by-copy</A>
+</LI><LI><A HREF="index029.html#toc171">pass-by-reference</A>
+</LI><LI><A HREF="index029.html#toc172">pass-by-value</A>
+</LI><LI><A HREF="index029.html#toc173">PIC</A>
+</LI><LI><A HREF="index029.html#toc174">preprocessing</A>
+</LI><LI><A HREF="index029.html#toc175">private data</A>
+</LI><LI><A HREF="index029.html#toc176">process</A>
+</LI><LI><A HREF="index029.html#toc177">protocol</A>
+</LI><LI><A HREF="index029.html#toc178">reference counting</A>
+</LI><LI><A HREF="index029.html#toc179">Remote Method Invocation</A>
+</LI><LI><A HREF="index029.html#toc180">reverse engineering</A>
+</LI><LI><A HREF="index029.html#toc181">RMI</A>
+</LI><LI><A HREF="index029.html#toc182">RPC</A>
+</LI><LI><A HREF="index029.html#toc183">serialization</A>
+</LI><LI><A HREF="index029.html#toc184">shared library</A>
+</LI><LI><A HREF="index029.html#toc185">short name</A>
+</LI><LI><A HREF="index029.html#toc186">SIDL</A>
+</LI><LI><A HREF="index029.html#toc187">single process</A>
+</LI><LI><A HREF="index029.html#toc188">skeleton</A>
+</LI><LI><A HREF="index029.html#toc189">SO</A>
+</LI><LI><A HREF="index029.html#toc190">SPMD</A>
+</LI><LI><A HREF="index029.html#toc191">state (of an object)</A>
+</LI><LI><A HREF="index029.html#toc192">static</A>
+</LI><LI><A HREF="index029.html#toc193">static linking</A>
+</LI><LI><A HREF="index029.html#toc194">string</A>
+</LI><LI><A HREF="index029.html#toc195">stub</A>
+</LI><LI><A HREF="index029.html#toc196">SWIG</A>
+</LI><LI><A HREF="index029.html#toc197">tarball</A>
+</LI><LI><A HREF="index029.html#toc198">throws</A>
+</LI><LI><A HREF="index029.html#toc199">type</A>
+</LI><LI><A HREF="index029.html#toc200">URL</A>
+</LI><LI><A HREF="index029.html#toc201">user</A>
+</LI><LI><A HREF="index029.html#toc202">version</A>
+</LI><LI><A HREF="index029.html#toc203">virtual</A>
+</LI><LI><A HREF="index029.html#toc204">VM</A>
+</LI><LI><A HREF="index029.html#toc205">void</A>
+</LI><LI><A HREF="index029.html#toc206">VPATH</A>
+</LI><LI><A HREF="index029.html#toc207">XML</A>
+</LI></UL>
+</LI><LI><A HREF="index030.html">Index</A>
+</LI></UL>
+<!--FOOTER-->
+<HR SIZE=2><BLOCKQUOTE CLASS="quote"><EM>This document was translated from L<sup>A</sup>T<sub>E</sub>X by
+<A HREF="http://hevea.inria.fr/index.html">H<FONT SIZE=2><sup>E</sup></FONT>V<FONT SIZE=2><sup>E</sup></FONT>A</A>.</EM></BLOCKQUOTE></BODY>
+</HTML>

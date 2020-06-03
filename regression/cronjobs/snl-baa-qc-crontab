@@ -1,0 +1,8 @@
+MAILTO=baallan@dancer.ca.sandia.gov
+http_proxy=http://wwwproxy.ca.sandia.gov:80
+ftp_proxy=http://wwwproxy.ca.sandia.gov:80
+45 19 * * 0-4 (cd ${HOME}/babel_testing/babel/regression/cronjobs ; /bin/bash gantlet_cron.sh snl-linux-gcc4.1.2-pgf90-dbg make_webcheck babeltest@z.ca.sandia.gov) 2>&1
+45 20 * * 0-5 (cd ${HOME}/babel_testing/babel/regression/cronjobs ; /bin/bash gantlet_cron.sh snl-linux-gcc4.1.2-pgf90-static make_webcheck babeltest@z.ca.sandia.gov) 2>&1
+45 21 * * 0-5 (cd ${HOME}/babel_testing/babel/regression/cronjobs ; /bin/bash gantlet_cron.sh snl-linux-gcc4.1.2-g77-dbg make_webcheck babeltest@z.ca.sandia.gov) 2>&1
+45 22 * * 0-5 (cd ${HOME}/babel_testing/babel/regression/cronjobs ; /bin/bash gantlet_cron.sh snl-linux-gcc4.1.2-gfortran make_webcheck babeltest@z.ca.sandia.gov) 2>&1
+

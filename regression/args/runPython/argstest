@@ -1,0 +1,292 @@
+#!/usr/local/bin/python
+#
+# File:        argstest
+# Copyright:   (c) 2001 Lawrence Livermore National Security, LLC
+# Revision:    @(#) $Revision: 6855 $
+# Date:        $Date: 2010-05-10 17:17:51 -0700 (Mon, 10 May 2010) $
+# Description: Exercise every kind of argument
+#
+# Try to exercise everything possible in Python.
+
+import sidlPyArrays
+import Args.Basic
+if sidlPyArrays.type == "numpy":
+  from numpy import zeros, float32
+else:
+  import Numeric
+  zeros = Numeric.zeros
+  float32 = Numeric.Float32
+from synch.ResultType import *
+from synch import RegOut
+
+#basic RMI support
+remoteURL = ''
+
+def withRMI():
+  return remoteURL != ''
+
+def makeObject():
+  if withRMI():
+    return Args.Basic.Basic(url=remoteURL)
+  else:
+    return Args.Basic.Basic()
+
+def toFloat(d):
+  tmp = zeros((1,), float32)
+  try:
+    tmp[0] = d
+  except AttributeError:
+    # don't die!
+    tmp[0] = d
+  return float(tmp[0])
+
+class TestCounter:
+
+  def __init__(self, numparts = -1):
+    self.tracker = RegOut.RegOut()
+    self.partno = 0
+    self.tracker.setExpectations(numparts)
+
+  def describeTest(self, description):
+    self.partno = self.partno + 1
+    self.tracker.startPart(self.partno)
+    self.tracker.writeComment(description)
+
+  def fail(self):
+    self.tracker.forceFailure()
+
+  def evalTest(self, result, expected=1):
+    if (result):
+      if (expected):
+        self.tracker.endPart(self.partno, PASS)
+      else:
+        self.tracker.endPart(self.partno, XPASS)
+    else:
+      if (expected):
+        self.tracker.endPart(self.partno, FAIL)
+      else:
+        self.tracker.endPart(self.partno, XFAIL)
+        
+  def finish(self):
+    self.tracker.close()
+
+def driver(counter):
+  eps = 1e-6
+  
+  # boolean test
+  obj = makeObject()
+  counter.describeTest('obj = Args.Basic.Basic()')
+  counter.evalTest(obj != None)
+
+  counter.describeTest('obj.returnbackbool()')
+  counter.evalTest(obj.returnbackbool())
+
+  counter.describeTest('obj.passinbool(1)')
+  counter.evalTest(obj.passinbool(1))
+
+  counter.describeTest('(1, 1) == obj.passoutbool()')
+  counter.evalTest((1, 1) == obj.passoutbool())
+
+  counter.describeTest('(1, 0) == obj.passinoutbool(1)')
+  counter.evalTest((1, 0) == obj.passinoutbool(1))
+
+  counter.describeTest('(1, 1, 1) = obj.passeverywherebool(1, 0)')
+  counter.evalTest((1, 1, 1) == obj.passeverywherebool(1, 0))
+  
+  # char test
+  obj = makeObject()
+  counter.describeTest('obj = Args.Basic.Basic()')
+  counter.evalTest(obj != None)
+
+  counter.describeTest('obj.returnbackchar() == "3"')
+  counter.evalTest(obj.returnbackchar() == "3")
+
+  counter.describeTest('obj.passinchar("3")')
+  counter.evalTest(obj.passinchar("3"))
+
+  counter.describeTest('(1, "3") == obj.passoutchar()')
+  counter.evalTest((1, "3") == obj.passoutchar())
+
+  counter.describeTest('(1, "a") == obj.passinoutchar("A")')
+  counter.evalTest((1, "a") == obj.passinoutchar("A"))
+
+  counter.describeTest('("3", "3", "A") = obj.passeverywherechar("3", "a")')
+  counter.evalTest(("3", "3", "A") == obj.passeverywherechar("3", "a"))
+  
+  # int test
+  obj = makeObject()
+  counter.describeTest('obj = Args.Basic.Basic()')
+  counter.evalTest(obj != None)
+
+  counter.describeTest('obj.returnbackint() == 3')
+  counter.evalTest(obj.returnbackint() == 3)
+
+  counter.describeTest('obj.passinint(3)')
+  counter.evalTest(obj.passinint(3))
+
+  counter.describeTest('(1, 3) == obj.passoutint()')
+  counter.evalTest((1, 3) == obj.passoutint())
+
+  counter.describeTest('(1, -3) == obj.passinoutint(3)')
+  counter.evalTest((1, -3) == obj.passinoutint(3))
+
+  counter.describeTest('(3, 3, 3) = obj.passeverywhereint(3, -3)')
+  counter.evalTest((3, 3, 3) == obj.passeverywhereint(3, -3))
+
+  # long test
+  obj = makeObject()
+  counter.describeTest('obj = Args.Basic.Basic()')
+  counter.evalTest(obj != None)
+
+  counter.describeTest('obj.returnbacklong() == 3L')
+  counter.evalTest(obj.returnbacklong() == 3L)
+
+  counter.describeTest('obj.passinlong(3L)')
+  counter.evalTest(obj.passinlong(3L))
+
+  counter.describeTest('(1, 3L) == obj.passoutlong()')
+  counter.evalTest((1, 3L) == obj.passoutlong())
+
+  counter.describeTest('(1, -3L) == obj.passinoutlong(3L)')
+  counter.evalTest((1, -3L) == obj.passinoutlong(3L))
+
+  counter.describeTest('(3L, 3L, 3L) = obj.passeverywherelong(3L, -3L)')
+  counter.evalTest((3L, 3L, 3L) == obj.passeverywherelong(3L, -3L))
+
+  # float test
+  floatpi = toFloat(3.1)
+  obj = makeObject()
+  counter.describeTest('obj = Args.Basic.Basic()')
+  counter.evalTest(obj != None)
+
+  counter.describeTest('obj.returnbackfloat() == 3.1')
+  counter.evalTest(abs(obj.returnbackfloat() - floatpi) < eps)
+
+  counter.describeTest('obj.passinfloat(3.1)')
+  counter.evalTest(obj.passinfloat(floatpi))
+
+  counter.describeTest('(1, 3.1) == obj.passoutfloat()')
+  (a, b) = obj.passoutfloat()
+  counter.evalTest(a == 1 and abs(b - floatpi) < eps)
+
+  counter.describeTest('(1, -3.1) == obj.passinoutfloat(3.1)')
+  (a, b) = obj.passinoutfloat(floatpi)
+  counter.evalTest(a == 1 and abs(b + floatpi) < eps)
+
+  counter.describeTest('(3.1, 3.1, 3.1) = obj.passeverywherefloat(3.1, -3.1)')
+  (a, b, c) = obj.passeverywherefloat(floatpi, -floatpi)
+  counter.evalTest(abs(a - floatpi) < eps and
+                   abs(b - floatpi) < eps and
+                   abs(c - floatpi) < eps)
+
+  # double test
+  doublepi = 3.14
+  obj = makeObject()
+  counter.describeTest('obj = Args.Basic.Basic()')
+  counter.evalTest(obj != None)
+
+  counter.describeTest('obj.returnbackdouble() == 3.14')
+  counter.evalTest(abs(obj.returnbackdouble() - doublepi) < eps)
+
+  counter.describeTest('obj.passindouble(3.14)')
+  counter.evalTest(obj.passindouble(doublepi))
+
+  counter.describeTest('(1, 3.14) == obj.passoutdouble()')
+  (a, b) = obj.passoutdouble()  
+  counter.evalTest(a == 1 and abs(b - doublepi) < eps)
+
+  counter.describeTest('(1, -3.14) == obj.passinoutdouble(3.14)')
+  (a, b) = obj.passinoutdouble(doublepi)
+  counter.evalTest(a == 1 and abs(b + doublepi) < eps)
+
+  counter.describeTest('(3.14, 3.14, 3.14) = obj.passeverywheredouble(3.14, -3.14)')
+  (a, b, c) = obj.passeverywheredouble(doublepi, -doublepi)
+  counter.evalTest(abs(a - doublepi) < eps and
+                   abs(b - doublepi) < eps and
+                   abs(c - doublepi) < eps)
+
+  # fcomplex test
+  fcomplexpi = floatpi + floatpi * 1.0j
+  fconj = floatpi - floatpi * 1.0j
+  obj = makeObject()
+  counter.describeTest('obj = Args.Basic.Basic()')
+  counter.evalTest(obj != None)
+
+  counter.describeTest('obj.returnbackfcomplex() == 3.1 + 3.1i')
+  counter.evalTest(abs(obj.returnbackfcomplex() - fcomplexpi) < eps)
+
+  counter.describeTest('obj.passinfcomplex(3.1 + 3.1i)')
+  counter.evalTest(obj.passinfcomplex(fcomplexpi))
+
+  counter.describeTest('(1, 3.1 + 3.1i) == obj.passoutfcomplex()')
+  (a,b) = obj.passoutfcomplex()
+  counter.evalTest(a == 1 and abs(b - fcomplexpi) < eps)
+
+  counter.describeTest('(1, 3.1 - 3.1i) == obj.passinoutfcomplex(3.1 + 3.1i)')
+  (a,b) = obj.passinoutfcomplex(fcomplexpi)
+  counter.evalTest(a == 1 and abs(b.real - floatpi) < eps and abs(b.imag + floatpi) < eps)
+
+  counter.describeTest('(3.1 + 3.1i, 3.1 + 3.1i, 3.1 + 3.1i) = obj.passeverywherefcomplex(3.1 + 3.1i, 3.1 - 3.1i)')
+  (a, b, c) = obj.passeverywherefcomplex(fcomplexpi, fconj)
+  counter.evalTest(abs(a - fcomplexpi) < eps and
+                   abs(b - fcomplexpi) < eps and
+                   abs(c - fcomplexpi) < eps)
+
+  # dcomplex test
+  dcomplexpi = doublepi + doublepi * 1.0j
+  dconj = doublepi - doublepi * 1.0j
+  obj = makeObject()
+  counter.describeTest('obj = Args.Basic.Basic()')
+  counter.evalTest(obj != None)
+
+  counter.describeTest('obj.returnbackdcomplex() == 3.14 + 3.14i')
+  counter.evalTest(abs(obj.returnbackdcomplex() - dcomplexpi) < eps)
+
+  counter.describeTest('obj.passindcomplex(3.14 + 3.14i)')
+  counter.evalTest(obj.passindcomplex(dcomplexpi))
+
+  counter.describeTest('(1, 3.14 + 3.14i) == obj.passoutdcomplex()')
+  (a,b) = obj.passoutdcomplex()
+  counter.evalTest(a == 1 and abs(b - dcomplexpi) < eps)
+
+  counter.describeTest('(1, 3.14 - 3.14i) == obj.passinoutdcomplex(3.14 + 3.14i)')
+  (a,b) = obj.passinoutdcomplex(dcomplexpi)
+  counter.evalTest(a == 1 and abs(b.real - doublepi) < eps and abs(b.imag + doublepi) < eps)
+
+  
+  counter.describeTest('(3.14 + 3.14i, 3.14 + 3.14i, 3.14 + 3.14i) = obj.passeverywheredcomplex(3.14 + 3.14i, 3.14 - 3.14i)')
+  (a, b, c) = obj.passeverywheredcomplex(dcomplexpi, dconj)
+  counter.evalTest(abs(a - dcomplexpi) < eps and
+                   abs(b - dcomplexpi) < eps and
+                   abs(c - dcomplexpi) < eps)
+  
+
+if __name__ == '__main__':
+  import sys
+  
+  counter = TestCounter(48)
+  try:
+    # Parse the command line  to see if we are running RMI tests
+    for arg in sys.argv:
+      if arg.startswith("--url="):
+        remoteURL = arg[6:]
+        remoteURL = counter.tracker.replaceMagicVars(remoteURL, '')
+
+    if withRMI():
+      print 'using remote URL ' + remoteURL
+      
+    # Setup RMI if necessary
+    if withRMI():
+      import sidl.rmi.ProtocolFactory
+      print 'registering RMI protocol simhandle'
+      if not sidl.rmi.ProtocolFactory.addProtocol('simhandle', 'sidlx.rmi.SimHandle'):
+        print('sidl.rmi.ProtocolFactor.addProtocol() failed')
+        sys.exit(2);
+    driver(counter)
+  except:
+    (type, value, trace) = sys.exc_info()
+    counter.fail()
+    import traceback
+    traceback.print_exception(type, value, trace)
+  counter.finish()
+0

@@ -1,0 +1,316 @@
+.\" Man page generated from reStructeredText.
+.
+.TH BABEL 1 "2011-12-16" "2.0" "Compilers and Programming Languages"
+.SH NAME
+Babel \- High-performance language interoperability
+.
+.nr rst2man-indent-level 0
+.
+.de1 rstReportMargin
+\\$1 \\n[an-margin]
+level \\n[rst2man-indent-level]
+level margin: \\n[rst2man-indent\\n[rst2man-indent-level]]
+-
+\\n[rst2man-indent0]
+\\n[rst2man-indent1]
+\\n[rst2man-indent2]
+..
+.de1 INDENT
+.\" .rstReportMargin pre:
+. RS \\$1
+. nr rst2man-indent\\n[rst2man-indent-level] \\n[an-margin]
+. nr rst2man-indent-level +1
+.\" .rstReportMargin post:
+..
+.de UNINDENT
+. RE
+.\" indent \\n[an-margin]
+.\" old: \\n[rst2man-indent\\n[rst2man-indent-level]]
+.nr rst2man-indent-level -1
+.\" new: \\n[rst2man-indent\\n[rst2man-indent-level]]
+.in \\n[rst2man-indent\\n[rst2man-indent-level]]u
+..
+.\" -*- rst -*-
+.
+.SH SYNOPSIS
+.INDENT 0.0
+.INDENT 3.5
+.sp
+babel [ \-h | \-\-help ]
+.sp
+babel [ \-v | \-\-version ]
+.sp
+babel option(s) filename1.sidl [ ... filenameN.sidl ]
+.UNINDENT
+.UNINDENT
+.SH DESCRIPTION
+.sp
+Babel is a high\-performance language interoperability tool. The
+project is mainly developed at the Center for Applied Scientific
+Computing (CASC) at Lawrence Livermore National Laboratory
+(LLNL). Babel started as an internal Lab Directed Research and
+Development (LDRD) project in 2000 and has been under constant
+development since then. It is now funded mainly under the
+U.S. Department of Energy (DOE) Office of Science\(aqs SciDAC program.
+.sp
+Babel currently fully supports C, C++, Fortran 77/90/2003/2008, Python,
+and Java. It won a prestigious R&D 100 award in 2006 for "The world\(aqs
+most rapid communication among many programming languages in a single
+application.".
+.sp
+Our tool is based on the Scientific Interface Description Language
+(SIDL). SIDL is tailored to the needs of the scientific community and
+features support for complex numbers, structs, and dynamic
+multidimensional arrays. Babel is a compiler that generates glue code
+from SIDL interface descriptions. SIDL provides a modern object
+oriented programming model, even on top of traditional procedural
+languages. This includes automatic reference counting and resource
+(de)allocation. Code written in one language can be called from any of
+the supported languages.
+.sp
+Babel focuses on high\-performance language interoperability within a
+single address space. Full support for Remote Method Invocation (RMI)
+allows for the development of parallel distributed applications.
+.sp
+We also provide tools to automatically generate documentation from
+SIDL descriptions. An equivalent XML representation eases development
+of third\-party tools.
+.sp
+The full manual (amounting to several hundred printed pages) can be found at
+<\fI\%https://computation.llnl.gov/casc/components/docs/users_guide/index.html\fP>.
+.SH OPTIONS
+.INDENT 0.0
+.INDENT 3.5
+.INDENT 0.0
+.TP
+.B \-\-Cca\-mode
+.
+Enables generation of CCA support files and default splicer blocks.
+.TP
+.B \-c<lang>, \-\-client<lang>
+.
+Generate only client code in the specified language (C | C++ | F77 | F90 | F03 | Java | Python).
+.TP
+.B \-\-comment\-local\-only
+.
+Only comment locally defined methods in stub.
+.UNINDENT
+.INDENT 0.0
+.TP
+.B \-x,  \-\-cxx\-ior\-exception
+.
+Include IOR pointer checking in C++ stubs; throw a NullIORException if IOR is Null.
+.UNINDENT
+.INDENT 0.0
+.TP
+.B \-e<regex>, \-\-exclude<regex>
+.
+Symbols matching the regular expression are excluded from code generation.
+.UNINDENT
+.INDENT 0.0
+.TP
+.B \-f,  \-\-fast\-call
+.
+Enable experimental inter\-language optimizations.
+.TP
+.B \-i,  \-\-generate\-hooks
+.
+Generate pre\-/post\-method hooks
+.UNINDENT
+.INDENT 0.0
+.TP
+.B \-\-generate\-sidl\-stdlib
+.
+Regenerate only the SIDL standard library.
+.UNINDENT
+.INDENT 0.0
+.TP
+.B \-g,  \-\-generate\-subdirs
+.
+Postpend Java\-style package subdirs.
+.UNINDENT
+.INDENT 0.0
+.TP
+.B \-\-generate\-subdirs\-off
+.
+Turn off \-\-generate\-subdirs and restore default behavior.
+.UNINDENT
+.INDENT 0.0
+.TP
+.B \-h,  \-\-help
+.
+Display usage information and exit.
+.TP
+.B \-u,  \-\-hide\-glue
+.
+Put "glue" (not modifiable by user) generate code in a glue/ subdirectory.
+.UNINDENT
+.INDENT 0.0
+.TP
+.B \-\-hide\-glue\-off
+.
+Turn off \-\-hide\-glue and restore default behavior.
+.TP
+.B \-I <url>, \-\-include<url>
+.
+Read types from a SIDL file, but don\(aqt generate code for them.
+.UNINDENT
+.sp
+\-\-include\-referenced
+.INDENT 0.0
+.INDENT 3.5
+.sp
+Code is generated for symbols referenced by those listed on the command line.
+.UNINDENT
+.UNINDENT
+.INDENT 0.0
+.TP
+.B \-l,  \-\-language\-subdirs
+.
+Generate code in a language\-specific subdirectory.
+.UNINDENT
+.INDENT 0.0
+.TP
+.B \-\-language\-subdirs\-off
+.
+Turn off \-\-language\-subdirs and restore default behavior.
+.TP
+.B \-m<prefix>, \-\-make\-prefix<prefix>
+.
+<prefix> is prepended to the name of babel.make and the symbols defined internally to allow Babel to be run multiple times in a single directory.
+.TP
+.B \-\-makefile
+.
+Generate a sample GNU Makefile.
+.TP
+.B \-\-multi
+.
+Use to generate multiple targets in one run. This causes Babel to process arguments in a strict left to right approach.
+.TP
+.B \-!, \-\-no\-default\-repository
+.
+Prohibit use of default repository to resolve symbols.
+.TP
+.B \-o<dir>, \-\-output\-directory<dir>
+.
+Set Babel output directory (\(aq.\(aq default).
+.UNINDENT
+.INDENT 0.0
+.TP
+.B \-p,  \-\-parse\-check
+.
+Parse the sidl file but do not generate code.
+.UNINDENT
+.INDENT 0.0
+.TP
+.B \-\-rename\-splicers
+.
+Automatically rename splicer blocks whose name have changed from previous Babel releases.
+.TP
+.B \-R<path>, \-\-repository\-path<path>
+.
+Set semicolon\-separated URL list used to resolve symbols.
+.TP
+.B \-s<lang>, \-\-server<lang>
+.
+Generate server (and client code) in the specified language (C | C++ | F77 | F90 | F03 | Java |  Python).
+.TP
+.B \-\-short\-file\-names
+.
+Use in conjuction with \-g to generate file names that don\(aqt include package names.
+.TP
+.B \-\-strict\-provenance
+.
+Use to cleanly separate generated and developer code and avoid overwriting impl files.
+.TP
+.B \-\-suppress\-contracts
+.
+Refrain from generating contract enforcement from SIDL specs.
+.TP
+.B \-\-suppress\-ior
+.
+Refrain from generating IOR source or header files.
+.TP
+.B \-\-suppress\-stubs
+.
+Refrain from generating stub source or header files.
+.TP
+.B \-t<form>, \-\-text<form>
+.
+Generate text in specified form (XML | SIDL | HTML).
+.TP
+.B \-\-timestamp
+.
+Generate timestamps in generated files.
+.TP
+.B \-\-verbose
+.
+Turn on verbose debugging text
+.UNINDENT
+.INDENT 0.0
+.TP
+.B \-v,  \-\-version
+.
+Display the version information and exit.
+.UNINDENT
+.INDENT 0.0
+.TP
+.B \-V<path>, \-\-vpath<path>
+.
+Prepend alternative search path for reading Impl  splicer blocks. Does not affect where Impls are  generated. NOTE: \-\-vpath=. is a no\-op for  autoconf/automake. If you really want current  directory, use another argument like \fIpwd\fP or even  ./.
+.UNINDENT
+.UNINDENT
+.UNINDENT
+.sp
+If you have any suggestions or questions not answered by the documentation,
+please send email to \fI\%components@llnl.gov\fP.
+.SH SEE ALSO
+.INDENT 0.0
+.IP \(bu 2
+.
+Babel home page <\fI\%https://www.llnl.gov/CASC/Components\fP>
+.IP \(bu 2
+.
+The Babel User\(aqs Guide <\fI\%https://computation.llnl.gov/casc/components/docs/users_guide/index.html\fP>
+.IP \(bu 2
+.
+BRAID is a related project, which will implement support for Chapel,
+X10 and UPC.  (see <\fI\%http://compose\-hpc.sourceforge.net/\fP> ). Babel
+and BRAID are 100% compatible to each other.
+.UNINDENT
+.SH AUTHORS
+.sp
+Babel is written by the components team <\fI\%components@llnl.gov\fP> at
+Lawrence Livermore National Laboratory.
+.SS Active Members
+.INDENT 0.0
+.INDENT 3.5
+.sp
+Tom Epperly (PL), Tamara Dahlgren and Adrian Prantl.
+.UNINDENT
+.UNINDENT
+.SS Alumni
+.INDENT 0.0
+.INDENT 3.5
+.sp
+Bill Bosl, Kevin Durrenberger, Nathan Dykman, Dietmar Ebner, Scott Kohn, Gary Kumfert, James Leek, Steve Smith and Brent Smolinsky.
+.UNINDENT
+.UNINDENT
+.SS Summer Interns
+.INDENT 0.0
+.INDENT 3.5
+.sp
+Irina Abramova \- USC (Summer 2009), Jewel Watts \- NCAT (Summer 2009), Monica Porsche \- Central State University (Summer 2008), Nija Shi \- UC Davis (Summer/Fall 2004), Kirk Kelsey (Summer 2004) \- Sarah Knoop \- UW Madison (Summer 2003) and Melvina Blackgoat \- NAU (Summer 2001).
+.UNINDENT
+.UNINDENT
+.SH LICENSE
+.sp
+Babel is released under the GNU Lesser General Public (LGPL) license,
+which is an OSI Certified open source license. It can be freely
+copied, modified, and distributed under the terms of this license.
+.SH BUGS
+.sp
+See the file BUGS included with the source distribution.
+.\" Generated by docutils manpage writer.
+.\" 
+.

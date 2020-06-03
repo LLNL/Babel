@@ -1,0 +1,220 @@
+..                                               -*- rst -*-
+
+=====
+Babel
+=====
+
+------------------------------------------
+High-performance language interoperability
+------------------------------------------
+
+:Date:   2011-12-16
+:Version: 2.0
+:Manual section: 1
+:Manual group: Compilers and Programming Languages
+
+SYNOPSIS
+========
+
+   babel [ -h | --help ]
+
+   babel [ -v | --version ]
+
+   babel option(s) filename1.sidl [ ... filenameN.sidl ]
+
+DESCRIPTION
+===========
+
+Babel is a high-performance language interoperability tool. The
+project is mainly developed at the Center for Applied Scientific
+Computing (CASC) at Lawrence Livermore National Laboratory
+(LLNL). Babel started as an internal Lab Directed Research and
+Development (LDRD) project in 2000 and has been under constant
+development since then. It is now funded mainly under the
+U.S. Department of Energy (DOE) Office of Science's SciDAC program.
+
+Babel currently fully supports C, C++, Fortran 77/90/2003/2008, Python,
+and Java. It won a prestigious R&D 100 award in 2006 for "The world's
+most rapid communication among many programming languages in a single
+application.".
+
+Our tool is based on the Scientific Interface Description Language
+(SIDL). SIDL is tailored to the needs of the scientific community and
+features support for complex numbers, structs, and dynamic
+multidimensional arrays. Babel is a compiler that generates glue code
+from SIDL interface descriptions. SIDL provides a modern object
+oriented programming model, even on top of traditional procedural
+languages. This includes automatic reference counting and resource
+(de)allocation. Code written in one language can be called from any of
+the supported languages.
+
+Babel focuses on high-performance language interoperability within a
+single address space. Full support for Remote Method Invocation (RMI)
+allows for the development of parallel distributed applications.
+
+We also provide tools to automatically generate documentation from
+SIDL descriptions. An equivalent XML representation eases development
+of third-party tools.
+
+The full manual (amounting to several hundred printed pages) can be found at
+<https://computation.llnl.gov/casc/components/docs/users_guide/index.html>.
+
+
+OPTIONS
+=======
+
+  --Cca-mode
+    Enables generation of CCA support files and default splicer blocks.
+
+  -c<lang>, --client<lang>
+    Generate only client code in the specified language (C | C++ | F77 | F90 | F03 | Java | Python).
+
+  --comment-local-only
+    Only comment locally defined methods in stub.
+
+  -x, --cxx-ior-exception
+    Include IOR pointer checking in C++ stubs; throw a NullIORException if IOR is Null.
+
+  -e<regex>, --exclude<regex>   
+    Symbols matching the regular expression are excluded from code generation.
+
+  -f, --fast-call
+    Enable experimental inter-language optimizations.
+
+  -i, --generate-hooks
+    Generate pre-/post-method hooks
+
+  --generate-sidl-stdlib
+    Regenerate only the SIDL standard library.
+
+  -g, --generate-subdirs
+    Postpend Java-style package subdirs.
+
+  --generate-subdirs-off
+    Turn off --generate-subdirs and restore default behavior.
+
+  -h, --help
+    Display usage information and exit.
+
+  -u, --hide-glue
+    Put "glue" (not modifiable by user) generate code in a glue/ subdirectory.
+
+  --hide-glue-off
+    Turn off --hide-glue and restore default behavior.
+
+  -I <url>, --include<url>
+    Read types from a SIDL file, but don't generate code for them.
+
+  --include-referenced
+
+    Code is generated for symbols referenced by those listed on the command line.
+
+  -l, --language-subdirs
+    Generate code in a language-specific subdirectory.
+
+  --language-subdirs-off
+    Turn off --language-subdirs and restore default behavior.
+
+  -m<prefix>, --make-prefix<prefix>   
+    <prefix> is prepended to the name of babel.make and the symbols defined internally to allow Babel to be run multiple times in a single directory.
+
+  --makefile
+    Generate a sample GNU Makefile.
+
+  --multi
+    Use to generate multiple targets in one run. This causes Babel to process arguments in a strict left to right approach.
+
+  -!, --no-default-repository  
+    Prohibit use of default repository to resolve symbols.
+
+  -o<dir>, --output-directory<dir>
+    Set Babel output directory ('.' default).
+
+  -p, --parse-check
+    Parse the sidl file but do not generate code.
+
+  --rename-splicers
+    Automatically rename splicer blocks whose name have changed from previous Babel releases.
+
+  -R<path>, --repository-path<path>
+    Set semicolon-separated URL list used to resolve symbols.
+
+  -s<lang>, --server<lang>
+    Generate server (and client code) in the specified language (C | C++ | F77 | F90 | F03 | Java |  Python).
+
+  --short-file-names
+    Use in conjuction with -g to generate file names that don't include package names.
+
+  --strict-provenance
+    Use to cleanly separate generated and developer code and avoid overwriting impl files.
+
+  --suppress-contracts
+    Refrain from generating contract enforcement from SIDL specs.
+
+  --suppress-ior
+    Refrain from generating IOR source or header files.
+
+  --suppress-stubs
+    Refrain from generating stub source or header files.
+
+  -t<form>, --text<form>
+    Generate text in specified form (XML | SIDL | HTML).
+
+  --timestamp
+    Generate timestamps in generated files.
+
+  --verbose
+    Turn on verbose debugging text
+
+  -v, --version
+    Display the version information and exit.
+
+  -V<path>, --vpath<path>
+    Prepend alternative search path for reading Impl  splicer blocks. Does not affect where Impls are  generated. NOTE: --vpath=. is a no-op for  autoconf/automake. If you really want current  directory, use another argument like `pwd` or even  ./.
+
+If you have any suggestions or questions not answered by the documentation,
+please send email to components@llnl.gov.
+
+SEE ALSO
+========
+
+* Babel home page <https://www.llnl.gov/CASC/Components>
+* The Babel User's Guide <https://computation.llnl.gov/casc/components/docs/users_guide/index.html>
+* BRAID is a related project, which will implement support for Chapel,
+  X10 and UPC.  (see <http://compose-hpc.sourceforge.net/> ). Babel
+  and BRAID are 100% compatible to each other.
+
+
+AUTHORS
+=======
+
+Babel is written by the components team <components@llnl.gov> at
+Lawrence Livermore National Laboratory.
+
+Active Members
+~~~~~~~~~~~~~~~
+   Tom Epperly (PL), Tamara Dahlgren and Adrian Prantl.
+
+Alumni
+~~~~~~
+
+   Bill Bosl, Kevin Durrenberger, Nathan Dykman, Dietmar Ebner, Scott Kohn, Gary Kumfert, James Leek, Steve Smith and Brent Smolinsky.
+
+Summer Interns
+~~~~~~~~~~~~~~
+
+   Irina Abramova - USC (Summer 2009), Jewel Watts - NCAT (Summer 2009), Monica Porsche - Central State University (Summer 2008), Nija Shi - UC Davis (Summer/Fall 2004), Kirk Kelsey (Summer 2004) - Sarah Knoop - UW Madison (Summer 2003) and Melvina Blackgoat - NAU (Summer 2001).
+
+
+
+LICENSE
+=======
+
+Babel is released under the GNU Lesser General Public (LGPL) license,
+which is an OSI Certified open source license. It can be freely
+copied, modified, and distributed under the terms of this license.
+
+BUGS
+====
+
+See the file BUGS included with the source distribution.

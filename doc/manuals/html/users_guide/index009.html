@@ -1,0 +1,46 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN"
+            "http://www.w3.org/TR/REC-html40/loose.dtd">
+<HTML>
+<HEAD>
+
+<META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<META name="GENERATOR" content="hevea 1.10">
+<LINK rel="stylesheet" type="text/css" href="index.css">
+<TITLE>Upgrade Notes</TITLE>
+</HEAD>
+<BODY >
+<A HREF="index008.html"><IMG SRC="previous_motif.gif" ALT="Previous"></A>
+<A HREF="index-multipage.html"><IMG SRC="contents_motif.gif" ALT="Up"></A>
+<A HREF="index010.html"><IMG SRC="next_motif.gif" ALT="Next"></A>
+<HR>
+<H1 CLASS="chapter"><A NAME="htoc30">Chapter 7</A>  Upgrade Notes</H1><UL>
+<LI><A HREF="index009.html#toc30">Upgrading from Babel 1.0 to 1.4</A>
+</LI></UL>
+<P><A NAME="c:upgrade"></A></P><P><BR>
+</P><H2 CLASS="section"><A NAME="toc30"></A><A NAME="htoc31">7.1</A>  Upgrading from Babel 1.0 to 1.4</H2><P>This section covers some of the important changes for users upgrading
+from Babel 1.0 to Babel 1.4. Users who are new to Babel 1.4 should
+skip this chapter because it gets into details that only experienced
+Babel users will understand.</P><P>There are two major changes for users upgrading. The first involves
+renaming certain splicer blocks in the C and C++ bindings, and the
+second involves the extra comments needed for the CCA’s Bocca
+IDE. Both these changes require new command line options.</P><P>Some splicer blocks have been renamed from what they were in Babel
+1.0. The <TT>_misc</TT> and <TT>_includes</TT> in a C or C++ implementation
+header file have been renamed to <TT>_hmisc</TT> and
+<TT>_hincludes</TT>. The goal of this change has to give each splicer
+block a unique name across the implementation header and
+implementation source files. In Babel 1.0, the header and source both
+have a splicer blocks named <TT>_misc</TT> and <TT>_includes</TT>. This
+made things confusing for Bocca users.</P><P>To help users upgrading from Babel 1.0 to 1.4, Babel 1.4 has a
+<TT>--rename-splicers</TT> command line option that will
+automatically rename the header splicer blocks whose names have
+changed. Once you’ve generated new implementation header files, you
+do not need to keep using <TT>--rename-splicers</TT>.</P><P>To support CCA’s Bocca, Babel 1.0 introduced extra comments to guide
+the Bocca IDE to blocks of text that need to be edited. In Babel 1.4,
+you need to specifically request these extra comments with
+<TT>--cca-mode</TT>.
+</P><HR>
+<A HREF="index008.html"><IMG SRC="previous_motif.gif" ALT="Previous"></A>
+<A HREF="index-multipage.html"><IMG SRC="contents_motif.gif" ALT="Up"></A>
+<A HREF="index010.html"><IMG SRC="next_motif.gif" ALT="Next"></A>
+</BODY>
+</HTML>

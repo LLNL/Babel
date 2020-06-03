@@ -1,0 +1,208 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html>
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="GENERATOR" content="Mozilla/4.78 [en] (X11; U; Linux 2.4.18-c0smp i686) [Netscape]">
+   <title>BNF for SIDL.jj</title>
+</head>
+<body>
+
+<center>
+<h1>
+BNF for SIDL 0.8.2</h1></center>
+
+<center>
+<h2>
+NON-TERMINALS</h2></center>
+
+<table>
+<tr>
+<td ALIGN=RIGHT VALIGN=BASELINE><a NAME="prod1"></a>Specification</td>
+
+<td ALIGN=CENTER VALIGN=BASELINE>::=</td>
+
+<td ALIGN=LEFT VALIGN=BASELINE>( <a href="#prod2">Require</a> )* ( <a href="#prod3">Import</a>
+)* ( <a href="#prod4">Package</a> )* &lt;EOF></td>
+</tr>
+
+<tr>
+<td ALIGN=RIGHT VALIGN=BASELINE><a NAME="prod2"></a>Require</td>
+
+<td ALIGN=CENTER VALIGN=BASELINE>::=</td>
+
+<td ALIGN=LEFT VALIGN=BASELINE>&lt;T_REQUIRE> <a href="#prod5">ScopedIdentifier</a>
+&lt;T_VERSION> ( &lt;T_INTEGER> | &lt;T_VERSION_STRING> ) &lt;T_SEMICOLON></td>
+</tr>
+
+<tr>
+<td ALIGN=RIGHT VALIGN=BASELINE><a NAME="prod3"></a>Import</td>
+
+<td ALIGN=CENTER VALIGN=BASELINE>::=</td>
+
+<td ALIGN=LEFT VALIGN=BASELINE>&lt;T_IMPORT> <a href="#prod5">ScopedIdentifier</a>
+( &lt;T_VERSION> ( &lt;T_INTEGER> | &lt;T_VERSION_STRING> ) )? &lt;T_SEMICOLON></td>
+</tr>
+
+<tr>
+<td ALIGN=RIGHT VALIGN=BASELINE><a NAME="prod4"></a>Package</td>
+
+<td ALIGN=CENTER VALIGN=BASELINE>::=</td>
+
+<td ALIGN=LEFT VALIGN=BASELINE>( &lt;T_FINAL> )? &lt;T_PACKAGE> <a href="#prod5">ScopedIdentifier</a>
+( &lt;T_VERSION> ( &lt;T_INTEGER> | &lt;T_VERSION_STRING> ) )? &lt;T_OPEN_CURLY>
+( <a href="#prod6">Definition</a> )* &lt;T_CLOSE_CURLY> ( &lt;T_SEMICOLON>
+)?</td>
+</tr>
+
+<tr>
+<td ALIGN=RIGHT VALIGN=BASELINE><a NAME="prod6"></a>Definition</td>
+
+<td ALIGN=CENTER VALIGN=BASELINE>::=</td>
+
+<td ALIGN=LEFT VALIGN=BASELINE>( <a href="#prod7">Class</a> | <a href="#prod8">Enum</a>
+| <a href="#prod9">Interface</a> | <a href="#prod4">Package</a> )</td>
+</tr>
+
+<tr>
+<td ALIGN=RIGHT VALIGN=BASELINE><a NAME="prod7"></a>Class</td>
+
+<td ALIGN=CENTER VALIGN=BASELINE>::=</td>
+
+<td ALIGN=LEFT VALIGN=BASELINE>( &lt;T_ABSTRACT> )? &lt;T_CLASS> <a href="#prod10">Identifier</a>
+( &lt;T_EXTENDS> <a href="#prod5">ScopedIdentifier</a> )? ( &lt;T_IMPLEMENTS_ALL>
+<a href="#prod11">AddInterface</a>
+( &lt;T_COMMA> <a href="#prod11">AddInterface</a> )* )? ( &lt;T_IMPLEMENTS>
+<a href="#prod11">AddInterface</a> ( &lt;T_COMMA>
+<a href="#prod11">AddInterface</a>
+)* )? &lt;T_OPEN_CURLY> ( <a href="#prod12">ClassMethod</a> )* &lt;T_CLOSE_CURLY>
+( &lt;T_SEMICOLON> )?</td>
+</tr>
+
+<tr>
+<td ALIGN=RIGHT VALIGN=BASELINE><a NAME="prod8"></a>Enum</td>
+
+<td ALIGN=CENTER VALIGN=BASELINE>::=</td>
+
+<td ALIGN=LEFT VALIGN=BASELINE>&lt;T_ENUM> <a href="#prod10">Identifier</a>
+&lt;T_OPEN_CURLY> <a href="#prod13">Enumerator</a> ( &lt;T_COMMA> <a href="#prod13">Enumerator</a>
+)* ( &lt;T_COMMA> )? &lt;T_CLOSE_CURLY> ( &lt;T_SEMICOLON> )?</td>
+</tr>
+
+<tr>
+<td ALIGN=RIGHT VALIGN=BASELINE><a NAME="prod13"></a>Enumerator</td>
+
+<td ALIGN=CENTER VALIGN=BASELINE>::=</td>
+
+<td ALIGN=LEFT VALIGN=BASELINE><a href="#prod10">Identifier</a> ( &lt;T_EQUALS>
+&lt;T_INTEGER> )?</td>
+</tr>
+
+<tr>
+<td ALIGN=RIGHT VALIGN=BASELINE><a NAME="prod9"></a>Interface</td>
+
+<td ALIGN=CENTER VALIGN=BASELINE>::=</td>
+
+<td ALIGN=LEFT VALIGN=BASELINE>&lt;T_INTERFACE> <a href="#prod10">Identifier</a>
+( &lt;T_EXTENDS> <a href="#prod11">AddInterface</a> ( &lt;T_COMMA> <a href="#prod11">AddInterface</a>
+)* )? &lt;T_OPEN_CURLY> ( <a href="#prod14">InterfaceMethod</a> )* &lt;T_CLOSE_CURLY>
+( &lt;T_SEMICOLON> )?</td>
+</tr>
+
+<tr>
+<td ALIGN=RIGHT VALIGN=BASELINE><a NAME="prod11"></a>AddInterface</td>
+
+<td ALIGN=CENTER VALIGN=BASELINE>::=</td>
+
+<td ALIGN=LEFT VALIGN=BASELINE><a href="#prod5">ScopedIdentifier</a></td>
+</tr>
+
+<tr>
+<td ALIGN=RIGHT VALIGN=BASELINE><a NAME="prod12"></a>ClassMethod</td>
+
+<td ALIGN=CENTER VALIGN=BASELINE>::=</td>
+
+<td ALIGN=LEFT VALIGN=BASELINE>( ( &lt;T_ABSTRACT> | &lt;T_FINAL> | &lt;T_STATIC>
+) )? <a href="#prod15">Method</a></td>
+</tr>
+
+<tr>
+<td ALIGN=RIGHT VALIGN=BASELINE><a NAME="prod14"></a>InterfaceMethod</td>
+
+<td ALIGN=CENTER VALIGN=BASELINE>::=</td>
+
+<td ALIGN=LEFT VALIGN=BASELINE><a href="#prod15">Method</a></td>
+</tr>
+
+<tr>
+<td ALIGN=RIGHT VALIGN=BASELINE><a NAME="prod15"></a>Method</td>
+
+<td ALIGN=CENTER VALIGN=BASELINE>::=</td>
+
+<td ALIGN=LEFT VALIGN=BASELINE>( &lt;T_VOID> | ( &lt;T_COPY> )? <a href="#prod16">Type</a>
+) <a href="#prod10">Identifier</a> ( &lt;T_IDENTIFIER> )? &lt;T_OPEN_PAREN>
+( <a href="#prod17">Argument</a> ( &lt;T_COMMA> <a href="#prod17">Argument</a>
+)* )? &lt;T_CLOSE_PAREN> ( &lt;T_LOCAL> | &lt;T_ONEWAY> )? ( &lt;T_THROWS>
+<a href="#prod5">ScopedIdentifier</a>
+( &lt;T_COMMA> <a href="#prod5">ScopedIdentifier</a> )* )? &lt;T_SEMICOLON></td>
+</tr>
+
+<tr>
+<td ALIGN=RIGHT VALIGN=BASELINE><a NAME="prod17"></a>Argument</td>
+
+<td ALIGN=CENTER VALIGN=BASELINE>::=</td>
+
+<td ALIGN=LEFT VALIGN=BASELINE>( &lt;T_COPY> )? ( &lt;T_IN> | &lt;T_OUT>
+| &lt;T_INOUT> ) <a href="#prod16">Type</a> <a href="#prod10">Identifier</a></td>
+</tr>
+
+<tr>
+<td ALIGN=RIGHT VALIGN=BASELINE><a NAME="prod16"></a>Type</td>
+
+<td ALIGN=CENTER VALIGN=BASELINE>::=</td>
+
+<td ALIGN=LEFT VALIGN=BASELINE>( &lt;T_BOOLEAN> | &lt;T_CHAR> | &lt;T_DCOMPLEX>
+| &lt;T_DOUBLE> | &lt;T_FCOMPLEX> | &lt;T_FLOAT> | &lt;T_INT> | &lt;T_LONG>
+| &lt;T_OPAQUE> | &lt;T_STRING> | <a href="#prod18">Array</a> | <a href="#prod19">SymbolType</a>
+)</td>
+</tr>
+
+<tr>
+<td ALIGN=RIGHT VALIGN=BASELINE><a NAME="prod18"></a>Array</td>
+
+<td ALIGN=CENTER VALIGN=BASELINE>::=</td>
+
+<td ALIGN=LEFT VALIGN=BASELINE>&lt;T_ARRAY> &lt;T_OPEN_ANGLE> <a href="#prod16">Type</a>
+( &lt;T_COMMA> ( &lt;T_INTEGER> ( &lt;T_COMMA> ( &lt;T_COLUMN_MAJOR> |
+&lt;T_ROW_MAJOR> ) )? | ( &lt;T_COLUMN_MAJOR> | &lt;T_ROW_MAJOR> ) ) )?
+&lt;T_CLOSE_ANGLE></td>
+</tr>
+
+<tr>
+<td ALIGN=RIGHT VALIGN=BASELINE><a NAME="prod19"></a>SymbolType</td>
+
+<td ALIGN=CENTER VALIGN=BASELINE>::=</td>
+
+<td ALIGN=LEFT VALIGN=BASELINE><a href="#prod5">ScopedIdentifier</a></td>
+</tr>
+
+<tr>
+<td ALIGN=RIGHT VALIGN=BASELINE><a NAME="prod5"></a>ScopedIdentifier</td>
+
+<td ALIGN=CENTER VALIGN=BASELINE>::=</td>
+
+<td ALIGN=LEFT VALIGN=BASELINE><a href="#prod10">Identifier</a> ( &lt;T_SCOPE>
+<a href="#prod10">Identifier</a>
+)*</td>
+</tr>
+
+<tr>
+<td ALIGN=RIGHT VALIGN=BASELINE><a NAME="prod10"></a>Identifier</td>
+
+<td ALIGN=CENTER VALIGN=BASELINE>::=</td>
+
+<td ALIGN=LEFT VALIGN=BASELINE>&lt;T_IDENTIFIER></td>
+</tr>
+</table>
+
+</body>
+</html>

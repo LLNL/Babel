@@ -1,0 +1,54 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN"
+            "http://www.w3.org/TR/REC-html40/loose.dtd">
+<HTML>
+<HEAD>
+
+<META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<META name="GENERATOR" content="hevea 1.10">
+<LINK rel="stylesheet" type="text/css" href="index.css">
+<TITLE>Troubleshooting</TITLE>
+</HEAD>
+<BODY >
+<A HREF="index023.html"><IMG SRC="previous_motif.gif" ALT="Previous"></A>
+<A HREF="index-multipage.html"><IMG SRC="contents_motif.gif" ALT="Up"></A>
+<A HREF="index025.html"><IMG SRC="next_motif.gif" ALT="Next"></A>
+<HR>
+<H1 CLASS="chapter"><A NAME="htoc111">Chapter 22</A>  Troubleshooting</H1><UL>
+<LI><A HREF="index024.html#toc94">Introduction</A>
+</LI><LI><A HREF="index024.html#toc95">Common Errors</A>
+</LI><LI><A HREF="index024.html#toc96">Common Warnings</A>
+</LI></UL>
+<P><A NAME="c:troubleshooting"></A></P><P><BR>
+</P><H2 CLASS="section"><A NAME="toc94"></A><A NAME="htoc112">22.1</A>  Introduction</H2><P><A NAME="s:intro_errors"></A>
+This appendix provides an overview of common problems that Babel users have 
+encountered. Additional insights may be found in Chapter <A HREF="index025.html#c:lessons">23</A>.</P><H2 CLASS="section"><A NAME="toc95"></A><A NAME="htoc113">22.2</A>  Common Errors</H2><P><A NAME="s:common_errors"></A>
+This section focuses on common errors encountered by Babel users. The errors 
+have been separated into those related to SIDL parsing, XML parsing, and 
+compilation.</P><H3 CLASS="subsection">SIDL Parsing Errors</H3><P>
+<A NAME="@default2047"></A>
+</P><UL CLASS="itemize"><LI CLASS="li-itemize">
+<EM><B>Babel: Error: when trying to resolve remaining args...Error 
+: ÄnArgumentfails to resolve as a symbol or file.</B></EM> For a symbol, Babel 
+attempts to find it in the repository(ies) specified on the command line or, 
+if none specified, in the default repository. Check the repository being used 
+to ensure that XML exists for the appropriate version of the symbol. If it is 
+not present, generate the XML for it first then try again.<BR>
+
+</LI></UL><H3 CLASS="subsection">XML Parsing Errors</H3><H3 CLASS="subsection">Compilation Errors</H3><H2 CLASS="section"><A NAME="toc96"></A><A NAME="htoc114">22.3</A>  Common Warnings</H2><P><A NAME="s:common_warns"></A>
+This section focuses on common warnings encountered by Babel users. Again, 
+warnings have been separated into those related to SIDL parsing, XML parsing, 
+and compilation.</P><H3 CLASS="subsection">SIDL Parsing Warnings</H3><P>
+<A NAME="@default2048"></A>
+</P><UL CLASS="itemize"><LI CLASS="li-itemize">
+<B><EM>Babel: Warning: When creating repository...File 
+Repository+Fileïs not a repository directory"</EM>.</B>
+First verify that the specified directory is actually a repository directory. 
+That is, that it contains symbol interfaces defined by XML files. If not,
+correct the repository option then try again.<BR>
+
+</LI></UL><H3 CLASS="subsection">XML Parsing Warnings</H3><H3 CLASS="subsection">Compilation Warnings</H3><HR>
+<A HREF="index023.html"><IMG SRC="previous_motif.gif" ALT="Previous"></A>
+<A HREF="index-multipage.html"><IMG SRC="contents_motif.gif" ALT="Up"></A>
+<A HREF="index025.html"><IMG SRC="next_motif.gif" ALT="Next"></A>
+</BODY>
+</HTML>

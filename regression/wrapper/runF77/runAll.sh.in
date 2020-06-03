@@ -1,0 +1,212 @@
+#!/bin/bash
+## File:        runAll.sh
+## Package:     Babel regression driver
+## Revision:    $Revision$
+## Modified:    $Date$
+## Description: regression driver that dynamically loads implementations
+##
+## Copyright (c) 2000-2006, Lawrence Livermore National Security, LLC
+## Produced at the Lawrence Livermore National Laboratory.
+## Written by the Components Team <components@llnl.gov>
+## UCRL-CODE-2002-054
+## All rights reserved.
+##
+## This file is part of Babel. For more information, see
+## http://www.llnl.gov/CASC/components/. Please read the COPYRIGHT file
+## for Our Notice and the LICENSE file for the GNU Lesser General Public
+## License.
+##
+## This program is free software; you can redistribute it and/or modify it
+## under the terms of the GNU Lesser General Public License (as published by
+## the Free Software Foundation) version 2.1 dated February 1999.
+##
+## This program is distributed in the hope that it will be useful, but
+## WITHOUT ANY WARRANTY; without even the IMPLIED WARRANTY OF
+## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the terms and
+## conditions of the GNU Lesser General Public License for more details.
+##
+## You should have received a copy of the GNU Lesser General Public License
+## along with this program; if not, write to the Free Software Foundation,
+## Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+
+
+#
+# If running the regression tests against the installed version under CYGWIN,
+# we need to add the DLL location to the default path.
+#
+
+# limit CPU time to 10 minutes
+ulimit -t 600
+
+prefix=@prefix@
+exec_prefix=@exec_prefix@
+python_version=@PYTHON_VERSION@
+VERSION="@VERSION@"
+PYTHON="@PYTHON@"
+libjvm_dir=@LIBJVM_DIR@
+libjava_dir=@LIBJAVA_DIR@
+allstatus=0
+
+if test -f stamp-installcheck; then
+  installcheck=yes
+  case "`uname`" in
+    CYGWIN*)
+      PATH="$PATH:${bindir}"; export PATH
+    ;;
+  esac
+else
+  installcheck=no
+fi
+ORIG_LIBPATH="${@SHARED_LIB_VAR@}"
+
+#
+# Run the tests against the various back-end implementations.
+#
+
+
+echo "TEST_BEGIN F77->C"
+echo "COMMENT: Wrapper from C..."
+if test $installcheck = yes; then
+  @SHARED_LIB_VAR@="$exec_prefix/lib:${ORIG_LIBPATH}"
+else
+  @SHARED_LIB_VAR@="../../../lib/sidlstubs/C/.libs:${ORIG_LIBPATH}"
+fi
+export @SHARED_LIB_VAR@
+SIDL_DLL_PATH="../libC/libImpl.scl;../../output/libC/libOutput.scl;../../../runtime/sidlx/libsidlx.scl" ; export SIDL_DLL_PATH
+./runAll C $*
+Cstatus=$?
+let "allstatus=allstatus | Cstatus"
+if test $Cstatus -ne 0 ; then
+  echo "TEST_RESULT BROKEN $Cstatus"
+fi
+
+echo "TEST_BEGIN F77->C++"
+echo "COMMENT: Wrapper from C++..."
+if test $installcheck = yes; then
+  @SHARED_LIB_VAR@="$exec_prefix/lib:${ORIG_LIBPATH}"
+else
+  @SHARED_LIB_VAR@="../../../lib/sidlstubs/Cxx/.libs:${ORIG_LIBPATH}"
+fi
+export @SHARED_LIB_VAR@
+SIDL_DLL_PATH="../libCxx/libImpl.scl;../../output/libC/libOutput.scl;../../../runtime/sidlx/libsidlx.scl" ; export SIDL_DLL_PATH
+./runAll C++ $*
+Cxxstatus=$?
+let "allstatus=allstatus | Cxxstatus"
+if test $Cxxstatus -ne 0 ; then
+  echo "TEST_RESULT BROKEN $Cxxstatus"
+fi
+
+if test "X@SUPPORT_FORTRAN77_TRUE@" = "X"; then
+  echo "TEST_BEGIN F77->F77"
+  echo "COMMENT: Wrapper from F77..."
+  if test $installcheck = yes; then
+    @SHARED_LIB_VAR@="$exec_prefix/lib:${ORIG_LIBPATH}"
+  else
+    @SHARED_LIB_VAR@="../../../lib/sidlstubs/F77/.libs:${ORIG_LIBPATH}"
+  fi
+  export @SHARED_LIB_VAR@
+  SIDL_DLL_PATH="../libF77/libImpl.scl;../../output/libC/libOutput.scl;../../../runtime/sidlx/libsidlx.scl" ; export SIDL_DLL_PATH
+  ./runAll F77 $*
+F77status=$?
+let "allstatus=allstatus | F77status"
+if test $F77status -ne 0 ; then
+  echo "TEST_RESULT BROKEN $F77status"
+fi
+
+fi
+
+
+if test "X@SUPPORT_FORTRAN90_TRUE@" = "X"; then
+  echo "TEST_BEGIN F77->F90"
+  echo "COMMENT: Wrapper from F90..."
+  if test $installcheck = yes; then
+    @SHARED_LIB_VAR@="$exec_prefix/lib:${ORIG_LIBPATH}"
+  else
+    @SHARED_LIB_VAR@="../../../lib/sidlstubs/F90/.libs:${ORIG_LIBPATH}"
+  fi
+  export @SHARED_LIB_VAR@
+  SIDL_DLL_PATH="../libF90/libImpl.scl;../../output/libC/libOutput.scl;../../../runtime/sidlx/libsidlx.scl" ; export SIDL_DLL_PATH
+  ./runAll F90 $*
+F90status=$?
+let "allstatus=allstatus | F90status"
+if test $F90status -ne 0 ; then
+  echo "TEST_RESULT BROKEN $F90status"
+fi
+
+fi
+
+
+if test "X@SERVER_PYTHON_TRUE@" = "X"; then
+  echo "TEST_BEGIN F77->Python"
+  echo "COMMENT: Wrapper from Python..."
+
+  SIDL_DLL_PATH="../libPython/libImpl.scl;../libPython/libImplPy.scl;../../output/libC/libOutput.scl;../../../runtime/sidlx/libsidlx.scl"
+  export SIDL_DLL_PATH
+  if test $installcheck = yes; then
+    @SHARED_LIB_VAR@="$exec_prefix/lib:${ORIG_LIBPATH}"
+    RUNTIME_PYTHON=`$PYTHON -c "from distutils.sysconfig import get_python_lib; print get_python_lib(prefix='$exec_prefix',plat_specific=1) + ':' + get_python_lib(prefix='$exec_prefix')"`
+  else
+    @SHARED_LIB_VAR@="../../../runtime/sidl/.libs:../../../runtime/libchasmlite/.libs:../../../runtime/libparsifal/src/.libs:../../../runtime/libchasmlite/.libs:${ORIG_LIBPATH}"
+    RUNTIME_PYTHON="../../../runtime/python"
+  fi
+  export @SHARED_LIB_VAR@
+
+  if test "X$PYTHONPATH" = "X"; then
+    PYTHONPATH="../libPython:${RUNTIME_PYTHON}"
+  else
+    PYTHONPATH="../libPython:${RUNTIME_PYTHON}:$PYTHONPATH"
+  fi
+  export PYTHONPATH
+
+  ./runAll Python $*
+  pythonstatus=$?
+  let "allstatus=allstatus | pythonstatus"
+  if test $pythonstatus -ne 0 ; then
+    echo "TEST_RESULT BROKEN $pythonstatus"
+  fi
+fi
+
+if test "X@SUPPORT_JAVA_TRUE@" = "X"; then
+  echo "TEST_BEGIN F77->Java"
+  echo "COMMENT: Wrapper from Java..."
+  if test $installcheck = yes; then
+    @SHARED_LIB_VAR@="${libjvm_dir}:${libjava_dir}:${exec_prefix}/lib:${ORIG_LIBPATH}"
+    CLASSPATH="../libJava:${exec_prefix}/lib/sidl-${VERSION}.jar:${exec_prefix}/lib/sidlstub_${VERSION}.jar:."
+    SIDL_DLL_PATH="../libJava/libImpl.scl;../libJava/libClient.scl;${exec_prefix}/lib/libsidlstub_java.scl;${exec_prefix}/lib/libsidl.scl;../../../runtime/sidlx/libsidlx.scl;../../output/libC/libOutput.scl"
+  else
+    @SHARED_LIB_VAR@="${libjvm_dir}:${libjava_dir}:../../../runtime/sidl/.libs:../../../runtime/libchasmlite/.libs:../../../runtime/libparsifal/src/.libs:../../../lib/sidlstubs/Java/.libs:${ORIG_LIBPATH}"
+    SIDL_DLL_PATH="../libJava/libImpl.scl;../libJava/libClient.scl;../../../lib/sidlstubs/Java/libsidlstub_java.scl;../../../runtime/sidl/libsidl.scl;../../../runtime/sidlx/libsidlx.scl;../../output/libC/libOutput.scl"
+    CLASSPATH="../libJava:../../../lib/sidl-${VERSION}.jar:../../../lib/sidlstubs/Java/sidlstub_${VERSION}.jar:." 
+  fi
+  export @SHARED_LIB_VAR@
+  export SIDL_DLL_PATH
+  export CLASSPATH
+  ./runAll Java $*
+  javastatus=$?
+  let "allstatus=allstatus | javastatus"
+  if test $javastatus -ne 0 ; then
+    echo "TEST_RESULT BROKEN $javastatus"
+  fi
+fi
+
+if test "X@SUPPORT_FORTRAN03_TRUE@" = "X"; then
+  echo "TEST_BEGIN F77->F03"
+  echo "COMMENT: Wrapper from F03..."
+  if test $installcheck = yes; then
+    @SHARED_LIB_VAR@="$exec_prefix/lib:${ORIG_LIBPATH}"
+  else
+    @SHARED_LIB_VAR@="../../../lib/sidlstubs/F03/.libs:${ORIG_LIBPATH}"
+  fi
+  export @SHARED_LIB_VAR@
+  SIDL_DLL_PATH="../libF03/libImpl.scl;../../output/libC/libOutput.scl;../../../runtime/sidlx/libsidlx.scl" ; export SIDL_DLL_PATH
+  ./runAll F03 $*
+F03status=$?
+let "allstatus=allstatus | F03status"
+if test $F03status -ne 0 ; then
+  echo "TEST_RESULT BROKEN $F03status"
+fi
+
+fi
+
+
+exit $allstatus

@@ -1,0 +1,240 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN"
+            "http://www.w3.org/TR/REC-html40/loose.dtd">
+<HTML>
+<HEAD>
+
+<META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<META name="GENERATOR" content="hevea 1.10">
+<LINK rel="stylesheet" type="text/css" href="index.css">
+<TITLE>Preface</TITLE>
+</HEAD>
+<BODY >
+<A HREF="index-multipage.html"><IMG SRC="contents_motif.gif" ALT="Up"></A>
+<A HREF="index002.html"><IMG SRC="next_motif.gif" ALT="Next"></A>
+<HR>
+<H1 CLASS="chapter"><A NAME="htoc1">Chapter 1</A>  Preface</H1><UL>
+<LI><A HREF="index001.html#toc1">Babel in a Nutshell</A>
+</LI><LI><A HREF="index001.html#toc2">Scope of this Manual</A>
+</LI><LI><A HREF="index001.html#toc3">Getting the Software</A>
+</LI><LI><A HREF="index001.html#toc4">Conventions</A>
+</LI><LI><A HREF="index001.html#toc5">We Appreciate Your Feedback</A>
+</LI><LI><A HREF="index001.html#toc6">Acknowledgments</A>
+</LI><LI><A HREF="index001.html#toc7">Software Notices</A>
+</LI></UL>
+<P><A NAME="c:preface"></A></P><DIV CLASS="center">
+<EM>This document applies to Babel 2.0.0.
+It, like the software it documents, is a work in progress.<BR>
+</EM>
+– The Babel Development Team
+</DIV><H2 CLASS="section"><A NAME="toc1"></A>Babel in a Nutshell</H2><P><A NAME="s:preface-nutshell"></A><A NAME="@default0"></A>
+</P><P>Babel is a tool that enables software written in different 
+languages to communicate. It accomplishes this task by
+using an Interface Definition Language (IDL) similar to 
+COM and CORBA. Babel relies on the Scientific Interface Definition
+Language (SIDL) that is specifically tuned for scientific applications.
+By expressing software interfaces, or APIs<SUP><A NAME="text1" HREF="#note1">1</A></SUP>, in SIDL the appropriate glue code stubs and
+skeletons can be generated to facilitate language interoperability.
+Features unique to SIDL are:
+</P><UL CLASS="itemize"><LI CLASS="li-itemize">
+Dynamic multi-dimensional arrays
+</LI><LI CLASS="li-itemize">Complex numbers (e. g. 2 + 3<I>i</I>)
+</LI><LI CLASS="li-itemize">In-process optimizations
+</LI><LI CLASS="li-itemize">Syntax for specifying executable interface contracts
+</LI><LI CLASS="li-itemize">Special directives for large-scale parallel distributed programming (future)
+</LI></UL><P>Babel enables true object-oriented techniques even in 
+non object-oriented languages. The object model that SIDL
+supports is similar to Java and Objective C where a class
+can extend at most one class, but implement many interfaces.
+In C++ speak, an interface is simply a class of all pure-virtual 
+methods. Furthermore, if library developers want object-oriented
+features but are required to be 100% ANSI C compliant,
+Babel can meet those constraints. Although the Babel code 
+generator is implemented in Java, the runtime libraries and 
+generated files for C bindings are 100% ANSI C compliant.</P><P>Babel can be used as the basis for a component framework, but it is
+<EM>not</EM> a complete framework by itself. We’ve added a tiny CCA-compliant framework, called
+<EM>Decaf</EM><A NAME="@default1"></A><A NAME="@default2"></A>, in our examples/ directory.
+Decaf demonstrates how Babel can be used to implement a component 
+framework. </P><P>SIDL is also a useful communications tool for code development teams since
+it only expresses the public API. That is, implementation details, which
+often prove distracting during collaborative design, can be safely avoided
+by restricting discussions to the interfaces described in SIDL.
+Furthermore, since SIDL is simple and clean it can be used by Computer
+Scientists, Math Programmers, and 
+Application Scientists to debate APIs even using only email.</P><H2 CLASS="section"><A NAME="toc2"></A>Scope of this Manual</H2><P><A NAME="s:preface-purpose"></A></P><P>This document is intended as an introduction and tutorial on the use of
+Babel tools for the generation and use of component
+software. The Babel tools were designed specifically
+for scientific applications, therefore most of 
+the examples and exercises here also deal with
+scientific applications.</P><P>This manual assumes the reader is a programmer who is proficient in
+two or more of the following languages: C, C++, <SPAN STYLE="font-variant:small-caps">fortran 77</SPAN>,
+Fortran 90/95, Fortran 2003/2003, Java, or Python. Furthermore, this
+manual assumes the reader is familiar with the SPMD<SUP><A NAME="text2" HREF="#note2">2</A></SUP> programming model that pervades the
+scientific computing community. Knowledge of and experience with MPI
+programming is helpful, but not strictly required.</P><H2 CLASS="section"><A NAME="toc3"></A>Getting the Software</H2><P><A NAME="@default3"></A></P><P>Babel source is available free of charge on the web. Developed
+by the Components Project at the Lawrence Livermore National Laboratory
+Center for Applied Scientific Computing (CASC), 
+it is licensed under the Lesser GNU Public License (LGPL). See the
+source distribution for details.</P><P>The homepage for the Components Project is 
+</P><BLOCKQUOTE CLASS="quote">
+<TT><A HREF="http://www.llnl.gov/CASC/components">http://www.llnl.gov/CASC/components</A></TT>
+</BLOCKQUOTE><H2 CLASS="section"><A NAME="toc4"></A>Conventions</H2><P><A NAME="s:preface-conventions"></A></P><P>The following typographic conventions are used throughout
+this manual.</P><TABLE CELLSPACING=6 CELLPADDING=0><TR><TD VALIGN=top ALIGN=left NOWRAP>&nbsp;</TD><TD VALIGN=top ALIGN=left>&nbsp;</TD></TR>
+<TR><TD VALIGN=top ALIGN=left NOWRAP><EM>Italic</EM>		</TD><TD VALIGN=top ALIGN=left>is used for file and command names. It
+			 is also used to highlight comments in
+			examples and to define terms the first time
+			they appear in a document.</TD></TR>
+<TR><TD VALIGN=top ALIGN=left NOWRAP>&nbsp;</TD><TD VALIGN=top ALIGN=left>&nbsp;</TD></TR>
+<TR><TD VALIGN=top ALIGN=left NOWRAP><TT>Constant Width</TT></TD><TD VALIGN=top ALIGN=left>is used in examples to show the text that
+			is generated, and in regular text to show operators,
+			variables, and the output from commands or programs.</TD></TR>
+<TR><TD VALIGN=top ALIGN=left NOWRAP>&nbsp;</TD><TD VALIGN=top ALIGN=left>&nbsp;</TD></TR>
+<TR><TD VALIGN=top ALIGN=left NOWRAP><FONT COLOR=maroon><I><TT>Constant Slanted</TT></I></FONT></TD><TD VALIGN=top ALIGN=left>is used for displaying for SIDL source code.
+			We use a separate font to distinguish SIDL code
+			from generated code.</TD></TR>
+<TR><TD VALIGN=top ALIGN=left NOWRAP>&nbsp;</TD><TD VALIGN=top ALIGN=left>&nbsp;</TD></TR>
+<TR><TD VALIGN=top ALIGN=left NOWRAP><B><TT>Constant Bold</TT></B></TD><TD VALIGN=top ALIGN=left>is used to show user’s modifications to generated
+				code and in examples to show user’s actual input
+				at a terminal.</TD></TR>
+<TR><TD VALIGN=top ALIGN=left NOWRAP>&nbsp;</TD><TD VALIGN=top ALIGN=left>&nbsp;</TD></TR>
+<TR><TD VALIGN=top ALIGN=left NOWRAP><FONT COLOR=maroon><I>Sans Serif Slanted</I></FONT></TD><TD VALIGN=top ALIGN=left>is used in examples to show variables for
+				which a context-specific substitution should be made.
+				The variable <FONT COLOR=maroon><I>filename</I></FONT>, for example, 
+				would be replaced by the actual filename.</TD></TR>
+<TR><TD VALIGN=top ALIGN=left NOWRAP>&nbsp;</TD></TR>
+</TABLE><P>Additionally, we may use specific blocks of text as sidebars
+to call the readers attention to particular information.
+Here’s one kind.</P><BLOCKQUOTE CLASS="quotation"><B>Rationale:</B> <EM>
+Often when listing restrictions or requirements, 
+we find it helpful to also explain and document
+the rationale behind a design decision. In time,
+the context in which the rationale was based
+may become irrelevant, making the rationale blocks
+very useful for understanding when to change a decision.
+</EM></BLOCKQUOTE><H2 CLASS="section"><A NAME="toc5"></A>We Appreciate Your Feedback</H2><P><A NAME="s:preface-corrections"></A><A NAME="@default4"></A></P><P>We have tested and verified the information in this
+manual. Nonetheless, features may have changed or oversights may exist.
+Please contact us with any issues, corrections, or suggestions
+for future versions of this manual through snail mail at:
+</P><BLOCKQUOTE CLASS="quotation">
+Components Project<BR>
+Center for Applied Scientific Computing<BR>
+Lawrence Livermore National Laboratory<BR>
+P. O. Box 808, L–561<BR>
+Livermore, CA 94551
+</BLOCKQUOTE><P>
+or through email to:
+</P><BLOCKQUOTE CLASS="quotation">
+<TT><A HREF="mailto:components@llnl.gov">components@llnl.gov</A></TT>
+</BLOCKQUOTE><P>
+To find out more about Babel, feel free to subscribe to one or more of the
+associated distribution lists given below.
+</P><UL CLASS="itemize"><LI CLASS="li-itemize">
+<TT>babel-announce@llnl.gov</TT> is a moderated email forum
+to which anyone can subscribe (though no-one can post). This is a low-volume 
+alternative for people who want to know about releases and major announcements.
+</LI><LI CLASS="li-itemize"><TT>babel-dev@llnl.gov</TT> is an open discussion forum 
+about Babel for serious babel users who want to talk about the internal workings of the tools. Anyone can subscribe or send email to this list.
+</LI><LI CLASS="li-itemize"><TT>babel-users@llnl.gov</TT> is an open discussion forum 
+about Babel for users. Anyone can subscribe or send email to this list.
+</LI></UL><P>
+To subscribe, simply send email to 
+<TT><A HREF="mailto:majordomo@lists.llnl.gov">majordomo@lists.llnl.gov</A></TT>
+with the appropriate line(s):
+</P><BLOCKQUOTE CLASS="quotation">	<B><TT>subscribe babel-announce</TT></B> <FONT COLOR=maroon><I>[email-address]</I></FONT><BR>
+	<B><TT>subscribe babel-dev     </TT></B> <FONT COLOR=maroon><I>[email-address]</I></FONT><BR>
+	<B><TT>subscribe babel-users   </TT></B> <FONT COLOR=maroon><I>[email-address]</I></FONT><BR>
+</BLOCKQUOTE><P>
+where you can explicitly state your email address in
+<FONT COLOR=maroon><I>email-address</I></FONT> or, if you leave <FONT COLOR=maroon><I>email-address</I></FONT> blank,
+majordomo will use your email ReplyTo: field.</P><H2 CLASS="section"><A NAME="toc6"></A>Acknowledgments</H2><H5 CLASS="paragraph">Active Team Members:</H5><P>Tom Epperly (Project Lead),
+Tamara Dahlgren, and
+Adrian Prantl.</P><H5 CLASS="paragraph">Project Alumni:</H5><P>
+Bill Bosl,
+Kevin Durrenberger,
+Nathan Dykman,
+Dietmar Ebner,
+Scott Kohn,
+Gary Kumfert,
+James Leek,
+Steve Smith, and
+Brent Smolinsky.</P><H5 CLASS="paragraph">Interns:</H5><P>
+Irina Abramova, <EM>USC (Summer 2009)</EM>,
+Jewel Watts, <EM>NCAT (Summer 2009)</EM>,
+Monica Porsche, <EM>Central State University (Summer 2008)</EM>,
+Nija Shi, <EM>UC Davis (Summer/Fall 2004)</EM>,
+Kirk Kelsey, <EM>(Summer 2004)</EM>,
+Sarah Knoop, <EM>UW Madison (Summer 2003)</EM>, and
+Melvina Blackgoat, <EM>NAU (Summer 2001)</EM>.</P><H5 CLASS="paragraph">Alpha Testers:</H5><P>
+Andy Cleary, 
+Jeff Painter, 
+and
+Cal Ribbens</P><H5 CLASS="paragraph">Contributors (Ideas, Bug Reports, Patches, &amp; Code):</H5><P>
+Rob Armstrong, 
+Ben Allan, 
+Wael Elwasif, 
+Matt Knepley, 
+Boyana Norris,
+Barry Smith,
+Jody Winston, 
+and 
+many more.</P><H5 CLASS="paragraph">Sponsors:</H5><P>
+Babel development originally started as a Strategic Initiative (SI)
+in the LDRD (Lab Directed R&amp;D) portfolio of Lawrence Livermore National 
+Laboratory.
+Follow-on funding comes through collaborations with the Common Component 
+Architecture (CCA) Forum (<TT><A HREF="http://www.cca-forum.org/wiki">http://www.cca-forum.org/wiki</A></TT>).
+Specifically, the U.S. Department of Energy (<TT><A HREF="http://www.doe.gov/">http://www.doe.gov/</A></TT>)
+supports the project through the Office of Science (<TT><A HREF="http://sc.doe.gov/">http://sc.doe.gov/</A></TT>)
+SciDAC program (<TT><A HREF="http://www.scidac.gov/">http://www.scidac.gov/</A></TT>).
+Initial follow-on SciDAC funding came as part of the Center for 
+Common Component Technology for Terascale Scientific Simulation (CCTTSS).
+Current SciDAC II funding is part of the Center for Technology for 
+Advanced Scientific Component Software (TASCS) 
+(<TT><A HREF="http://tascs-scidac.org/">http://tascs-scidac.org/</A></TT>).
+
+</P><H2 CLASS="section"><A NAME="toc7"></A>Software Notices</H2><P><A NAME="s:preface-sharedcode"></A>
+Babel depends on a great deal of third-party software. </P><UL CLASS="itemize"><LI CLASS="li-itemize"><B>JavaCC</B> is used to generate the SIDL Parser. This is a
+java.net community project. JavaCC is available under a 
+	BSD-style license here: <TT><A HREF="https://javacc.dev.java.net/">https://javacc.dev.java.net/</A></TT>).</LI><LI CLASS="li-itemize"><B>gnu.getopt</B> is an implementation of GNU Getopt in Java
+	and is distributed with Babel as a JAR file.
+	It can be downloaded (along with sourcecode) from either the GNU 
+website 
+	<BLOCKQUOTE CLASS="quote"><PRE CLASS="verbatim">http://www.gnu.org/software/java/packages.html
+ </PRE>	</BLOCKQUOTE>
+	or the author’s website
+	<BLOCKQUOTE CLASS="quote"><PRE CLASS="verbatim">http://www.urbanophile.com/arenn/hacking/download.html.
+ </PRE>	</BLOCKQUOTE>
+	The following is the copyright notice for gnu.getopt:
+	<BLOCKQUOTE CLASS="quote">	<PRE CLASS="verbatim">/**************************************************************************
+/* Getopt.java -- Java port of GNU getopt from glibc 2.0.6
+/*
+/* Copyright (c) 1987-1997 Free Software Foundation, Inc.
+/* Java Port Copyright (c) 1998 by Aaron M. Renn (arenn@urbanophile.com)
+/*
+/* This program is free software; you can redistribute it and/or modify
+/* it under the terms of the GNU Library General Public License as published 
+/* by  the Free Software Foundation; either version 2 of the License or
+/* (at your option) any later version.
+/*
+/* This program is distributed in the hope that it will be useful, but
+/* WITHOUT ANY WARRANTY; without even the implied warranty of
+/* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+/* GNU Library General Public License for more details.
+/*
+/* You should have received a copy of the GNU Library General Public License
+/* along with this program; see the file COPYING.LIB.  If not, write to 
+/* the Free Software Foundation Inc., 59 Temple Place - Suite 330, 
+/* Boston, MA  02111-1307 USA
+/**************************************************************************/
+ </PRE>	</BLOCKQUOTE>
+	The text for the GNU Library GPL is available at 
+	<TT><A HREF="http://www.gnu.org/copyleft/library.html">http://www.gnu.org/copyleft/library.html</A></TT>.</LI></UL><HR CLASS="footnoterule"><DL CLASS="thefootnotes"><DT CLASS="dt-thefootnotes">
+<A NAME="note1" HREF="#text1">1</A></DT><DD CLASS="dd-thefootnotes">Application 
+Programming Interfaces
+</DD><DT CLASS="dt-thefootnotes"><A NAME="note2" HREF="#text2">2</A></DT><DD CLASS="dd-thefootnotes">Single
+Program Multiple Data
+</DD></DL>
+<HR>
+<A HREF="index-multipage.html"><IMG SRC="contents_motif.gif" ALT="Up"></A>
+<A HREF="index002.html"><IMG SRC="next_motif.gif" ALT="Next"></A>
+</BODY>
+</HTML>

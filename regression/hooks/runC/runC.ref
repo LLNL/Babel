@@ -1,0 +1,6 @@
+aStaticMeth_pre: 3.500000
+aStaticMeth: 3.500000
+aStaticMeth_post: 3.500000
+aNonStaticMeth_pre: 7
+aNonStaticMeth: 7
+aNonStaticMeth_post: 7

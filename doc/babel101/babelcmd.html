@@ -1,0 +1,210 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html>
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="GENERATOR" content="Mozilla/4.78 [en] (X11; U; Linux 2.4.18-c0smp i686) [Netscape]">
+</head>
+<body>
+
+<center>
+<h1>
+<b>Babel 0.8.x Command Line</b></h1></center>
+
+<h2>
+<b>Name</b></h2>
+&nbsp;&nbsp;&nbsp; babel - Babel compiler
+<br>&nbsp;
+<h2>
+<b>Synopsis</b></h2>
+&nbsp;&nbsp;&nbsp; babel&nbsp; [-h&nbsp; |&nbsp; --help ]
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+|&nbsp; [ -v |&nbsp; --version ]
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+|&nbsp; [&nbsp; [&nbsp; -c<u>targetlanguage</u>&nbsp;&nbsp;&nbsp; |&nbsp;
+--client=<u>targetlanguage</u>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+|&nbsp; -s<u>targetlanguage</u>&nbsp;&nbsp; |&nbsp; --server=<u>targetlanguage</u>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+|&nbsp; -x&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+|&nbsp; --xml
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+|&nbsp; -p&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+|&nbsp; --parse-check
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+|&nbsp; -t<u>targetform</u>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+|&nbsp; --text=<u>targetform</u>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+|&nbsp; --generate-sidl-stdlib&nbsp; ]
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+[ -o<u>outputdirectory</u>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; |&nbsp; --output-directory=<u>outputdirectory</u>&nbsp;
+]
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+[ -e<u>regexpression</u>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; | --exclude=<u>regexpression</u>&nbsp;
+]
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+[ -g&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+| -- generate-subdirs&nbsp; ]
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+[ -R<u>urlpath</u>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+|&nbsp; --repository-path=<u>urlpath</u>&nbsp; ]
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+[ --suppress-timestamp]
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+[ --no-default-repository ]&nbsp; <u>sidlfilename1</u> [,
+<u>sidlfilename2</u>,
+... ]&nbsp; ]
+<br>&nbsp;
+<h2>
+<b>Description</b></h2>
+&nbsp;&nbsp;&nbsp; Babel is a language interoperability tool intended for
+use by the high-
+<br>&nbsp;&nbsp;&nbsp; performance scientific computing community.&nbsp;
+Developed by the
+<br>&nbsp;&nbsp;&nbsp; <a href="http://www.llnl.gov/CASC/components">Components
+project</a> at Lawrence Livermore National Laboratory,
+<br>&nbsp;&nbsp;&nbsp; Babel supports the <a href="grammar.html">Scientific
+Interface Definition Language (SIDL)</a>
+<br>&nbsp;&nbsp;&nbsp; for the language-independent declaration of interfaces
+associated with
+<br>&nbsp;&nbsp;&nbsp; scientific software packages.
+<p>&nbsp;&nbsp;&nbsp; The Babel tool, applied to a SIDL file or the corresponding
+XML files,
+<br>&nbsp;&nbsp;&nbsp; results in the automatic generation of the associated
+skeleton, stub, or
+<br>&nbsp;&nbsp;&nbsp; text files.&nbsp; That is, source files for the
+client and/or server can be automatically
+<br>&nbsp;&nbsp;&nbsp; generated.&nbsp; Alternatively, text files containing
+XML or SIDL can automatically
+<br>&nbsp;&nbsp;&nbsp; be generated.&nbsp; For server side source code,
+the Babel user need only add the
+<br>&nbsp;&nbsp;&nbsp; necessary code to the impl source files to complete
+the provision of a language-
+<br>&nbsp;&nbsp;&nbsp; independent interface to the package described by
+the SIDL file.&nbsp; The languages
+<br>&nbsp;&nbsp;&nbsp; currently supported by Babel on the server-side
+are C, C++, F77, F90, Java,
+<br>&nbsp;&nbsp;&nbsp; and Python.&nbsp; On the client-side, Babel supports
+C, C++, F77, F90, and Python.
+<br>&nbsp;&nbsp;&nbsp; The textual representations that can be generated
+from SIDL or XML are
+<br>&nbsp;&nbsp;&nbsp; XML and SIDL.
+<br>&nbsp;
+<h2>
+<b>Options</b></h2>
+&nbsp;&nbsp;&nbsp; -c<u>targetlanguage</u>&nbsp;&nbsp;&nbsp; |&nbsp; --client=<u>targetlanguage</u>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Generate, in the specified
+language, only the client code (i.e., the stubs and ior
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; headers).&nbsp; The
+<u>targetlanguage</u>
+can be one of C, C++, F77, Java, and Python.
+<p>&nbsp;&nbsp;&nbsp; -e<u>regexpression</u>&nbsp;&nbsp;&nbsp; |&nbsp;
+--exclude=<u>regularexpression</u>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Do not generate code or
+text corresponding to the symbols matching the regular
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; expression.&nbsp; This option
+requires JRE 1.4 virtual machine or higher.
+<p>&nbsp;&nbsp; --generate-sidl-stdlib
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Generate skeleton and impl
+files for the SIDL base classes.&nbsp; It is used by Babel
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; developers to regenerate
+the SIDL base classes in the runtime directory after
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; a change has been made to
+sidl.sidl.
+<p>&nbsp;&nbsp;&nbsp; -h&nbsp;&nbsp;&nbsp; |&nbsp; --help
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Default option.&nbsp; Display
+the command line options before exiting.
+<p>&nbsp;&nbsp;&nbsp; --no-repository-default
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Prohibit the use of the
+<i>repositoryDefault</i>
+in finding repositories to resolve symbols.
+<p>&nbsp;&nbsp;&nbsp; -o<u>outputdirectory</u>&nbsp;&nbsp;&nbsp; |&nbsp;
+--output-directory=<u>outputdirectory</u>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Identify the output directory
+to be used as the root of the distribution.&nbsp; By default,
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; the output directory is
+'.'.
+<p>&nbsp;&nbsp;&nbsp; -p&nbsp;&nbsp;&nbsp; |&nbsp; --parse-check
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Only parse the specified
+SIDL file.&nbsp; That is, do not generate the associated code.
+<p>&nbsp;&nbsp;&nbsp; -R<u>urlpath</u>&nbsp;&nbsp;&nbsp; |&nbsp; --repository-path=<u>urlpath</u>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Set the search path for
+symbol repositories to the specified,&nbsp; semicolon-separated
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; list of URLs.&nbsp; The
+<u>urlpath</u>
+is used to search for repositories to resolve symbols.
+<p>&nbsp;&nbsp;&nbsp; -s<u>targetlanguage</u>&nbsp;&nbsp;&nbsp; |&nbsp;
+--server=<u>targetlanguage</u>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Generate, in the specified
+language, the server code (i.e., the stubs, iors, skeletons,
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; and impls).&nbsp; The <u>targetlanguage</u>
+can be one of C, C++, F77, and Python.
+<p>&nbsp;&nbsp;&nbsp; --suppressTimestamp
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Suppress timestamps on the
+generated files.&nbsp; This feature is useful for avoiding
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; revisions based solely on
+changes to the file generation timestamp embedded
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; within the generated source
+codes.
+<p>&nbsp;&nbsp;&nbsp; -t<u>targetform</u>&nbsp;&nbsp;&nbsp; |&nbsp; --text=<u>targetform</u>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Generate text in the specified
+target format.&nbsp; The targetform can be one of XML
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; and SIDL.&nbsp; If XML,
+the repository will be updated.
+<p>&nbsp;&nbsp;&nbsp; -v&nbsp;&nbsp;&nbsp; |&nbsp; --version
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Display the Babel compiler
+version before exiting.
+<p>&nbsp;&nbsp;&nbsp; -x&nbsp;&nbsp;&nbsp; |&nbsp; --xml
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; DEPRECATED.&nbsp; Use --text=XML
+or -tXML instead.&nbsp; Generate SIDL's XML and
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; update the repository.
+<br>&nbsp;
+<p>Note:&nbsp; One and only one of the following options can be specified
+on a given command line:
+<br>&nbsp;&nbsp;&nbsp; -c, --client, -s, --server, --generate-sidl-stdlib,
+-x, --xml, -t, --text, -p, --parse-check,
+<br>&nbsp;&nbsp;&nbsp; -h, --help, -v, --version.
+<br>&nbsp;
+<br>&nbsp;
+<h2>
+Examples</h2>
+&nbsp;&nbsp;&nbsp; The examples included here are taken from the <a href="Babel101.html">Babel
+101 tutorial</a> and assume
+<br>&nbsp;&nbsp;&nbsp; BABEL_HOME points to the directory into which you
+installed the Babel
+<br>&nbsp;&nbsp;&nbsp; distribution.
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; % $BABEL_HOME/babel/bin/babel
+-sC++ ../hello.sidl
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+This generates the C++ server sources (i.e., <i>-sC++</i>)&nbsp; along
+with the associated
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+makefile fragment, called <i>babel.make,</i> placing all of the generated&nbsp;
+files in the
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+current directory.&nbsp; The SIDL file, called <i>hello.sidl</i>, is assumed
+to be in&nbsp; the directory
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+immediately above the current one.
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; % $BABEL_HOME/babel/bin/babel
+-cc hello.sidl
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+This generates the C client bindings (i.e., <i>-cc</i>) and the makefile
+fragment, called
+<br><i>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+babel.make, </i>associated with the C stub for the interface defined in
+<i>hello.sidl</i>.
+<h2>
+<b>See Also</b></h2>
+&nbsp;&nbsp;&nbsp; A tutorial on the use of Babel to create a "Hello World!"
+program using SIDL can be
+<br>&nbsp;&nbsp;&nbsp; found in&nbsp; <a href="Babel101.html">Babel 101</a>.&nbsp;
+An example of a more involved <a href="hypre.html">SIDL file</a> illustrating
+the interface
+<br>&nbsp;&nbsp;&nbsp; for the <i><a href="http://www.llnl.gov/CASC/hypre/">hypre</a></i>
+library is also available along with the <a href="grammar.html">SIDL grammar</a>.&nbsp;
+Crash courses
+<br>&nbsp;&nbsp;&nbsp; are also available on <a href="SIDLArray.html">SIDL
+Arrays</a> and <a href="SIDLF77.html">Fortran 77</a>.
+<br>&nbsp;
+</body>
+</html>

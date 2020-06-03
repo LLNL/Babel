@@ -1,0 +1,53 @@
+{
+   ClassInfoI/setName
+   Memcheck:Leak
+   fun:malloc
+   fun:sidl_String_strdup
+   fun:impl_sidl_ClassInfoI_setName
+}
+
+{
+   ClassInfoI/_ctor
+   Memcheck:Leak
+   fun:malloc
+   fun:impl_sidl_ClassInfoI__ctor
+   fun:sidl_ClassInfoI__new
+   fun:initMetadata
+   fun:sidl_ClassInfoI__new
+}
+
+{
+   ClassInfoI/_new
+   Memcheck:Leak
+   fun:malloc
+   fun:sidl_ClassInfoI__new
+   fun:initMetadata
+   fun:sidl_ClassInfoI__new
+}
+
+{
+   ClassInfoI/sidl_BaseClass__ctor
+   Memcheck:Leak
+   fun:malloc
+   fun:impl_sidl_BaseClass__ctor
+   fun:sidl_ClassInfoI__init
+   fun:sidl_ClassInfoI__new
+   fun:initMetadata
+   fun:sidl_ClassInfoI__new
+}
+
+{
+   hashtable/create
+   Memcheck:Leak
+   fun:malloc
+   fun:create_hashtable
+}
+
+{
+   hashtable/insert
+   Memcheck:Leak
+   fun:malloc
+   fun:hashtable_insert
+   fun:*
+   fun:*ClassInfo*
+}

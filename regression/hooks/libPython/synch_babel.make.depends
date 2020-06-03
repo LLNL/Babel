@@ -1,0 +1,20 @@
+# synch_IORHDRS dependencies.
+synch_IOR.h:                                                                  \
+  /home/epperly/current/babel_fix_hooks/regression/hooks/libPython/../../output/output.sidl
+synch_IOR.h: synch_RegOut_IOR.h
+synch_IOR.h: synch_ResultType_IOR.h
+
+synch_RegOut_IOR.h:                                                           \
+  /home/epperly/current/babel_fix_hooks/regression/hooks/libPython/../../output/output.sidl
+synch_RegOut_IOR.h: sidl_header.h
+synch_RegOut_IOR.h: sidl_BaseClass_IOR.h
+synch_RegOut_IOR.h: synch_ResultType_IOR.h
+
+synch_ResultType_IOR.h: sidlType.h
+
+
+# synch_PYMOD_HDRS dependencies.
+synch_RegOut_Module.h:                                                        \
+  /home/epperly/current/babel_fix_hooks/regression/hooks/libPython/../../output/output.sidl
+
+

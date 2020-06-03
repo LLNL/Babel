@@ -1,0 +1,243 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN"
+            "http://www.w3.org/TR/REC-html40/loose.dtd">
+<HTML>
+<HEAD>
+
+<META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<META name="GENERATOR" content="hevea 1.10">
+<LINK rel="stylesheet" type="text/css" href="index.css">
+<TITLE>Installation</TITLE>
+</HEAD>
+<BODY >
+<A HREF="index003.html"><IMG SRC="previous_motif.gif" ALT="Previous"></A>
+<A HREF="index-multipage.html"><IMG SRC="contents_motif.gif" ALT="Up"></A>
+<A HREF="index006.html"><IMG SRC="next_motif.gif" ALT="Next"></A>
+<HR>
+<H1 CLASS="chapter"><A NAME="htoc10">Chapter 3</A>  Installation</H1><UL>
+<LI><A HREF="index005.html#toc14">Simple Installation</A>
+</LI><LI><A HREF="index005.html#toc15">External Software
+Requirements</A>
+</LI></UL>
+<P><A NAME="c:install"></A>
+<EM>Ideally, Babel will configure and make “out-of-the-box” on most 
+Unix-like machines. If the configuration process detects that 
+certain resources are unavailable, it will correctly disable support
+for languages or features needing those resources. If this instance
+of correct behavior is not the intended behavior, then the installer 
+is left to install the external resources and then re-configure, make, 
+and install Babel. This chapter is intended to provide help and
+reassurance that Babel is indeed configured and installed correctly.
+</EM></P><P><BR>
+<BR>
+<BR>
+
+<BR>
+</P><H2 CLASS="section"><A NAME="toc14"></A><A NAME="htoc11">3.1</A>  Simple Installation</H2><P><A NAME="s:simpleInstall"></A></P><P>These instructions assume you have a “tarball” 
+(e. g. *.tar.gz file). We have volunteers 
+who put together and manage RedHat RPMs<A NAME="@default39"></A> and
+Debian *.deb<A NAME="@default40"></A> distributions of Babel. If you have one of
+these distros, read their documentation first as it
+may have details that supersede our own.</P><P>A typical build is a simple sequence of
+</P><BLOCKQUOTE CLASS="quotation"><TT>
+% <B>./configure -C</B><BR>
+ # lots of stuff<BR>
+ ...<BR>
+	 Fortran77 enabled.<BR>
+ 	 C++ enabled.<BR>
+ 	 Java enabled.<BR>
+ 	 Python enabled.<BR>
+	 Fortran90 enabled.<BR>
+ % <B>make</B><BR>
+ # lots more stuff<BR>
+ ...<BR>
+ % <B>make install</B><BR>
+ # not so much stuff<BR>
+ ...
+</TT></BLOCKQUOTE><P>
+The <B><TT>-C</TT></B> tells configure to cache its results in a
+file. This improves the overall speed of configuration because the
+runtime configure script reuses the results of the top-level configure.</P><P>There are many circumstances where the configuration step will
+properly terminate with an error, but if the configuration works, the
+build and installation shouldn’t terminate abnormally. If you have
+problems or note bugs during configuration, installation or later
+Babel usage, please send an email to
+<TT><A HREF="mailto:babel-bugs@cca-forum.org">babel-bugs@cca-forum.org</A></TT>
+including the version of babel you are working with, if possible the
+output from <B><TT>babel-config --version-full</TT></B>, and the exact
+output that indicates the presence of a bug. <B><TT>babel-config</TT></B> is
+Bourne shell script that the configure creates in the <TT>bin</TT>
+directory. If your current directory is the top directory of the Babel
+distribution, normally you can invoke <B><TT>babel-config</TT></B> as
+follows: 
+</P><BLOCKQUOTE CLASS="quotation"><TT>
+% <B>bin/babel-config --version-full</B><BR>
+</TT></BLOCKQUOTE><H3 CLASS="subsection">3.1.1  Configure</H3><P><A NAME="s:configure"></A><A NAME="@default41"></A></P><P>There are two main choices to be made at configure time:
+“Where does the software get built?” and 
+“Where does the software get installed?”. The mechanisms
+for effecting these choices are quite different.</P><P>If you want to build software in a separate directory from
+where the tarball was untarred, this is called a “VPATH build”.
+VPATH<A NAME="@default42"></A> builds are useful if you want to build Babel multiple times 
+with various compilers, flags, or you have a shared filesystem 
+across multiple platforms. It separates the code you generate
+from things that you were given. The downside is that it is more
+complex to remember where to edit what since original sources will
+be in the source directory tree and the generated sources and 
+compiled assets will be in the build directory tree.</P><P>If you run configure in the directory it appears, (i. e. you typed
+<B><TT>./configure</TT></B>) you are performing an “non-VPATH build”.
+To do a VPATH build, simply cd to the directory you want to be
+the build directory root, then launch configure from there.
+The following sequence demonstrates a vpath build
+</P><BLOCKQUOTE CLASS="quotation"><TT>
+% <B>tar zxvf babel-x.x.x.tar.gz</B><BR>
+ % <B>mkdir babel-linux-build</B><BR>
+ % <B>cd babel-linux-build</B><BR>
+ % <B>../babel-x.x.x/configure -C</B><BR>
+</TT></BLOCKQUOTE><P>Note that the directory where you build Babel should be
+different from the directory where you install Babel.
+The default install directory is <TT>/usr/local</TT>, but can
+be set to any directory that you have read/write access to.
+To change the install directory<A NAME="@default43"></A>, run configure with the 
+<B><TT>--prefix</TT></B><A NAME="@default44"></A> option. Since many people do not
+have root access on their machine (or prefer to install in
+a local directory when dealing with unfamiliar software), 
+this option is probably the second most heavily used
+option for configure (first being <B><TT>--help</TT></B>, which
+is a good one to try also.)</P><P>At the time of this writing (1.1.0), there are two configure
+scripts in Babel, about 47K lines of shell script each.
+These configure scripts will then propagate the information they
+acquire to Makefiles by performing approximately 190 sed substitutions 
+(per Makefile), to the source code by setting approximately
+170 preprocessor macros in babel_config.h, and various bits of
+shell script in the build that do not get propagated to the install
+directory. The configure script does not modify any source code in 
+Babel’s runtime system or code generator. This means that source
+code generated by a different Babel installation is usable as long
+as it gets compiled against the local babel_config.h and linked
+with the local Babel runtime libraries.</P><H3 CLASS="subsection">3.1.2  Make</H3><P><A NAME="@default45"></A></P><P>The makefiles are generated by the configure script from Makefile.in<A NAME="@default46"></A> 
+templates. The configure script is generated by a tool called 
+autoconf<A NAME="@default47"></A>. The Makefile.in’s are generated from Makefile.am<A NAME="@default48"></A> files
+by a separate, related tool called automake<A NAME="@default49"></A>. We also use a tool
+called libtool<A NAME="@default50"></A> to help with libraries. Libtool is written in shell, 
+automake in perl<A NAME="@default51"></A>, and autoconf in m4<A NAME="@default52"></A>.</P><P>After a successful configuration step, if your build fails it is
+most likely that there is a bug in Babel, autoconf, libtool, or 
+a library of m4 macros from any of the above. It is less likely 
+to be an issue with automake, but possible. Perl and m4 themselves
+are no longer involved in the process after the configure script
+is produced, so while there may be a nascent bug in the files they
+generated, it is unlikely.</P><H3 CLASS="subsection">3.1.3  Make Check (Optional)</H3><P><A NAME="@default53"></A><A NAME="@default54"></A>
+This is an exhaustive check that can take hours to complete on an
+average workstation. The number of actual tests run depends on the
+number of languages that are enabled. In general a driver and an
+implementation of each test is generated in each enabled language.
+Then each combination of driver and implementation are run (both
+statically linked libraries and dynamically loaded libraries, as
+appropriate) and tested. A test script can actually launch multiple
+tests, and tests can have multiple parts. At the time of this writing
+(babel-0.9.3) there are over 13,000 parts tested when all languages
+are enabled.</P><H3 CLASS="subsection">3.1.4  Make Install</H3><P><A NAME="@default55"></A><A NAME="@default56"></A></P><P>This transfers built software to the final installation directory.
+Examples and tests are not installed, nor are Makefiles or
+dozens of other types of files. Make install also builds javadoc
+documentation for Babel’s code generator. Since some libraries are
+built with install paths in mind, libtool uses a lot of scripts
+to make things work in their build directory with binaries actually
+hidden in .lib subdirectories. Make install strips this extra scaffolding
+away as well.</P><H3 CLASS="subsection">3.1.5  Make Installcheck (Optional)</H3><P><A NAME="@default57"></A></P><P>This is the same test suite as with make check. The only
+difference is that it is run against the code in the 
+install directories, not the build directories.</P><H2 CLASS="section"><A NAME="toc15"></A><A NAME="htoc12">3.2</A>  External Software
+Requirements</H2><P><A NAME="s:swreqts"></A><A NAME="@default58"></A></P><P>Babel builds on a lot of available software; some optional, 
+some required. Some we ship in our tarball, some we require
+users to install separately.</P><H3 CLASS="subsection">3.2.1  Required &amp; Included</H3><UL CLASS="itemize"><LI CLASS="li-itemize">
+<B>Java GetOpt:</B><A NAME="@default59"></A>
+This is a Java rewrite of GNU GetOpt available at
+<TT><A HREF="http://www.urbanophile.com/arenn/hacking/download.html">http://www.urbanophile.com/arenn/hacking/download.html</A></TT>
+The Babel code generator uses this to parse command line arguments. 
+The JAR file, 
+download information, and licensing details are in the lib/ subdirectory
+of the Babel distribution.</LI><LI CLASS="li-itemize"><B>Xerces-J:</B><A NAME="@default60"></A><A NAME="@default61"></A>
+Xerces-J is a Java implementation of SAX and DOM XML parsers
+available from the Apache Software Foundation at
+<TT><A HREF="http://www.apache.org">http://www.apache.org</A></TT>.
+The Babel code generator uses this for XML I/O.
+The JAR file, 
+download information, and licensing details are in the lib/ subdirectory
+of the Babel distribution.</LI><LI CLASS="li-itemize"><B>libparsifal:</B> libparsifal is a lightweight XML parser implemented in C, and Babel uses
+it to parse its <TT>.scl</TT> files.</LI><LI CLASS="li-itemize"><B>libchasmlite:</B><A NAME="@default62"></A>
+Babel uses a simplified form of the Fortran array descriptor library from Chasm (see 
+<TT><A HREF="http://chasm-interop.sourceforge.net">http://chasm-interop.sourceforge.net</A></TT>).
+Chasm is a language interoperability tool in its own right, 
+but as of version 1.0.1, only the array library is considered complete.
+Without libchasmlite, the configuration script will disable Fortran 90/95 support.</LI><LI CLASS="li-itemize"><B>libltdl:</B> The libtool dynamic loading library.
+</LI></UL><H3 CLASS="subsection">3.2.2  Required but Separate</H3><UL CLASS="itemize"><LI CLASS="li-itemize">
+<B>Unix shell &amp; bintools:</B><A NAME="@default63"></A>
+On early 64bit Linux<A NAME="@default64"></A> boxes, we found it necessary
+to rebuild even these basic tools with all 64bit options enabled.
+Apparently they were originally installed with less attention to
+detail than necessary. Bintools includes things like cp and mv.</LI><LI CLASS="li-itemize"><B>C/C++ compiler:</B><A NAME="@default65"></A>
+The Babel runtime library and much of the code generated by the
+Babel code generator will be ANSI C. So that must be available.
+The C++ compiler should be optional, but at the time of this
+writing the configure and makefiles didn’t reliably support disabling
+C++.</LI><LI CLASS="li-itemize"><B>Java:</B><A NAME="@default66"></A>
+The Babel code generator is implemented in Java.
+One can disable the support for Java language bindings, but
+a working Java would still be needed for just about everything else.
+We generally stick with Sun’s java developer kits (available at
+<TT><A HREF="http://java.sun.com">http://java.sun.com</A></TT>).
+Others have run Babel with Kaffe and GCJ.
+</LI></UL><H3 CLASS="subsection">3.2.3  Recommended</H3><UL CLASS="itemize"><LI CLASS="li-itemize">
+<B>Python:</B><A NAME="@default67"></A>
+Needed for the python language binding (obviously) and for the testing harness.
+Since the Linux kernel is often configured with a Python-based tool, its
+hard to find a Linux without python already installed. Python can be 
+downloaded from 
+<TT><A HREF="http://www.python.org">http://www.python.org</A></TT>.<P>One important gotcha is a special case where non-python applications create
+Babel objects implemented in python. In this case, the Babel runtime 
+needs to dynamically load the python virtual machine (libpython.so).
+Unfortunately, python does not always build a dynamically loadable version
+of this library by default. If the Babel configure script cannot find
+a libpython.so, it will disable server-side Python support.</P><P>At the time of this writing, Python cannot be coerced to build a 
+libpython.so on AIX.</P></LI><LI CLASS="li-itemize"><B>NumPy:</B><A NAME="@default68"></A><A NAME="@default69"></A>
+This is a scientific array python extension module. It 
+provides native C arrays (and the ability to manipulate very
+big arrays) similar to python lists. Babel’s python
+language binding requires this extension module available
+at <TT><A HREF="http://numpy.scipy.ord">http://numpy.scipy.ord</A></TT>.</LI><LI CLASS="li-itemize"><B>Python Meta Widgets (Pmw):</B><A NAME="@default70"></A>
+This is a library of GUI widgets built on top of Python’s native
+tcl/tk interface (tkinter). Its available on SourceForge
+<TT><A HREF="http://pmw.sourceforge.net">http://pmw.sourceforge.net</A></TT>
+Pmw is only needed by the GUI in the
+babel-life supercomputing demo. This Babel implementation of Conway’s
+Game of Life is a separate tarball found in the contrib/ directory of 
+the Babel distro. There is no test for Pmw in Babel’s configuration script.</LI><LI CLASS="li-itemize"><B>pthreads:</B><A NAME="@default71"></A> Needed for Java language binding.</LI></UL><H3 CLASS="subsection">3.2.4  Optional</H3><P>
+These packages are used by Babel maintainers in the course of normal
+development. You’ll need these only if you start rewriting code in
+Babel’s distribution.
+</P><UL CLASS="itemize"><LI CLASS="li-itemize">
+<B>Automake:</B><A NAME="@default72"></A> Part of GNU Autotools (see
+<TT><A HREF="http://www.gnu.org/software/automake">http://www.gnu.org/software/automake</A></TT>).
+Check the configure.ac
+file to determine exactly which version we use. The configure script
+will disable autoconf if it detects the slightest variation from 
+the version we prescribe.</LI><LI CLASS="li-itemize"><B>Autoconf:</B><A NAME="@default73"></A> Part of GNU Autotools (see
+<TT><A HREF="http://www.gnu.org/software/automake">http://www.gnu.org/software/automake</A></TT>).
+Check the configure.ac
+file to determine exactly which version we use. The configure script
+will disable autoconf if it detects the slightest variation from 
+the version we prescribe.</LI><LI CLASS="li-itemize"><B>Libtool:</B><A NAME="@default74"></A> Part of GNU Autotools (see
+<TT><A HREF="http://www.gnu.org/software/libtool">http://www.gnu.org/software/libtool</A></TT>).
+Note that we often find need to make minor tweeks to ltmain.sh
+so a fresh download may generate slightly worse results on 
+some platforms.</LI><LI CLASS="li-itemize"><B>m4:</B><A NAME="@default75"></A> Contact us for a patched version that we use
+(we overflow buffers in the distributed version).</LI><LI CLASS="li-itemize"><B>JavaCC:</B><A NAME="@default76"></A> This Java Compiler Compiler is what we
+use to generate the SIDL parser in Babel. If you are interested
+in experimenting with changing the SIDL grammar, then edit
+the compiler/gov/llnl/babel/parsers/sidl2/SIDLParser.jj file and
+rebuilt the parser with this tool. Information available at
+<TT><A HREF="https://javacc.dev.java.net">https://javacc.dev.java.net</A></TT>.</LI><LI CLASS="li-itemize"><B>H<FONT SIZE=2><sup>E</sup></FONT>V<FONT SIZE=2><sup>E</sup></FONT>A:</B><A NAME="@default77"></A> This is used to generate the HTML
+version of our manuals (see <TT><A HREF="http://hevea.inria.fr/">http://hevea.inria.fr/</A></TT>).</LI><LI CLASS="li-itemize"><B>rst2man:</B><A NAME="@default78"></A> This is used to generate man page 
+(see <TT><A HREF="http://docutils.sourceforge.net/">http://docutils.sourceforge.net/</A></TT>).</LI><LI CLASS="li-itemize"><B>perl:</B><A NAME="@default79"></A> Needed by automake and other bits and pieces.</LI></UL><HR>
+<A HREF="index003.html"><IMG SRC="previous_motif.gif" ALT="Previous"></A>
+<A HREF="index-multipage.html"><IMG SRC="contents_motif.gif" ALT="Up"></A>
+<A HREF="index006.html"><IMG SRC="next_motif.gif" ALT="Next"></A>
+</BODY>
+</HTML>

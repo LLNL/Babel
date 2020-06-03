@@ -1,0 +1,39 @@
+# PYMOD_SRCS dependencies.
+wrapper_Data_Module.c:                                                        \
+  /home/epperly/current/babel_fix_wrap/regression/wrapper/runSIDL/../wrapper.sidl
+wrapper_Data_Module.c: sidl_BaseClass.h
+wrapper_Data_Module.c: sidl_ClassInfo.h
+wrapper_Data_Module.c: sidl_rmi_ProtocolFactory.h
+wrapper_Data_Module.c: sidl_rmi_InstanceRegistry.h
+wrapper_Data_Module.c: sidl_rmi_InstanceHandle.h
+wrapper_Data_Module.c: sidl_rmi_Invocation.h
+wrapper_Data_Module.c: sidl_rmi_Response.h
+wrapper_Data_Module.c: sidl_rmi_ServerRegistry.h
+wrapper_Data_Module.c: sidl_rmi_ConnectRegistry.h
+wrapper_Data_Module.c: sidl_io_Serializable.h
+wrapper_Data_Module.c: wrapper_Data_Module.h
+wrapper_Data_Module.c: wrapper_Data_IOR.h
+wrapper_Data_Module.c: sidlObjA.h
+wrapper_Data_Module.c: sidlPyArrays.h
+wrapper_Data_Module.c: oldnumeric.h
+wrapper_Data_Module.c: Numeric/arrayobject.h
+wrapper_Data_Module.c: sidl_Loader.h
+wrapper_Data_Module.c: sidl_header.h
+wrapper_Data_Module.c: sidl_interface_IOR.h
+wrapper_Data_Module.c: sidl_rmi_NetworkException_Module.h
+wrapper_Data_Module.c: sidl_BaseClass_Module.h
+wrapper_Data_Module.c: sidl_BaseInterface_Module.h
+wrapper_Data_Module.c: sidl_ClassInfo_Module.h
+wrapper_Data_Module.c: sidl_RuntimeException_Module.h
+wrapper_Data_Module.c: sidl_rmi_Call_Module.h
+wrapper_Data_Module.c: sidl_rmi_Return_Module.h
+wrapper_Data_Module.c: sidl_rmi_Ticket_Module.h
+
+
+# PYTHONADMIN dependencies.
+
+# PYTHONSRC dependencies.
+Data_Impl.py:                                                                 \
+  /home/epperly/current/babel_fix_wrap/regression/wrapper/runSIDL/../wrapper.sidl
+
+

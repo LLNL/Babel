@@ -1,0 +1,103 @@
+/*
+ * File:          Inherit_E2_Impl.c
+ * Symbol:        Inherit.E2-v1.1
+ * Symbol Type:   class
+ * Babel Version: 0.9.0
+ * Description:   Server-side implementation for Inherit.E2
+ * 
+ * WARNING: Automatically generated; only changes within splicers preserved
+ * 
+ * babel-version = 0.9.0
+ */
+
+/*
+ * DEVELOPERS ARE EXPECTED TO PROVIDE IMPLEMENTATIONS
+ * FOR THE FOLLOWING METHODS BETWEEN SPLICER PAIRS.
+ */
+
+/*
+ * Symbol "Inherit.E2" (version 1.1)
+ */
+
+#include "Inherit_E2_Impl.h"
+
+/* DO-NOT-DELETE splicer.begin(Inherit.E2._includes) */
+#include <string.h>
+#include "sidl_String.h"
+#include "Inherit_E2_IOR.h"
+#include "Inherit_C_IOR.h"
+
+static struct Inherit_C__epv* super = 0;
+
+static char* super_c( Inherit_E2 self ) { 
+  super = super ? super : Inherit_E2__externals()->getSuperEPV();
+  return (*super->f_c)((struct Inherit_C__object* )self);
+}
+
+/* DO-NOT-DELETE splicer.end(Inherit.E2._includes) */
+
+/*
+ * Class constructor called when the class is created.
+ */
+
+#undef __FUNC__
+#define __FUNC__ "impl_Inherit_E2__ctor"
+
+void
+impl_Inherit_E2__ctor(
+  Inherit_E2 self)
+{
+  /* DO-NOT-DELETE splicer.begin(Inherit.E2._ctor) */
+  /* Insert the implementation of the constructor method here... */
+  /* DO-NOT-DELETE splicer.end(Inherit.E2._ctor) */
+
+}
+
+/*
+ * Class destructor called when the class is deleted.
+ */
+
+#undef __FUNC__
+#define __FUNC__ "impl_Inherit_E2__dtor"
+
+void
+impl_Inherit_E2__dtor(
+  Inherit_E2 self)
+{
+  /* DO-NOT-DELETE splicer.begin(Inherit.E2._dtor) */
+  /* Insert the implementation of the constructor method here... */
+  /* DO-NOT-DELETE splicer.end(Inherit.E2._dtor) */
+}
+
+/*
+ * Method:  c[]
+ */
+
+#undef __FUNC__
+#define __FUNC__ "impl_Inherit_E2_c"
+
+char*
+impl_Inherit_E2_c(
+  Inherit_E2 self)
+{
+  /* DO-NOT-DELETE splicer.begin(Inherit.E2.c) */
+  return super_c(self);
+  //  return sidl_String_strdup("E2.c");
+  /* DO-NOT-DELETE splicer.end(Inherit.E2.c) */
+}
+
+/*
+ * Method:  e[]
+ */
+
+#undef __FUNC__
+#define __FUNC__ "impl_Inherit_E2_e"
+
+char*
+impl_Inherit_E2_e(
+  Inherit_E2 self)
+{
+  /* DO-NOT-DELETE splicer.begin(Inherit.E2.e) */
+  return sidl_String_strdup("E2.e");
+  /* DO-NOT-DELETE splicer.end(Inherit.E2.e) */
+}

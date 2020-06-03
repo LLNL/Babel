@@ -1,0 +1,28 @@
+# client_IORHDRS dependencies.
+synch_IOR.h:                                                                  \
+  /home/epperly/current/babel_fix_wrap/regression/wrapper/runPython/../../output/output.sidl
+synch_IOR.h: synch_RegOut_IOR.h
+synch_IOR.h: synch_ResultType_IOR.h
+
+synch_RegOut_IOR.h:                                                           \
+  /home/epperly/current/babel_fix_wrap/regression/wrapper/runPython/../../output/output.sidl
+synch_RegOut_IOR.h: sidl_header.h
+synch_RegOut_IOR.h: sidl_BaseClass_IOR.h
+synch_RegOut_IOR.h: synch_ResultType_IOR.h
+
+synch_ResultType_IOR.h: sidlType.h
+
+wrapper_User_IOR.h:                                                           \
+  /home/epperly/current/babel_fix_wrap/regression/wrapper/runSIDL/../wrapper.sidl
+wrapper_User_IOR.h: sidl_header.h
+wrapper_User_IOR.h: sidl_BaseClass_IOR.h
+
+
+# client_PYMOD_HDRS dependencies.
+synch_RegOut_Module.h:                                                        \
+  /home/epperly/current/babel_fix_wrap/regression/wrapper/runPython/../../output/output.sidl
+
+wrapper_User_Module.h:                                                        \
+  /home/epperly/current/babel_fix_wrap/regression/wrapper/runSIDL/../wrapper.sidl
+
+

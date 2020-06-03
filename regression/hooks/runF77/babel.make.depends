@@ -1,0 +1,112 @@
+# IORHDRS dependencies.
+hooks_Basics_IOR.h:                                                           \
+  /home/leek2/babel/btest/vpath/regression/hooks/runF77/../../../../babel/regression/hooks/runF77/../hooks.sidl
+hooks_Basics_IOR.h: sidl_header.h
+hooks_Basics_IOR.h: sidl_BaseClass_IOR.h
+
+hooks_IOR.h:                                                                  \
+  /home/leek2/babel/btest/vpath/regression/hooks/runF77/../../../../babel/regression/hooks/runF77/../hooks.sidl
+hooks_IOR.h: hooks_Basics_IOR.h
+
+synch_IOR.h:                                                                  \
+  /home/leek2/babel/btest/vpath/regression/hooks/runF77/../../../../babel/regression/hooks/runF77/../../output/output.sidl
+synch_IOR.h: synch_RegOut_IOR.h
+synch_IOR.h: synch_ResultType_IOR.h
+
+synch_RegOut_IOR.h:                                                           \
+  /home/leek2/babel/btest/vpath/regression/hooks/runF77/../../../../babel/regression/hooks/runF77/../../output/output.sidl
+synch_RegOut_IOR.h: sidl_header.h
+synch_RegOut_IOR.h: sidl_BaseClass_IOR.h
+synch_RegOut_IOR.h: synch_ResultType_IOR.h
+
+synch_ResultType_IOR.h: sidlType.h
+
+
+# STUBDOCS dependencies.
+hooks_Basics.fif:                                                             \
+  /home/leek2/babel/btest/vpath/regression/hooks/runF77/../../../../babel/regression/hooks/runF77/../hooks.sidl
+
+synch_RegOut.fif:                                                             \
+  /home/leek2/babel/btest/vpath/regression/hooks/runF77/../../../../babel/regression/hooks/runF77/../../output/output.sidl
+
+
+# STUBFORTRANINC dependencies.
+
+# STUBHDRS dependencies.
+hooks_Basics_fStub.h:                                                         \
+  /home/leek2/babel/btest/vpath/regression/hooks/runF77/../../../../babel/regression/hooks/runF77/../hooks.sidl
+hooks_Basics_fStub.h: hooks_Basics_IOR.h
+
+synch_RegOut_fStub.h:                                                         \
+  /home/leek2/babel/btest/vpath/regression/hooks/runF77/../../../../babel/regression/hooks/runF77/../../output/output.sidl
+synch_RegOut_fStub.h: synch_RegOut_IOR.h
+
+
+# STUBSRCS dependencies.
+hooks_Basics_fStub.c:                                                         \
+  /home/leek2/babel/btest/vpath/regression/hooks/runF77/../../../../babel/regression/hooks/runF77/../hooks.sidl
+hooks_Basics_fStub.c: hooks_Basics_fStub.h
+hooks_Basics_fStub.c: sidlfortran.h
+hooks_Basics_fStub.c: sidl_header.h
+hooks_Basics_fStub.c: sidl_interface_IOR.h
+hooks_Basics_fStub.c: sidl_Exception.h
+hooks_Basics_fStub.c: babel_config.h
+hooks_Basics_fStub.c: sidl_Loader.h
+hooks_Basics_fStub.c: hooks_Basics_IOR.h
+hooks_Basics_fStub.c: sidl_BaseException_IOR.h
+hooks_Basics_fStub.c: sidl_BaseInterface_IOR.h
+hooks_Basics_fStub.c: sidl_ClassInfo_IOR.h
+hooks_Basics_fStub.c: sidl_RuntimeException_IOR.h
+hooks_Basics_fStub.c: sidl_rmi_ConnectRegistry.h
+hooks_Basics_fStub.c: hooks_Basics_fStub.h
+hooks_Basics_fStub.c: sidl_BaseClass_fStub.h
+hooks_Basics_fStub.c: sidl_BaseInterface_fStub.h
+hooks_Basics_fStub.c: sidl_ClassInfo_fStub.h
+hooks_Basics_fStub.c: sidl_RuntimeException_fStub.h
+hooks_Basics_fStub.c: sidl_BaseClass.h
+hooks_Basics_fStub.c: sidl_ClassInfo.h
+hooks_Basics_fStub.c: sidl_rmi_ProtocolFactory.h
+hooks_Basics_fStub.c: sidl_rmi_InstanceRegistry.h
+hooks_Basics_fStub.c: sidl_rmi_InstanceHandle.h
+hooks_Basics_fStub.c: sidl_rmi_Invocation.h
+hooks_Basics_fStub.c: sidl_rmi_Response.h
+hooks_Basics_fStub.c: sidl_rmi_ServerRegistry.h
+hooks_Basics_fStub.c: sidl_rmi_ConnectRegistry.h
+hooks_Basics_fStub.c: sidl_io_Serializable.h
+
+synch_RegOut_fStub.c:                                                         \
+  /home/leek2/babel/btest/vpath/regression/hooks/runF77/../../../../babel/regression/hooks/runF77/../../output/output.sidl
+synch_RegOut_fStub.c: synch_RegOut_fStub.h
+synch_RegOut_fStub.c: sidlfortran.h
+synch_RegOut_fStub.c: sidl_header.h
+synch_RegOut_fStub.c: sidl_interface_IOR.h
+synch_RegOut_fStub.c: sidl_Exception.h
+synch_RegOut_fStub.c: babel_config.h
+synch_RegOut_fStub.c: sidl_Loader.h
+synch_RegOut_fStub.c: synch_RegOut_IOR.h
+synch_RegOut_fStub.c: sidl_BaseException_IOR.h
+synch_RegOut_fStub.c: sidl_BaseInterface_IOR.h
+synch_RegOut_fStub.c: sidl_ClassInfo_IOR.h
+synch_RegOut_fStub.c: sidl_RuntimeException_IOR.h
+synch_RegOut_fStub.c: synch_ResultType_IOR.h
+synch_RegOut_fStub.c: sidl_rmi_ConnectRegistry.h
+synch_RegOut_fStub.c: sidl_BaseClass_fStub.h
+synch_RegOut_fStub.c: sidl_BaseInterface_fStub.h
+synch_RegOut_fStub.c: sidl_ClassInfo_fStub.h
+synch_RegOut_fStub.c: sidl_RuntimeException_fStub.h
+synch_RegOut_fStub.c: synch_RegOut_fStub.h
+synch_RegOut_fStub.c: sidl_BaseClass.h
+synch_RegOut_fStub.c: sidl_ClassInfo.h
+synch_RegOut_fStub.c: sidl_rmi_ProtocolFactory.h
+synch_RegOut_fStub.c: sidl_rmi_InstanceRegistry.h
+synch_RegOut_fStub.c: sidl_rmi_InstanceHandle.h
+synch_RegOut_fStub.c: sidl_rmi_Invocation.h
+synch_RegOut_fStub.c: sidl_rmi_Response.h
+synch_RegOut_fStub.c: sidl_rmi_ServerRegistry.h
+synch_RegOut_fStub.c: sidl_rmi_ConnectRegistry.h
+synch_RegOut_fStub.c: sidl_io_Serializable.h
+
+synch_ResultType_fStub.c: sidl_int_IOR.h
+synch_ResultType_fStub.c: sidlfortran.h
+
+

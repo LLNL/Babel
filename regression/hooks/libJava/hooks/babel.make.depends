@@ -1,0 +1,10 @@
+# JAVAIMPL dependencies.
+Basics_Impl.java:                                                             \
+  /home/epperly/current/babel_fix_hooks/regression/hooks/libJava/../hooks.sidl
+
+
+# STUBJAVA dependencies.
+Basics.java:                                                                  \
+  /home/epperly/current/babel_fix_hooks/regression/hooks/libJava/../hooks.sidl
+
+

@@ -1,0 +1,6 @@
+Thanks to the following people who contributed code to Babel:
+
+	Adam C. Powell IV	for Debian packaging and support for Kaffe
+	Boyana Norris		for command line features
+	Jason Kraftcheck	for Java classpath improvement
+	Steven Parker		for C++ bindings

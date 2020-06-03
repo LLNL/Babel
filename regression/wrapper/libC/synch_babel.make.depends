@@ -1,0 +1,63 @@
+# synch_IORHDRS dependencies.
+synch_IOR.h:                                                                  \
+  /home/epperly/current/babel_fix_wrap/regression/wrapper/libC/../../output/output.sidl
+synch_IOR.h: synch_RegOut_IOR.h
+synch_IOR.h: synch_ResultType_IOR.h
+
+synch_RegOut_IOR.h:                                                           \
+  /home/epperly/current/babel_fix_wrap/regression/wrapper/libC/../../output/output.sidl
+synch_RegOut_IOR.h: sidl_header.h
+synch_RegOut_IOR.h: sidl_BaseClass_IOR.h
+synch_RegOut_IOR.h: synch_ResultType_IOR.h
+
+synch_ResultType_IOR.h: sidlType.h
+
+
+# synch_STUBHDRS dependencies.
+synch.h:                                                                      \
+  /home/epperly/current/babel_fix_wrap/regression/wrapper/libC/../../output/output.sidl
+synch.h: synch_RegOut.h
+synch.h: synch_ResultType.h
+
+synch_RegOut.h:                                                               \
+  /home/epperly/current/babel_fix_wrap/regression/wrapper/libC/../../output/output.sidl
+synch_RegOut.h: sidl_header.h
+synch_RegOut.h: sidl_BaseException.h
+synch_RegOut.h: sidl_BaseInterface.h
+synch_RegOut.h: sidl_ClassInfo.h
+synch_RegOut.h: sidl_RuntimeException.h
+synch_RegOut.h: sidl_SIDLException.h
+synch_RegOut.h: synch_ResultType.h
+synch_RegOut.h: sidl_rmi_Call.h
+synch_RegOut.h: sidl_rmi_Return.h
+synch_RegOut.h: synch_RegOut_IOR.h
+
+synch_ResultType.h: synch_ResultType_IOR.h
+
+
+# synch_STUBSRCS dependencies.
+synch_RegOut_Stub.c:                                                          \
+  /home/epperly/current/babel_fix_wrap/regression/wrapper/libC/../../output/output.sidl
+synch_RegOut_Stub.c: synch_RegOut.h
+synch_RegOut_Stub.c: synch_RegOut_IOR.h
+synch_RegOut_Stub.c: sidl_interface_IOR.h
+synch_RegOut_Stub.c: sidl_rmi_InstanceHandle.h
+synch_RegOut_Stub.c: sidl_rmi_ConnectRegistry.h
+synch_RegOut_Stub.c: sidl_Exception.h
+synch_RegOut_Stub.c: sidl_interface_IOR.h
+synch_RegOut_Stub.c: sidl_BaseInterface_IOR.h
+synch_RegOut_Stub.c: sidl_BaseClass.h
+synch_RegOut_Stub.c: sidl_ClassInfo.h
+synch_RegOut_Stub.c: sidl_rmi_ProtocolFactory.h
+synch_RegOut_Stub.c: sidl_rmi_InstanceRegistry.h
+synch_RegOut_Stub.c: sidl_rmi_InstanceHandle.h
+synch_RegOut_Stub.c: sidl_rmi_Invocation.h
+synch_RegOut_Stub.c: sidl_rmi_Response.h
+synch_RegOut_Stub.c: sidl_rmi_ServerRegistry.h
+synch_RegOut_Stub.c: sidl_rmi_ConnectRegistry.h
+synch_RegOut_Stub.c: sidl_io_Serializable.h
+
+synch_ResultType_Stub.c: synch_ResultType.h
+synch_ResultType_Stub.c: sidl_int_IOR.h
+
+

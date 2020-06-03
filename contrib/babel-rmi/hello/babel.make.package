@@ -1,0 +1,4 @@
+BABEL_MAKEFILE_NAME = babel.make
+STUB_SRC_DIRS = .
+IMPL_SRC_DIRS = .
+IOR_SRC_DIRS = .

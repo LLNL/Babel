@@ -1,0 +1,1063 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN"
+            "http://www.w3.org/TR/REC-html40/loose.dtd">
+<HTML>
+<HEAD>
+
+<META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<META name="GENERATOR" content="hevea 1.10">
+<LINK rel="stylesheet" type="text/css" href="index.css">
+<TITLE>Fortran 90/95 Bindings</TITLE>
+</HEAD>
+<BODY >
+<A HREF="index012.html"><IMG SRC="previous_motif.gif" ALT="Previous"></A>
+<A HREF="index-multipage.html"><IMG SRC="contents_motif.gif" ALT="Up"></A>
+<A HREF="index014.html"><IMG SRC="next_motif.gif" ALT="Next"></A>
+<HR>
+<H1 CLASS="chapter"><A NAME="htoc48">Chapter 11</A>  Fortran 90/95 Bindings</H1><UL>
+<LI><A HREF="index013.html#toc43">Introduction</A>
+</LI><LI><A HREF="index013.html#toc44">Basics</A>
+</LI><LI><A HREF="index013.html#toc45">Client-side</A>
+</LI><LI><A HREF="index013.html#toc46">Implementation-side</A>
+</LI></UL>
+<P><A NAME="c:f90"></A></P><P><BR>
+</P><H2 CLASS="section"><A NAME="toc43"></A><A NAME="htoc49">11.1</A>  Introduction</H2><P>
+This chapter provides an overview of the Fortran 90/95 bindings for SIDL.
+Common aspects of the bindings, such as the mapping of SIDL data types
+to their native Fortran 90/95 representatives, are presented in
+Section <A HREF="#s:f90:basics">11.2</A>.
+Issues of concern to Fortran 90/95 callers are addressed in the client-side 
+bindings discussion in Section <A HREF="#s:f90:client">11.3</A>, while issues of interest
+to callees of Fortran 90/95 appear in the implementation-side discussion in
+Section <A HREF="#s:f90:implementation">11.4</A>.</P><H2 CLASS="section"><A NAME="toc44"></A><A NAME="htoc50">11.2</A>  Basics</H2><P><A NAME="s:f90:basics"></A></P><P>This section summarizes basic features that are common to both client and
+implementation bindings.
+Conventions used to protect the global name space are described in
+Subsection <A HREF="#ss:f90:namespace">11.2.1</A>, while those associated with the generation
+of subroutines from methods are given in Subsection <A HREF="#ss:f90:signatures">11.2.2</A>.
+Translations between SIDL and native Fortran 90/95 constructs are
+described in Subsection <A HREF="#ss:f90:types">11.2.3</A>.
+Finally, the process of casting between different types is illustrated
+in Subsection <A HREF="#ss:f90:casting">11.2.4</A>.</P><H3 CLASS="subsection">11.2.1  Name space</H3><P><A NAME="ss:f90:namespace"></A>
+<A NAME="@default988"></A>
+<A NAME="@default989"></A></P><P>The name of the module that holds method definitions is derived
+from the fully qualified name of the class or interface. Module names
+are essentially formed by replacing all periods in the fully qualified
+name with underscores. The name of the module holding the derived type 
+of the class or interface is the same as the one holding the methods 
+with the exception of having <TT>_type</TT> appended. For example, the 
+methods for <FONT COLOR=maroon><I><TT>sidl.SIDLException</TT></I></FONT><A NAME="@default990"></A> are 
+defined in a module named <TT>sidl_SIDLException</TT> in the file 
+<TT>sidl_SIDLException.F90</TT>. Defined in the file 
+<TT>sidl_SIDLException_type.F90</TT>, the types for 
+<FONT COLOR=maroon><I><TT>sidl.SIDLException</TT></I></FONT> are called 
+<TT>sidl_SIDLException_t</TT>
+and, for the array, <TT>sidl_SIDLException_a</TT>.</P><H3 CLASS="subsection">11.2.2  Method signatures</H3><P><A NAME="ss:f90:signatures"></A>
+<A NAME="@default991"></A>
+<A NAME="@default992"></A></P><P>All SIDL methods are implemented as Fortran 90/95 
+subroutines<A NAME="@default993"></A> regardless 
+of whether they have a return value. 
+The name of a subroutine that clients invoke is the method’s
+full name from the SIDL description. Hence, in cases where 
+the method has a name extension (so is overloaded), the full 
+name is the concatenation of the specified short name and extension.
+On the implementation-side, the name is formed as the 
+concatenation of the package, class (or interface), full 
+method name<A NAME="@default994"></A>, and “mi”, with each part separated by an 
+underscore and name mangling used to ensure uniqueness if 
+the resulting name exceeds the character limit.</P><P>The same process used for <SPAN STYLE="font-variant:small-caps">fortran 77</SPAN>, described in 
+Subsection <A HREF="index012.html#ss:f77:signatures">10.2.2</A>, is used to build up the parameters 
+for generated methods. That is, object (or interface) pointers, return
+values, and exception pointers are added, as needed. More specifically,
+the object (or interface) pointer is automatically inserted as the first
+parameter in the signature of non-static methods. This parameter
+operates like an <FONT COLOR=maroon><I><TT>in</TT></I></FONT> parameter. 
+When a method has a return value, a parameter to hold the return value is
+also added after all of the formally declared arguments.
+This extra argument behaves like an <FONT COLOR=maroon><I><TT>out</TT></I></FONT> parameter.
+With the addition of remote method invocation (RMI) support, all methods
+now implicitly throw exceptions<A NAME="@default995"></A>.
+Hence, an extra <FONT COLOR=maroon><I><TT>out</TT></I></FONT> parameter for the exception is automatically added
+as the last parameter of the signature.
+<A NAME="@default996"></A><A NAME="@default997"></A>
+An example that illustrates the SIDL specification and corresponding 
+routines can be found in Subsections <A HREF="#ss:f90:exceptioncatching">11.3.5</A>
+and <A HREF="#ss:f90:exceptionthrowing">11.4.4</A>.</P><H3 CLASS="subsection">11.2.3  Data types</H3><P><A NAME="ss:f90:types"></A>
+<A NAME="@default998"></A>
+<A NAME="@default999"></A></P><BLOCKQUOTE CLASS="table"><DIV CLASS="center"><HR WIDTH="80%" SIZE=2></DIV>
+<DIV CLASS="caption"><TABLE CELLSPACING=6 CELLPADDING=0><TR><TD VALIGN=top ALIGN=left>Table 11.1: SIDL to Fortran 90/95 Type Mappings</TD></TR>
+</TABLE></DIV><A NAME="tbl:f90:types"></A>
+<DIV CLASS="center">
+<TABLE BORDER=1 CELLSPACING=0 CELLPADDING=1><TR><TD ALIGN=left NOWRAP> <B>SIDL TYPE</B></TD><TD ALIGN=left NOWRAP><B>Fortran 90/95 TYPE</B></TD></TR>
+<TR><TD ALIGN=left NOWRAP> <FONT COLOR=maroon><I><TT>int</TT></I></FONT></TD><TD ALIGN=left NOWRAP><TT>INTEGER (kind=sidl_int)</TT>	<A NAME="@default1000"></A></TD></TR>
+<TR><TD ALIGN=left NOWRAP> <FONT COLOR=maroon><I><TT>long</TT></I></FONT></TD><TD ALIGN=left NOWRAP><TT>INTEGER (kind=sidl_long)</TT>	<A NAME="@default1001"></A></TD></TR>
+<TR><TD ALIGN=left NOWRAP> <FONT COLOR=maroon><I><TT>float</TT></I></FONT></TD><TD ALIGN=left NOWRAP><TT>REAL (kind=sidl_float)</TT>	<A NAME="@default1002"></A></TD></TR>
+<TR><TD ALIGN=left NOWRAP> <FONT COLOR=maroon><I><TT>double</TT></I></FONT></TD><TD ALIGN=left NOWRAP><TT>REAL (kind=sidl_double)</TT>	<A NAME="@default1003"></A></TD></TR>
+<TR><TD ALIGN=left NOWRAP> <FONT COLOR=maroon><I><TT>bool</TT></I></FONT></TD><TD ALIGN=left NOWRAP><TT>LOGICAL</TT>			<A NAME="@default1004"></A></TD></TR>
+<TR><TD ALIGN=left NOWRAP> <FONT COLOR=maroon><I><TT>char</TT></I></FONT></TD><TD ALIGN=left NOWRAP><TT>CHARACTER (LEN=1)</TT>		<A NAME="@default1005"></A></TD></TR>
+<TR><TD ALIGN=left NOWRAP> <FONT COLOR=maroon><I><TT>string</TT></I></FONT></TD><TD ALIGN=left NOWRAP><TT>CHARACTER (LEN=*)</TT>		<A NAME="@default1006"></A></TD></TR>
+<TR><TD ALIGN=left NOWRAP> <FONT COLOR=maroon><I><TT>fcomplex</TT></I></FONT></TD><TD ALIGN=left NOWRAP><TT>COMPLEX (kind=sidl_fcomplex)</TT> <A NAME="@default1007"></A></TD></TR>
+<TR><TD ALIGN=left NOWRAP> <FONT COLOR=maroon><I><TT>dcomplex</TT></I></FONT></TD><TD ALIGN=left NOWRAP><TT>COMPLEX (kind=sidl_dcomplex)</TT> <A NAME="@default1008"></A></TD></TR>
+<TR><TD ALIGN=left NOWRAP> <FONT COLOR=maroon><I><TT>enum</TT></I></FONT></TD><TD ALIGN=left NOWRAP><TT>INTEGER (kind=sidl_enum)</TT>	<A NAME="@default1009"></A></TD></TR>
+<TR><TD ALIGN=left NOWRAP> <FONT COLOR=maroon><I><TT>opaque</TT></I></FONT></TD><TD ALIGN=left NOWRAP><TT>INTEGER (kind=sidl_opaque)</TT> 	<A NAME="@default1010"></A></TD></TR>
+<TR><TD ALIGN=left NOWRAP> <FONT COLOR=maroon><I><TT>interface</TT></I></FONT></TD><TD ALIGN=left NOWRAP><EM><TT>derived type</TT></EM>		<A NAME="@default1011"></A></TD></TR>
+<TR><TD ALIGN=left NOWRAP> <FONT COLOR=maroon><I><TT>class</TT></I></FONT>	</TD><TD ALIGN=left NOWRAP><EM><TT>derived type</TT></EM>		<A NAME="@default1012"></A></TD></TR>
+<TR><TD ALIGN=left NOWRAP> <FONT COLOR=maroon><I><TT>array</TT></I></FONT>	</TD><TD ALIGN=left NOWRAP><EM><TT>derived type</TT></EM>		<A NAME="@default1013"></A></TD></TR>
+</TABLE>
+</DIV>
+<DIV CLASS="center"><HR WIDTH="80%" SIZE=2></DIV></BLOCKQUOTE><P>The mapping for simple SIDL types to Fortran 90/95 is given in
+Table <A HREF="#tbl:f90:types">11.1</A>. The kind parameters, given in
+the <TT>sidl</TT> F90 module, define integer
+parameters for <TT>sidl_int</TT>, <TT>sidl_long</TT>,
+<TT>sidl_float</TT>, <TT>sidl_double</TT>, 
+<TT>sidl_fcomplex</TT>, <TT>sidl_dcomplex</TT>, 
+<TT>sidl_enum</TT> and <TT>sidl_opaque</TT> to
+give sizes that match the corresponding SIDL types.
+The remainder of this subsection elaborates on mappings of strings, 
+pointers, enumerations, and arrays.</P><H4 CLASS="subsubsection">Strings</H4><P><A NAME="sss:f90:strings"></A>
+<A NAME="@default1014"></A><A NAME="@default1015"></A>
+<A NAME="@default1016"></A><A NAME="@default1017"></A></P><P>The SIDL string type mapping is currently identical to that of the
+<SPAN STYLE="font-variant:small-caps">fortran 77</SPAN> mapping. That is, all Fortran 90/95 strings have a limited 
+fixed size<A NAME="@default1018"></A>. When implementing a
+subroutine with an <FONT COLOR=maroon><I><TT>out</TT></I></FONT> parameter, the size of the string is 
+restricted to 512 characters. </P><P><EM><B>NOTE</B>:
+Modification of the value of 
+<TT>SIDL_F90_STR_MINSIZE</TT> in
+<TT>runtime/sidl/babel_config.h</TT> prior to configuring Babel
+can be used to change the string size limitation.
+</EM></P><H4 CLASS="subsubsection">Pointers</H4><P><A NAME="sss:f90:pointers"></A>
+<A NAME="@default1019"></A><A NAME="@default1020"></A>
+<A NAME="@default1021"></A><A NAME="@default1022"></A></P><P>Pointer types are: opaque, interface, class, and array. This subsection
+elaborates on each within the context of the Fortran 90/95 language bindings.
+Opaque<A NAME="@default1023"></A><A NAME="@default1024"></A>
+pointers<A NAME="@default1025"></A><A NAME="@default1026"></A> are 
+mapped to the equivalent of SIDL double. That is, the
+intermediate object reference (IOR) assumes a 64-bit integer is used to
+enable portability between systems with 32-bit and 64-bit address spaces. 
+On a 32-bit system, the upper 32
+bits of these quantities are ignored. Systems with more than 64-bit
+pointers aren’t currently supported.
+A derived type is used to hold opaque pointers for 
+interfaces<A NAME="@default1027"></A><A NAME="@default1028"></A>, 
+classes<A NAME="@default1029"></A><A NAME="@default1030"></A>, and 
+arrays<A NAME="@default1031"></A><A NAME="@default1032"></A>. 
+The derived type for arrays of numeric types also
+has a pointer to an array to provide native access without
+function calls. For each interface and class, there are two modules
+created. In the first module, the derived type for the object and
+array are defined. In the second, methods for the object (or interface)
+and arrays of the object (or interface) are defined. Clients of a class (or
+interface), typically <TT>use</TT> the module containing the methods. 
+It, in turn, <TT>use</TT>s the module containing the types.</P><P>Generally, clients should treat 
+opaque<A NAME="@default1033"></A><A NAME="@default1034"></A>, 
+interface<A NAME="@default1035"></A><A NAME="@default1036"></A>, 
+class<A NAME="@default1037"></A><A NAME="@default1038"></A>, and 
+array<A NAME="@default1039"></A><A NAME="@default1040"></A>
+values as black boxes. However, the value zero is special
+since it is the equivalent of <TT>NULL</TT><A NAME="@default1041"></A>.
+Hence, any non-zero value is or should be a valid object
+reference. The method module provides built-in functions to test whether an
+interface, class, or array value <TT>is_null</TT> or is
+<TT>not_null</TT>. There is also a subroutine to initialize the value
+to <TT>set_null</TT><A NAME="@default1042"></A>. Clients should
+generally initialize new class (or interface) pointers to <TT>NULL</TT>.</P><H4 CLASS="subsubsection">Enumerations</H4><P><A NAME="sss:f90:enum"></A>
+<A NAME="@default1043"></A><A NAME="@default1044"></A>
+<A NAME="@default1045"></A><A NAME="@default1046"></A></P><P>SIDL enumerations map to integer values, which are defined in a module.
+Given the specification from Section <A HREF="index008.html#ssec:basics:fundamental:enums">6.3</A> 
+for an enumeration type called <FONT COLOR=maroon><I><TT>car</TT></I></FONT>, Babel will produce the following 
+enumerated type:
+<A NAME="@default1047"></A><A NAME="@default1048"></A></P><DIV CLASS="flushright"><SPAN CLASS="textboxed"><FONT COLOR=purple><B>Fortran 90/95</B></FONT></SPAN></DIV><TABLE CLASS="lstframe" STYLE="padding:1ex;border-style:solid;"><TR><TD CLASS="lstlisting"><FONT COLOR="blue"><I>! File:          enums_car.F90
+! Symbol:        enums.car-v1.0
+! Symbol Type:   enumeration
+! Babel Version: 0.8.2
+! Description:   Client-side module for enums.car</I></FONT>
+
+<B>module</B> enums_car
+<FONT COLOR="blue"><I>! Symbol "enums.car" (version 1.0)</I></FONT>
+  <B>use</B> sidl
+
+  integer (<B>kind</B>=sidl_enum), parameter :: porsche = 911
+  integer (<B>kind</B>=sidl_enum), parameter :: ford = 150
+  integer (<B>kind</B>=sidl_enum), parameter :: mercedes = 550
+end <B>module</B> enums_car</TD></TR>
+</TABLE><H4 CLASS="subsubsection">Arrays</H4><P><A NAME="sss:f90:arrays"></A>
+<A NAME="@default1049"></A><A NAME="@default1050"></A>
+<A NAME="@default1051"></A><A NAME="@default1052"></A></P><P>As discussed in Section <A HREF="index008.html#s:arrays">6.4</A>, SIDL supports both normal and raw
+arrays (i. e., r-arrays). Normal SIDL arrays can be used by any supported
+language; whereas, r-arrays are restricted to numeric types and use in
+languages such as C, C++, and Fortran. This subsection starts with a 
+discussion normal and generic arrays before proceeding with an example
+of the interfaces for r-arrays. </P><P>The normal SIDL array API is available in a module for creating, 
+destroying, and accessing array elements and meta-data for normal arrays. 
+More information on the API can be found in 
+Subsection <A HREF="index008.html#ss:basics:array:api">6.4</A>.
+For <FONT COLOR=maroon><I><TT>sidl.SIDLException</TT></I></FONT>, the array module — called
+<TT>sidl_SIDLException_array</TT> — is defined in
+<TT>sidl_SIDLException_array.F90</TT>.
+The derived type for a SIDL array is named after the class,
+interface, or basic type that it holds and the dimension of the
+array. For <FONT COLOR=maroon><I><TT>sidl.SIDLException</TT></I></FONT>, the array derived types are
+named <TT>sidl_SIDLException_1d</TT>, 
+<TT>sidl_SIDLException_2d</TT>,
+<TT>sidl_SIDLException_3d</TT>, … up to
+<TT>sidl_SIDLException_7d</TT>. For basic types, they 
+are treated as <FONT COLOR=maroon><I><TT>sidl.dcomplex</TT></I></FONT>, <FONT COLOR=maroon><I><TT>sidl.double</TT></I></FONT>, 
+<FONT COLOR=maroon><I><TT>sidl.fcomplex</TT></I></FONT>, etc. Each of these derived types has a 
+64-bit integer to hold an opaque pointer.</P><P><EM><B>NOTE</B>:
+Normal Fortran 90/95 arrays or normal SIDL arrays can be used when
+calling a Fortran 90/95 method, but they cannot be mixed.
+</EM></P><P>Derived types for SIDL types <FONT COLOR=maroon><I><TT>dcomplex</TT></I></FONT>, <FONT COLOR=maroon><I><TT>double</TT></I></FONT>, <FONT COLOR=maroon><I><TT>fcomplex</TT></I></FONT>, 
+<FONT COLOR=maroon><I><TT>float</TT></I></FONT>, <FONT COLOR=maroon><I><TT>int</TT></I></FONT>, and <FONT COLOR=maroon><I><TT>long</TT></I></FONT> have pointers to arrays of the 
+appropriate type and dimension that facilitate direct access to array elements. 
+For example, the derived type for 2d and 3d arrays of <FONT COLOR=maroon><I><TT>double</TT></I></FONT>s is:
+<A NAME="@default1053"></A></P><DIV CLASS="flushright"><SPAN CLASS="textboxed"><FONT COLOR=purple><B>Fortran 90/95</B></FONT></SPAN></DIV><TABLE CLASS="lstframe" STYLE="padding:1ex;border-style:solid;"><TR><TD CLASS="lstlisting">  <B>use</B> sidl
+  type sidl_double_2d
+    <B>sequence</B>
+    integer (<B>kind</B>=sidl_arrayptr) :: d_array
+    real (<B>kind</B>=sidl_double), <B>pointer</B>, &amp;
+      dimension(:,:) :: d_data
+  end type sidl_double_2d
+
+  type sidl_double_3d
+    <B>sequence</B>
+    integer (<B>kind</B>=sidl_arrayptr) :: d_array
+    real (<B>kind</B>=sidl_double), <B>pointer</B>, &amp;
+      dimension(:,:,:) :: d_data
+  end type sidl_double_3d</TD></TR>
+</TABLE><P>For the other types, the array API must be used to access elements.
+In this case, the array can be accessed with the F90 array pointer 
+<TT>d_data</TT> just like any other F90 array. However, 
+the F90 built-in methods <TT>allocate</TT><A NAME="@default1054"></A> or 
+<TT>deallocate</TT><A NAME="@default1055"></A> on <TT>d_data</TT> <EM>must not</EM> 
+be used. Instead, SIDL functions, <TT>createCol</TT><A NAME="@default1056"></A>, 
+<TT>createRow</TT><A NAME="@default1057"></A>, <TT>create1d</TT><A NAME="@default1058"></A>, 
+<TT>create2dRow</TT><A NAME="@default1059"></A>, or 
+<TT>create2dCol</TT><A NAME="@default1060"></A>, must be used to create a
+new array. These SIDL routines initialize <TT>d_data</TT> to refer to
+the data allocated in <TT>d_array</TT>. </P><P><EM><B>NOTE</B>:
+<TT>create1d</TT>,
+<TT>create2dRow</TT>, and <TT>create2dCol</TT> create arrays whose lower
+index is </EM>0<EM> not 1. To create arrays with a lower index of 1, 
+<TT>createCol</TT> or <TT>createRow</TT> must be used.
+</EM></P><P>Software packages like LINPACK or BLAS can be called, but the stride 
+should be checked to make sure the array is suitably packed. Using
+<TT>stride(i)</TT><A NAME="@default1061"></A> will provide the distance between elements in 
+dimension <TT>i</TT>. 
+A value of 1 means elements are packed densely.
+Negative stride values are possible and, when an array is sliced, the
+resulting array might not even have one densely packed dimension.</P><P>As discussed in Section <A HREF="index008.html#sss:basics:genericarrays">6.4</A>, the type of a generic 
+array<A NAME="@default1062"></A><A NAME="@default1063"></A> is not specified.
+As a result, Fortran 90/95 represents generic arrays as the derived type
+<TT>sidl__array</TT> as defined in the 
+<TT>sidl_array_type</TT> module.
+(Note the use of a two underscore separator.) The following subroutines,
+defined in the <TT>sidl_array_array</TT> module, apply to 
+generic arrays:
+<TT>addRef</TT><A NAME="@default1064"></A>, 
+<TT>deleteRef</TT><A NAME="@default1065"></A>, 
+<TT>dimen</TT>, <TT>type</TT>,
+<TT>isColumnOrder</TT><A NAME="@default1066"></A>, 
+<TT>isRowOrder</TT><A NAME="@default1067"></A>,
+<TT>is_null</TT><A NAME="@default1068"></A>, 
+<TT>no_null</TT><A NAME="@default1069"></A>, 
+<TT>set_null</TT><A NAME="@default1070"></A>, 
+<TT>lower</TT><A NAME="@default1071"></A>, 
+<TT>upper</TT><A NAME="@default1072"></A>, 
+<TT>length</TT><A NAME="@default1073"></A>, 
+<TT>stride</TT><A NAME="@default1074"></A>, and 
+<TT>smartCopy</TT><A NAME="@default1075"></A>. </P><P>Finally, SIDL r-arrays<A NAME="@default1076"></A><A NAME="@default1077"></A> are passed 
+to and from methods as normal Fortran 90/95 arrays. 
+Index variables do not need to be included because the
+values are determined from the Fortran 90/95 array extents in each
+dimension. For example,
+the client-side interface for <TT>solve</TT> — introduced in
+Section <A HREF="index008.html#ss:r-arrays">6.4</A> — behaves as if it is a Fortran 90/95 function
+with the following overloaded interface:
+<A NAME="@default1078"></A></P><DIV CLASS="flushright"><SPAN CLASS="textboxed"><FONT COLOR=purple><B>Fortran 90/95</B></FONT></SPAN></DIV><TABLE CLASS="lstframe" STYLE="padding:1ex;border-style:solid;"><TR><TD CLASS="lstlisting">  <B>private</B> :: solve_1s, solve_2s
+  <B>interface</B> solve
+    <B>module</B> procedure solve_1s, solve_2s
+  end <B>interface
+
+  recursive</B> subroutine solve_1s(self, A, x, exception)
+    implicit <B>none</B>
+    <FONT COLOR="blue"><I>! in num.Linsol self</I></FONT>
+    type(num_Linsol_t) , <B>intent</B>(<B>in</B>) :: self
+    <FONT COLOR="blue"><I>! in array&lt;double,2,column-major&gt; A</I></FONT>
+    type(sidl_double_2d) , <B>intent</B>(<B>in</B>) :: A
+    <FONT COLOR="blue"><I>! inout array&lt;double,column-major&gt; x</I></FONT>
+    type(sidl_double_1d) , <B>intent</B>(<B>inout</B>) :: x
+    <FONT COLOR="blue"><I>! out sidl.BaseInterface exception</I></FONT>
+    type(sidl_BaseInterface_t) , <B>intent</B>(<B>out</B>) :: exception
+  end subroutine solve_1s
+
+  <B>recursive</B> subroutine solve_2s(self, A, x, exception)
+    implicit <B>none</B>
+    <FONT COLOR="blue"><I>! in num.Linsol self</I></FONT>
+    type(num_Linsol_t) , <B>intent</B>(<B>in</B>) :: self
+    <FONT COLOR="blue"><I>! in rarray&lt;double,2&gt; A(m,n)</I></FONT>
+    real (<B>kind</B>=sidl_double) , <B>intent</B>(<B>in</B>), dimension(:, :) :: A
+    <FONT COLOR="blue"><I>! inout rarray&lt;double&gt; x(n)</I></FONT>
+    real (<B>kind</B>=sidl_double) , <B>intent</B>(<B>inout</B>), dimension(:) :: x
+    <FONT COLOR="blue"><I>! out sidl.BaseInterface exception</I></FONT>
+    type(sidl_BaseInterface_t) , <B>intent</B>(<B>out</B>) :: exception
+    <FONT COLOR="blue"><I>! in int m</I></FONT>
+    integer (<B>kind</B>=sidl_int) :: m
+    <FONT COLOR="blue"><I>! in int n</I></FONT>
+    integer (<B>kind</B>=sidl_int) :: n
+  end subroutine solve_2s</TD></TR>
+</TABLE><P>The server-side interface, shown below, is similar. 
+<A NAME="@default1079"></A></P><DIV CLASS="flushright"><SPAN CLASS="textboxed"><FONT COLOR=purple><B>Fortran 90/95</B></FONT></SPAN></DIV><TABLE CLASS="lstframe" STYLE="padding:1ex;border-style:solid;"><TR><TD CLASS="lstlisting"><B>recursive</B> subroutine num_Linsol_solve_mi(self, A, x, m, n, exception)
+  <B>use</B> sidl
+  <B>use</B> sidl_BaseInterface
+  <B>use</B> sidl_RuntimeException
+  <B>use</B> num_Linsol
+  <B>use</B> sidl_double_array
+  <B>use</B> num_Linsol_impl
+  <FONT COLOR="blue"><I>! DO-NOT-DELETE splicer.begin(num.Linsol.solve.use)
+  ! Insert-Code-Here {num.Linsol.solve.use} (use statements)
+  ! DO-NOT-DELETE splicer.end(num.Linsol.solve.use)</I></FONT>
+  implicit <B>none</B>
+  type(num_Linsol_t) :: self <FONT COLOR="blue"><I>! in</I></FONT>
+  integer (<B>kind</B>=sidl_int) :: m <FONT COLOR="blue"><I>! in</I></FONT>
+  integer (<B>kind</B>=sidl_int) :: n <FONT COLOR="blue"><I>! in</I></FONT>
+  type(sidl_BaseInterface_t) :: exception <FONT COLOR="blue"><I>! out</I></FONT>
+  real (<B>kind</B>=sidl_double), dimension(0:m-1, 0:n-1) :: A <FONT COLOR="blue"><I>! in</I></FONT>
+  real (<B>kind</B>=sidl_double), dimension(0:n-1) :: x <FONT COLOR="blue"><I>! inout
+
+! DO-NOT-DELETE splicer.begin(num.Linsol.solve)
+! Insert-Code-Here {num.Linsol.solve} (solve method)
+! DO-NOT-DELETE splicer.end(num.Linsol.solve)</I></FONT>
+end subroutine num_Linsol_solve_mi</TD></TR>
+</TABLE><P><EM><B>NOTE</B>:
+The lower
+index of each dimension of every incoming array is <B>always</B> zero.
+</EM></P><H3 CLASS="subsection">11.2.4  Type casting</H3><P><A NAME="ss:f90:casting"></A>
+<A NAME="@default1080"></A><A NAME="@default1081"></A>
+<A NAME="@default1082"></A></P><P>Babel automatically generates the <TT>cast()</TT><A NAME="@default1083"></A>
+method for casting between different interface and class types.
+Actually, a set of overloaded methods support every allowable cast 
+between a type and all its parent types
+(both objects and interfaces). The first argument is the object (or interface)
+to be cast, and the second is a variable of the desired
+type. The cast is successful if, after the call to <TT>cast()</TT>, the value 
+of the second argument is <TT>not_null</TT><A NAME="@default1084"></A>. The 
+caller then owns (and is responsible for) the returned reference. 
+Examples of type casting can be found in 
+Subsections <A HREF="#ss:f90:exceptioncatching">11.3.5</A> and <A HREF="#ss:f90:exceptionthrowing">11.4.4</A>.</P><H2 CLASS="section"><A NAME="toc45"></A><A NAME="htoc51">11.3</A>  Client-side</H2><P><A NAME="s:f90:client"></A>
+<A NAME="@default1085"></A></P><P>This section summarizes aspects of generating and using the Fortran 90/95 bindings
+associated with software wrapped with Babel’s language interoperability
+middleware. The bindings generation process is presented first.
+Object management and invocation of static and overloaded methods are
+also summarized. The process of catching exceptions is then discussed.
+Finally, the processes for enabling and disabling implementation-specific
+pre- and post-method instrumentation — referred to as “hooks” —
+are illustrated.</P><H3 CLASS="subsection">11.3.1  Bindings generation</H3><P>
+<A NAME="@default1086"></A>
+<A NAME="@default1087"></A><A NAME="@default1088"></A></P><P>The following is an example of invoking Babel to create the Fortran 90/95 
+stubs for a SIDL file<SUP><A NAME="text17" HREF="#note17">1</A></SUP>:
+<A NAME="@default1089"></A></P><BLOCKQUOTE CLASS="quotation"><TT>
+% <B>babel --exclude-external --client=f90 file.sidl</B><BR>
+</TT></BLOCKQUOTE><P>
+or simply
+</P><BLOCKQUOTE CLASS="quotation"><TT>
+% <B>babel -E -c=f90 file.sidl</B><BR>
+</TT></BLOCKQUOTE><P>As a result, a makefile fragment called <TT>babel.make</TT>, numerous C header 
+and source files, and some Fortran 90/95 files will be created. Files ending in
+<TT>_fStub.c</TT> (i. e., <TT>STUBSRCS</TT> in <TT>babel.make</TT>) are called 
+by the Fortran 90/95 module which in turn allow Fortran 90/95 to call SIDL 
+methods. Files ending in <TT>_type.F90</TT> (i. e., <TT>STUBMODULESRCS</TT> 
+in <TT>babel.make</TT>) contain derived type definitions for classes and 
+interfaces. The remaining files ending in <TT>.F90</TT> (i. e., 
+<TT>TYPEMODULESRCS</TT> in <TT>babel.make</TT>) are Fortran 90/95 modules 
+containing methods. All of these files need to be compiled and 
+linked into the application. </P><P>Normally, IOR files (i. e., those ending in <TT>_IOR.c</TT>) are linked 
+together with the implementation file, so probably don’t need to be compiled.</P><H3 CLASS="subsection">11.3.2  Object management</H3><P>
+<A NAME="@default1090"></A>
+<A NAME="@default1091"></A></P><P>SIDL-specified objects are managed through explicit creation and
+reference counting<A NAME="@default1092"></A>. Babel automatically generates
+a <TT>new()</TT><A NAME="@default1093"></A> method for concrete classes.
+The method is used to instantiate the class and return the associated reference.
+The following example illustrates the instantiation and casting of an object
+to an interface:
+<A NAME="@default1094"></A><A NAME="@default1095"></A>
+<A NAME="@default1096"></A><A NAME="@default1097"></A>
+<A NAME="@default1098"></A><A NAME="@default1099"></A></P><DIV CLASS="flushright"><SPAN CLASS="textboxed"><FONT COLOR=purple><B>Fortran 90/95</B></FONT></SPAN></DIV><TABLE CLASS="lstframe" STYLE="padding:1ex;border-style:solid;"><TR><TD CLASS="lstlisting">  <B>use</B> sidl_BaseClass
+  <B>use</B> sidl_BaseInterface
+  type(sidl_BaseClass_t)     :: object
+  type(sidl_BaseInterface_t) :: <B>interface</B>
+  type(sidl_BaseInterface_t) :: exception
+  <FONT COLOR="blue"><I>! perhaps other code here</I></FONT>
+  call new(object, exception)
+  call cast(object, <B>interface</B>, exception)</TD></TR>
+</TABLE><P>The owner of the instance is responsible for its proper disposal. In other
+words, when processing with the object is done, the owner must
+invoke <TT>deleteRef()</TT><A NAME="@default1100"></A> on it. Similarly, any object 
+references returned
+by a subroutine call must be deleted or given to another part of the code
+that will take ownership of and, therefore, responsibility
+for <TT>deleteRef</TT>’ing it.
+The following example illustrates calling <TT>deleteRef()</TT> using the
+<FONT COLOR=maroon><I><TT>sidl.BaseInterface</TT></I></FONT> method:
+<A NAME="@default1101"></A>
+<A NAME="@default1102"></A><A NAME="@default1103"></A></P><DIV CLASS="flushright"><SPAN CLASS="textboxed"><FONT COLOR=purple><B>Fortran 90/95</B></FONT></SPAN></DIV><TABLE CLASS="lstframe" STYLE="padding:1ex;border-style:solid;"><TR><TD CLASS="lstlisting">  <B>use</B> sidl_BaseInterface
+  type(sidl_BaseInterface_t) :: interface1, interface2
+  type(sidl_BaseInterface_t) :: exception
+  logical                    :: areSame
+  <FONT COLOR="blue"><I>!
+  ! code to initialize interface1 &amp; interface 2 here
+  !</I></FONT>
+  call deleteRef(interface1, exception)</TD></TR>
+</TABLE><P>When it is necessary to determine if two references point to the same object,
+the built-in <TT>isSame</TT> method can be used. For example, the following
+attempts to determine if <TT>interface1</TT> and <TT>interface2</TT> point to
+the same object:
+<A NAME="@default1104"></A><A NAME="@default1105"></A></P><DIV CLASS="flushright"><SPAN CLASS="textboxed"><FONT COLOR=purple><B>Fortran 90/95</B></FONT></SPAN></DIV><TABLE CLASS="lstframe" STYLE="padding:1ex;border-style:solid;"><TR><TD CLASS="lstlisting">  <B>use</B> sidl_BaseInterface
+  <FONT COLOR="blue"><I>! later in the code</I></FONT>
+  call isSame(interface1, interface2, areSame, exception)
+  <FONT COLOR="blue"><I>! areSame holds the return value</I></FONT></TD></TR>
+</TABLE><H3 CLASS="subsection">11.3.3  Static methods</H3><P>
+<A NAME="@default1106"></A></P><P>Below is an example illustrating a call to <TT>addSearchPath()</TT>, which
+is a static method in the <FONT COLOR=maroon><I><TT>sidl.Loader</TT></I></FONT> class.
+<A NAME="@default1107"></A>
+<A NAME="@default1108"></A>
+<A NAME="@default1109"></A><A NAME="@default1110"></A></P><DIV CLASS="flushright"><SPAN CLASS="textboxed"><FONT COLOR=purple><B>Fortran 90/95</B></FONT></SPAN></DIV><TABLE CLASS="lstframe" STYLE="padding:1ex;border-style:solid;"><TR><TD CLASS="lstlisting">  <B>use</B> sidl_Loader
+  <B>use</B> sidl_BaseInterface
+  type(sidl_BaseInterface_t) :: exception
+  <FONT COLOR="blue"><I>! later</I></FONT>
+  call addSearchPath('/try/looking/here', exception)</TD></TR>
+</TABLE><P>Note the function is invoked directly, without an object reference
+argument.</P><H3 CLASS="subsection">11.3.4  Overloaded methods</H3><P>
+<A NAME="@default1111"></A>
+<A NAME="@default1112"></A></P><P>Examples of calls to SIDL overloaded methods are based on the 
+<TT>overload_sample.sidl</TT> file shown in Section <A HREF="index008.html#sec:overloading">6.7</A>. 
+Recall that the file describes three versions of the <TT>getValue</TT> method. 
+The first takes no arguments, the second takes an integer argument, and the 
+third takes a boolean. Each is called in the following code snippet:
+<A NAME="@default1113"></A>
+<A NAME="@default1114"></A><A NAME="@default1115"></A>
+<A NAME="@default1116"></A><A NAME="@default1117"></A></P><DIV CLASS="flushright"><SPAN CLASS="textboxed"><FONT COLOR=purple><B>Fortran 90/95</B></FONT></SPAN></DIV><TABLE CLASS="lstframe" STYLE="padding:1ex;border-style:solid;"><TR><TD CLASS="lstlisting">  <B>use</B> sidl
+  <B>use</B> Overload_Sample
+  type(Overload_Sample_t)         :: t
+  type(sidl_BaseInterface_t)      :: exception
+  logical                         :: b1, bretval
+  integer (<B>kind</B>=sidl_int)  :: i1, iretval
+
+  call new(t, exception)
+
+  call getValue (t, iretval, exception)
+  call getValueInt (t, i1, iretval, exception)
+  call getValueBool (t, b1, bretval, exception)</TD></TR>
+</TABLE><H3 CLASS="subsection">11.3.5  Exception catching</H3><P><A NAME="ss:f90:exceptioncatching"></A>
+<A NAME="@default1118"></A><A NAME="@default1119"></A>
+<A NAME="@default1120"></A></P><P>Since all methods can now throw <FONT COLOR=maroon><I><TT>sidl.RuntimeException</TT></I></FONT>
+<A NAME="@default1121"></A>, Babel ensures there is an
+<FONT COLOR=maroon><I><TT>out</TT></I></FONT> argument to hold an exception. If not explicitly specified,
+Babel will automatically add the argument.
+For maximum backward compatibility, the exception argument type is 
+<FONT COLOR=maroon><I><TT>sidl.BaseInterface</TT></I></FONT>, while the base exception class is
+<FONT COLOR=maroon><I><TT>sidl.SIDLException</TT></I></FONT>. The exception argument, which behaves like 
+an <TT>out</TT> parameter, will appear after the return value when both 
+occur in a method. After the call, the client should test this argument 
+using <TT>is_null</TT><A NAME="@default1122"></A> or <TT>not_null</TT>. 
+If it is <TT>not_null</TT><A NAME="@default1123"></A><TT>_null</TT>, an exception was 
+thrown by the method
+so the caller should respond appropriately. When an exception is thrown,
+the values of all other arguments are undefined. So the best course of
+action is to ignore them. If the code does not check the
+exception argument after each call (that can throw one), any
+exceptions that are thrown will be utterly ignored as a result of not being
+automatically propagated to higher level routines.</P><P>It is possible to determine which exception was thrown through
+casting the argument. A successful cast indicates the type of exception
+that occurred. An example of this process is illustrated below.
+Package <TT>ExceptionTest</TT> has a class named <TT>Fib</TT> with a 
+<TT>getFib</TT> method declared in SIDL as follows: 
+<A NAME="@default1124"></A>
+<A NAME="@default1125"></A></P><DIV CLASS="flushright"><SPAN CLASS="textboxed"><FONT COLOR=purple><B>SIDL</B></FONT></SPAN></DIV><TABLE CLASS="lstframe" STYLE="padding:1ex;border-style:solid;"><TR><TD CLASS="lstlisting"><FONT COLOR=maroon><I><B>int</B> getFib(<B>in int</B> n, <B>in int</B> max_depth, <B>in int</B> max_value, <B>in int</B> depth)
+    <B>throws</B> NegativeValueException, FibException;</I></FONT></TD></TR>
+</TABLE><P>The code to catch specified exception types is:
+<A NAME="@default1126"></A><A NAME="@default1127"></A>
+<A NAME="@default1128"></A><A NAME="@default1129"></A>
+<A NAME="@default1130"></A><A NAME="@default1131"></A>
+<A NAME="@default1132"></A><A NAME="@default1133"></A></P><DIV CLASS="flushright"><SPAN CLASS="textboxed"><FONT COLOR=purple><B>Fortran 90/95</B></FONT></SPAN></DIV><TABLE CLASS="lstframe" STYLE="padding:1ex;border-style:solid;"><TR><TD CLASS="lstlisting">  <B>use</B> sidl
+  <B>use</B> ExceptionTest_Fib
+  <B>use</B> ExceptionTest_FibException
+  <B>use</B> ExceptionTest_NegativeValueException
+  <B>use</B> sidl_BaseInterface
+  type(ExceptionTest_Fib_t)                    :: fib
+  type(sidl_BaseInterface_t)                   :: except, except2
+  type(ExceptionTest_FibException_t)           :: fibexcept
+  type(ExceptionTest_NegativeValueException_t) :: nvexcept
+  integer (<B>kind</B>=sidl_int)  :: index, maxdepth, maxval, depth, <B>result</B>
+  call new(fib, except)
+
+  index    = 4
+  maxdepth = 100
+  maxvalue = 32000
+  depth    = 0
+  call getFib(fib, index, maxdepth, maxvalue, depth, <B>result</B>, except)
+  if (not_null(except)) then
+    call cast(except, fibexcept, except2)
+    if (not_null(fibexcept)) then
+<FONT COLOR="blue"><I>!      do something here with the FibException</I></FONT>
+       call deleteRef(fibexcept, except2)
+    else
+      call cast(except, nvexcept, except2)
+<FONT COLOR="blue"><I>!     do something here with the NegativeValueException</I></FONT>
+      call deleteRef(nvexcept, except2)
+    <B>endif</B>
+    call deleteRef(except, except2)
+  else
+    write (*,*) 'getFib for ', index, ' returned ', <B>result
+  endif</B>
+  call deleteRef(fib, except2)</TD></TR>
+</TABLE><P><EM><B>NOTE</B>:
+Any caller of a method that returns an exception should ignore
+the values of <TT>out</TT> and <TT>inout</TT> parameters. Anything not
+freed becomes a reference and memory leak. 
+</EM></P><H3 CLASS="subsection">11.3.6  Hooks execution</H3><P><A NAME="ss:f90:sethooks"></A>
+<A NAME="@default1134"></A><A NAME="@default1135"></A>
+<A NAME="@default1136"></A><A NAME="@default1137"></A>
+<A NAME="@default1138"></A><A NAME="@default1139"></A></P><P>If a given component supports pre- and post-method invocation instrumentation,
+also known as “hooks”, their execution can be enabled or disabled at
+runtime through the built-in <TT>set_hooks</TT> method. For example,
+given the following SIDL specification:</P><DIV CLASS="flushright"><SPAN CLASS="textboxed"><FONT COLOR=purple><B>SIDL</B></FONT></SPAN></DIV><TABLE CLASS="lstframe" STYLE="padding:1ex;border-style:solid;"><TR><TD CLASS="lstlisting"><FONT COLOR=maroon><I><B>package</B> hooks <B>version</B> 1.0
+{
+  <B>class</B> Basics {
+    /**
+     * Basic illustration of hooks for static methods.
+     */
+    <B>static int</B> aStaticMeth(<B>in int</B> i, <B>out int</B> o, <B>inout int</B> io);
+
+    /**
+     * Basic illustration of hooks for static methods.
+     */
+    <B>int</B> aNonStaticMeth(<B>in int</B> i, <B>out int</B> o, <B>inout int</B> io);
+  }
+}</I></FONT></TD></TR>
+</TABLE><P>which has a single static function and a member function for the
+<TT>Basics</TT> class. Due to unresolved method overloading problems, 
+the processes for enabling and disabling execution of the 
+implementation-specific hooks are currently dependent on use of 
+fully-qualified functions, as illustrated below.</P><DIV CLASS="flushright"><SPAN CLASS="textboxed"><FONT COLOR=purple><B>Fortran 90/95</B></FONT></SPAN></DIV><TABLE CLASS="lstframe" STYLE="padding:1ex;border-style:solid;"><TR><TD CLASS="lstlisting">  <B>use</B> sidl
+  <B>use</B> hooks_Basics
+  type(hooks_Basics_t)         :: obj
+  type(sidl_BaseInterface_t)   :: exception
+
+  call new(obj, exception)
+
+  <FONT COLOR="blue"><I>!
+  ! Enable hooks execution (enabled by default)
+  ! ...for static methods
+  !    (until method overloading issue can be resolved)...
+  !</I></FONT>
+  call hooks_Basics__set_hooks_static_m(1, exception)
+  <FONT COLOR="blue"><I>!
+  ! ...for non-static methods
+  !    (until method overloading issue can be resolved)...
+  !</I></FONT>
+  call hooks_Basics__set_hooks_m(obj, 1, exception)
+
+  <FONT COLOR="blue"><I>!
+  ! ...do something important...
+  !
+
+  !
+  ! Disable hooks execution
+  ! ...for static methods
+  !</I></FONT>
+  call hooks_Basics__set_hooks_static_m(0, exception)
+  <FONT COLOR="blue"><I>!
+  ! ...for non-static methods
+  !</I></FONT>
+  call hooks_Basics__set_hooks_m(obj, 0, exception)
+
+  <FONT COLOR="blue"><I>!
+  ! ...do something important...
+  !</I></FONT></TD></TR>
+</TABLE><P>It is important to keep in mind that the 
+<TT>set_hooks_static</TT>
+method must be used to enable/disable invocation of hooks for static 
+methods and the <TT>set_hooks</TT> method must be used for 
+those of non-static methods. Also, Babel does not provide client 
+access to the <TT>_pre</TT> and <TT>_post</TT> methods; therefore, they 
+cannot be invoked directly. More information on the instrumentation 
+process is provided in Subsection <A HREF="#ss:f90:hooksimpl">11.4.5</A>.</P><H3 CLASS="subsection">11.3.7  Contract enforcement</H3><P><A NAME="ss:f90:contract_enforcement"></A>
+<A NAME="@default1140"></A>
+<A NAME="@default1141"></A>
+<A NAME="@default1142"></A></P><P>Interface contracts specify the expected behaviors of clients and servers
+of interface and class methods.
+Once specified, contracts can automatically be enforced at runtime.
+This section provides an example of a specification and associated code
+snippets for performing basic, traditional contract enforcement —
+introduced in Section <A HREF="index008.html#ss:intro_contract_enforcement">6.5</A> — within a
+Fortran 90/95 client.</P><P>A SIDL specification, including preconditions and postconditions, for
+calculating the sum of two vectors is given below.
+(Refer to Section <A HREF="index008.html#s:ifc_contracts">6.5</A> for an introduction to the contract
+syntax.)
+According to the preconditions,
+<A NAME="@default1143"></A><A NAME="@default1144"></A>
+<A NAME="@default1145"></A>
+all callers are expected to provide two one-dimensional, SIDL arrays of the
+same size as arguments.
+The postconditions
+<A NAME="@default1146"></A><A NAME="@default1147"></A>
+<A NAME="@default1148"></A>
+specify that all implementations are expected to return a non-null, 
+one-dimensional array of the same size (as the first SIDL array), 
+assuming the preconditions are satisfied.</P><P><A NAME="@default1149"></A>
+<A NAME="@default1150"></A>
+<A NAME="@default1151"></A>
+<A NAME="@default1152"></A><A NAME="@default1153"></A>
+<A NAME="@default1154"></A>
+<A NAME="@default1155"></A>
+<A NAME="@default1156"></A>
+<A NAME="@default1157"></A>
+<A NAME="@default1158"></A>
+<A NAME="@default1159"></A>
+<A NAME="@default1160"></A>
+<A NAME="@default1161"></A>
+<A NAME="@default1162"></A>
+</P><DIV CLASS="flushright"><SPAN CLASS="textboxed"><FONT COLOR=purple><B>SIDL</B></FONT></SPAN></DIV><TABLE CLASS="lstframe" STYLE="padding:1ex;border-style:solid;"><TR><TD CLASS="lstlisting"><FONT COLOR=maroon><I><B>package</B> vect <B>version</B> 1.0 {
+  <B>class</B> Utils {
+    /* ... */
+
+    /**
+     * Return the sum of the specified vectors.
+     */
+    <B>static array</B>&lt;<B>double</B>&gt; vuSum(<B>in array</B>&lt;<B>double</B>&gt; u, <B>in array</B>&lt;<B>double</B>&gt; v)
+      <B>throws</B>
+        sidl.PreViolation, sidl.PostViolation;
+      <B>require</B>
+        not_null_u: u != null;
+        u_is_1d : dimen(u) == 1;
+        not_null_v: v != null;
+        v_is_1d : dimen(v) == 1;
+        same_size: size(u) == size(v);
+      <B>ensure</B>
+        no_side_effects : is pure;
+        result_not_null: result != null;
+        result_is_1d : dimen(result) == 1;
+        result_correct_size: size(result) == size(u);
+  }
+
+    /* ... */
+}</I></FONT></TD></TR>
+</TABLE><P>An example of a Fortran 90/95 client calling the method is given below. 
+The code snippet illustrates declaring and creating the arrays; enabling 
+full contract enforcement (i. e., checking all contract clauses); 
+executing <TT>vuSum</TT>; handling contract violation exceptions; 
+and cleaning up references is given below.</P><P><A NAME="@default1163"></A>
+<A NAME="@default1164"></A>
+<A NAME="@default1165"></A>
+<A NAME="@default1166"></A>
+<A NAME="@default1167"></A>
+<A NAME="@default1168"></A>
+<A NAME="@default1169"></A>
+<A NAME="@default1170"></A>
+<A NAME="@default1171"></A>
+<A NAME="@default1172"></A>
+<A NAME="@default1173"></A>
+<A NAME="@default1174"></A>
+<A NAME="@default1175"></A>
+<A NAME="@default1176"></A>
+<A NAME="@default1177"></A>
+<A NAME="@default1178"></A>
+<A NAME="@default1179"></A>
+<A NAME="@default1180"></A>
+<A NAME="@default1181"></A>
+</P><DIV CLASS="flushright"><SPAN CLASS="textboxed"><FONT COLOR=purple><B>Fortran 90/95</B></FONT></SPAN></DIV><TABLE CLASS="lstframe" STYLE="padding:1ex;border-style:solid;"><TR><TD CLASS="lstlisting">  <B>use</B> sidl
+  <B>use</B> sidl_ContractClass
+  <B>use</B> sidl_double_array
+  <B>use</B> sidl_BaseInterface
+  <B>use</B> sidl_EnfPolicy
+  <B>use</B> vect_Utils
+  implicit <B>none</B>
+
+<FONT COLOR="blue"><I>!     ...</I></FONT>
+
+  type (sidl_BaseInterface_t) :: exc, tae
+  type (sidl_double_1d) :: u, v, x
+
+  call createDouble(MAX_SIZE, u)
+  call createDouble(MAX_SIZE, v)
+
+<FONT COLOR="blue"><I>!     Initialize u and v.
+
+!     Enable FULL contract enforcement.</I></FONT>
+  call sidl_EnfPolicy_setEnforceAll_m(ALLCLASSES, .true., exc)
+  if (.not. is_null(exc)) then
+<FONT COLOR="blue"><I>!    Handle the exception</I></FONT>
+  <B>endif</B>
+
+<FONT COLOR="blue"><I>!     Do something meaningful before executing the method.</I></FONT>
+
+  call vect_Utils_vuSum_m(u, v, x, exc)
+  if (is_null(exc)) then
+<FONT COLOR="blue"><I>!    Do something meaningful with the result, x.</I></FONT>
+  else
+<FONT COLOR="blue"><I>!    Handle the exception</I></FONT>
+  <B>endif</B>
+
+<FONT COLOR="blue"><I>!     ...</I></FONT>
+
+  call deleteRef(u)
+  call deleteRef(v)
+  if (.not. is_null(x)) then
+     call deleteRef(x)
+  <B>endif</B></TD></TR>
+</TABLE><P>Alternative enforcement options can be set, as described in
+Section <A HREF="index008.html#ss:intro_contract_enforcement">6.5</A>, through the two
+basic helper methods: <TT>setEnforceAll</TT> and <TT>setEnforceNone</TT>.
+The code snippet below shows the Fortran 90/95 calls associated with the 
+traditional options of enabling only precondition enforcement, enabling 
+postcondition enforcement, or completely disabling contract enforcement.</P><P><A NAME="@default1182"></A>
+<A NAME="@default1183"></A>
+<A NAME="@default1184"></A>
+<A NAME="@default1185"></A>
+<A NAME="@default1186"></A>
+<A NAME="@default1187"></A>
+<A NAME="@default1188"></A>
+<A NAME="@default1189"></A>
+<A NAME="@default1190"></A>
+<A NAME="@default1191"></A>
+</P><DIV CLASS="flushright"><SPAN CLASS="textboxed"><FONT COLOR=purple><B>Fortran 90/95</B></FONT></SPAN></DIV><TABLE CLASS="lstframe" STYLE="padding:1ex;border-style:solid;"><TR><TD CLASS="lstlisting">  <B>use</B> sidl
+  <B>use</B> sidl_ContractClass
+  <B>use</B> sidl_double_array
+  <B>use</B> sidl_BaseInterface
+  <B>use</B> sidl_EnfPolicy
+  <B>use</B> vect_Utils
+  implicit <B>none</B>
+
+<FONT COLOR="blue"><I>!     ...
+
+!
+!     Enable only precondition contract enforcement.
+!     (Useful when only need to ensure callers comply with contract.)
+!</I></FONT>
+  call sidl_EnfPolicy_setEnforceAll_m(PRECONDS, .false., exception)
+  if (.not. is_null(exc)) then
+<FONT COLOR="blue"><I>!       Handle the exception</I></FONT>
+  <B>endif</B>
+
+
+<FONT COLOR="blue"><I>!
+!     Enable only postcondition contract enforcement.
+!     (Useful when only need to ensure implementation(s) comply with contract.)
+!</I></FONT>
+  call sidl_EnfPolicy_setEnforceAll_m(POSTCONDS, .false., exception)
+  if (.not. is_null(exc)) then
+<FONT COLOR="blue"><I>!       Handle the exception</I></FONT>
+  <B>endif</B>
+
+<FONT COLOR="blue"><I>!
+!     Disable contract enforcement.
+!     (Should only be used when have confidence in caller AND implementation.)
+!</I></FONT>
+  call sidl_EnfPolicy_setEnforceNone_m(.false., exception)
+  if (.not. is_null(exc)) then
+<FONT COLOR="blue"><I>!       Handle the exception</I></FONT>
+  <B>endif</B></TD></TR>
+</TABLE><P>This section illustrates the basic interfaces and processes for
+traditional interface contract enforcement for a Fortran 90/95 client.
+Additional enforcement policy options and methods as well as more
+information regarding the specification and enforcement of contracts
+can be found in Chapter <A HREF="index023.html#c:contracts">21</A>.</P><H2 CLASS="section"><A NAME="toc46"></A><A NAME="htoc52">11.4</A>  Implementation-side</H2><P><A NAME="s:f90:implementation"></A>
+<A NAME="@default1192"></A></P><P>This section summarizes aspects of generating and wrapping software
+written in Fortran 90/95. The bindings generation and basic implementation 
+processes are presented first.
+Since access to object state requires special steps in Fortran 90/95, the process
+for defining and managing that data is discussed. Throwing
+exceptions in the implementation is then illustrated.
+Finally, the results of generating implementations with pre- and post-method
+“hooks” are shown.</P><H3 CLASS="subsection">11.4.1  Bindings generation</H3><P><A NAME="ss:f90:implgen"></A>
+<A NAME="@default1193"></A>
+<A NAME="@default1194"></A><A NAME="@default1195"></A></P><P>Much of the information associated with generating client-side bindings is 
+pertinent to implementing a SIDL class in Fortran 90/95. The mapping of SIDL 
+types to language constructs was given in Table <A HREF="#tbl:f90:types">11.1</A>.
+If the implementation calls other SIDL methods, client-side caller rules 
+must be followed.</P><P>To create the implementation bindings for a set of SIDL classes in Fortran 90/95,
+Babel is invoked as follows:
+<A NAME="@default1196"></A></P><BLOCKQUOTE CLASS="quotation"><TT>
+% <B>babel --exclude-external --server=f90 file.sidl</B><BR>
+</TT></BLOCKQUOTE><P>
+or simply
+</P><BLOCKQUOTE CLASS="quotation"><TT>
+% <B>babel -E -s=f90 file.sidl</B><BR>
+</TT></BLOCKQUOTE><P>As a result, a makefile fragment called <TT>babel.make</TT>, numerous C 
+header and source files, and some Fortran 90/95 source files will be created. 
+The <TT>SUBROUTINE</TT> and <TT>END SUBROUTINE</TT>
+statements are automatically generated and the types of arguments declared. 
+Implementation details must be added to the Fortran 90/95 “Impl” files,
+whose names end with <TT>_Impl.F90</TT> and <TT>_Mod.F90</TT>.
+More on this matter is provided in Subsection <A HREF="#ss:f90:implfill">11.4.2</A>.</P><H3 CLASS="subsection">11.4.2  Bindings implementation</H3><P><A NAME="ss:f90:implfill"></A>
+<A NAME="@default1197"></A></P><P>Implementation details must be added to the “Impl” files generated in
+Subsection <A HREF="#ss:f90:implgen">11.4.1</A>. Changes to these files must be made between
+code splicer pairs to ensure their retention in subsequent invocations of
+Babel. Below is an example of the 
+standard, automatically generated code splicer pairs.
+<A NAME="@default1198"></A><A NAME="@default1199"></A></P><DIV CLASS="flushright"><SPAN CLASS="textboxed"><FONT COLOR=purple><B>Fortran 90/95</B></FONT></SPAN></DIV><TABLE CLASS="lstframe" STYLE="padding:1ex;border-style:solid;"><TR><TD CLASS="lstlisting"><FONT COLOR="blue"><I>! DO-NOT-DELETE splicer.begin(_miscellaneous_code_start)
+! Insert-Code-Here {_miscellaneous_code_start} (extra code)
+! DO-NOT-DELETE splicer.end(_miscellaneous_code_start)</I></FONT>
+
+.
+.
+.
+
+<B>recursive</B> subroutine Pkg_Class_name_mi(self, arg, exception)
+  <B>use</B> sidl
+  <B>use</B> sidl_BaseInterface
+  <B>use</B> sidl_RuntimeException
+  <B>use</B> Pkg_Class
+  <B>use</B> Pkg_Class_impl
+  <FONT COLOR="blue"><I>! DO-NOT-DELETE splicer.begin(Pkg.Class.name.use)
+  ! Insert-Code-Here {Pkg.Class.name.use} (use statements)
+  ! DO-NOT-DELETE splicer.end(Pkg.Class.name.use)</I></FONT>
+  implicit <B>none</B>
+  type(Pkg_Class_t) :: self <FONT COLOR="blue"><I>! in</I></FONT>
+  integer (<B>kind</B>=sidl_int) :: arg <FONT COLOR="blue"><I>! in</I></FONT>
+  type(sidl_BaseInterface_t) :: exception <FONT COLOR="blue"><I>! out
+
+! DO-NOT-DELETE splicer.begin(Pkg.Class.name)
+! Insert-Code-Here {Pkg.Class.name} (name method)
+! DO-NOT-DELETE splicer.end(Pkg.Class.name)</I></FONT>
+end subroutine Pkg_Class_name_mi</TD></TR>
+</TABLE><P>The comment 
+“Insert-Code-Here” associated with the “miscellaneous code start” 
+splicer pair will need to be replaced with details such as 
+additional abbreviation file(s) and any local, or 
+private, subroutines. For the subroutine’s “use” splicer pair, the 
+“Insert-Code-Here {Pkg.Class.name.use} (use statements)” comment must
+be replaced with any <TT>use</TT> statements needed by the subroutine. 
+Finally, the implementation between the subroutine body’s splicer pairs 
+must be added in place of the 
+“Insert-Code-Here {Pkg.Class.name} (name method)” comment.</P><H3 CLASS="subsection">11.4.3  Private data</H3><P>
+<A NAME="@default1200"></A>
+<A NAME="@default1201"></A></P><P>Any variables declared in the implementation source file will, by
+virtue of Babel’s encapsulation, be private.
+Special initialization procedures can be added to
+the built-in <TT>_load()</TT> method, which is guaranteed to be called
+exactly once per class to set global class data — <EM>before</EM> 
+any user-defined methods can even be invoked.</P><P>The SIDL IOR keeps a pointer for each object that is intended to hold 
+a pointer to the object’s internal data. Below is an
+excerpt from a <TT>_Mod.F90</TT> file for an object whose state requires a
+single integer value.
+<A NAME="@default1202"></A></P><DIV CLASS="flushright"><SPAN CLASS="textboxed"><FONT COLOR=purple><B>Fortran 90/95</B></FONT></SPAN></DIV><TABLE CLASS="lstframe" STYLE="padding:1ex;border-style:solid;"><TR><TD CLASS="lstlisting">#<B>include</B> "sort_SimpleCounter_fAbbrev.h"
+<B>module</B> sort_SimpleCounter_impl
+
+<FONT COLOR="blue"><I>! DO-NOT-DELETE splicer.begin(sort.SimpleCounter.use)</I></FONT>
+<B>use</B> sidl
+<FONT COLOR="blue"><I>! DO-NOT-DELETE splicer.end(sort.SimpleCounter.use)</I></FONT>
+
+type sort_SimpleCounter_priv
+  <B>sequence</B>
+  <FONT COLOR="blue"><I>! DO-NOT-DELETE splicer.begin(sort.SimpleCounter.private_data)</I></FONT>
+   integer(<B>kind</B>=sidl_int) :: count
+  <FONT COLOR="blue"><I>! DO-NOT-DELETE splicer.end(sort.SimpleCounter.private_data)</I></FONT>
+end type sort_SimpleCounter_priv
+
+type sort_SimpleCounter_wrap
+  <B>sequence</B>
+  type(sort_SimpleCounter_priv), <B>pointer</B> :: d_private_data
+end type sort_SimpleCounter_wrap
+
+end <B>module</B> sort_SimpleCounter_impl</TD></TR>
+</TABLE><P>The derived type <TT>sort_SimpleCounter_priv</TT> is the type in which
+the developer adds data to store the object’s state. The
+<TT>sort_SimpleCounter_wrap</TT> type exists simply to 
+facilitate transferring the <TT>sort_SimpleCounter_priv</TT> 
+pointer to and from the IOR.</P><P>Access to this data is provided by two built-in functions — referred to
+as <TT>set_data</TT> and <TT>get_data</TT> — whose full names are derived 
+from the fully qualified type name<A NAME="@default1203"></A>. In both cases, the 
+first argument is the object pointer (i. e., <TT>self</TT>), and the second is a
+derived type defined in the <TT>_Mod.F90</TT> file. The developer is 
+responsible for managing the memory associated with the private data.</P><P>As illustrated in the constructor below, the basic process to initialize
+private data involves allocating memory then setting the data pointer.
+<A NAME="@default1204"></A>
+<A NAME="@default1205"></A><A NAME="@default1206"></A>
+<A NAME="@default1207"></A></P><DIV CLASS="flushright"><SPAN CLASS="textboxed"><FONT COLOR=purple><B>Fortran 90/95</B></FONT></SPAN></DIV><TABLE CLASS="lstframe" STYLE="padding:1ex;border-style:solid;"><TR><TD CLASS="lstlisting"><B>recursive</B> subroutine sort_SimpleCounter__ctor_mi(self, exception)
+  <B>use</B> sidl
+  <B>use</B> sidl_BaseInterface
+  <B>use</B> sidl_RuntimeException
+  <B>use</B> sort_SimpleCounter
+  <B>use</B> sort_SimpleCounter_impl
+  <FONT COLOR="blue"><I>! DO-NOT-DELETE splicer.begin(sort.SimpleCounter._ctor.use)
+  ! Insert-Code-Here {sort.SimpleCounter._ctor.use} (use statements)
+  ! DO-NOT-DELETE splicer.end(sort.SimpleCounter._ctor.use)</I></FONT>
+  implicit <B>none</B>
+  type(sort_SimpleCounter_t) :: self <FONT COLOR="blue"><I>! in</I></FONT>
+  type(sidl_BaseInterface_t) :: exception <FONT COLOR="blue"><I>! out
+
+! DO-NOT-DELETE splicer.begin(sort.SimpleCounter._ctor)</I></FONT>
+  type(sort_SimpleCounter_wrap) :: dp
+  <B>allocate</B>(dp%d_private_data)
+  dp%d_private_data%count = 0
+  call sort_SimpleCounter__set_data_m(self, dp)
+<FONT COLOR="blue"><I>! DO-NOT-DELETE splicer.end(sort.SimpleCounter._ctor)</I></FONT>
+end subroutine sort_SimpleCounter__ctor_mi</TD></TR>
+</TABLE><P>Note the use of <TT>allocate(pd%d_private_data)</TT> 
+in the constructor, <TT>_ctor</TT>, to allocate the memory for the
+<TT>sort_SimpleCounter_priv</TT> derived type and the fully qualified
+name for <TT>get_data</TT>.</P><P>Similarly, the destructor is responsible for freeing the data’s memory
+as follows:
+<A NAME="@default1208"></A>
+<A NAME="@default1209"></A><A NAME="@default1210"></A>
+<A NAME="@default1211"></A></P><DIV CLASS="flushright"><SPAN CLASS="textboxed"><FONT COLOR=purple><B>Fortran 90/95</B></FONT></SPAN></DIV><TABLE CLASS="lstframe" STYLE="padding:1ex;border-style:solid;"><TR><TD CLASS="lstlisting"><B>recursive</B> subroutine sort_SimpleCounter__dtor_mi(self, exception)
+  <B>use</B> sidl
+  <B>use</B> sidl_BaseInterface
+  <B>use</B> sidl_RuntimeException
+  <B>use</B> sort_SimpleCounter
+  <B>use</B> sort_SimpleCounter_impl
+  <FONT COLOR="blue"><I>! DO-NOT-DELETE splicer.begin(sort.SimpleCounter._dtor.use)
+  ! Insert-Code-Here {sort.SimpleCounter._dtor.use} (use statements)
+  ! DO-NOT-DELETE splicer.end(sort.SimpleCounter._dtor.use)</I></FONT>
+  implicit <B>none</B>
+  type(sort_SimpleCounter_t) :: self <FONT COLOR="blue"><I>! in</I></FONT>
+  type(sidl_BaseInterface_t) :: exception <FONT COLOR="blue"><I>! out
+
+! DO-NOT-DELETE splicer.begin(sort.SimpleCounter._dtor)</I></FONT>
+  type(sort_SimpleCounter_wrap) :: dp
+  call sort_SimpleCounter__get_data_m(self, dp)
+  <B>deallocate</B>(dp%d_private_data)
+<FONT COLOR="blue"><I>! DO-NOT-DELETE splicer.end(sort.SimpleCounter._dtor)</I></FONT>
+end subroutine sort_SimpleCounter__dtor_mi</TD></TR>
+</TABLE><P>In this case, <TT>deallocate(pd%d_private_data)</TT> is used to 
+free the memory allocated in the constructor for the 
+<TT>sort_SimpleCounter_priv</TT> derived type. </P><H3 CLASS="subsection">11.4.4  Exception throwing</H3><P><A NAME="ss:f90:exceptionthrowing"></A>
+<A NAME="@default1212"></A>
+<A NAME="@default1213"></A></P><P>Below is an example of an implementation subroutine that throws an
+exception. The returned exception object pointer must be <TT>cast</TT>
+into the exception <TT>out</TT> parameter. This example also utilizes
+two methods, inherited from <FONT COLOR=maroon><I><TT>sidl.BaseException</TT></I></FONT> and implemented 
+in 
+<FONT COLOR=maroon><I><TT>sidl.SIDLException</TT></I></FONT>, that aid client-side debugging. The first,
+<TT>setNote</TT>, allows the developer to provide a useful error message.
+The second, <TT>add</TT>, provides a multi-language traceback capability —
+assuming each layer of the call stack invokes <TT>add</TT> before it propagates
+the exception.
+<A NAME="@default1214"></A>
+<A NAME="@default1215"></A><A NAME="@default1216"></A>
+<A NAME="@default1217"></A><A NAME="@default1218"></A>
+<A NAME="@default1219"></A><A NAME="@default1220"></A>
+<A NAME="@default1221"></A><A NAME="@default1222"></A></P><DIV CLASS="flushright"><SPAN CLASS="textboxed"><FONT COLOR=purple><B>Fortran 90/95</B></FONT></SPAN></DIV><TABLE CLASS="lstframe" STYLE="padding:1ex;border-style:solid;"><TR><TD CLASS="lstlisting"><B>recursive</B> subroutine ExceptionTest_Fib_getFib_mi(self, n, max_depth, &amp;
+  max_value, depth, retval, exception)
+  <B>use</B> sidl
+  <B>use</B> sidl_BaseInterface
+  <B>use</B> ExceptionTest_Fib
+  <B>use</B> ExceptionTest_NegativeValueException
+  <B>use</B> ExceptionTest_FibException
+  <B>use</B> ExceptionTest_Fib_impl
+  <FONT COLOR="blue"><I>! DO-NOT-DELETE splicer.begin(ExceptionTest.Fib.getFib.use)</I></FONT>
+  <B>use</B> ExceptionTest_TooBigException
+  <B>use</B> ExceptionTest_TooDeepException
+  <FONT COLOR="blue"><I>! DO-NOT-DELETE splicer.end(ExceptionTest.Fib.getFib.use)</I></FONT>
+  implicit <B>none</B>
+  type(ExceptionTest_Fib_t) :: self
+  integer (<B>kind</B>=sidl_int) :: n, max_depth, max_value
+  integer (<B>kind</B>=sidl_int) :: retval, depth
+  type(sidl_BaseInterface_t) :: exception
+  type(sidl_BaseInterface_t) :: except2
+<FONT COLOR="blue"><I>! DO-NOT-DELETE splicer.begin(ExceptionTest.Fib.getFib)</I></FONT>
+  type(ExceptionTest_NegativeValueException_t) :: negexc
+<FONT COLOR="blue"><I>! ...lines deleted...</I></FONT>
+  character (<B>len</B>=*) myfilename
+  parameter(myfilename='ExceptionTest_Fib_Impl.f')
+  retval = 0
+  if (n .lt. 0) then
+     call new(negexc, except2)
+     if (not_null(negexc)) then
+        call setNote(negexc, &amp;
+             'called with negative n', except2)
+        call add(negexc, myfilename, 57, &amp;
+                 'ExceptionTest_Fib_getFib_impl', except2)
+        call cast(negexc, exception, except2)
+        call deleteRef(negexc, except2)
+        return
+     <B>endif</B>
+  else
+<FONT COLOR="blue"><I>! ...numerous lines deleted....
+! DO-NOT-DELETE splicer.end(ExceptionTest.Fib.getFib)</I></FONT>
+end subroutine ExceptionTest_Fib_getFib_mi</TD></TR>
+</TABLE><P>When an exception is thrown, the implementation should
+<TT>deleteRef</TT> any references it was planning to return to its
+caller. In general, when throwing an exception, it is
+good practice to call <TT>set_null</TT> on all <TT>out</TT> and
+<TT>inout</TT> array, class, and interface arguments before returning.
+This makes things work out better for
+clients who forget to check if an exception occurred or willfully
+choose to ignore it.</P><H3 CLASS="subsection">11.4.5  Hooks implementation</H3><P><A NAME="ss:f90:hooksimpl"></A>
+<A NAME="@default1223"></A><A NAME="@default1224"></A>
+<A NAME="@default1225"></A>
+<A NAME="@default1226"></A><A NAME="@default1227"></A>
+<A NAME="@default1228"></A><A NAME="@default1229"></A></P><P>As discussed in Subsection <A HREF="#ss:f90:sethooks">11.3.6</A>, when hooks execution
+is enabled, implementation-specific instrumentation is executed. Using
+the <B><TT><CODE>--</CODE>generate-hooks</TT></B> option on the Babel
+command line when generating implementation-side bindings results
+in the automatic generation of a <TT>_pre</TT> and <TT>_post</TT>
+method for every static and non-static method associated with each class
+in the specification. For the <TT>aStaticMethod</TT> specified in
+Subsection <A HREF="#ss:f90:sethooks">11.3.6</A>, the generated <TT>_pre</TT> method
+implementation is:</P><DIV CLASS="flushright"><SPAN CLASS="textboxed"><FONT COLOR=purple><B>Fortran 90/95</B></FONT></SPAN></DIV><TABLE CLASS="lstframe" STYLE="padding:1ex;border-style:solid;"><TR><TD CLASS="lstlisting"><B>recursive</B> subroutine hooks_Basics_aStaticMeth_pre_mi(i, io, exception)
+  <B>use</B> sidl
+  <B>use</B> sidl_NotImplementedException
+  <B>use</B> sidl_BaseInterface
+  <B>use</B> sidl_RuntimeException
+  <B>use</B> hooks_Basics
+  <B>use</B> hooks_Basics_impl
+  <FONT COLOR="blue"><I>! DO-NOT-DELETE splicer.begin(hooks.Basics.aStaticMeth_pre.use)
+  !   Insert implementation use details
+  ! DO-NOT-DELETE splicer.end(hooks.Basics.aStaticMeth_pre.use)</I></FONT>
+  implicit <B>none</B>
+  integer (<B>kind</B>=sidl_int) :: i <FONT COLOR="blue"><I>! in</I></FONT>
+  integer (<B>kind</B>=sidl_int) :: io <FONT COLOR="blue"><I>! in</I></FONT>
+  type(sidl_BaseInterface_t) :: exception <FONT COLOR="blue"><I>! out
+
+! DO-NOT-DELETE splicer.begin(hooks.Basics.aStaticMeth_pre)
+!
+!   Add instrumentation here to be executed immediately prior
+!   to dispatch to aStaticMeth().
+!
+! DO-NOT-DELETE splicer.end(hooks.Basics.aStaticMeth_pre)</I></FONT>
+end subroutine hooks_Basics_aStaticMeth_pre_mi</TD></TR>
+</TABLE><P>while that of the <TT>_post</TT> method is:</P><DIV CLASS="flushright"><SPAN CLASS="textboxed"><FONT COLOR=purple><B>Fortran 90/95</B></FONT></SPAN></DIV><TABLE CLASS="lstframe" STYLE="padding:1ex;border-style:solid;"><TR><TD CLASS="lstlisting"><B>recursive</B> subroutine B_aStaticMeth_postywgp49zzy2_mi(i, o, io, retval,         &amp;
+  exception)
+  <B>use</B> sidl
+  <B>use</B> sidl_NotImplementedException
+  <B>use</B> sidl_BaseInterface
+  <B>use</B> sidl_RuntimeException
+  <B>use</B> hooks_Basics
+  <B>use</B> hooks_Basics_impl
+  <FONT COLOR="blue"><I>! DO-NOT-DELETE splicer.begin(hooks.Basics.aStaticMeth_post.use)
+  !   Insert implementation use details
+  ! DO-NOT-DELETE splicer.end(hooks.Basics.aStaticMeth_post.use)</I></FONT>
+  implicit <B>none</B>
+  integer (<B>kind</B>=sidl_int) :: i <FONT COLOR="blue"><I>! in</I></FONT>
+  integer (<B>kind</B>=sidl_int) :: o <FONT COLOR="blue"><I>! in</I></FONT>
+  integer (<B>kind</B>=sidl_int) :: io <FONT COLOR="blue"><I>! in</I></FONT>
+  integer (<B>kind</B>=sidl_int) :: retval <FONT COLOR="blue"><I>! in</I></FONT>
+  type(sidl_BaseInterface_t) :: exception <FONT COLOR="blue"><I>! out
+
+! DO-NOT-DELETE splicer.begin(hooks.Basics.aStaticMeth_post)
+!
+!    Add instrumentation here to be executed immediately after
+!    return from dispatch to aStaticMeth().
+!</I></FONT>
+  return
+<FONT COLOR="blue"><I>! DO-NOT-DELETE splicer.end(hooks.Basics.aStaticMeth_post)</I></FONT>
+end subroutine B_aStaticMeth_postywgp49zzy2_mi</TD></TR>
+</TABLE><P>Per the normal implementation process, the desired instrumentation
+should be added within the splicer blocks of
+<TT>aStaticMethod_pre</TT> and
+<TT>aStaticMethod_post</TT>. As stated in the comments
+within those blocks, <TT>aStaticMethod_pre</TT> will be
+executed immediately prior to dispatch to <TT>aStaticMethod</TT> when the
+latter is invoked by a client. Assuming no exceptions are encountered,
+<TT>aStaticMethod_post</TT> is executed immediately upon
+return from <TT>aStaticMethod</TT>.
+</P><HR CLASS="footnoterule"><DL CLASS="thefootnotes"><DT CLASS="dt-thefootnotes">
+<A NAME="note17" HREF="#text17">1</A></DT><DD CLASS="dd-thefootnotes">For information on additional command line 
+options, refer to Section <A HREF="index006.html#s:basics_commandline">4.2</A>.
+</DD></DL>
+<HR>
+<A HREF="index012.html"><IMG SRC="previous_motif.gif" ALT="Previous"></A>
+<A HREF="index-multipage.html"><IMG SRC="contents_motif.gif" ALT="Up"></A>
+<A HREF="index014.html"><IMG SRC="next_motif.gif" ALT="Next"></A>
+</BODY>
+</HTML>

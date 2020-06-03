@@ -1,0 +1,677 @@
+
+options {
+  STATIC=false;
+  VISITOR=true;
+  NODE_USES_PARSER=true;
+  NODE_PREFIX="JJT";
+}
+
+PARSER_BEGIN(SIDLParser)
+
+package gov.llnl.babel.parsers.sidl2;
+
+public class SIDLParser {}
+
+PARSER_END(SIDLParser)
+
+
+/* WHITE SPACE */
+SPECIAL_TOKEN :
+{
+  " "
+| "\t"
+| "\n"
+| "\r"
+| "\f"
+}
+
+/* COMMENTS */
+MORE :
+{
+  "//" : IN_SINGLE_LINE_COMMENT
+|
+  <"/**" ~["/"] > { input_stream.backup(1); } : IN_DOC_COMMENT 
+|
+  "/*" : IN_MULTI_LINE_COMMENT
+}
+
+<IN_SINGLE_LINE_COMMENT>
+SPECIAL_TOKEN :
+{
+  <SINGLE_LINE_COMMENT: "\n" | "\r" | "\r\n" > : DEFAULT
+}
+
+<IN_DOC_COMMENT>
+SPECIAL_TOKEN :
+{
+  <DOC_COMMENT: "*/" > : DEFAULT
+}
+
+<IN_MULTI_LINE_COMMENT>
+SPECIAL_TOKEN :
+{
+  <MULTI_LINE_COMMENT: "*/" > : DEFAULT
+}
+
+<IN_SINGLE_LINE_COMMENT,IN_DOC_COMMENT,IN_MULTI_LINE_COMMENT>
+MORE :
+{
+  < ~[] >
+}
+
+/* BASIC TYPES */
+TOKEN : { 
+   < VOID           : "void" >
+ | < ARRAY          : "array" >
+ | < RARRAY	    : "rarray" >
+ | < BOOLEAN        : "bool" >
+ | < CHAR           : "char" >
+ | < DCOMPLEX       : "dcomplex" >
+ | < DOUBLE         : "double" >
+ | < FCOMPLEX       : "fcomplex" >
+ | < FLOAT          : "float" >
+ | < INT            : "int" >
+ | < LONG           : "long" >
+ | < OPAQUE         : "opaque" >
+ | < STRING         : "string" >
+}
+
+/* USER DEFINED TYPES */
+TOKEN : { 
+   < CLASS          : "class" >
+ | < ENUM           : "enum" >
+ | < STRUCT         : "struct" > 
+ | < INTERFACE      : "interface" >
+} 
+
+/* RESERVED WORDS */
+TOKEN : {
+   < ABSTRACT       : "abstract" >
+ | < LOGICAL_AND    : "and" >
+ | < COPY           : "copy" >
+ | < COLUMN_MAJOR   : "column-major" > 
+ | < ELSE           : "else" >
+ | < ENSURE         : "ensure" >
+ | < EXTENDS        : "extends" >
+ | < FINAL          : "final" >
+ | < FROM           : "from" > 
+ | < IFF            : "iff" > 
+ | < IMPLEMENTS     : "implements" >
+ | < IMPLEMENTS_ALL : "implements-all" >
+ | < IMPLIES        : "implies" > 
+ | < IMPORT         : "import" >
+ | < IN             : "in" >
+ | < INOUT          : "inout" >
+ | < INVARIANT      : "invariant" >
+ | < IS             : "is" > 
+ | < LOCAL          : "local" >
+ | < MODULUS        : "mod" > 
+ | < NOT            : "not" >
+ | < NULL           : "null" > 
+ | < NONBLOCKING    : "nonblocking" >
+ | < ONEWAY         : "oneway" >
+ | < ORDER          : "order" >
+ | < LOGICAL_OR     : "or" >
+ | < OUT            : "out" >
+ | < PACKAGE        : "package" >
+ | < PURE           : "pure" > 
+ | < REMAINDER      : "rem" >
+ | < REQUIRE        : "require" >
+ | < RESULT         : "result" > 
+ | < ROW_MAJOR      : "row-major" > 
+ | < STATIC         : "static" >
+ | < THEN           : "then" >
+ | < THROWS         : "throws" >
+ | < VERSION        : "version" >
+ | < LOGICAL_XOR    : "xor" > 
+}
+
+
+/* IDENTIFIERS */
+TOKEN :
+{
+  < IDENTIFIER      : <LETTER> ( <LETTER> | <DIGIT> | "_" )* >
+| < EXTENSION       : <LBRACKET> ( <LETTER> | <DIGIT> | "_")+ <RBRACKET> > 
+| < VERSION_STRING  : (<DIGIT>)+ <DOT> (<DIGIT>)+ ( <DOT> ( <DIGIT> )+ )+ > 
+| < #LETTER         : ["a"-"z","A"-"Z"] > 
+| < #DIGIT          : ["0"-"9"] > 
+}
+
+/* SEPARATORS */
+
+TOKEN :
+{
+  < LPAREN: "(" >
+| < RPAREN: ")" >
+| < LBRACE: "{" >
+| < RBRACE: "}" >
+| < LBRACKET: "[" >
+| < RBRACKET: "]" >
+| < SEMICOLON: ";" >
+| < COMMA: "," >
+| < DOT: "." >
+}
+
+/* SPECIAL MODES */
+TOKEN : 
+{
+  <ATTRIB_BEGIN : "%attrib{" > : IN_ATTRIB_LIST
+}
+
+<IN_ATTRIB_LIST>
+TOKEN : 
+{ 
+  < ATTRIB_ID      : <LETTER> ( <LETTER> | <DIGIT> | "_")* >
+| < ATTRIB_STRING :
+      "\""
+      (   (~["\"","\\","\n","\r"])
+        | ("\\"
+            ( ["n","t","b","r","f","\\","'","\""]
+            | ["0"-"7"] ( ["0"-"7"] )?
+            | ["0"-"3"] ["0"-"7"] ["0"-"7"]
+            )
+          )
+      )*
+      "\""
+  >
+| < ATTRIB_EQ : "=" >
+| < ATTRIB_COMMA : "," >
+| < ATTRIB_END : "}" > : DEFAULT
+}
+
+<IN_ATTRIB_LIST>
+SPECIAL_TOKEN :
+{
+  " "
+| "\t"
+| "\n"
+| "\r"
+| "\f"
+}
+
+/* OPERATORS */
+
+TOKEN :
+{
+  < ASSIGN: "=" >
+| < BITWISE_AND: "&" >
+| < BITWISE_XOR: "^" >
+| < COLON: ":" >
+| < EQ: "==" >
+| < GE: ">=" >
+| < GT: ">" >
+| < LE: "<=" >
+| < LT: "<" >
+| < MINUS: "-" >
+| < NE: "!=" >
+| < BITWISE_OR: "|" >
+| < PLUS: "+" >
+| < POWER : "**" > 
+| < SLASH: "/" >
+| < STAR: "*" >
+| < TILDE: "~" >
+| < LSHIFT: "<<<" >
+| < RSHIFT: ">>>" > 
+}
+
+/* LITERALS */
+TOKEN :
+{
+  < BOOLEAN_LITERAL : <FALSE> | <TRUE> > 
+| < #FALSE          : "false">
+| < #TRUE           : "true">
+| < INTEGER_LITERAL :
+        <DECIMAL_LITERAL> (["l","L"])?
+      | <HEX_LITERAL> (["l","L"])?
+      | <OCTAL_LITERAL> (["l","L"])?
+  >
+|
+  < DECIMAL_LITERAL: ["1"-"9"] (["0"-"9"])* >
+|
+  < #HEX_LITERAL    : "0" ["x","X"] (["0"-"9","a"-"f","A"-"F"])+ >
+|
+  < #OCTAL_LITERAL  : "0" (["0"-"7"])* >
+|
+  < FLOATING_POINT_LITERAL:
+        <SIMPLE_FLOATING_POINT_LITERAL> <EXPONENT> (["f","F","d","D"])?
+      | <SIMPLE_FLOATING_POINT_LITERAL> (<EXPONENT>)? ["f","F","d","D"]
+      | (["0"-"9"])+ <DOT> (<EXPONENT>)? (["f","F","d","D"])?
+      | <DOT> (["0"-"9"])+ (<EXPONENT>)? (["f","F","d","D"])?
+      | (["0"-"9"])+ <EXPONENT> (["f","F","d","D"])?
+      | (["0"-"9"])+ (<EXPONENT>)? ["f","F","d","D"]
+  >
+| < SIMPLE_FLOATING_POINT_LITERAL : 
+           (["0"-"9"])+ <DOT> (["0"-"9"])+ >
+|
+  < #EXPONENT: ["e","E"] (["+","-"])? (["0"-"9"])+ >
+|
+  < CHARACTER_LITERAL:
+      "'"
+      (   (~["'","\\","\n","\r"])
+        | ("\\"
+            ( ["n","t","b","r","f","\\","'","\""]
+            | ["0"-"7"] ( ["0"-"7"] )?
+            | ["0"-"3"] ["0"-"7"] ["0"-"7"]
+            )
+          )
+      )
+      "'"
+  >
+|
+  < STRING_LITERAL:
+      "\""
+      (   (~["\"","\\","\n","\r"])
+        | ("\\"
+            ( ["n","t","b","r","f","\\","'","\""]
+            | ["0"-"7"] ( ["0"-"7"] )?
+            | ["0"-"3"] ["0"-"7"] ["0"-"7"]
+            )
+          )
+      )*
+      "\""
+  >
+}
+
+SimpleNode Start() #Start : {}
+{
+  ( Require() )* ( Import() )* ( UserType() )*  <EOF> { return jjtThis; }
+}
+
+void Version() : {}
+{
+  <VERSION> ( <VERSION_STRING> | <SIMPLE_FLOATING_POINT_LITERAL> | <DECIMAL_LITERAL> ) 
+  { jjtThis.name=token.image; } 
+}
+
+void Require() : {}
+{
+  <REQUIRE> ScopedID() Version() <SEMICOLON>
+}
+
+void Import() : {}
+{
+  <IMPORT> ScopedID() [ Version() ] <SEMICOLON>
+}
+
+void Package() : {}
+{
+ <PACKAGE> Name()
+ [ Version() ] 
+ <LBRACE> ( UserType() )* <RBRACE> [ <SEMICOLON> ]
+}
+
+void UserType() : {}
+{
+  [ (TypeAttr() | CustomAttrList())+ #TypeAttrs ]
+  ( Class() 
+  | Interface()
+  | Package()
+  | Struct()
+  | Enum()
+  ) 
+}
+
+void TypeAttr() : {}
+{
+  <FINAL> | <ABSTRACT>
+}
+
+void Enum() : {}
+{
+  <ENUM> Name()
+  <LBRACE> Enumerator() ( LOOKAHEAD(2) <COMMA> Enumerator() )*  [ <COMMA> ] <RBRACE> [ <SEMICOLON> ]
+}
+
+void Enumerator() : {}
+{
+  Name() [ <ASSIGN> Integer() ]
+}
+
+void Struct() : {}
+{
+  <STRUCT> Name()
+  <LBRACE> ( StructItem() )* <RBRACE> [ <SEMICOLON> ]
+}
+
+void StructItem()  :{}
+{
+   ( ( Type() Name() ) | Rarray() ) <SEMICOLON>
+}
+
+void Class () : {}
+{
+  <CLASS> Name()
+  [ ExtendsOne() ]
+  (ImplementsList() | ImplementsAllList() )*
+  <LBRACE>  ( Invariants() )*  ( Method() )* <RBRACE> [<SEMICOLON>]
+}
+
+void Interface () : {}
+{
+  <INTERFACE> Name() 
+  [ ExtendsList() ] 
+  <LBRACE>  ( Invariants() )* ( Method() )* <RBRACE> [<SEMICOLON>]
+}
+
+void ExtendsOne() : {}
+{
+  <EXTENDS> ScopedID()
+}
+
+void ExtendsList() : {}
+{ 
+  <EXTENDS> ScopedID() ( <COMMA> ScopedID() )*
+}
+
+void ImplementsList() : {}
+{
+  <IMPLEMENTS> ScopedID() ( <COMMA> ScopedID() )*
+}
+
+void ImplementsAllList() : {}
+{ 
+  <IMPLEMENTS_ALL> ScopedID() ( <COMMA> ScopedID() )*
+}
+
+void Method() : {}
+{ 
+  [ (MethodAttr() | CustomAttrList() )+ #MethodAttrs ]
+  ( Type() #ReturnType | <VOID> )
+  MethodName()
+  <LPAREN> [ ArgList() ] <RPAREN>
+  [ ExceptClause() ]
+  [ FromClause () ]
+  <SEMICOLON> 
+  ( Requires() )* 
+  ( Ensures() )* 
+}
+
+void MethodAttr() : {}
+{
+  <ONEWAY> | <LOCAL> | <STATIC> | <ABSTRACT> | <FINAL> | <NONBLOCKING> | <COPY>
+}
+
+void MethodName() : {}
+{ 
+  Identifier() #ShortName [ Extension() ]
+}
+
+void ExceptClause() : {}
+{
+  <THROWS> ScopedID() ( <COMMA> ScopedID() )* 
+}
+
+void FromClause() : {}
+{
+  <FROM> ScopedID()
+}
+
+void Invariants() : {}
+{
+  <INVARIANT> ( LOOKAHEAD( Assertion() ) Assertion() )+
+}
+
+void Requires() : {}
+{
+  <REQUIRE> ( LOOKAHEAD( Assertion() ) Assertion() )+ 
+}
+
+void Ensures() : {}
+{
+  <ENSURE> ( LOOKAHEAD( Assertion() ) Assertion() )+ 
+}
+
+void Assertion() : {}
+{
+
+  [
+    LOOKAHEAD( Identifier() <COLON> ) 
+    (Identifier()) #Name <COLON> 
+  ] 
+  AssertExpr() <SEMICOLON>
+}
+
+void ArgList() : {}
+{
+  Arg() ( <COMMA> Arg() )* 
+}
+
+void Arg() : {}
+{ 
+  [ ( ArgAttr() | CustomAttrList() )+ #ArgAttrs ]
+  Mode() ( ( Type() Name() ) | Rarray() )
+}
+
+void ArgAttr() : {}
+{
+  <COPY>
+}
+
+void CustomAttrList() #void : {}
+{
+  <ATTRIB_BEGIN> CustomAttr() (<ATTRIB_COMMA> CustomAttr())* <ATTRIB_END>
+}
+
+void CustomAttr() : {}
+{
+  <ATTRIB_ID> (<ATTRIB_EQ> <ATTRIB_STRING>)?
+}
+
+void Mode() : {}
+{
+  <IN> | <OUT> | <INOUT>  
+}
+
+void Type() #void : {}
+{
+  PrimativeType() | Array() | ScopedID()
+}
+
+void PrimativeType() : {}
+{
+  <BOOLEAN> | <CHAR> | <INT> | <LONG> | <FLOAT> | <DOUBLE>
+| <FCOMPLEX> | <DCOMPLEX> | <STRING> | <OPAQUE>
+}
+
+void Array() : {}
+{
+  <ARRAY> <LT> 
+  [ (PrimativeType() | ScopedID() ) #ScalarType
+    [ LOOKAHEAD(2) <COMMA> <INTEGER_LITERAL> #Dimension ]
+    [ <COMMA> ( "row-major" | "column-major" ) #Orientation ] 
+  ]
+ <GT>
+}
+
+void Rarray() : {Node n;}
+{
+  <RARRAY> <LT> 
+    ( PrimativeType() ) #ScalarType
+    [ <COMMA> <INTEGER_LITERAL> #Dimension ]
+  <GT> 
+  Name() {n=jjtree.popNode();} // squirrel this ID until later
+  <LPAREN> Extents() <RPAREN>
+  {jjtree.pushNode(n);}  
+}
+
+void Extents() : {}
+{
+  Extent() ( <COMMA> Extent() )*
+}
+
+void Extent() : {}
+{
+  SimpleIntExpression()
+}
+
+void SimpleIntExpression() #void : {}
+{
+  ( SimpleIntTerm() 
+    ( ( <PLUS> | <MINUS> ) {jjtThis.name += (token.image + "\\");}
+       SimpleIntTerm() 
+    )* 
+  ) #Add(>1)
+}
+
+void SimpleIntTerm() #void : {}
+{
+  ( SimpleIntPrimary() 
+    ( (<STAR> | <SLASH> ) {jjtThis.name += (token.image + "\\");}
+      SimpleIntPrimary() )*
+  ) #Mult(>1)
+}
+
+void SimpleIntPrimary() #void : {}
+{
+  Name() | Integer() | ( "(" SimpleIntExpression() ")" )
+}
+
+void AssertExpr() #void : {}
+{
+  ( 
+    OrExpr() [ ( <IMPLIES> | <IFF> ) {jjtThis.name += (token.image + "\\");} OrExpr() ]
+  ) #Implication(>1) 
+} 
+
+void OrExpr () #void : {}
+{ 
+  ( 
+    AndExpr() ( ( <LOGICAL_OR> | <LOGICAL_XOR> ) {jjtThis.name += (token.image + "\\");} AndExpr() )*
+  ) #Or(>1)
+} 
+
+void AndExpr() #void : {}
+{ 
+  ( 
+    BitwiseExpr() ( <LOGICAL_AND> {jjtThis.name += (token.image + "\\");} BitwiseExpr() )*
+  ) #And(>1)
+}
+
+void BitwiseExpr() #void : {}
+{
+   ( 
+     EqualityExpr() ( ( <BITWISE_AND> | <BITWISE_OR> | <BITWISE_XOR> ) { jjtThis.name += (token.image + "\\"); } EqualityExpr() )*
+   ) #Bitwise(>1)
+}
+
+void EqualityExpr() #void : {}
+{
+  ( 
+    RelationalExpr() ( ( <EQ> | <NE> ) {jjtThis.name += (token.image + "\\");} RelationalExpr() )*
+  ) #Equality(>1)
+}
+
+void RelationalExpr() #void : {}
+{ 
+  ( 
+    ShiftExpr() ( ( <LT> | <GT> | <LE> | <GE> ) {jjtThis.name += (token.image + "\\");} ShiftExpr() )*
+  ) #GtLt(>1)
+} 
+
+void ShiftExpr() #void : {}
+{ 
+  ( 
+    AddExpr() ( ( <LSHIFT> | <RSHIFT> )  {jjtThis.name += (token.image + "\\");}  AddExpr() )*
+  ) #Shift(>1)
+}
+
+void AddExpr() #void : {}
+{
+  (
+    MultExpr() 
+    ( ( "+" | "-" ) {jjtThis.name += (token.image+"\\");} MultExpr() )*
+  ) #Add(>1)
+}
+ 
+void MultExpr() #void : {}
+{
+  (
+    PowerExpr()
+    ( ( "*" | "/" | "%" | "rem" ) {jjtThis.name+=(token.image + "\\");} PowerExpr() )*
+  ) #Mult(>1)
+}
+
+void PowerExpr() #void : {}
+{
+  (
+    UnaryExpr()
+    ( <POWER> {jjtThis.name+= (token.image + "\\");} UnaryExpr() )*
+  ) #Power(>1)
+}
+ 
+void UnaryExpr() #void : {}
+
+{
+  (
+    ((<IS> | <NOT> | <TILDE>) {jjtThis.name+= (token.image);}  FuncEval())#Unary
+    | FuncEval()
+  )
+}
+
+void FuncEval() #void : {}
+{
+ ( 
+   LOOKAHEAD( Identifier() <LPAREN> ) ( Identifier() {jjtThis.name+= (token.image);} <LPAREN>  [ FuncArgs() ] <RPAREN> )#Func
+|  PrimaryExpr()
+ )
+} 
+
+void FuncArgs() : {}
+{
+  OrExpr() ( <COMMA> OrExpr() )*
+}
+
+void PrimaryExpr() #void : {}
+{ 
+  LOOKAHEAD(Identifier()) (Identifier()) #Name  | Literal() | ( "(" OrExpr() ")" )
+} 
+ 
+void ScopedID() : {}
+{ 
+  ( 
+    [ (<DOT>) ] <IDENTIFIER> ( <DOT>  <IDENTIFIER> )* [ <EXTENSION> ]
+  ) 
+}
+
+void Name() : {}
+{
+	Identifier()
+}
+
+void Identifier() #void : {}
+{
+  <IDENTIFIER> 
+} 
+
+void Extension() : {}
+{
+ <EXTENSION>
+}
+
+void Literal() : {}
+{ 
+   Number() | Complex() 
+   | <NULL> {jjtThis.name+= (token.image);} 
+   | <PURE> {jjtThis.name+= (token.image);} 
+   | <RESULT> {jjtThis.name+= (token.image);} 
+   | <BOOLEAN_LITERAL> {jjtThis.name+= (token.image);} 
+   | <CHARACTER_LITERAL> {jjtThis.name+= (token.image);} 
+   | <STRING_LITERAL> {jjtThis.name+= (token.image);}
+  
+} 
+
+void Complex() : {}
+{
+  <LBRACE> Number() <COMMA> Number() <RBRACE> 
+}
+                                                                  
+void Number() : {}
+{
+  [ <PLUS> | <MINUS> ]
+  ( <INTEGER_LITERAL> | <SIMPLE_FLOATING_POINT_LITERAL> | <FLOATING_POINT_LITERAL> ) { jjtThis.name = jjtThis.name.toLowerCase(); }
+}
+
+void Integer() : {}
+{
+  [ <PLUS> | <MINUS> ] <INTEGER_LITERAL> 
+}

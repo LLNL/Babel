@@ -1,0 +1,4 @@
+client_BABEL_MAKEFILE_NAME = client_babel.make
+client_STUB_SRC_DIRS = .
+client_JAVA_SRC_DIRS = wrapper/
+client_JAVA_SRC_FILES = wrapper/User.java

@@ -1,0 +1,116 @@
+#!/usr/local/bin/python
+#
+# File:		stringtest
+# Copyright:	(c) 2001 Lawrence Livermore National Security, LLC
+# Revision:	$Revision: 6776 $
+# Date:		$Date: 2009-11-10 17:33:00 -0800 (Tue, 10 Nov 2009) $
+# Description:	Excercise strings in hopes of finding bugs
+#
+
+import Strings.Cstring
+from synch import RegOut
+from synch.ResultType import *
+
+#basic RMI support
+remoteURL = ''
+
+def withRMI():
+  return remoteURL != ''
+
+def makeObject():
+  if withRMI():
+    return Strings.Cstring.Cstring(url=remoteURL)
+  else:
+    return Strings.Cstring.Cstring()
+
+class TestCounter:
+
+  def __init__(self, numparts = -1):
+    self.tracker = RegOut.RegOut();
+    self.partno = 0
+    self.tracker.setExpectations(numparts)
+
+  def describeTest(self, description):
+    self.partno = self.partno + 1
+    self.tracker.startPart(self.partno)
+    self.tracker.writeComment(description)
+
+  def evalTest(self, result, expected=1):
+    if (result):
+      if (expected):
+        self.tracker.endPart(self.partno, PASS)
+      else:
+        self.tracker.endPart(self.partno, XPASS)
+    else:
+      if (expected):
+        self.tracker.endPart(self.partno, FAIL)
+      else:
+        self.tracker.endPart(self.partno, XFAIL)
+        
+  def finish(self):
+    self.tracker.close()
+      
+if __name__ == '__main__':
+  import sys
+  counter = TestCounter(12)
+  
+  # Parse the command line  to see if we are running RMI tests
+  for arg in sys.argv:
+    if arg.startswith("--url="):
+      remoteURL = arg[6:]
+      remoteURL = counter.tracker.replaceMagicVars(remoteURL, '')
+      
+  if withRMI():
+    print 'using remote URL ' + remoteURL
+
+  # Setup RMI if necessary
+  if withRMI():
+    import sidl.rmi.ProtocolFactory
+    print 'registering RMI protocol simhandle'
+    if not sidl.rmi.ProtocolFactory.addProtocol('simhandle', 'sidlx.rmi.SimHandle'):
+      print('sidl.rmi.ProtocolFactor.addProtocol() failed')
+      sys.exit(2);
+
+  counter.describeTest("obj = Strings.Cstring.Cstring()")
+  obj = makeObject()
+  counter.evalTest(obj != None)
+
+  counter.describeTest('obj.returnback(1) == "Three"')
+  counter.evalTest(obj.returnback(1) == "Three")
+
+  counter.describeTest('obj.returnback(0) == None || ""')
+  rbr = obj.returnback(0)
+  counter.evalTest((rbr == None) or (rbr == ""))
+
+  counter.describeTest('obj.passin("Three")')
+  counter.evalTest(obj.passin("Three"))
+
+  counter.describeTest('not obj.passin(None)')
+  counter.evalTest(not obj.passin(None))
+
+  counter.describeTest('(1, "Three") == obj.passout(1)')
+  counter.evalTest((1, "Three") == obj.passout(1))
+
+  counter.describeTest('obj.passout(0) == (0, None) || (0, "")')
+  rbr = obj.passout(0)
+  counter.evalTest((rbr == (0, None)) or (rbr == (0, "")))
+
+  counter.describeTest('(1, "threes") == obj.passinout("Three")')
+  counter.evalTest((1, "threes") == obj.passinout("Three"))
+
+  counter.describeTest('obj.passinout(None) == (0, None) || (0, "")')
+  rbr = obj.passinout(None)
+  counter.evalTest((rbr == (0, None)) or (rbr == 0, ""))
+
+  counter.describeTest('("Three", "Three", "Three") == obj.passeverywhere("Three", "threes")')
+  counter.evalTest(("Three", "Three", "Three") ==
+                   obj.passeverywhere("Three", "threes"))
+
+  counter.describeTest('obj.mixedarguments("Test", "z", "Test", "z")')
+  counter.evalTest(obj.mixedarguments("Test", "z", "Test", "z"))
+
+  counter.describeTest('obj.mixedarguments("Not", "A", "Equal", "a")')
+  counter.evalTest(not obj.mixedarguments("Not", "A", "Equal", "a"))
+
+  counter.finish()
+0

@@ -1,0 +1,5 @@
+BABEL_MAKEFILE_NAME = babel.make
+STUB_SRC_DIRS = .
+IOR_SRC_DIRS = .
+JAVA_SRC_DIRS = wrapper/
+JAVA_SRC_FILES = wrapper/Data.java wrapper/Data_Impl.java

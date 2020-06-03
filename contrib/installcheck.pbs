@@ -1,0 +1,48 @@
+#!/bin/sh
+
+#=======================================================================
+#
+# installcheck.psub
+#
+# Bourne Shell script to be used when submitting a run script as a pbs
+# batch job, e.g., qsub installcheck.pbs.  Note that you need to submit
+# this script from the directory that the run will be done in.
+#
+#=======================================================================
+
+#PBS -A XXX_ACCOUNT_XXX
+#PBS -M XXX_EMAIL_XXX
+#PBS -N babelcheck
+#PBS -j oe
+#PBS -l walltime=0:30:00,size=4
+#PBS -m eba
+
+TESTHOME="XXX_TESTHOME_XXX"
+
+echo ""
+echo "Babel PBS InstallCheck Script"
+echo ""
+
+date
+
+echo ""
+echo "PATH: $PATH"
+echo ""
+echo "PBS_JOBID:  $PBS_JOBID"
+
+
+cd $PBS_O_WORKDIR
+echo ""
+echo "pwd: "`pwd`
+echo ""
+
+for i in ${TESTHOME}/regression/*/run*/run*2C \
+		${TESTHOME}/regression/*/run*/run*2Cxx \
+		${TESTHOME}/regression/*/run*/run*2F77 \
+		${TESTHOME}/regression/*/run*/run*2F90 ; do
+  echo "$i > $i.testresult"
+  aprun -n 1 $i > $i.testresult
+done
+
+exit 0
+

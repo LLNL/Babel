@@ -1,0 +1,108 @@
+#!/bin/bash
+#This script starts a dedicated Babel object server for each backend language.
+#The assigned port is 9000 plus the historical order of the particular language.
+#A list of process IDs is written to runbos.pids
+
+# Hint: run ./runbos.sh --debug
+
+builddir="@abs_top_builddir@"
+runtimedir="@abs_top_builddir@/runtime/"
+
+#the order here is important!
+ALL_LANGS="C Cxx F77 F90 Python Java F03"
+PIDFILE="./runbos.pid"
+VERSION="@VERSION@"
+
+prefix="@prefix@"
+exec_prefix="@exec_prefix@"
+bindir="@bindir@"
+libdir="@libdir@"
+
+ORIG_LIBPATH="${@SHARED_LIB_VAR@}"
+
+if [ x"$1" == x"--debug" ]; then
+    DEBUG=yes
+    shift
+fi
+
+if [ $# -gt 0 ] ; then
+    LANGS="$*"
+else
+    LANGS="$ALL_LANGS"
+fi
+
+echo "starting servers for ${LANGS}"
+
+rm -rf $PIDFILE
+for lang in $LANGS ; do
+
+    port=9000
+    p=9000
+    for t in $ALL_LANGS ; do
+        let p=p+1
+        if [ "$t" == "$lang" ] ; then
+            port=$p
+        fi
+    done
+
+    if [ "$port" == "9000" ] ; then
+        echo "unrecognized language \"$lang\""
+        exit 1
+    fi
+
+    echo "starting BOS for backend language $lang on port $port"
+    SIDL_DLL_PATH="$runtimedir/sidl/libsidl.scl;$runtimedir/sidlx/libsidlx.scl"
+    for d in `find $builddir/regression -type d -name lib$lang` ; do
+        for lib in $d/*.scl ; do
+            if [ -f $lib ] ; then
+                SIDL_DLL_PATH="$SIDL_DLL_PATH;$lib";
+            fi
+        done
+    done
+
+    #some special setup for Python
+    if [ "$lang" == "Python" ] ; then
+        RUNTIME_PYTHON="@abs_top_builddir@/runtime/python"
+        PYTHONPATH="${RUNTIME_PYTHON}"
+        for d in `find $builddir/regression -type d -name libPython` ; do
+            PYTHONPATH="$PYTHONPATH:$d"
+        done
+        export PYTHONPATH
+        echo "PYTHONPATH=\"$PYTHONPATH\""
+    fi
+
+    #some special setup for Java
+    if [ "$lang" == "Java" ] ; then
+        SIDL_DLL_PATH="@abs_top_builddir@/lib/sidlstubs/Java/libsidlstub_java.scl;$SIDL_DLL_PATH"
+        CPLIB="@abs_top_builddir@/lib"
+        CLASSPATH="$CPLIB/sidl-${VERSION}.jar:$CPLIB/sidlstubs/Java/sidlstub_${VERSION}.jar"
+        for d in `find $builddir/regression -type d -name libJava` ; do
+            CLASSPATH="$CLASSPATH:$d"
+        done
+        export CLASSPATH
+        echo "CLASSPATH=\"$CLASSPATH\""
+
+        @SHARED_LIB_VAR@="@LIBJVM_DIR@:@LIBJAVA_DIR@:$runtimedir/sidl/.libs:$CPLIB/sidlstubs/Java/.libs:${ORIG_LIBPATH}"
+	export @SHARED_LIB_VAR@
+        echo "@SHARED_LIB_VAR@=\"$@SHARED_LIB_VAR@\""
+    fi
+            
+    export SIDL_DLL_PATH
+    echo "SIDL_DLL_PATH=\"$SIDL_DLL_PATH\""
+    if [ -n "$DEBUG" ]; then
+	xterm -T "./bos $port ($lang)" -e \
+	    env SIDL_DLL_PATH="$SIDL_DLL_PATH" valgrind --db-attach=yes \
+	    $builddir/regression/bos/bos $port &
+	pid="$!"
+	sleep 1
+    else
+	$builddir/regression/bos/bos $port &
+	pid="$!"
+	sleep 1
+    fi
+    echo "PID: $pid"
+    echo "$pid" >> $PIDFILE
+    echo    
+done
+echo "DONE"
+exit 0

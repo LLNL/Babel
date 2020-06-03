@@ -1,0 +1,598 @@
+* babel 2.0.0 (?? August 2011)                              -*- org -*-
+  * Struct support is now tested and complete for all supported
+    languages, including RMI.
+
+  * Mutex-free reference counting for GCC 4.1.2 and higher 
+    on any platform
+
+  * Experimental fastcall support. (See --fast-call option)
+
+  * F03: Rewrote the Fortran 2003/2008 binding
+    + High performance, comparable to C/C++
+    + Stubs and Skeletons are now implemented in Fortran 2003
+      where possible.
+    + Fully compatible to ISO standard
+    + No longer depending on libchasmlite for r-arrays
+    + Names can be up to 64 chars
+    + Requires GCC >= 4.6.1 (we are using lots of advanced features,
+      including type extensions and C function pointers.
+        - ./configure will automatically detect whether all necessary
+          features are supported buy the specified Fortran compiler.
+	- Please see BUGS for a complete list of supported compilers.
+
+  * Python: Added splicer block to inherit from other python classes.
+
+  * More testcases.
+
+  * Babel now comes with a babel.pc (PKG_CONFIG) file for easier
+    detection by autotools-generated `configure' and friends.
+
+  * Many bug fixes, including
+    + Extensive build/runtime/RMI testing with GCC, Intel, Pathscale 
+      and PGI compilers
+    + Improved Python global interpreter lock handling
+
+  * Babel now comes with a man page: babel(1)
+
+* babel 1.4.0 (20 October 2008)
+  + Major autotools upgrade:
+	m4        1.4.4  --> 1.4.11
+	autoconf  2.61   --> 2.62
+	automake  1.10   --> 1.10.1
+	libtool   1.5.22 --> 2.2.4
+  + Bundle CHASM-lite into the Babel distribution.
+  + Add PathScale compiler support (version 3.1 tested)
+  + Add --makefile option for basic GNU Makefile generation
+  + Lots of little fixes and portability improvements
+  + Add svn revision to the version information.
+  + Add --disable-numeric and --disable-numpy configuration
+    options to give users control over which Python array
+    library is used.
+  + F2003 binding includes experimental struct support
+    (credit goes to Tech-X Corporation for this feature)
+  + Experimental struct support in C, C++, and Python
+  + Enhanced interface contract enforcement support (beta)
+    +  New enumerations and policies in SIDL for setting 
+       enforcement options
+    +  Demonstrated in contracts regression tests for 
+       implementations in C, C++, FORTRAN 77, Fortran 90, 
+       Java, and Python
+    +  Client-side setting of enforcement options
+       currently limited to C and C++
+
+* babel 1.2.0 (11 November 2007)
+  + SIDL enums are now always 64-bits in the IOR. FORTRAN 77
+    should use integer*8 for enums now.
+  + Struct bindings for C, C++, and Python (in alpha testing)
+  + A new --multi mode (see babel-x.y.z/compiler/Makefile.am
+    for an example of how it can be used
+  + Fixes for Fortran line wrapping problems.
+  + Add a --cca-mode flag that enables generation of babel.make.depends
+    and --babel.make.package and nested Bocca splicers
+  + Ability to build on BG/L and Jaguar.
+  + Fixes to the babel-cc, babel-cxx, babel-f77, and babel-f90
+    scripts.
+  + Initialize sys.argv for server-side Python (issue530)
+  + Babel's CCA example (decaf) now matches the 0.8.2 CCA spec.
+  + Improve Babel's performance by upgrading to latest version of
+    Xerces (the XML parser)
+  + throw MemAllocException's when an internal malloc fails.
+  + f77_31 filename suffix for FORTRAN 77 files is .fpp instead of .f 
+    (issue527)
+
+* babel 1.1.0 (26 March 2007)
+  + Improved Babel RMI performance through protocol & coding improvements
+  + Improved Java configuration (issue150)
+  + Faster (mutex-free) reference counting on x86 platform
+  + Make definition of SIDL_F77_Bool & SIDL_F90_Bool dependent on
+    configuration checks
+  + Python preferentially uses NumPy instead of the deprecated
+    Numeric Python.
+  + Change C++ binding to use "const &" for "in" parameters
+    improved runtime performance by 12% (issue424).
+  + Modify build to support "make -j4" (for improved build 
+    speed on multi-core machines)
+
+* babel 1.0.2 (13 November 2006)
+  + C++ remote create/connect did not throw exceptions (issue399)
+  + Configurable retry on failed connections (issue402)
+  + Fixed problems with overloaded super methods in C++ (issue403)
+  + Python None is now a valid NULL opaque (issue405)
+  + SimpleOrb throws exception instead of seg faulting (issue406)
+  + Parser report conflicting attributes instead of crashing (issue410)
+  + Prevent #pragma line wrap (issue411)
+  + Avoid wrapping preprocessor lines (413)
+  + Use IF/THEN/ELSE instead of SELECT in F77 (issue416)
+  + Checking for 64-bit integer string lengths for F77/F90 (issue417)
+  + Simple Protocol did not properly return remote exceptions (issue418)
+  + Fix array/object reference leaks during exceptions (issue419 issue421
+    issue422 issue423)
+  + Add missing F90 use statement for enumerated types (issue420)
+
+* babel 1.0.0 (21 July 2006)
+  + Fixed C++ backdoor initialization error (appeared on AIX only)
+  + Fixed F90 backdoor initialization error
+  + Fixed Python reference counting bug (issue397)
+  + Fixed Python backdoor initialization reference counting issue
+
+* babel 0.99.2 (28 June 2006)
+  + removed sidl.rmi.BaseServer as pretty much useless
+  + Fix BABEL_VERSION_HEX (issue365)
+  + issue366: better error reporting for undefined symbols
+  + issue367: constant rarray extent cause parse failure
+  + issue369: report complex rarray expressions
+  + issue372: Fix java build problem
+  + issue373: Fix sidl.DLL.createClass fatal bug
+  + issue378: Fix pthread #ifdef's
+  + issue380: Fix decaf example runtime bug
+  + issue385: Improve autoconf compatibility & configure speed
+  + issue386: Patch Python memory leaks
+  + issue387: Solve problem with multiple Python installations
+  + issue388: Improve MacOSX configure finding Java without a
+              JNI_INCLUDES setting
+  + Check for IOR version match when dynamically loading a shared 
+    library
+
+* babel 0.99.0 (25 April 2006)
+  + upgraded libtool from 1.5.10 to 1.5.22 (includes Babel-mods
+	for F90 support and AIX tweeks.)  
+  + upgraded automake from 1.9.3 to 1.9.6
+  + Babel has a new parser that correctly resolves ambiguous type
+    references
+  + The SIDL language now supports the leading dot '.' to indicate
+    a name in the global namespace
+  + Babel now supports FROM to rename methods when inheritance
+    requires overloading
+  + The UC++ binding is now the only C++ binding, and it's called
+    C++, UC++, Cxx or UCxx
+  + The deprecated C++ binding has been dropped
+  + new babel-cc, babel-cxx, babel-f77, babel-f90 scripts to help
+    beginners compile Babel generated files.
+  + The XML dtds have been change to support new Babel/SIDL features
+  + Better Babel parser error reporting
+  + Better forwarding of exceptions in Python and C++ (issue360)
+  + Bug fixes issue344, issue350, issue357, issue359, issue361
+  + Structs are support by the SIDL parser and XML parser.
+  + Generalized attributes are support by the SIDL parser and XML parser
+  + New constructor for wrapping native objects
+  + C++ babel_cast is in the global C++ namespace in addition to being
+    in the sidl namespace.
+  + --exclude-external and --suppress-timestamp are now the default
+    settings
+  + C++ stub headers/source are smaller and compile faster
+  + rarray extents can be simple expressions or constants
+  + remove throw declarations from C++ headers
+  + Simple C stubs are inline'd in the header file when the compiler 
+    supports it
+  + Add RMI nonblocking API
+
+* babel 0.11.0 (22 Dec 2005)
+  + All methods throw sidl.RuntimeException
+  + _cast now increments the reference count
+  + RMI is a supported feature
+  + new babel-cc, babel-cxx, babel-f77, babel-f90 scripts to help
+    beginners compile Babel generated files.
+  + significant changes to the Babel Users' Guide to reflect changes above
+  + The C++/Cxx binding has been renamed to DC++/DCxx to indicate it is
+    the deprecated C++ binding
+  + The UC++/UCxx binding is now the recommended C++ binding, and it is
+    covered in the Babel Users' Guide.
+  + The UCxx binding will generate .hxx and .cxx files now instead of
+    .hh and .cc.
+  + All references to the ucxx namespace are made through the UCXX
+    and UCXX_LOCAL preprocessor macros, so we can drop the ucxx
+    namespace when UC++/UCxx becomes the default C++ binding.
+
+* babel 0.10.10 (19 Aug 2005)
+  + Fix bug 216 (configuration failure with GNU gfortran)
+  + Fix bug 222 (configuration with ICC 9.0)
+  + Fix bug 223 (Raw F77 array access)
+
+* babel 0.10.8 (30 July 2005)
+  + Fixed XML repository parsing that broke rarray code generation
+    (issue213)
+  + Add work around for Numeric Python 24.0b2
+  + Add .xsl and .css files to the distribution tar file (issue209)
+  + Fix arbitrary method ordering for implements-all (issue204)
+
+* babel 0.10.6 (17 June 2005)
+  + Bug fix release
+  + Fixed Mac OSX configure (issue 190)
+  + Remove a cast bug (issue195)
+  + "make check" works with --without-sidlx configuration
+  + "make check" works with --disable-fortran90 --disable-fortran77
+    --disable-java --disable-python --without-sidlx
+
+* babel 0.10.4 (14 June 2005)
+  + Fixed roundup issues: 94, 137, 138, 139, 143, 145, 144, 146,
+    147, 151, 153, 155, 156, 157, 158, 159, 161, 163, 164, 167,
+    168, 172, 180
+  + Significant usability improvements including:
+        + ability to generate multiple language bindings in a 
+          single run
+        + generate babel.make.package to help people building Babel
+          code
+        + generate babel.make.depends to help people building Babel
+          code
+        + New Babel documentation capability --text=html generates
+          documentation similar to Javadoc for .sidl files.
+        + Use consistent names for libraries and babel-config.
+  + Enable Babel extensions to add command line flags
+  + Improved Babel's configuration and build
+  + Support latest AIX compilers and MPI compiler wrapper scripts
+  + Improve Mac OSX configure/build/testing
+  + Support JDK 1.4 or 1.5
+  + Pregenerate sidl stubs for all supported languages.
+  + Add assertion and hook regression tests.
+  + Use --with-chasm[=prefix] instead of --enable-chasm now
+
+* babel 0.10.2 (28 March 2005)
+  + Switch the Babel source code repository from CVS to subversion SVN.
+  + Fixed Roundup issues: 90, 91, 92, 93, 98, 103, 104, 106,
+    114, 122, 124, 126, 127, 128, 131, 133, 135
+  + Enable more Fortran 90 function overloading
+  + Add support for GCC 4.0 (based on prereleases) and gfortran.
+  + Allow developers to replace libsidl's mechanism for finding
+    types in libraries with their own mechanism for MOCCA CCA.
+  + Undocumented prototype of assertion mechanism
+  + Reduce the number of F90 stub files generated by
+    combining the _array.F90 into the normal stub file.
+  + General Python binding upgrade.
+  + Significantly reduce the amount of array copying that occurs
+    with the Python binding.
+  + Python stub classes now have an inheritance structure that
+    matches the inheritance in the SIDL file.
+  + Make "self" a keyword.
+
+* babel 0.10.0 (26 January 2005)
+  + Super methods are now supported in all language bindings
+    except Python.
+  + Generic arrays are now supported.
+  + r-arrays (aka rarray) are a new type of array with a simpler
+    interface from C, C++, F77 and F90
+  + Upgrade autoconf, automake and libtool to recent versions.
+  + Add the Utah C++ backend (UCxx)
+  + Improve Mac OSX build (still more work to do)
+  + Add _load() and _unload() methods for each class
+  + Fix Roundup issues: 62, 94, 96, & 99
+  + improved thread-safety using recursive mutexes in IOR 
+  + fixed build to ignore older versions of Babel that may be lurking
+    in your path
+  + upgrade m4, automake, & libtool to 1.4.2, 1.9.3, and  1.5.10, respectively
+    (NOTE: if using XL compilers on AIX, add "-brtl" to LDFLAGS before running configure)
+
+* babel 0.9.8 (26 October 2004) 
+  + Fix a bug in the regression tests that cause Babel regressions
+    tests to fail with Numeric Python 23.4 and 23.5 (issue79).
+  + Fix an inout interface bug in the C++ binding (issue82).
+
+
+* babel 0.9.6 (9 September 2004) 
+  + Fix a bug in the length method in the C++ array API
+    for arrays of classes and interfaces (issue78 on
+    Roundup).
+
+* babel 0.9.4 (19 August 2004)
+  + Java is now fully supported (client & server side)
+  + Add F77 backend with 31 character symbol max
+  + upgrade autoconf, automake and libtool to 2.59, 1.8.3 and 1.5.4 
+    respectively.  BACKWARD COMPATIBILITY NOTE:  Whenever possible, we
+    abandoned our homegrown "F90" macros in preference for autoconf's new
+    "FC" macros.  A side-effect of this is that the $F90 and $F90FLAGS 
+    environment variables are deprecated in favor of "FC" and "FCFLAGS".
+    type `configure --help` for the full list of environment variables
+  + [bug#43] Fixed problems with gcc-3.4.0
+  + Added SC demo: contrib/babel-life.tar.gz
+  + Use -fno-strict-aliasing for GNU compilers.
+  + Add length method to SIDL array API.
+  + Allow SCL information to be embedded in other XML files.
+  + Search .cca and .scl files for SCL information
+  + Roundup issues resolved: 24, 36, 45, 51, 52, 53, 60, 66
+  + Add reference count debugging tool -DSIDL_DEBUG_REFCOUNT
+
+* babel 0.9.2 (5 May 2004))
+  + Expanded support for libxml to as far back as 2.4.0 (was 2.6.2 or above)
+
+* babel 0.9.0 (2 February 2004)
+  + WARNING THIS RELEASE HAS SEVERAL BACKWARDLY INCOMPATIBLE
+    CHANGES
+  + Renamed SIDL package to sidl.
+  + C++: Changed naming convention of enumerands to prevent collision
+    (roundup:issue18)
+  + changed sidl.BaseException from class to interface
+  + added sidl.SIDLException as new base exception class
+  * fixed Fortran enum passing bug
+  + sidl.Loader API has changed (SCL files now needed for
+    dynamic loading.
+  + --make-prefix command line option allows you to rename
+    babel.make and the variables inside it.
+
+* babel 0.8.8 (29 October 2003)
+  + First official release with native F90 array pointer support
+    with array descrptor support provided by CHASM 1.0.1.
+  + Improved behavior with version control systems.  Babel will
+    generate code in temporary files and compare them to existing
+    files before overwriting.  This reduces spurious changes in the
+    last time modified of the files.
+  + array support increased from 4-D to 7-D
+  + added create1dInit(int32_t len, T* data) to create a 1-D array an
+    initialize it with copies of data (hint: to avoid the copy, use
+    borrowed arrays)
+  + refactored C++ array implementation 
+    + changed implementation of get/set for arrays of fixed size types
+      (i.e. not strings or objects) to be faster and more easily inlined.
+    + added operator[] to be eqivalent to get(i) (for use in 1-D only)
+    + added STL input iterators to C++ arrays (for use in 1-D only) e.g,
+        SIDL::array<int32_t> sidl_array, sidl_array2;
+        std::vector<int> std_vector;
+
+        // To go from SIDL::array<int> std::vector<int>
+        copy( sidl_array.begin(), sidl_array.end(), back_inserter(std_vector) )
+
+        // vice versa
+        sidl_array2 = SIDL::array<int32_t>::create1dInit( std_vector.size(),
+		 std_vector.begin() )
+  + closed bug#548: Check for unbalanced splicer blocks
+  + added info about --vpath option to --help output
+  + added option --exclude-external (short version -E) which causes code to
+    be generated only for the symbols specified on the command line (no
+    code is generated for symbols on which the user symbols depend)
+  + added option --language-subdir (short version -l) which causes 
+    all generated files to be stored in a language-dependent subdirectory;
+    if the --generate-subdirs option is also used, the language directory 
+    will be at the bottom of the hierarchy.
+  + added option --hide-glue (short version -u) which can be used to  
+    generate all non-impl files in a glue/ subdirectory.
+  + modified generated file names to use only short symbol names 
+    when --generate-subdirs and --exclude-external are used together 
+    (only for C++ and Fortran)
+
+
+* babel 0.8.6 (25 July 2003)
+  + partial support for AIX (server-side python is not working)
+    (see notes in INSTALL before attempting AIX configure/build)
+  + support for Absoft, Lahey, Intel and PGI F90 on Linux x86
+    (see notes for compiling with Intel's compilers on Linux)
+  + arrays of enumerated types are supported in C, C++ and Python.
+  + upgrade autoconf, automake and libtool to 2.57, 1.7.4 and 1.5 respectively
+  + upgrade to Xerces 2.4.0 (an XML parser)
+  + support Kaffe's virtual machine
+  + bugfixes and consistency improvements in configure
+    + improved support for disabling languages
+    + can enable compilers not found in PATH
+    + more "influential environment variables" documented in `configure --help`
+    + NOTE: some options to configure have changed names/behavior
+  + bugfixes in babel-config (minor)
+
+
+* babel 0.8.4 (7 April 2003)
+ + added --noquiet option to Babel's launching script to echo
+   arguments it passes to JVM.  --verbose also sets --noquiet, but
+   it prints a lot of additional information for debugging the script.
+ + Babel's launching script now detects if users' $JAVA is in a different
+   location from the one it was configured for.  If this situation is
+   found it displays a warning, and defaults to location of JAVA it was
+   configured for.  The new --override-installpath option can override
+   this behavior, but should only be used as a last resort.
+ + closed bug#506 had to fill in JNI_INCLUDES in runtime/sidl/Makefile
+ + closed bug#404 with improved configuration
+ + closed bug#507 fixed bugs with the F90 backend
+ + add doc comments for enumerated types
+ + the C++ binding for array<long> has changed to SIDL::array<int64_t>
+   (closes bug#509)
+ + the C++ binding for array<int> has changed to SIDL::array<int32_t>.
+   NOTE THIS INTRODUCES A BACWARD INCOMPATIBILITY.
+
+* babel 0.8.2 (24 March 2003)
+ + added F77 _cast2 method to perform the old _cast functionality
+ + changed F77 _cast to allow casting from any type to any allowable type
+   in one method call
+ + added generation of an F90 module for each array type
+ + added support for derived type pointers
+ + added --comment-local-only command line option
+ + updated the documentation (Babel 101 and the User's Guide)
+ + closed bug#493 hello.sidl in share/doc/babel-0.8.0/babel101/Babel101.html 
+                  is out-of date
+ + closed bug#502 babel compile fails with jar -u not supported
+
+* babel 0.8.0 (14 January 2003)
+ + completed phase I F90 support with name mangling
+ + added SIDL backend and corresponding --text option
+ + changed Java interfaces for adding backends
+ + added more metadata in the IOR using ClassInfo
+ + packages are now reentrant 
+ + packages can be non-reentrant with the "final" keyword
+ + packages can be unversioned
+ + changed syntax for saying what version is required 
+ + changed syntax for declaring the version of a package
+ + added --vpath option
+ + added #line directives
+ + made runtime/ subdir a separable package
+ + replaced PETF with Gauntlet for testing
+ + upgraded to autoconf-2.54
+ + upgraded to automake-1.7
+ + upgraded to m4-1.4q
+ + closed bug#238 Create new SIDL.RuntimeException
+ + closed bug#277 Rebuilds babel.jar out of the box
+ + closed bug#315 Allow Re-entrant packages in SIDL
+ + closed bug#334 Ordering issue on command line
+ + closed bug#408 CCA example: circumvent or provide alternative when
+                  no F77
+ + closed bug#432 Package names with "dots" can squeak by parser
+ + closed bug#446 Fortran subroutine names too long for Absoft compiler
+ + closed bug#463 babel --version results in an exception traceback
+ + closed bug#468 reusable configure results
+ + closed bug#474 rfe: c++ binding more ISO conformant
+ + closed bug#489 Disabling languages not fully supported in Makefile.am
+
+* babel 0.7.4 (21 August 2002)
+ + fix build problem with 0.7.2
+ + improve Python support for arrays of long
+ + Release under LGPL with LLNL preamble (required by DOE contract)
+
+* babel 0.7.2 (9 August 2002)
+ + added --exclude=<regexp> command line option to exclude code
+   generation for all symbols matching the regular expression
+   (see bugs #425 and #369 for more)
+ + fixed bugs with C++ null objects passed in inout.
+ + fixed bugs with ::std::string being initialized with (char*)0.
+ + changed array<T>::set(val,i,j,k) to array<T>::set(i,j,k,val)
+   so C++ binding is more consistent with C,F77,etc.
+ + completed support of method overloading in object-oriented
+   languages based on an exact match of the arguments
+ + added Python DistUtils support
+ + removed support for Python builds using Makefile.pre.in
+   approach
+ + corrected bug in 3-d and 4-d array access functions for all
+   basic types
+ + fixed bug#268 Typdef for user data structure in back end
+ + fixed bug#290 Static/dynamic loading documented
+ + fixed bug#311 Documentation of code example with version
+ + fixed bug#354 Optionally suppress "source-line = " comments
+ + fixed bug#369 Babel generates code for everything you reference
+ + fixed bug#376 Possible bug in header paths for Python
+ + fixed bug#417 Inconsistent use of cast in epv
+ + fixed bug#421 Arrays f objects always do reference counting ops
+ + fixed bug#425 "including" existing packages
+ + fixed bug#443 Babel 101 command line options error
+ + fixed bug#444 Improper reuse of PWD macro reserved word
+ + fixed bug#445 Improper reuse of PWD macro reserved word (duplicate)
+
+* babel 0.7.0 (7 May 2002)
+ + reworked C++ enums so that possible values are correctly
+   scoped... and dropped the ugly "__enum" suffix that was
+   appended.  (Its needed internally, but needn't be exposed).
+ + modified SIDL grammar to support specifications of array
+   ordering (i.e., optional row-major or column-major).
+ + modified SIDL grammar to support optional method name 
+   extension that is used, together with the short, or base,
+   name to uniquely identify methods for those languages
+   that do not support method overloading.  Full support
+   of method overloading is still a work in progress.
+ + highlighted retention of impl code no longer referenced due 
+   to modified and regenerated SIDL interface; retention of 
+   said code also now supported in F77 and Python (bug #269).
+ + new FORTRAN Interface File (.fif) documents FORTRAN stub
+ + new array API (see users guide for API description)
+ + new array ordering constructs in the SIDL language
+ + rewrite CCA decaf example to track the emerging CCA standard
+   (in particular BuilderServices and ConnectionEventServices)
+ + add array ordering regression test
+ + SIDL.BaseException.getStackTrace renamed to SIDL.BaseException.getTrace.
+ + change C++ array dim to dimen() (to get the dimension)
+ + initial code work on overloaded functions (not complete)
+ + fix reference counting issue with interfaces in C++
+ + Add Python calling Python regression tests
+ + fixed bug#234 Method ordering in SIDL file is preserved
+ + fixed bug#269 Preserve non-referenced splicer block sections
+ + fixed bug#281 configure --without-fortran to build without a F77 compiler
+ + fixed bug#288 add examples to release check-list and regression tests
+ + fixed bug#305 bool array (C++ destructor) problem fixed
+ + fixed bug#312 void as an arg problem
+ + fixed bug#328 boolean in documentation changed to bool where appropriate
+ + fixed bug#348 babel shells script won't run with kaffe
+ + fixed bug#350 Python inout arguments treated incorrectly
+ + fixed bug#359 Fix line break in #include problem.
+ + fixed bug#365 Sun's SDK 1.4.0 compatibility
+ + fixed bug#366 Inconsistent header specifications
+ + fixed bug#368 Sun's SDK 1.4.0 compatibility
+ + fixed bug#374 const correctness for C++ code
+ + fixed bug#380 Wrong signature for borrow in SIDL_cxx.h
+ + fixed bug#381 Better array usability (borrowing in particular)
+ + fixed bug#388 name space conflict for enums in C
+ + fixed bug#393 forward decls in C++ stubs to fix mutual include problem
+ + fixed bug#400 Fixed Python stub namespace problem
+ + fixed bug#412 generate FORTRAN 77 API (human readable)
+ + fixed bug#422 better documentation of FORTRAN array alignment problem
+ + fixed bug#423 babel errors identified with "babel:"
+ + fixed bug#424 Better Python error message
+ + fixed bug#428 Added pass in Python splicer blocks
+
+* babel 0.6.2 (Friday, 4 January 2002)
+ + fix boolean array arguments (bug #331)
+ + add regression test for boolean arrays
+ + fix typo in Java binding Boolan -> Boolean
+ + add missing SIDL files to the decaf example distribution
+ + modify nightly QC to build examples
+ + stop old version of automake/autoconf from clobbering files generated
+   by newer versions
+ + distribute CHANGES file
+
+* babel 0.6.1 (Friday, 7 December 2001)
+ + moved cannonical build system from Sun-Solaris2.7 to RedHat-Linux
+ + upgraded from Automake 1.4  to 1.5
+ + upgraded from Autoconf 1.23 to 1.52d
+ + Fixed bug in C++ stubs of abstract classes.
+ + Changed C++ stub methods is_nil() and not_nil() to 
+   _is_nil() and _not_nil() to prevent collisions with user
+   defined methods.
+ + hardened Python support (client & server beta)
+ + minor updates to (DRAFT) Users' Guide (PS, PDF & HTML)
+ + fix abstract class bugs in Python, C++, F77 (bug #317) (added test)
+ + fix crash when SIDL_DLL_PATH undefined (bug #310)
+ + fix output directory error (bug #314)
+ + added support for KCC on Linux-x86
+ + C++ binding uses std::string and std::complex instead of
+   string and complex.
+ + increased test suite, currently > 5000 tests (increases in 
+   Python testing and new abstract class test)
+ + bug fixes in decaf example
+ + bug fix in Python client side and server side exception handling
+ + use newer autoconf, automake, etc.
+ + improve Python doc comments
+ + libtool change to support KCC
+
+* babel 0.6.0 (Friday, 19 October 2001)
+ + added client-side Java support (still need arrays of objects)
+ + added server-side Python support 
+ + added (DRAFT) Users' Guide in PS, PDF, and HTML.
+ + added CCA-0.5 compliant mini-framework (called Decaf) to 
+   examples directory with sample components and drivers
+ + changed casting support in C in response to user requests
+ + complete overhaul of commandline interface (bugs #237, #252, #253, #272, #282)
+ + asundry changes to C stubs & headers (bugs #241, #270, #258, #268, #264)
+ + fixed C++ handling of objects as arguments
+ + fixed off-by-one error for throwing exceptions through C++ Stubs
+ + increased test suite, currently > 3200 tests 
+
+* babel 0.5.1 (Friday, 10 August 2001)
+ + fixed all detectable memory leaks in regression tests 
+ + babel script tolerates being accessed through symbolic links
+ + added additional babel101 documentation
+ + added #define SIDL_STATIC_LIBRARY to babel_config.h 
+   when configured with --disable-shared
+ + fixed BUG#274: F77 client calling method with exception yeilds uninitialized
+                  pointer
+ + fixed BUG#275: A C client calling a C++ implementation yeilds a reference 
+                  count leak
+ + fixed memory leak for inout strings in C++ (see BUG#275)
+ + fixed memory leak in C++ arraytest drivers (see BUG#275)
+ + fixed BUG#276: memory link[sic.] when reading elements from a SIDL string 
+                  array
+ + fixed BUG#278: Memory leak in FORTRAN77 skeletons for inout string parameters
+ + fixed BUG#279: Python example Makefile.am has a space issue
+ + fixed BUG#280: sidl comments missing for classes/interfaces
+
+* babel 0.5.0 (Monday, 30 July 2001)
+ + first public beta release
+ + fixed BUG#  8: type 'long' unsupported
+ + fixed BUG# 58: Force abstract classes to use an abstract keyword
+ + fixed BUG# 59: Add a implements-all keyword to the SIDL parser
+ + fixed BUG# 80: getName doesn't work on babel_MetaData
+ + fixed BUG# 81: Report babel version number in every generated file
+ + fixed BUG#119: declaring 2=D Fortran arrays: leading dimension not set
+ + fixed BUG#120: Fortran variable name truncation destroys name uniqueness
+ + fixed BUG#167: Fortran generated with >72 characters per line
+ + fixed BUG#170: Fortran stubs dereference garbage pointers
+ + fixed BUG#196: Make endContinuationLine language dependent
+ + fixed BUG#197: Language writer acting as advertised...
+ + fixed BUG#239: add tests that create XML repository and then use it
+ + fixed BUG#240: must generate code for all referenced symbols
+ + fixed BUG#248: Java include directory problems
+ + fixed BUG#251: Minor path problem 
+ + fixed BUG#256: GNU versus native compiler search order
+ + fixed BUG#257: missing line continuation character in array declarations
+ + fixed BUG#259: generate sidl.sidl XML files in installation
+ + fixed BUG#260: automatically generated make files - continuation \ do not 
+                  line up
+ + fixed BUG#261: need isInstance method

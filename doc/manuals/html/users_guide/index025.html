@@ -1,0 +1,54 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN"
+            "http://www.w3.org/TR/REC-html40/loose.dtd">
+<HTML>
+<HEAD>
+
+<META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<META name="GENERATOR" content="hevea 1.10">
+<LINK rel="stylesheet" type="text/css" href="index.css">
+<TITLE>Lessons Learned</TITLE>
+</HEAD>
+<BODY >
+<A HREF="index024.html"><IMG SRC="previous_motif.gif" ALT="Previous"></A>
+<A HREF="index-multipage.html"><IMG SRC="contents_motif.gif" ALT="Up"></A>
+<A HREF="index026.html"><IMG SRC="next_motif.gif" ALT="Next"></A>
+<HR>
+<H1 CLASS="chapter"><A NAME="htoc115">Chapter 23</A>  Lessons Learned</H1><UL>
+<LI><A HREF="index025.html#toc97">Introduction</A>
+</LI><LI><A HREF="index025.html#toc98">Compilation Consistency is Key</A>
+</LI></UL>
+<P><A NAME="c:lessons"></A></P><P><BR>
+</P><H2 CLASS="section"><A NAME="toc97"></A><A NAME="htoc116">23.1</A>  Introduction</H2><P><A NAME="s:intro_lessons"></A>
+This appendix focuses on providing tips, tricks, and advice submitted by 
+Babel/SIDL users. We have generally provided the information verbatim.</P><H2 CLASS="section"><A NAME="toc98"></A><A NAME="htoc117">23.2</A>  Compilation Consistency is Key</H2><P><EM><B>Steve Smith, 24 September 2001</B></EM></P><P>Basically “be consistent” is the biggest lesson we found. </P><P>When compiling C++ codes, you may have conflicts if you use different
+compile options. Under KCC we found -no_exceptions caused problems if
+parts were compiled with/without the flag. 
+There are most likely other compile flags which turn features on/off 
+which would cause similar problems. 
+This caused a core dump immediately when core file was
+loaded. This is somewhat obvious but if you are linking together several
+different codes from a variety of developers you need to examine the
+compile flags very carefully. This problem is probably more likely with
+C++ due to the greater number of code generation options (e. g. RTTI,
+exceptions etc).</P><P>A much more subtle problem occurred when we had a C shared library which
+called functions in a C++ shared library. We initially used gcc to create
+the C shared library and KCC to create the C++ shared library. The
+application would core dump when a dynamic cast was attempted. This was
+solved by using the <TT>cc</TT> compiler wrapper that is part of the KCC
+distribution (which uses the native <TT>cc</TT>). So you need to be aware of not
+only what is in your .so and how it is compiled but all the .so’s that you
+are using.</P><P>If you have several versions of a library, say during a debugging process,
+make sure you are using the correct versions of things. The <TT>ldd</TT> command
+is very useful for making sure you getting the shared libraries that you
+think you should be linking to. Along these lines, keep your
+LD_LIBRARY_PATH as simple as possible when debugging.</P><P>In retrospect this does not look like a large number of problems, but
+figuring out the second problem took a long time since I focused on how the
+C++ library was being created rather than where the real problem was being
+introduced. It wasn’t until after I had exhausted a long list of other
+potential conflicts that I started messing with the C library compilation. 
+</P><HR>
+<A HREF="index024.html"><IMG SRC="previous_motif.gif" ALT="Previous"></A>
+<A HREF="index-multipage.html"><IMG SRC="contents_motif.gif" ALT="Up"></A>
+<A HREF="index026.html"><IMG SRC="next_motif.gif" ALT="Next"></A>
+</BODY>
+</HTML>

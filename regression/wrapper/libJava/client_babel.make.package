@@ -1,0 +1,5 @@
+client_BABEL_MAKEFILE_NAME = client_babel.make
+client_STUB_SRC_DIRS = .
+client_JAVA_SRC_DIRS = wrapper/ synch/
+client_JAVA_SRC_FILES = synch/RegOut.java synch/ResultType.java               \
+  wrapper/Data.java

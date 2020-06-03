@@ -1,0 +1,82 @@
+# client_IORHDRS dependencies.
+wrapper_Data_IOR.h:                                                           \
+  /home/epperly/current/babel_fix_wrap/regression/wrapper/runSIDL/../wrapper.sidl
+wrapper_Data_IOR.h: sidl_header.h
+wrapper_Data_IOR.h: sidl_BaseClass_IOR.h
+
+
+# client_STUBHDRS dependencies.
+wrapper_Data_fAbbrev.h:                                                       \
+  /home/epperly/current/babel_fix_wrap/regression/wrapper/runSIDL/../wrapper.sidl
+
+wrapper_Data_fStub.h:                                                         \
+  /home/epperly/current/babel_fix_wrap/regression/wrapper/runSIDL/../wrapper.sidl
+wrapper_Data_fStub.h: wrapper_Data_IOR.h
+
+
+# client_STUBMODULESRCS dependencies.
+wrapper_Data.F90:                                                             \
+  /home/epperly/current/babel_fix_wrap/regression/wrapper/runSIDL/../wrapper.sidl
+wrapper_Data.F90: wrapper_Data_fAbbrev.h
+wrapper_Data.F90: sidl_ClassInfo_fAbbrev.h
+wrapper_Data.F90: sidl_BaseInterface_fAbbrev.h
+wrapper_Data.F90: sidl_RuntimeException_fAbbrev.h
+wrapper_Data.F90: sidl_BaseException_fAbbrev.h
+wrapper_Data.F90: sidl_BaseClass_fAbbrev.h
+wrapper_Data.F90: sidl
+wrapper_Data.F90: wrapper_Data_type
+wrapper_Data.F90: sidl_ClassInfo_type
+wrapper_Data.F90: sidl_BaseInterface_type
+wrapper_Data.F90: sidl_RuntimeException_type
+wrapper_Data.F90: sidl_BaseException_type
+wrapper_Data.F90: sidl_BaseClass_type
+wrapper_Data.F90: sidl_rmi_Call_type
+wrapper_Data.F90: sidl_rmi_Return_type
+wrapper_Data.F90: sidl_rmi_Ticket_type
+wrapper_Data.F90: sidl
+wrapper_Data.F90: wrapper_Data_type
+wrapper_Data.F90: sidl_array_type
+
+
+# client_STUBSRCS dependencies.
+wrapper_Data_fStub.c:                                                         \
+  /home/epperly/current/babel_fix_wrap/regression/wrapper/runSIDL/../wrapper.sidl
+wrapper_Data_fStub.c: wrapper_Data_fStub.h
+wrapper_Data_fStub.c: sidlfortran.h
+wrapper_Data_fStub.c: sidlf90array.h
+wrapper_Data_fStub.c: sidl_header.h
+wrapper_Data_fStub.c: sidl_interface_IOR.h
+wrapper_Data_fStub.c: sidl_Exception.h
+wrapper_Data_fStub.c: babel_config.h
+wrapper_Data_fStub.c: sidl_Loader.h
+wrapper_Data_fStub.c: wrapper_Data_IOR.h
+wrapper_Data_fStub.c: wrapper_Data_fAbbrev.h
+wrapper_Data_fStub.c: sidl_BaseException_IOR.h
+wrapper_Data_fStub.c: sidl_BaseInterface_IOR.h
+wrapper_Data_fStub.c: sidl_ClassInfo_IOR.h
+wrapper_Data_fStub.c: sidl_RuntimeException_IOR.h
+wrapper_Data_fStub.c: sidl_rmi_ConnectRegistry.h
+wrapper_Data_fStub.c: sidl_BaseClass_fStub.h
+wrapper_Data_fStub.c: sidl_BaseInterface_fStub.h
+wrapper_Data_fStub.c: sidl_ClassInfo_fStub.h
+wrapper_Data_fStub.c: sidl_RuntimeException_fStub.h
+wrapper_Data_fStub.c: wrapper_Data_fStub.h
+wrapper_Data_fStub.c: sidl_BaseClass.h
+wrapper_Data_fStub.c: sidl_ClassInfo.h
+wrapper_Data_fStub.c: sidl_rmi_ProtocolFactory.h
+wrapper_Data_fStub.c: sidl_rmi_InstanceRegistry.h
+wrapper_Data_fStub.c: sidl_rmi_InstanceHandle.h
+wrapper_Data_fStub.c: sidl_rmi_Invocation.h
+wrapper_Data_fStub.c: sidl_rmi_Response.h
+wrapper_Data_fStub.c: sidl_rmi_ServerRegistry.h
+wrapper_Data_fStub.c: sidl_rmi_ConnectRegistry.h
+wrapper_Data_fStub.c: sidl_io_Serializable.h
+
+
+# client_TYPEMODULESRCS dependencies.
+wrapper_Data_type.F90:                                                        \
+  /home/epperly/current/babel_fix_wrap/regression/wrapper/runSIDL/../wrapper.sidl
+wrapper_Data_type.F90: wrapper_Data_fAbbrev.h
+wrapper_Data_type.F90: sidl
+
+

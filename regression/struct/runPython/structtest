@@ -1,0 +1,308 @@
+#!/usr/local/bin/python
+#
+# File:        structtest
+# Copyright:   (c) 2007 Lawrence Livermore National Security, LLC
+# Revision:    @(#) $Revision: 6968 $
+# Date:        $Date: 2010-10-18 15:41:11 -0700 (Mon, 18 Oct 2010) $
+# Description: Exercise every kind of argument
+#
+# Try to exercise everything possible in Python.
+
+import sidlPyArrays
+if sidlPyArrays.type == "numpy":
+  from numpy import zeros, float32
+else:
+  import Numeric
+  zeros = Numeric.zeros
+  float32 = Numeric.Float32
+from synch.ResultType import *
+from synch import RegOut
+import sidl
+from s import *
+
+#basic RMI support
+remoteURL = ''
+
+def withRMI():
+  return remoteURL != ''
+
+def makeObject():
+  if withRMI():
+    return StructTest.StructTest(url=remoteURL)
+  else:
+    return StructTest.StructTest()
+
+def toFloat(d):
+  tmp = zeros((1,), float32)
+  try:
+    tmp[0] = d
+  except AttributeError:
+    # don't die!
+    tmp[0] = d
+  return float(tmp[0])
+
+class TestCounter:
+
+  def __init__(self, numparts = -1):
+    self.tracker = RegOut.RegOut()
+    self.partno = 0
+    self.tracker.setExpectations(numparts)
+
+  def describeTest(self, description):
+    self.partno = self.partno + 1
+    self.tracker.startPart(self.partno)
+    self.tracker.writeComment(description)
+
+  def fail(self):
+    self.tracker.forceFailure()
+
+  def evalTest(self, result, expected=1):
+    if (result):
+      if (expected):
+        self.tracker.endPart(self.partno, PASS)
+      else:
+        self.tracker.endPart(self.partno, XPASS)
+    else:
+      if (expected):
+        self.tracker.endPart(self.partno, FAIL)
+      else:
+        self.tracker.endPart(self.partno, XFAIL)
+        
+  def finish(self):
+    self.tracker.close()
+
+def checkSimple(s):
+  eps=1E-6;
+  return ( s.d_bool and (s.d_char == '3') and
+           (abs(s.d_dcomplex.real - 3.14)  < eps) and
+           (abs(s.d_dcomplex.imag - 3.14)  < eps) and
+           (abs(s.d_fcomplex.real - toFloat(3.1)) < eps) and
+           (abs(s.d_fcomplex.imag - toFloat(3.1)) < eps) and
+           (abs(s.d_double - 3.14) < eps) and
+           (abs(s.d_float - toFloat(3.1)) < eps) and
+           (s.d_int == 3) and
+           (s.d_long == 3) and
+           (s.d_opaque == None) and
+           (s.d_enum == Color.blue))
+
+def checkSimpleInv(s):
+  eps=1E-6;
+  return ( (not s.d_bool) and (s.d_char == '3') and
+           (abs(s.d_dcomplex.real - 3.14)  < eps) and
+           (abs(s.d_dcomplex.imag + 3.14)  < eps) and
+           (abs(s.d_fcomplex.real - toFloat(3.1)) < eps) and
+           (abs(s.d_fcomplex.imag + toFloat(3.1)) < eps) and
+           (abs(s.d_double + 3.14) < eps) and
+           (abs(s.d_float + toFloat(3.1)) < eps) and
+           (s.d_int == -3) and
+           (s.d_long == -3) and
+           (s.d_opaque == None) and
+           (s.d_enum == Color.red))
+
+def checkHard(h):
+  return ((len(h.d_string)==1) and ("Three" == h.d_string[0]) and (None != h.d_object) and
+          (None != h.d_object) and
+          (None != h.d_interface) and h.d_object.isSame(h.d_interface) and
+          (len(h.d_array) == 3) and (h.d_array[0] == 1.0) and
+          (h.d_array[1] == 2.0) and (h.d_array[2] == 3.0) and
+          (len(h.d_objectArray) == 3) and
+          h.d_objectArray[0].isType("sidl.BaseClass") and
+          h.d_objectArray[1].isType("sidl.BaseClass") and
+          h.d_objectArray[2].isType("sidl.BaseClass"))
+
+def checkHardInv(h):
+  return ((len(h.d_string)==1) and ("three" == h.d_string[0]) and (None != h.d_object) and
+          (None != h.d_object) and
+          (None != h.d_interface) and (not h.d_object.isSame(h.d_interface))
+          and (len(h.d_array) == 3) and (h.d_array[0] == 3.0) and
+          (h.d_array[1] == 2.0) and (h.d_array[2] == 1.0) and
+          (len(h.d_objectArray) == 3) and
+          h.d_objectArray[0].isType("sidl.BaseClass") and
+          (h.d_objectArray[1] == None) and
+          h.d_objectArray[2].isType("sidl.BaseClass"))
+
+def checkCombined(c):
+  return checkSimple(c.d_simple) and checkHard(c.d_hard)
+
+def checkCombinedInv(c):
+  return checkSimpleInv(c.d_simple) and checkHardInv(c.d_hard)
+
+class MyEmpty:
+  d_bool = 1
+  pass
+
+def emptyTest(counter):
+  test = makeObject()
+  counter.describeTest('e1 = Empty.Empty(); test.passinEmpty(e1)')
+  e1 = Empty.Empty()
+  counter.evalTest(test.passinEmpty(e1))
+  counter.describeTest('e1 = MyEmpty() ; test.passinEmpty(e1)')
+  e1 = MyEmpty()
+  counter.evalTest(test.passinEmpty(e1))
+  counter.describeTest('e1 = test.returnEmpty(); test.passinEmpty(e1)')
+  e1 = test.returnEmpty()
+  counter.evalTest(test.passinEmpty(e1))
+  counter.describeTest('(r, e1) = test.passoutEmpty(); test.passinEmpty(e1)')
+  (r, e1) = test.passoutEmpty()
+  counter.evalTest(r and test.passinEmpty(e1))
+  counter.describeTest('(r, e1) = test.passinoutEmpty(e1)')
+  (r, e1) = test.passinoutEmpty(e1)
+  counter.evalTest(r and test.passinEmpty(e1))
+  counter.describeTest('(e1, e2, e3) = test.passeverywhereEmpty(e1, e2)')
+  e2 = Empty.Empty()
+  (e1, e2, e3) = test.passeverywhereEmpty(e1, e2)
+  counter.evalTest(test.passinEmpty(e1) and test.passinEmpty(e2) and
+                   test.passinEmpty(e3))
+
+def initSimple(s):
+  f = toFloat(3.1)    
+  s.d_bool = 1
+  s.d_char = '3'
+  s.d_dcomplex = 3.14 + 3.14j
+  s.d_double = 3.14
+  s.d_fcomplex = f + f * 1j
+  s.d_float = f
+  s.d_int = 3
+  s.d_long = 3
+  s.d_opaque = None
+  s.d_enum = Color.blue
+  s.d_string = 'string'
+
+class MySimple:
+  def __init__(self):
+    initSimple(self)
+
+def simpleTest(counter):
+  test = makeObject()
+  counter.describeTest('s1 = test.returnSimple(); checkSimple(s1)')
+  s1 = test.returnSimple()
+  counter.evalTest(checkSimple(s1))
+  counter.describeTest('test.passinSimple(s1)')
+  counter.evalTest(test.passinSimple(s1))
+  counter.describeTest('s1 = MySimple() ; checkSimple(s1) and test.passinSimple(s1)')
+  s1 = MySimple()
+  counter.evalTest(checkSimple(s1) and test.passinSimple(s1))
+  counter.describeTest('(r, s1) = test.passoutSimple(); r and checkSimple(s1) and test.passinSimple(s1)')
+  (r, s1) = test.passoutSimple()
+  counter.evalTest(r and checkSimple(s1) and test.passinSimple(s1))
+  counter.describeTest('(r, s2) = test.passinoutSimple(s1)')
+  (r, s2) = test.passinoutSimple(s1)
+  counter.evalTest(r and checkSimpleInv(s2))
+  counter.describeTest('(s3, s4, s5) = test.passeverywhereSimple(s1, s2); checkSimple(s3) and checkSimpleInv(s4) and checkSimple(s5) and checkSimple(s2)')
+  s1 = test.returnSimple()
+  s2 = Simple.Simple()
+  initSimple(s2)
+  (s3, s4, s5) = test.passeverywhereSimple(s1, s2)
+  counter.evalTest(checkSimple(s3) and checkSimple(s4) and
+                   checkSimpleInv(s5))
+
+def initHard(h):
+  h.d_object = sidl.BaseClass.BaseClass()
+  h.d_interface = h.d_object
+  h.d_string = ["Three"]
+  h.d_array = [ 1, 2, 3]
+  h.d_objectArray = [ sidl.BaseClass.BaseClass(),
+                      sidl.BaseClass.BaseClass(),
+                      sidl.BaseClass.BaseClass() ]
+
+class MyHard:
+  def __init__(self):
+    initHard(self)
+
+def hardTest(counter):
+  test = makeObject()
+  counter.describeTest('h1 = test.returnHard(); checkHard(h1)')
+  h1 = test.returnHard()
+  counter.evalTest(checkHard(h1))
+  counter.describeTest('test.passinHard(h1)')
+  counter.evalTest(test.passinHard(h1))
+  counter.describeTest('h1 = MyHard() ; checkHard(h1) and test.passinHard(h1)')
+  h1 = MyHard()
+  counter.evalTest(checkHard(h1) and test.passinHard(h1))
+  counter.describeTest('(r, h1) = test.passoutHard(); r and checkHard(h1) and test.passinHard(h1)')
+  (r, h1) = test.passoutHard()
+  counter.evalTest(r and checkHard(h1) and test.passinHard(h1))
+  counter.describeTest('(r, h2) = test.passinoutHard(h1)')
+  (r, h2) = test.passinoutHard(h1)
+  counter.evalTest(r and checkHardInv(h2))
+  counter.describeTest('(h3, h4, h5) = test.passeverywhereHard(h1, h2); checkHard(h3) and checkHard(h4) and checkHardInv(h5)')
+  h1 = test.returnHard()
+  h2 = Hard.Hard()
+  initHard(h2)
+  (h3, h4, h5) = test.passeverywhereHard(h1, h2)
+  counter.evalTest(checkHard(h3) and checkHard(h4) and
+                   checkHardInv(h5))
+
+def initCombined(c):
+  c.d_hard = MyHard()
+  c.d_simple = MySimple()
+
+class MyCombined:
+  def __init__(self):
+    initCombined(self)
+
+def combinedTest(counter):
+  test = makeObject()
+  counter.describeTest('c1 = test.returnCombined(); checkCombined(c1)')
+  c1 = test.returnCombined()
+  counter.evalTest(checkCombined(c1))
+  counter.describeTest('test.passinCombined(c1)')
+  counter.evalTest(test.passinCombined(c1))
+  counter.describeTest('c1 = MyCombined() ; checkCombined(c1) and test.passinCombined(c1)')
+  c1 = MyCombined()
+  counter.evalTest(checkCombined(c1) and test.passinCombined(c1))
+  counter.describeTest('(r, c1) = test.passoutCombined(); r and checkCombined(c1) and test.passinCombined(c1)')
+  (r, c1) = test.passoutCombined()
+  counter.evalTest(r and checkCombined(c1) and test.passinCombined(c1))
+  counter.describeTest('(r, c2) = test.passinoutCombined(c1)')
+  (r, c2) = test.passinoutCombined(c1)
+  counter.evalTest(r and checkCombinedInv(c2))
+  counter.describeTest('(c3, c4, c5) = test.passeverywhereCombined(c1, c2); checkCombined(c3) and checkCombined(c4) and checkCombinedInv(c5)')
+  c1 = test.returnCombined()
+  c2 = Combined.Combined()
+  initCombined(c2)
+  (c3, c4, c5) = test.passeverywhereCombined(c1, c2)
+  counter.evalTest(checkCombined(c1) and 
+                   checkCombined(c3) and checkCombined(c4) and
+                   checkCombinedInv(c5))
+
+if __name__ == '__main__':
+  import sys
+  
+  num_tests = 24
+    
+  # Parse the command line  to see if we are running RMI tests
+  for arg in sys.argv:
+    if arg.startswith("--url="):
+      remoteURL = arg[6:]
+      num_tests = 12
+
+  counter = TestCounter(num_tests)
+  
+  if withRMI():
+    remoteURL = counter.tracker.replaceMagicVars(remoteURL, '')
+    print 'using remote URL ' + remoteURL
+
+  try:    
+    # Setup RMI if necessary
+    if withRMI():
+      import sidl.rmi.ProtocolFactory
+      print 'registering RMI protocol simhandle'
+      if not sidl.rmi.ProtocolFactory.addProtocol('simhandle', 'sidlx.rmi.SimHandle'):
+        print('sidl.rmi.ProtocolFactor.addProtocol() failed')
+        sys.exit(2);
+    
+    emptyTest(counter)
+    simpleTest(counter)
+    # some elements in s.Hard can't be passed as they are not
+    # serializable, so skip these tests for RMI
+    if not withRMI():
+      hardTest(counter)
+      combinedTest(counter)
+  except:
+    (type, value, trace) = sys.exc_info()
+    counter.fail()
+    import traceback
+    traceback.print_exception(type, value, trace)
+  counter.finish()
+0

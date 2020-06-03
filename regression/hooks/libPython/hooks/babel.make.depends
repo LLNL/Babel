@@ -1,0 +1,39 @@
+# PYMOD_SRCS dependencies.
+hooks_Basics_Module.c:                                                        \
+  /home/epperly/current/babel_fix_hooks/regression/hooks/libPython/../hooks.sidl
+hooks_Basics_Module.c: sidl_BaseClass.h
+hooks_Basics_Module.c: sidl_ClassInfo.h
+hooks_Basics_Module.c: sidl_rmi_ProtocolFactory.h
+hooks_Basics_Module.c: sidl_rmi_InstanceRegistry.h
+hooks_Basics_Module.c: sidl_rmi_InstanceHandle.h
+hooks_Basics_Module.c: sidl_rmi_Invocation.h
+hooks_Basics_Module.c: sidl_rmi_Response.h
+hooks_Basics_Module.c: sidl_rmi_ServerRegistry.h
+hooks_Basics_Module.c: sidl_rmi_ConnectRegistry.h
+hooks_Basics_Module.c: sidl_io_Serializable.h
+hooks_Basics_Module.c: hooks_Basics_Module.h
+hooks_Basics_Module.c: hooks_Basics_IOR.h
+hooks_Basics_Module.c: sidlObjA.h
+hooks_Basics_Module.c: sidlPyArrays.h
+hooks_Basics_Module.c: oldnumeric.h
+hooks_Basics_Module.c: Numeric/arrayobject.h
+hooks_Basics_Module.c: sidl_Loader.h
+hooks_Basics_Module.c: sidl_header.h
+hooks_Basics_Module.c: sidl_interface_IOR.h
+hooks_Basics_Module.c: sidl_rmi_NetworkException_Module.h
+hooks_Basics_Module.c: sidl_BaseClass_Module.h
+hooks_Basics_Module.c: sidl_BaseInterface_Module.h
+hooks_Basics_Module.c: sidl_ClassInfo_Module.h
+hooks_Basics_Module.c: sidl_RuntimeException_Module.h
+hooks_Basics_Module.c: sidl_rmi_Call_Module.h
+hooks_Basics_Module.c: sidl_rmi_Return_Module.h
+hooks_Basics_Module.c: sidl_rmi_Ticket_Module.h
+
+
+# PYTHONADMIN dependencies.
+
+# PYTHONSRC dependencies.
+Basics_Impl.py:                                                               \
+  /home/epperly/current/babel_fix_hooks/regression/hooks/libPython/../hooks.sidl
+
+

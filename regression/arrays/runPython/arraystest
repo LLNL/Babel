@@ -1,0 +1,1362 @@
+#!/usr/local/bin/python
+#
+# File:        arraystest
+# Copyright:   (c) 2001 Lawrence Livermore National Security, LLC
+# Revision:    @(#) $Revision: 7450 $
+# Date:        $Date: 2012-04-19 09:08:27 -0700 (Thu, 19 Apr 2012) $
+# Description: Exercise arrays of fundamental types from Python
+#
+# Try to exercise everything possible in Python.
+
+import sidlPyArrays
+import sidl.BaseClass
+import ArrayTest.ArrayOps
+if sidlPyArrays.type == "numpy":
+  from numpy import zeros, int32, float64, complex128, ndarray, transpose
+  ArrayType = ndarray
+else:
+  import Numeric
+  zeros = Numeric.zeros
+  int32 = Numeric.Int32
+  float64 = Numeric.Float64
+  complex128 = Numeric.Complex
+  ArrayType = Numeric.ArrayType
+  transpose = Numeric.transpose
+
+
+from synch.ResultType import *
+from synch import RegOut
+from types import NoneType
+
+def savespace(o):
+  try:
+      o.savespace(1)
+  except AttributeError:
+      pass
+
+def typecode(o):
+  try:
+      return o.typecode()
+  except AttributeError:
+      return o.dtype.char
+
+# Return a true value iff sequences, seq1 and seq2, are equal.
+def isEqual(seq1, seq2):
+  if (len(seq1) == len(seq2)):
+    for i in range(len(seq1)):
+      if (seq1[i] != seq2[i]):
+        return 0
+    return 1
+  return 0
+
+# Return a true value iff seq1 is equal to seq2.reverse().
+def isReversed(seq1, seq2):
+  if (len(seq1) == len(seq2)):
+    for i in range(len(seq1)):
+      if (seq1[i] != seq2[len(seq2) - i - 1]):
+        return 0
+    return 1
+  return 0
+
+def driver(tracker):
+  partno = 0
+  TEST_SIZE = 345
+  TEST_DIM1 = 17
+  TEST_DIM2 = 13
+
+  partno = partno + 1
+  tracker.startPart(partno)
+  tracker.writeComment("checkBool(createBool(TEST_SIZE))")
+  if (ArrayTest.ArrayOps.checkBool(ArrayTest.ArrayOps.createBool(TEST_SIZE))):
+    tracker.endPart(partno, PASS)
+  else:
+    tracker.endPart(partno, FAIL)
+
+  partno = partno + 1
+  tracker.startPart(partno)
+  tracker.writeComment("checkChar(createChar(TEST_SIZE))")
+  if (ArrayTest.ArrayOps.checkChar(ArrayTest.ArrayOps.createChar(TEST_SIZE))):
+    tracker.endPart(partno, PASS)
+  else:
+    tracker.endPart(partno, FAIL)
+
+  partno = partno + 1
+  tracker.startPart(partno)
+  tracker.writeComment("checkInt(createInt(TEST_SIZE))")
+  obj = ArrayTest.ArrayOps.createInt(TEST_SIZE)
+  if (isinstance(obj,ArrayType) and obj[0] == 2 and obj[1] == 3 and
+      ArrayTest.ArrayOps.checkInt(obj)):
+    tracker.endPart(partno, PASS)
+  else:
+    tracker.endPart(partno, FAIL)
+  obj = None
+
+  partno = partno + 1
+  tracker.startPart(partno)
+  tracker.writeComment("checkLong(createLong(TEST_SIZE))")
+  obj = ArrayTest.ArrayOps.createLong(TEST_SIZE)
+  if (isinstance(obj, ArrayType) and obj[0] == 2 and obj[1] == 3 and
+      ArrayTest.ArrayOps.checkLong(obj)):
+    tracker.endPart(partno, PASS)
+  else:
+    tracker.endPart(partno, FAIL)
+  obj = None
+
+  partno = partno + 1
+  tracker.startPart(partno)
+  tracker.writeComment("checkString(createString(TEST_SIZE))")
+  if (ArrayTest.ArrayOps.checkString(ArrayTest.ArrayOps.createString(TEST_SIZE))):
+    tracker.endPart(partno, PASS)
+  else:
+    tracker.endPart(partno, FAIL)
+
+  partno = partno + 1
+  tracker.startPart(partno)
+  tracker.writeComment("checkDouble(createDouble(TEST_SIZE))")
+  if (ArrayTest.ArrayOps.checkDouble(ArrayTest.ArrayOps.createDouble(TEST_SIZE))):
+    tracker.endPart(partno, PASS)
+  else:
+    tracker.endPart(partno, FAIL)
+
+  partno = partno + 1
+  tracker.startPart(partno)
+  tracker.writeComment("checkFloat(createFloat(TEST_SIZE))")
+  if (ArrayTest.ArrayOps.checkFloat(ArrayTest.ArrayOps.createFloat(TEST_SIZE))):
+    tracker.endPart(partno, PASS)
+  else:
+    tracker.endPart(partno, FAIL)
+
+  partno = partno + 1
+  tracker.startPart(partno)
+  tracker.writeComment("checkFcomplex(createFcomplex(TEST_SIZE))")
+  if (ArrayTest.ArrayOps.checkFcomplex(ArrayTest.ArrayOps.createFcomplex(32))):
+    tracker.endPart(partno, PASS)
+  else:
+    tracker.endPart(partno, FAIL)
+
+  partno = partno + 1
+  tracker.startPart(partno)
+  tracker.writeComment("checkDcomplex(createDcomplex(TEST_SIZE))")
+  if (ArrayTest.ArrayOps.checkDcomplex(ArrayTest.ArrayOps.createDcomplex(32))):
+    tracker.endPart(partno, PASS)
+  else:
+    tracker.endPart(partno, FAIL)
+
+  partno = partno + 1
+  tracker.startPart(partno)
+  tracker.writeComment("checkBool(makeBool(TEST_SIZE))")
+  if (ArrayTest.ArrayOps.checkBool(ArrayTest.ArrayOps.makeBool(TEST_SIZE))):
+    tracker.endPart(partno, PASS)
+  else:
+    tracker.endPart(partno, FAIL)
+
+  partno = partno + 1
+  tracker.startPart(partno)
+  tracker.writeComment("checkChar(makeChar(TEST_SIZE))")
+  if (ArrayTest.ArrayOps.checkChar(ArrayTest.ArrayOps.makeChar(TEST_SIZE))):
+    tracker.endPart(partno, PASS)
+  else:
+    tracker.endPart(partno, FAIL)
+
+  partno = partno + 1
+  tracker.startPart(partno)
+  tracker.writeComment("checkInt(makeInt(TEST_SIZE))")
+  obj = ArrayTest.ArrayOps.makeInt(TEST_SIZE)
+  if (isinstance(obj,ArrayType) and obj[0] == 2 and obj[1] == 3 and
+      ArrayTest.ArrayOps.checkInt(obj)):
+    tracker.endPart(partno, PASS)
+  else:
+    tracker.endPart(partno, FAIL)
+
+  partno = partno + 1
+  tracker.startPart(partno)
+  tracker.writeComment("checkLong(makeLong(TEST_SIZE))")
+  obj = ArrayTest.ArrayOps.makeLong(TEST_SIZE)
+  if (isinstance(obj,ArrayType) and obj[0] == 2 and obj[1] == 3 and
+      ArrayTest.ArrayOps.checkLong(obj)):
+    tracker.endPart(partno, PASS)
+  else:
+    tracker.endPart(partno, FAIL)
+  obj = None
+
+  partno = partno + 1
+  tracker.startPart(partno)
+  tracker.writeComment("checkString(makeString(TEST_SIZE))")
+  if (ArrayTest.ArrayOps.checkString(ArrayTest.ArrayOps.makeString(TEST_SIZE))):
+    tracker.endPart(partno, PASS)
+  else:
+    tracker.endPart(partno, FAIL)
+
+  partno = partno + 1
+  tracker.startPart(partno)
+  tracker.writeComment("checkDouble(makeDouble(TEST_SIZE))")
+  if (ArrayTest.ArrayOps.checkDouble(ArrayTest.ArrayOps.makeDouble(TEST_SIZE))):
+    tracker.endPart(partno, PASS)
+  else:
+    tracker.endPart(partno, FAIL)
+
+  partno = partno + 1
+  tracker.startPart(partno)
+  tracker.writeComment("checkFloat(makeFloat(TEST_SIZE))")
+  if (ArrayTest.ArrayOps.checkFloat(ArrayTest.ArrayOps.makeFloat(TEST_SIZE))):
+    tracker.endPart(partno, PASS)
+  else:
+    tracker.endPart(partno, FAIL)
+
+  partno = partno + 1
+  tracker.startPart(partno)
+  tracker.writeComment("checkFcomplex(makeFcomplex(32))")
+  if (ArrayTest.ArrayOps.checkFcomplex(ArrayTest.ArrayOps.makeFcomplex(32))):
+    tracker.endPart(partno, PASS)
+  else:
+    tracker.endPart(partno, FAIL)
+
+  partno = partno + 1
+  tracker.startPart(partno)
+  tracker.writeComment("checkDcomplex(makeDcomplex(32))")
+  if (ArrayTest.ArrayOps.checkDcomplex(ArrayTest.ArrayOps.makeDcomplex(32))):
+    tracker.endPart(partno, PASS)
+  else:
+    tracker.endPart(partno, FAIL)
+
+  partno = partno + 1
+  tracker.startPart(partno)
+  tracker.writeComment("check reverse array of bools")
+  array1 = ArrayTest.ArrayOps.createBool(TEST_SIZE)
+  (passed, array2) = ArrayTest.ArrayOps.reverseBool(array1, 1)
+  if (passed and isReversed(array1, array2)):
+    tracker.endPart(partno, PASS)
+  else:
+    tracker.endPart(partno, FAIL)
+  array1 = None
+  array2 = None
+
+  partno = partno + 1
+  tracker.startPart(partno)
+  tracker.writeComment("check reverse array of bools")
+  array1 = ArrayTest.ArrayOps.createBool(TEST_SIZE)
+  (passed, array2) = ArrayTest.ArrayOps.reverseBool(array1, 0)
+  if (passed and (isEqual(array1, array2))):
+    tracker.endPart(partno, PASS)
+  else:
+    tracker.endPart(partno, FAIL)
+  array1 = None
+  array2 = None
+
+  partno = partno + 1
+  tracker.startPart(partno)
+  tracker.writeComment("check reverse array of chars")
+  array1 = ArrayTest.ArrayOps.createChar(TEST_SIZE)
+  (passed, array2) = ArrayTest.ArrayOps.reverseChar(array1, 1)
+  if (passed and isReversed(array1, array2)):
+    tracker.endPart(partno, PASS)
+  else:
+    tracker.endPart(partno, FAIL)
+  array1 = None
+  array2 = None
+
+  partno = partno + 1
+  tracker.startPart(partno)
+  tracker.writeComment("check reverse array of chars")
+  array1 = ArrayTest.ArrayOps.createChar(TEST_SIZE)
+  (passed, array2) = ArrayTest.ArrayOps.reverseChar(array1, 0)
+  if (passed and (isEqual(array1, array2))):
+    tracker.endPart(partno, PASS)
+  else:
+    tracker.endPart(partno, FAIL)
+  array1 = None
+  array2 = None
+
+  partno = partno + 1
+  tracker.startPart(partno)
+  tracker.writeComment("check reverse array of ints")
+  array1 = ArrayTest.ArrayOps.createInt(TEST_SIZE)
+  (passed, array2) = ArrayTest.ArrayOps.reverseInt(array1, 1)
+  if (passed and isReversed(array1, array2)):
+    tracker.endPart(partno, PASS)
+  else:
+    tracker.endPart(partno, FAIL)
+  array1 = None
+  array2 = None
+
+  partno = partno + 1
+  tracker.startPart(partno)
+  tracker.writeComment("check reverse array of ints")
+  array1 = ArrayTest.ArrayOps.createInt(TEST_SIZE)
+  (passed, array2) = ArrayTest.ArrayOps.reverseInt(array1, 0)
+  if (passed and (isEqual(array1, array2))):
+    tracker.endPart(partno, PASS)
+  else:
+    tracker.endPart(partno, FAIL)
+  array1 = None
+  array2 = None
+
+  partno = partno + 1
+  tracker.startPart(partno)
+  tracker.writeComment("check reverse array of longs")
+  array1 = ArrayTest.ArrayOps.createLong(TEST_SIZE)
+  (passed, array2) = ArrayTest.ArrayOps.reverseLong(array1, 1)
+  if (passed and isReversed(array1, array2)):
+    tracker.endPart(partno, PASS)
+  else:
+    tracker.endPart(partno, FAIL)
+  array1 = None
+  array2 = None
+
+  partno = partno + 1
+  tracker.startPart(partno)
+  tracker.writeComment("check reverse array of longs")
+  array1 = ArrayTest.ArrayOps.createLong(TEST_SIZE)
+  (passed, array2) = ArrayTest.ArrayOps.reverseLong(array1, 0)
+  if (passed and (isEqual(array1, array2))):
+    # should be XPASS on 32 bit machines
+    tracker.endPart(partno, PASS)
+  else:
+    if (passed and (isReversed(array1, array2))):
+      tracker.endPart(partno, XFAIL)
+    else:
+      tracker.endPart(partno, FAIL)
+  array1 = None
+  array2 = None
+
+  partno = partno + 1
+  tracker.startPart(partno)
+  tracker.writeComment("check reverse array of strings")
+  array1 = ArrayTest.ArrayOps.createString(TEST_SIZE)
+  (passed, array2) = ArrayTest.ArrayOps.reverseString(array1, 1)
+  if (passed and isReversed(array1, array2)):
+    tracker.endPart(partno, PASS)
+  else:
+    tracker.endPart(partno, FAIL)
+  array1 = None
+  array2 = None
+
+  partno = partno + 1
+  tracker.startPart(partno)
+  tracker.writeComment("check reverse array of strings")
+  array1 = ArrayTest.ArrayOps.createString(TEST_SIZE)
+  (passed, array2) = ArrayTest.ArrayOps.reverseString(array1, 0)
+  if (passed and (isEqual(array1, array2))):
+    tracker.endPart(partno, XPASS)
+  else:
+    if (passed and (isReversed(array1, array2))):
+      tracker.endPart(partno, XFAIL)
+    else:
+      tracker.endPart(partno, FAIL)
+  array1 = None
+  array2 = None
+
+  partno = partno + 1
+  tracker.startPart(partno)
+  tracker.writeComment("check reverse array of doubles")
+  array1 = ArrayTest.ArrayOps.createDouble(32)
+  (passed, array2) = ArrayTest.ArrayOps.reverseDouble(array1, 1)
+  if (passed and isReversed(array1, array2)):
+    tracker.endPart(partno, PASS)
+  else:
+    tracker.endPart(partno, FAIL)
+  array1 = None
+  array2 = None
+
+  partno = partno + 1
+  tracker.startPart(partno)
+  tracker.writeComment("check reverse array of doubles")
+  array1 = ArrayTest.ArrayOps.createDouble(32)
+  (passed, array2) = ArrayTest.ArrayOps.reverseDouble(array1, 0)
+  if (passed and (isEqual(array1, array2))):
+    tracker.endPart(partno, PASS)
+  else:
+    tracker.endPart(partno, FAIL)
+  array1 = None
+  array2 = None
+
+  partno = partno + 1
+  tracker.startPart(partno)
+  tracker.writeComment("check reverse array of floats")
+  array1 = ArrayTest.ArrayOps.createFloat(32)
+  (passed, array2) = ArrayTest.ArrayOps.reverseFloat(array1, 1)
+  if (passed and isReversed(array1, array2)):
+    tracker.endPart(partno, PASS)
+  else:
+    tracker.endPart(partno, FAIL)
+  array1 = None
+  array2 = None
+
+  partno = partno + 1
+  tracker.startPart(partno)
+  tracker.writeComment("check reverse array of floats")
+  array1 = ArrayTest.ArrayOps.createFloat(32)
+  (passed, array2) = ArrayTest.ArrayOps.reverseFloat(array1, 0)
+  if (passed and (isEqual(array1, array2))):
+    tracker.endPart(partno, PASS)
+  else:
+    tracker.endPart(partno, FAIL)
+  array1 = None
+  array2 = None
+
+  partno = partno + 1
+  tracker.startPart(partno)
+  tracker.writeComment("check reverse array of fcomplex")
+  array1 = ArrayTest.ArrayOps.createFcomplex(32)
+  (passed, array2) = ArrayTest.ArrayOps.reverseFcomplex(array1, 1)
+  if (passed and isReversed(array1, array2)):
+    tracker.endPart(partno, PASS)
+  else:
+    tracker.endPart(partno, FAIL)
+  array1 = None
+  array2 = None
+
+  partno = partno + 1
+  tracker.startPart(partno)
+  tracker.writeComment("check reverse array of fcomplex")
+  array1 = ArrayTest.ArrayOps.createFcomplex(32)
+  (passed, array2) = ArrayTest.ArrayOps.reverseFcomplex(array1, 0)
+  if (passed and (isEqual(array1, array2))):
+    tracker.endPart(partno, PASS)
+  else:
+    tracker.endPart(partno, FAIL)
+  array1 = None
+  array2 = None
+
+  partno = partno + 1
+  tracker.startPart(partno)
+  tracker.writeComment("check reverse array of dcomplex")
+  array1 = ArrayTest.ArrayOps.createDcomplex(32)
+  (passed, array2) = ArrayTest.ArrayOps.reverseDcomplex(array1, 1)
+  if (passed and isReversed(array1, array2)):
+    tracker.endPart(partno, PASS)
+  else:
+    tracker.endPart(partno, FAIL)
+  array1 = None
+  array2 = None
+
+  partno = partno + 1
+  tracker.startPart(partno)
+  tracker.writeComment("check reverse array of dcomplex")
+  array1 = ArrayTest.ArrayOps.createDcomplex(32)
+  (passed, array2) = ArrayTest.ArrayOps.reverseDcomplex(array1, 0)
+  if (passed and (isEqual(array1, array2))):
+    tracker.endPart(partno, PASS)
+  else:
+    tracker.endPart(partno, FAIL)
+  array1 = None
+  array2 = None
+
+  partno = partno + 1
+  tracker.startPart(partno)
+  tracker.writeComment("check coercion of embedded lists of doubles to double array")
+  array1 = [ [ 1.0, 0.5],
+             [ 2.0, 1.0] ]
+  if (ArrayTest.ArrayOps.check2Double(array1)):
+    tracker.endPart(partno, PASS)
+  else:
+    tracker.endPart(partno, FAIL)
+
+  partno = partno + 1
+  tracker.startPart(partno)
+  tracker.writeComment("check coercion of embedded lists of doubles to float array")
+  if (ArrayTest.ArrayOps.check2Float(array1)):
+    tracker.endPart(partno, PASS)
+  else:
+    tracker.endPart(partno, FAIL)
+
+  partno = partno + 1
+  tracker.startPart(partno)
+  tracker.writeComment("check remotely created 2D double array")
+  array1 = ArrayTest.ArrayOps.create2Double(TEST_DIM1,TEST_DIM2)
+  if (ArrayTest.ArrayOps.check2Double(array1)):
+    tracker.endPart(partno, PASS)
+  else:
+    tracker.endPart(partno, FAIL)
+
+  partno = partno + 1
+  tracker.startPart(partno)
+  tracker.writeComment("check remotely created 2D float array")
+  array1 = ArrayTest.ArrayOps.create2Float(TEST_DIM1,TEST_DIM2)
+  if (ArrayTest.ArrayOps.check2Float(array1)):
+    tracker.endPart(partno, PASS)
+  else:
+    tracker.endPart(partno, FAIL)
+
+  partno = partno + 1
+  tracker.startPart(partno)
+  tracker.writeComment("check coercion of embedded lists of complex to fcomplex array")
+  array1 = [ [ 1.0 + 1.0j, 1.0 + 0.5j],
+             [ 2.0 + 1.0j, 2.0 + 0.5j]]
+  if (ArrayTest.ArrayOps.check2Fcomplex(array1)):
+    tracker.endPart(partno, PASS)
+  else:
+    tracker.endPart(partno, FAIL)
+
+  partno = partno + 1
+  tracker.startPart(partno)
+  tracker.writeComment("check coercion of embedded lists of complex to dcomplex array")
+  if (ArrayTest.ArrayOps.check2Dcomplex(array1)):
+    tracker.endPart(partno, PASS)
+  else:
+    tracker.endPart(partno, FAIL)
+
+  partno = partno + 1
+  tracker.startPart(partno)
+  tracker.writeComment("check remotely created 2D dcomplex array")
+  array1 = ArrayTest.ArrayOps.create2Dcomplex(TEST_DIM1,TEST_DIM2)
+  if (ArrayTest.ArrayOps.check2Dcomplex(array1)):
+    tracker.endPart(partno, PASS)
+  else:
+    tracker.endPart(partno, FAIL)
+
+  partno = partno + 1
+  tracker.startPart(partno)
+  tracker.writeComment("check remotely created 2D fcomplex array")
+  array1 = ArrayTest.ArrayOps.create2Fcomplex(TEST_DIM1,TEST_DIM2)
+  if (ArrayTest.ArrayOps.check2Fcomplex(array1)):
+    tracker.endPart(partno, PASS)
+  else:
+    tracker.endPart(partno, FAIL)
+
+#  array1 = [[[6, 8],
+#             [9, 12]],
+#            [[12, 16],
+#             [18, 24]]]
+  partno = partno + 1
+  tracker.startPart(partno)
+  tracker.writeComment("check remotely created 3-d int array")
+  array1 = ArrayTest.ArrayOps.create3Int()
+  if (ArrayTest.ArrayOps.check3Int(array1)):
+    tracker.endPart(partno, PASS)
+  else:
+    tracker.endPart(partno, FAIL)
+
+#  array1 = [[[[24, 30],
+#              [32, 40]],
+#             [[36, 45],
+#              [48, 60]]],
+#            [[[48, 60],
+#              [64, 80]],
+#             [[72, 90],
+#              [96, 120]]]]
+  partno = partno + 1
+  tracker.startPart(partno)
+  tracker.writeComment("check remotely created 4-d int array")
+  array1 = ArrayTest.ArrayOps.create4Int()
+  if (ArrayTest.ArrayOps.check4Int(array1)):
+    tracker.endPart(partno, PASS)
+  else:
+    tracker.endPart(partno, FAIL)
+
+
+  partno = partno + 1
+  tracker.startPart(partno)
+  tracker.writeComment("check remotely created 5-d int array")
+  array1 = ArrayTest.ArrayOps.create5Int()
+  if (ArrayTest.ArrayOps.check5Int(array1)):
+    tracker.endPart(partno, PASS)
+  else:
+    tracker.endPart(partno, FAIL)
+
+
+  partno = partno + 1
+  tracker.startPart(partno)
+  tracker.writeComment("check remotely created 6-d int array")
+  array1 = ArrayTest.ArrayOps.create6Int()
+  if (ArrayTest.ArrayOps.check6Int(array1)):
+    tracker.endPart(partno, PASS)
+  else:
+    tracker.endPart(partno, FAIL)
+
+
+  partno = partno + 1
+  tracker.startPart(partno)
+  tracker.writeComment("check remotely created 7-d int array")
+  array1 = ArrayTest.ArrayOps.create7Int()
+  if (ArrayTest.ArrayOps.check7Int(array1)):
+    tracker.endPart(partno, PASS)
+  else:
+    tracker.endPart(partno, FAIL)
+
+
+
+  length1 = 100
+  array1 = ArrayTest.ArrayOps.createInt(length1)
+  array2 = zeros([length1, length1], typecode(array1))
+  for i in range(length1):
+    array2[i] = array1
+    if (not ArrayTest.ArrayOps.checkInt(array2[i])):
+      print "Row slice failed"
+  for i in range(length1):
+    array2[:,i] = array1
+    if (not ArrayTest.ArrayOps.checkInt(array2[:,i])):
+      print "Column slice failed"
+  array3 = transpose(array2)
+  for i in range(length1):
+    if (not ArrayTest.ArrayOps.checkInt(array3[i])):
+      print "Row slice failed"
+  for i in range(length1):
+    array2[:,i] = array1
+    if (not ArrayTest.ArrayOps.checkInt(array2[:,i])):
+      print "Column slice failed"
+  
+  partno = partno + 1
+  tracker.startPart(partno)
+  tracker.writeComment("check array of objects")
+  if (ArrayTest.ArrayOps.checkObject(ArrayTest.ArrayOps.createObject(1027)) == 1027):
+    tracker.endPart(partno, PASS)
+  else:
+    tracker.endPart(partno, FAIL)
+
+  partno = partno + 1
+  tracker.startPart(partno)
+  tracker.writeComment("check coercion of Python list of objects to array")
+  if (ArrayTest.ArrayOps.checkObject([ None, None, ArrayTest.ArrayOps.ArrayOps(),
+      None, ArrayTest.ArrayOps.ArrayOps() ] ) == 2):
+    tracker.endPart(partno, PASS)
+  else:
+    tracker.endPart(partno, FAIL)
+
+  partno = partno + 1
+  tracker.startPart(partno)
+  tracker.writeComment("check coercion of Python list of objects to array")
+  try:
+    ArrayTest.ArrayOps.checkObject([ None, sidl.BaseClass.BaseClass() ])
+  except TypeError:
+    tracker.endPart(partno, PASS)
+  except:
+    tracker.endPart(partno, FAIL)
+  else:
+    tracker.endPart(partno, FAIL)
+
+  partno = partno + 1
+  tracker.startPart(partno)
+  tracker.writeComment("checking initially null boolean array")
+  array1 = None
+  array1 = ArrayTest.ArrayOps.makeInOutBool(array1, TEST_SIZE)
+  if (ArrayTest.ArrayOps.checkBool(array1)):
+    tracker.endPart(partno, PASS)
+  else:
+    tracker.endPart(partno, FAIL)
+             
+  partno = partno + 1
+  tracker.startPart(partno)
+  tracker.writeComment("checking initially null character array")
+  array1 = None
+  array1 = ArrayTest.ArrayOps.makeInOutChar(array1, TEST_SIZE)
+  if (ArrayTest.ArrayOps.checkChar(array1)):
+    tracker.endPart(partno, PASS)
+  else:
+    tracker.endPart(partno, FAIL)
+             
+  partno = partno + 1
+  tracker.startPart(partno)
+  tracker.writeComment("checking initially null integer array")
+  array1 = None
+  array1 = ArrayTest.ArrayOps.makeInOutInt(array1, TEST_SIZE)
+  if (ArrayTest.ArrayOps.checkInt(array1)):
+    tracker.endPart(partno, PASS)
+  else:
+    tracker.endPart(partno, FAIL)
+             
+  partno = partno + 1
+  tracker.startPart(partno)
+  tracker.writeComment("checking initially null long array")
+  array1 = None
+  array1 = ArrayTest.ArrayOps.makeInOutLong(array1, TEST_SIZE)
+  if (ArrayTest.ArrayOps.checkLong(array1)):
+    tracker.endPart(partno, PASS)
+  else:
+    tracker.endPart(partno, FAIL)
+             
+  partno = partno + 1
+  tracker.startPart(partno)
+  tracker.writeComment("checking initially null string array")
+  array1 = None
+  array1 = ArrayTest.ArrayOps.makeInOutString(array1, TEST_SIZE)
+  if (ArrayTest.ArrayOps.checkString(array1)):
+    tracker.endPart(partno, PASS)
+  else:
+    tracker.endPart(partno, FAIL)
+             
+  partno = partno + 1
+  tracker.startPart(partno)
+  tracker.writeComment("checking initially null double array")
+  array1 = None
+  array1 = ArrayTest.ArrayOps.makeInOutDouble(array1, TEST_SIZE)
+  if (ArrayTest.ArrayOps.checkDouble(array1)):
+    tracker.endPart(partno, PASS)
+  else:
+    tracker.endPart(partno, FAIL)
+             
+  partno = partno + 1
+  tracker.startPart(partno)
+  tracker.writeComment("checking initially null float array")
+  array1 = None
+  array1 = ArrayTest.ArrayOps.makeInOutFloat(array1, TEST_SIZE)
+  if (ArrayTest.ArrayOps.checkFloat(array1)):
+    tracker.endPart(partno, PASS)
+  else:
+    tracker.endPart(partno, FAIL)
+             
+  partno = partno + 1
+  tracker.startPart(partno)
+  tracker.writeComment("checking initially null dcomplex array")
+  array1 = None
+  array1 = ArrayTest.ArrayOps.makeInOutDcomplex(array1, TEST_SIZE)
+  if (ArrayTest.ArrayOps.checkDcomplex(array1)):
+    tracker.endPart(partno, PASS)
+  else:
+    tracker.endPart(partno, FAIL)
+             
+  partno = partno + 1
+  tracker.startPart(partno)
+  tracker.writeComment("checking initially null fcomplex array")
+  array1 = None
+  array1 = ArrayTest.ArrayOps.makeInOutFcomplex(array1, TEST_SIZE)
+  if (ArrayTest.ArrayOps.checkFcomplex(array1)):
+    tracker.endPart(partno, PASS)
+  else:
+    tracker.endPart(partno, FAIL)
+             
+  partno = partno + 1
+  tracker.startPart(partno)
+  tracker.writeComment("checking initially null 2D integer array")
+  array1 = None
+  array1 = ArrayTest.ArrayOps.makeInOut2Int(array1, TEST_DIM1, TEST_DIM2)
+  if (ArrayTest.ArrayOps.check2Int(array1)):
+    tracker.endPart(partno, PASS)
+  else:
+    tracker.endPart(partno, FAIL)
+             
+  partno = partno + 1
+  tracker.startPart(partno)
+  tracker.writeComment("checking initially null 2D double array")
+  array1 = None
+  array1 = ArrayTest.ArrayOps.makeInOut2Double(array1, TEST_DIM1, TEST_DIM2)
+  if (ArrayTest.ArrayOps.check2Double(array1)):
+    tracker.endPart(partno, PASS)
+  else:
+    tracker.endPart(partno, FAIL)
+             
+  partno = partno + 1
+  tracker.startPart(partno)
+  tracker.writeComment("checking initially null 2D float array")
+  array1 = None
+  array1 = ArrayTest.ArrayOps.makeInOut2Float(array1, TEST_DIM1, TEST_DIM2)
+  if (ArrayTest.ArrayOps.check2Float(array1)):
+    tracker.endPart(partno, PASS)
+  else:
+    tracker.endPart(partno, FAIL)
+             
+  partno = partno + 1
+  tracker.startPart(partno)
+  tracker.writeComment("checking initially null 2D dcomplex array")
+  array1 = None
+  array1 = ArrayTest.ArrayOps.makeInOut2Dcomplex(array1, TEST_DIM1, TEST_DIM2)
+  if (ArrayTest.ArrayOps.check2Dcomplex(array1)):
+    tracker.endPart(partno, PASS)
+  else:
+    tracker.endPart(partno, FAIL)
+             
+  partno = partno + 1
+  tracker.startPart(partno)
+  tracker.writeComment("checking initially null 2D fcomplex array")
+  array1 = None
+  array1 = ArrayTest.ArrayOps.makeInOut2Fcomplex(array1, TEST_DIM1, TEST_DIM2)
+  if (ArrayTest.ArrayOps.check2Fcomplex(array1)):
+    tracker.endPart(partno, PASS)
+  else:
+    tracker.endPart(partno, FAIL)
+             
+  partno = partno + 1
+  tracker.startPart(partno)
+  tracker.writeComment("checking initially null 3D integer array")
+  array1 = None
+  array1 = ArrayTest.ArrayOps.makeInOut3Int(array1)
+  if (ArrayTest.ArrayOps.check3Int(array1)):
+    tracker.endPart(partno, PASS)
+  else:
+    tracker.endPart(partno, FAIL)
+             
+  partno = partno + 1
+  tracker.startPart(partno)
+  tracker.writeComment("checking initially null 4D integer array")
+  array1 = None
+  array1 = ArrayTest.ArrayOps.makeInOut4Int(array1)
+  if (ArrayTest.ArrayOps.check4Int(array1)):
+    tracker.endPart(partno, PASS)
+  else:
+    tracker.endPart(partno, FAIL)
+             
+  partno = partno + 1
+  tracker.startPart(partno)
+  tracker.writeComment("checking initially null 5D integer array")
+  array1 = None
+  array1 = ArrayTest.ArrayOps.makeInOut5Int(array1)
+  if (ArrayTest.ArrayOps.check5Int(array1)):
+    tracker.endPart(partno, PASS)
+  else:
+    tracker.endPart(partno, FAIL)
+
+  partno = partno + 1
+  tracker.startPart(partno)
+  tracker.writeComment("checking initially null 6D integer array")
+  array1 = None
+  array1 = ArrayTest.ArrayOps.makeInOut6Int(array1)
+  if (ArrayTest.ArrayOps.check6Int(array1)):
+    tracker.endPart(partno, PASS)
+  else:
+    tracker.endPart(partno, FAIL)
+
+  partno = partno + 1
+  tracker.startPart(partno)
+  tracker.writeComment("checking initially null 7D integer array")
+  array1 = None
+  array1 = ArrayTest.ArrayOps.makeInOut7Int(array1)
+  if (ArrayTest.ArrayOps.check7Int(array1)):
+    tracker.endPart(partno, PASS)
+  else:
+    tracker.endPart(partno, FAIL)
+
+
+  partno = partno + 1
+  tracker.startPart(partno)
+  tracker.writeComment("checking ArrayOps::create2Double(-1,-1) returns None")
+  if (ArrayTest.ArrayOps.create2Double(-1, -1)):
+    tracker.endPart(partno, FAIL)
+  else:
+    tracker.endPart(partno, PASS)
+
+
+
+  partno = partno + 1
+  tracker.startPart(partno)
+  tracker.writeComment("checking ArrayOps::create2Fcomplex(-1,-1) returns None")
+  if (ArrayTest.ArrayOps.create2Fcomplex(-1, -1)):
+    tracker.endPart(partno, FAIL)
+  else:
+    tracker.endPart(partno, PASS)
+
+
+
+  partno = partno + 1
+  tracker.startPart(partno)
+  tracker.writeComment("checking ArrayOps::create2Dcomplex(-1,-1) returns None")
+  if (ArrayTest.ArrayOps.create2Dcomplex(-1, -1)):
+    tracker.endPart(partno, FAIL)
+  else:
+    tracker.endPart(partno, PASS)
+
+
+
+  partno = partno + 1
+  tracker.startPart(partno)
+  tracker.writeComment("checking ArrayOps::create2Float(-1,-1) returns None")
+  if (ArrayTest.ArrayOps.create2Float(-1, -1)):
+    tracker.endPart(partno, FAIL)
+  else:
+    tracker.endPart(partno, PASS)
+
+
+
+  partno = partno + 1
+  tracker.startPart(partno)
+  tracker.writeComment("checking ArrayOps::create2Int(-1,-1) returns None")
+  if (ArrayTest.ArrayOps.create2Int(-1, -1)):
+    tracker.endPart(partno, FAIL)
+  else:
+    tracker.endPart(partno, PASS)
+
+
+  partno = partno + 1
+  tracker.startPart(partno)
+  tracker.writeComment("checking ArrayOps::createLong(-1) returns None")
+  if (ArrayTest.ArrayOps.createLong(-1)):
+    tracker.endPart(partno, FAIL)
+  else:
+    tracker.endPart(partno, PASS)
+  partno = partno + 1
+  tracker.startPart(partno)
+  tracker.writeComment("checking ArrayOps::makeLong(-1) returns None")
+  if (ArrayTest.ArrayOps.makeLong(-1)):
+    tracker.endPart(partno, FAIL)
+  else:
+    tracker.endPart(partno, PASS)
+
+
+
+  partno = partno + 1
+  tracker.startPart(partno)
+  tracker.writeComment("checking ArrayOps::createDcomplex(-1) returns None")
+  if (ArrayTest.ArrayOps.createDcomplex(-1)):
+    tracker.endPart(partno, FAIL)
+  else:
+    tracker.endPart(partno, PASS)
+  partno = partno + 1
+  tracker.startPart(partno)
+  tracker.writeComment("checking ArrayOps::makeDcomplex(-1) returns None")
+  if (ArrayTest.ArrayOps.makeDcomplex(-1)):
+    tracker.endPart(partno, FAIL)
+  else:
+    tracker.endPart(partno, PASS)
+
+
+
+  partno = partno + 1
+  tracker.startPart(partno)
+  tracker.writeComment("checking ArrayOps::createFloat(-1) returns None")
+  if (ArrayTest.ArrayOps.createFloat(-1)):
+    tracker.endPart(partno, FAIL)
+  else:
+    tracker.endPart(partno, PASS)
+  partno = partno + 1
+  tracker.startPart(partno)
+  tracker.writeComment("checking ArrayOps::makeFloat(-1) returns None")
+  if (ArrayTest.ArrayOps.makeFloat(-1)):
+    tracker.endPart(partno, FAIL)
+  else:
+    tracker.endPart(partno, PASS)
+
+
+
+  partno = partno + 1
+  tracker.startPart(partno)
+  tracker.writeComment("checking ArrayOps::createDouble(-1) returns None")
+  if (ArrayTest.ArrayOps.createDouble(-1)):
+    tracker.endPart(partno, FAIL)
+  else:
+    tracker.endPart(partno, PASS)
+  partno = partno + 1
+  tracker.startPart(partno)
+  tracker.writeComment("checking ArrayOps::makeDouble(-1) returns None")
+  if (ArrayTest.ArrayOps.makeDouble(-1)):
+    tracker.endPart(partno, FAIL)
+  else:
+    tracker.endPart(partno, PASS)
+
+
+
+  partno = partno + 1
+  tracker.startPart(partno)
+  tracker.writeComment("checking ArrayOps::createInt(-1) returns None")
+  if (ArrayTest.ArrayOps.createInt(-1)):
+    tracker.endPart(partno, FAIL)
+  else:
+    tracker.endPart(partno, PASS)
+  partno = partno + 1
+  tracker.startPart(partno)
+  tracker.writeComment("checking ArrayOps::makeInt(-1) returns None")
+  if (ArrayTest.ArrayOps.makeInt(-1)):
+    tracker.endPart(partno, FAIL)
+  else:
+    tracker.endPart(partno, PASS)
+
+
+
+  partno = partno + 1
+  tracker.startPart(partno)
+  tracker.writeComment("checking ArrayOps::createFcomplex(-1) returns None")
+  if (ArrayTest.ArrayOps.createFcomplex(-1)):
+    tracker.endPart(partno, FAIL)
+  else:
+    tracker.endPart(partno, PASS)
+  partno = partno + 1
+  tracker.startPart(partno)
+  tracker.writeComment("checking ArrayOps::makeFcomplex(-1) returns None")
+  if (ArrayTest.ArrayOps.makeFcomplex(-1)):
+    tracker.endPart(partno, FAIL)
+  else:
+    tracker.endPart(partno, PASS)
+
+
+
+  partno = partno + 1
+  tracker.startPart(partno)
+  tracker.writeComment("checking ArrayOps::createString(-1) returns None")
+  if (ArrayTest.ArrayOps.createString(-1)):
+    tracker.endPart(partno, FAIL)
+  else:
+    tracker.endPart(partno, PASS)
+  partno = partno + 1
+  tracker.startPart(partno)
+  tracker.writeComment("checking ArrayOps::makeString(-1) returns None")
+  if (ArrayTest.ArrayOps.makeString(-1)):
+    tracker.endPart(partno, FAIL)
+  else:
+    tracker.endPart(partno, PASS)
+
+
+
+  partno = partno + 1
+  tracker.startPart(partno)
+  tracker.writeComment("checking ArrayOps::createBool(-1) returns None")
+  if (ArrayTest.ArrayOps.createBool(-1)):
+    tracker.endPart(partno, FAIL)
+  else:
+    tracker.endPart(partno, PASS)
+  partno = partno + 1
+  tracker.startPart(partno)
+  tracker.writeComment("checking ArrayOps::makeBool(-1) returns None")
+  if (ArrayTest.ArrayOps.makeBool(-1)):
+    tracker.endPart(partno, FAIL)
+  else:
+    tracker.endPart(partno, PASS)
+
+
+  partno = partno + 1
+  tracker.startPart(partno)
+  tracker.writeComment("checking ArrayOps::createChar(-1) returns None")
+  if (ArrayTest.ArrayOps.createChar(-1)):
+    tracker.endPart(partno, FAIL)
+  else:
+    tracker.endPart(partno, PASS)
+    
+  partno = partno + 1
+  tracker.startPart(partno)
+  tracker.writeComment("checking ArrayOps::makeChar(-1) returns None")
+  if (ArrayTest.ArrayOps.makeChar(-1)):
+    tracker.endPart(partno, FAIL)
+  else:
+    tracker.endPart(partno, PASS)
+
+  partno = partno + 1
+  tracker.startPart(partno)
+  garray = None; #null generic array
+  dim = 1;
+  tp = 7;
+  dim2_tp2 = None;
+  
+  tracker.writeComment("Create a valid generic (int)array");
+  garray = ArrayTest.ArrayOps.createGeneric(dim,tp);
+  if isinstance(garray,ArrayType):
+    tracker.endPart(partno, PASS)
+  else:
+    tracker.endPart(partno, FAIL)
+
+  partno = partno + 1
+  tracker.startPart(partno)
+  tracker.writeComment("Generic array has correct dimension");
+  if (len(garray.shape) == dim):
+    tracker.endPart(partno, PASS)
+  else:
+    tracker.endPart(partno, FAIL)
+
+  partno = partno + 1
+  tracker.startPart(partno)
+  tracker.writeComment("Generic array has correct type");
+  if (typecode(garray) == 'i'):
+    tracker.endPart(partno, PASS)
+  else:
+    tracker.endPart(partno, FAIL)
+
+  partno = partno + 1
+  tracker.startPart(partno)
+  tracker.writeComment("CheckGeneric (int)array (Still not null)");
+  dim2_tp2 = ArrayTest.ArrayOps.checkGeneric(garray);
+  if isinstance(garray,ArrayType):
+    tracker.endPart(partno, PASS)
+  else:
+    tracker.endPart(partno, FAIL)
+
+  partno = partno + 1
+  tracker.startPart(partno)
+  tracker.writeComment("Generic array has correct dimension");
+  if (dim2_tp2[0] == dim):
+    tracker.endPart(partno, PASS)
+  else:
+    tracker.endPart(partno, FAIL)
+
+  partno = partno + 1
+  tracker.startPart(partno)
+  tracker.writeComment("Generic array has correct type");
+  if (dim2_tp2[1] == tp):
+    tracker.endPart(partno, PASS)
+  else:
+    tracker.endPart(partno, FAIL)
+    
+  garrayret = None;
+  garrayout = None;
+  garrayinout = None;
+  partno = partno + 1
+  tracker.startPart(partno)
+  tracker.writeComment("PassGeneric returns valid arrays");
+  (garrayret, garrayinout, garrayout) = ArrayTest.ArrayOps.passGeneric(garray, garrayinout);
+  if(isinstance(garrayret,ArrayType) and
+     isinstance(garrayinout,ArrayType) and
+     isinstance(garrayout,ArrayType)):
+    tracker.endPart(partno, PASS)
+  else:
+    tracker.endPart(partno, FAIL)
+
+
+  partno = partno + 1
+  tracker.startPart(partno)
+  tracker.writeComment("Returned CheckGeneric (int)array (Still not null)");
+  dim2_tp2 = ArrayTest.ArrayOps.checkGeneric(garrayret);
+  if isinstance(garrayret,ArrayType):
+    tracker.endPart(partno, PASS)
+  else:
+    tracker.endPart(partno, FAIL)
+
+  partno = partno + 1
+  tracker.startPart(partno)
+  tracker.writeComment("Returned Generic array has correct dimension");
+  if (dim2_tp2[0] == dim):
+    tracker.endPart(partno, PASS)
+  else:
+    tracker.endPart(partno, FAIL)
+
+  partno = partno + 1
+  tracker.startPart(partno)
+  tracker.writeComment("Returned Generic array has correct type");
+  if (dim2_tp2[1] == tp):
+    tracker.endPart(partno, PASS)
+  else:
+    tracker.endPart(partno, FAIL)
+
+  partno = partno + 1
+  tracker.startPart(partno)
+  tracker.writeComment("Out CheckGeneric (int)array (Still not null)");
+  dim2_tp2 = ArrayTest.ArrayOps.checkGeneric(garrayout);
+  if isinstance(garrayout,ArrayType):
+    tracker.endPart(partno, PASS)
+  else:
+    tracker.endPart(partno, FAIL)
+
+  partno = partno + 1
+  tracker.startPart(partno)
+  tracker.writeComment("Out Generic array has correct dimension");
+  if (dim2_tp2[0] == dim):
+    tracker.endPart(partno, PASS)
+  else:
+    tracker.endPart(partno, FAIL)
+
+  partno = partno + 1
+  tracker.startPart(partno)
+  tracker.writeComment("Out Generic array has correct type");
+  if (dim2_tp2[1] == tp):
+    tracker.endPart(partno, PASS)
+  else:
+    tracker.endPart(partno, FAIL)
+
+
+  partno = partno + 1
+  tracker.startPart(partno)
+  tracker.writeComment("inout CheckGeneric (int)array (Still not null)");
+  dim2_tp2 = ArrayTest.ArrayOps.checkGeneric(garrayinout);
+  if isinstance(garrayinout, ArrayType):
+    tracker.endPart(partno, PASS)
+  else:
+    tracker.endPart(partno, FAIL)
+
+  partno = partno + 1
+  tracker.startPart(partno)
+  tracker.writeComment("inout Generic array has correct dimension");
+  if (dim2_tp2[0] == 2):
+    tracker.endPart(partno, PASS)
+  else:
+    tracker.endPart(partno, FAIL)
+
+  partno = partno + 1
+  tracker.startPart(partno)
+  tracker.writeComment("inout Generic array has correct type");
+  if (dim2_tp2[1] == 7):
+    tracker.endPart(partno, PASS)
+  else:
+    tracker.endPart(partno, FAIL)
+
+  partno = partno + 1
+  tracker.startPart(partno)
+  tracker.writeComment("check Sidl 1 Int");
+  obj = ArrayTest.ArrayOps.createInt(TEST_SIZE)
+  if (isinstance(obj,ArrayType) and
+      ArrayTest.ArrayOps.checkInt(obj)):
+    tracker.endPart(partno, PASS)
+  else:
+    tracker.endPart(partno, FAIL)
+  partno = partno + 1
+  tracker.startPart(partno)
+  tracker.writeComment("check Rarray 1 Int");
+  if (isinstance(obj,ArrayType) and
+      ArrayTest.ArrayOps.checkRarray1Int(obj)):
+    tracker.endPart(partno, PASS)
+  else:
+    tracker.endPart(partno, FAIL)
+  obj = None
+
+  partno = partno + 1
+  tracker.startPart(partno)
+  tracker.writeComment("check Sidl 3 Int");
+  obj = ArrayTest.ArrayOps.create3Int()
+  if (isinstance(obj,ArrayType) and
+      ArrayTest.ArrayOps.check3Int(obj)):
+    tracker.endPart(partno, PASS)
+  else:
+    tracker.endPart(partno, FAIL)
+  partno = partno + 1
+  tracker.startPart(partno)
+  tracker.writeComment("check Rarray 3 Int");
+  if (isinstance(obj,ArrayType) and
+      ArrayTest.ArrayOps.checkRarray3Int(obj)):
+    tracker.endPart(partno, PASS)
+  else:
+    tracker.endPart(partno, FAIL)
+  obj = None
+
+  partno = partno + 1
+  tracker.startPart(partno)
+  tracker.writeComment("check Sidl 7 Int");
+  obj = ArrayTest.ArrayOps.create7Int()
+  if (isinstance(obj, ArrayType) and
+      ArrayTest.ArrayOps.check7Int(obj)):
+    tracker.endPart(partno, PASS)
+  else:
+    tracker.endPart(partno, FAIL)
+  partno = partno + 1
+  tracker.startPart(partno)
+  tracker.writeComment("check Rarray 7 Int");
+  if (isinstance(obj,ArrayType) and
+      ArrayTest.ArrayOps.checkRarray7Int(obj)):
+    tracker.endPart(partno, PASS)
+  else:
+    tracker.endPart(partno, FAIL)
+  obj = None
+
+  partno = partno + 1
+  tracker.startPart(partno)
+  tracker.writeComment("check Sidl 1 Double");
+  obj = ArrayTest.ArrayOps.createDouble(TEST_SIZE)
+  if (isinstance(obj,ArrayType) and
+      ArrayTest.ArrayOps.checkDouble(obj)):
+    tracker.endPart(partno, PASS)
+  else:
+    tracker.endPart(partno, FAIL)
+  partno = partno + 1
+  tracker.startPart(partno)
+  tracker.writeComment("check Rarray 1 Double");
+  if (isinstance(obj, ArrayType) and
+      ArrayTest.ArrayOps.checkRarray1Double(obj)):
+    tracker.endPart(partno, PASS)
+  else:
+    tracker.endPart(partno, FAIL)
+  obj = None
+
+  partno = partno + 1
+  tracker.startPart(partno)
+  tracker.writeComment("check Sidl 1 Dcomplex");
+  obj = ArrayTest.ArrayOps.createDcomplex(TEST_SIZE)
+  if (isinstance(obj,ArrayType) and
+      ArrayTest.ArrayOps.checkDcomplex(obj)):
+    tracker.endPart(partno, PASS)
+  else:
+    tracker.endPart(partno, FAIL)
+  partno = partno + 1
+  tracker.startPart(partno)
+  tracker.writeComment("check Rarray 1 Dcomplex");
+  if (isinstance(obj,ArrayType) and
+      ArrayTest.ArrayOps.checkRarray1Dcomplex(obj)):
+    tracker.endPart(partno, PASS)
+  else:
+    tracker.endPart(partno, FAIL)
+  obj = None
+ 
+
+  partno = partno + 1
+  tracker.startPart(partno)
+  tracker.writeComment("init Rarray 1 Int");
+  intArray = zeros((100, ), int32)
+  savespace(intArray)
+  intArray = ArrayTest.ArrayOps.initRarray1Int(intArray)
+  if(isinstance(intArray, NoneType)):
+    print "Int array is Null!"
+  if(not ArrayTest.ArrayOps.checkRarray1Int(intArray)):
+    print "Does not pass check!"
+  if (isinstance(intArray, ArrayType) and
+      ArrayTest.ArrayOps.checkRarray1Int(intArray)):
+    tracker.endPart(partno, PASS)
+  else:
+    tracker.endPart(partno, FAIL)
+    
+  partno = partno + 1
+  tracker.startPart(partno)
+  tracker.writeComment("init Rarray 3 Int");
+  intArray = zeros((3, 3, 2, ), int32)
+  savespace(intArray)
+  intArray = ArrayTest.ArrayOps.initRarray3Int(intArray)
+  if (isinstance(intArray, ArrayType) and
+      ArrayTest.ArrayOps.checkRarray3Int(intArray)):
+    tracker.endPart(partno, PASS)
+  else:
+    tracker.endPart(partno, FAIL)
+
+  partno = partno + 1
+  tracker.startPart(partno)
+  tracker.writeComment("init Rarray 7 Int");
+  intArray = zeros((3, 3, 3, 3, 2, 2, 2, ), int32)
+  savespace(intArray)
+  intArray = ArrayTest.ArrayOps.initRarray7Int(intArray)
+  if (isinstance(intArray, ArrayType) and
+      ArrayTest.ArrayOps.checkRarray7Int(intArray)):
+    tracker.endPart(partno, PASS)
+  else:
+    tracker.endPart(partno, FAIL)
+
+  partno = partno + 1
+  tracker.startPart(partno)
+  tracker.writeComment("init Rarray 1 Double");
+  intArray = zeros((100, ), float64)
+  savespace(intArray)
+  intArray = ArrayTest.ArrayOps.initRarray1Double(intArray)
+  if (isinstance(intArray, ArrayType) and
+      ArrayTest.ArrayOps.checkRarray1Double(intArray)):
+    tracker.endPart(partno, PASS)
+  else:
+    tracker.endPart(partno, FAIL)
+
+  partno = partno + 1
+  tracker.startPart(partno)
+  tracker.writeComment("init Rarray 1 Dcomplex");
+  intArray = zeros((100, ), complex128)
+  savespace(intArray)
+  intArray = ArrayTest.ArrayOps.initRarray1Dcomplex(intArray)
+  if (isinstance(intArray, ArrayType) and
+      ArrayTest.ArrayOps.checkRarray1Dcomplex(intArray)):
+    tracker.endPart(partno, PASS)
+  else:
+    tracker.endPart(partno, FAIL)
+
+  partno = partno + 1
+  tracker.startPart(partno)
+  tracker.writeComment("Matrix Multiply Test");
+  a = zeros((3, 3, ), int32)
+  b = zeros((3, 2, ), int32)
+  res = zeros((3, 2, ), int32)
+  savespace(a)
+  savespace(b)
+  savespace(res)
+  res = ArrayTest.ArrayOps.matrixMultiply(a,b,res)
+  if (isinstance(intArray, ArrayType) and
+      ArrayTest.ArrayOps.checkMatrixMultiply(a,b,res)):
+    tracker.endPart(partno, PASS)
+  else:
+    tracker.endPart(partno, FAIL)
+
+  partno = partno + 1
+  tracker.startPart(partno)
+  tracker.writeComment("check2String(create2String(13,14))")
+  if (ArrayTest.ArrayOps.check2String(ArrayTest.ArrayOps.create2String(13,14))):
+    tracker.endPart(partno, PASS)
+  else:
+    tracker.endPart(partno, FAIL)
+
+if __name__ == '__main__':
+  import sys
+  tracker = RegOut.RegOut()
+  tracker.setExpectations(-1)
+  try:
+    driver(tracker)
+  except:
+    (type, value, trace) = sys.exc_info()
+    tracker.forceFailure();
+    import traceback
+    traceback.print_exception(type, value, trace)
+
+  tracker.close()
+0

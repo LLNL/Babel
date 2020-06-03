@@ -1,0 +1,8 @@
+
+This directory contains the SIDL "CCA" example set.
+The CCA-compliant framework is called decaf.  The
+implementation (in C++) is in libdecaf.
+
+A repository/ subdirectory is also constructed on the fly.
+
+Enjoy.

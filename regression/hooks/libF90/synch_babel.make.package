@@ -1,0 +1,2 @@
+synch_BABEL_MAKEFILE_NAME = synch_babel.make
+synch_STUB_SRC_DIRS = .

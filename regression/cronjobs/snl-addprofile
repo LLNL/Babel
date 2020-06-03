@@ -1,0 +1,6 @@
+#!/bin/sh
+# there's almost certainly an svn setting for *.profile that could be done
+# to automate this.
+svn add $1
+svn propset svn:mime-type text/plain $1
+svn propset svn:eol-style native $1

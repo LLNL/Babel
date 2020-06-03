@@ -1,0 +1,8 @@
+#ifndef __chasmlite_config_h_loaded__
+#define __chasmlite_config_h_loaded__
+
+#define CHASM_ARCH_64 @CHASM_ARCH_64@
+
+#define CHASM_BROKEN_BITFIELD @CHASM_BROKEN_BITFIELD@
+
+#endif /*  __chasmlite_config_h_loaded__ */

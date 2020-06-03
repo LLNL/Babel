@@ -1,0 +1,57 @@
+#! /bin/sh
+## File:        runJava2Py.sh
+## Package:     Babel hello examples
+## Copyright:   (c) 2000-2001 Lawrence Livermore National Security, LLC
+## Revision:    $Revision: 6171 $
+## Modified:    $Date: 2007-10-08 16:39:28 -0700 (Mon, 08 Oct 2007) $
+## Description: script to run Java calling Python hello example
+##
+
+prefix=@prefix@
+exec_prefix=@exec_prefix@
+bindir=@bindir@
+libdir=@libdir@
+VERSION=@VERSION@
+JAVA="@JAVA@"
+
+case "`uname`" in
+  CYGWIN*) cygwin=true;;
+  *) cygwin=false;;
+esac
+
+if test -f ../../stamp-installcheck; then
+  CLASSPATH="${prefix}/lib/sidl-${VERSION}.jar:."
+  SIDL_DLL_PATH="libClient.scl;../libPython/libImpl.scl;../libPython/libPyImpl.scl;${libdir}/libsidl.scl"
+  @SHARED_LIB_VAR@="${libdir}:${@SHARED_LIB_VAR@}"
+  if $cygwin; then
+    JAVA_LIBRARY_PATH="${bindir}"
+  else
+    JAVA_LIBRARY_PATH="${libdir}"
+  fi
+else
+  RUNTIME_PYTHON="../../../runtime/python"
+  CLASSPATH="../../../lib/sidl-@VERSION@.jar:../libJava:../../../runtime/java:../../../lib/sidlstubs/Java/sidlstub_${VERSION}.jar:."
+  SIDL_DLL_PATH="libClient.scl;../libPython/libImpl.scl;../libPython/libImplPy.scl;../../../runtime/sidl/libsidl.scl;../../../lib/sidlstubs/Java/libsidlstub_java.scl;"
+  @SHARED_LIB_VAR@="../../../runtime/sidl/.libs:${@SHARED_LIB_VAR@}"
+  JAVA_LIBRARY_PATH="../../../runtime/sidl/.libs"
+fi
+if test "X$PYTHONPATH" = "X"; then
+  PYTHONPATH="../libPython:${RUNTIME_PYTHON}"
+else
+  PYTHONPATH="../libPython:${RUNTIME_PYTHON}:$PYTHONPATH"
+fi
+export PYTHONPATH
+sidl_LIBRARY_NAME=sidl
+
+if $cygwin; then
+  CLASSPATH=`cygpath --path --windows "${CLASSPATH}"`
+  JAVA_LIBRARY_PATH=`cygpath --path --windows "${JAVA_LIBRARY_PATH}"`
+  sidl_LIBRARY_NAME=cygsidl-`echo ${VERSION} | tr . -`
+fi
+export SIDL_DLL_PATH
+export CLASSPATH
+
+${JAVA} \
+  -Djava.library.path="${JAVA_LIBRARY_PATH}" \
+  -Dsidl.library.name="${sidl_LIBRARY_NAME}" \
+  HelloClient

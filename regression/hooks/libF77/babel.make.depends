@@ -1,0 +1,93 @@
+# IMPLSRCS dependencies.
+hooks_Basics_Impl.f:                                                          \
+  /home/epperly/current/babel_fix_hooks/regression/hooks/libF77/../hooks.sidl
+
+
+# IORHDRS dependencies.
+hooks_Basics_IOR.h:                                                           \
+  /home/epperly/current/babel_fix_hooks/regression/hooks/libF77/../hooks.sidl
+hooks_Basics_IOR.h: sidl_header.h
+hooks_Basics_IOR.h: sidl_BaseClass_IOR.h
+
+hooks_IOR.h:                                                                  \
+  /home/epperly/current/babel_fix_hooks/regression/hooks/libF77/../hooks.sidl
+hooks_IOR.h: hooks_Basics_IOR.h
+
+
+# IORSRCS dependencies.
+hooks_Basics_IOR.c:                                                           \
+  /home/epperly/current/babel_fix_hooks/regression/hooks/libF77/../hooks.sidl
+hooks_Basics_IOR.c: hooks_Basics_IOR.h
+hooks_Basics_IOR.c: sidl_BaseClass_Impl.h
+hooks_Basics_IOR.c: sidl_BaseClass.h
+hooks_Basics_IOR.c: sidl_ClassInfo.h
+hooks_Basics_IOR.c: sidl_ClassInfoI.h
+
+
+# SKELSRCS dependencies.
+hooks_Basics_fSkel.c:                                                         \
+  /home/epperly/current/babel_fix_hooks/regression/hooks/libF77/../hooks.sidl
+hooks_Basics_fSkel.c: hooks_Basics_fStub.h
+hooks_Basics_fSkel.c: sidlfortran.h
+hooks_Basics_fSkel.c: sidl_header.h
+hooks_Basics_fSkel.c: sidl_interface_IOR.h
+hooks_Basics_fSkel.c: sidl_Exception.h
+hooks_Basics_fSkel.c: babel_config.h
+hooks_Basics_fSkel.c: sidl_Loader.h
+hooks_Basics_fSkel.c: hooks_Basics_IOR.h
+hooks_Basics_fSkel.c: sidl_BaseException_IOR.h
+hooks_Basics_fSkel.c: sidl_BaseInterface_IOR.h
+hooks_Basics_fSkel.c: sidl_ClassInfo_IOR.h
+hooks_Basics_fSkel.c: sidl_RuntimeException_IOR.h
+hooks_Basics_fSkel.c: sidl_rmi_ConnectRegistry.h
+hooks_Basics_fSkel.c: hooks_Basics_fStub.h
+hooks_Basics_fSkel.c: sidl_BaseClass_fStub.h
+hooks_Basics_fSkel.c: sidl_BaseInterface_fStub.h
+hooks_Basics_fSkel.c: sidl_ClassInfo_fStub.h
+hooks_Basics_fSkel.c: sidl_RuntimeException_fStub.h
+
+
+# STUBDOCS dependencies.
+hooks_Basics.fif:                                                             \
+  /home/epperly/current/babel_fix_hooks/regression/hooks/libF77/../hooks.sidl
+
+
+# STUBHDRS dependencies.
+hooks_Basics_fStub.h:                                                         \
+  /home/epperly/current/babel_fix_hooks/regression/hooks/libF77/../hooks.sidl
+hooks_Basics_fStub.h: hooks_Basics_IOR.h
+
+
+# STUBSRCS dependencies.
+hooks_Basics_fStub.c:                                                         \
+  /home/epperly/current/babel_fix_hooks/regression/hooks/libF77/../hooks.sidl
+hooks_Basics_fStub.c: hooks_Basics_fStub.h
+hooks_Basics_fStub.c: sidlfortran.h
+hooks_Basics_fStub.c: sidl_header.h
+hooks_Basics_fStub.c: sidl_interface_IOR.h
+hooks_Basics_fStub.c: sidl_Exception.h
+hooks_Basics_fStub.c: babel_config.h
+hooks_Basics_fStub.c: sidl_Loader.h
+hooks_Basics_fStub.c: hooks_Basics_IOR.h
+hooks_Basics_fStub.c: sidl_BaseException_IOR.h
+hooks_Basics_fStub.c: sidl_BaseInterface_IOR.h
+hooks_Basics_fStub.c: sidl_ClassInfo_IOR.h
+hooks_Basics_fStub.c: sidl_RuntimeException_IOR.h
+hooks_Basics_fStub.c: sidl_rmi_ConnectRegistry.h
+hooks_Basics_fStub.c: hooks_Basics_fStub.h
+hooks_Basics_fStub.c: sidl_BaseClass_fStub.h
+hooks_Basics_fStub.c: sidl_BaseInterface_fStub.h
+hooks_Basics_fStub.c: sidl_ClassInfo_fStub.h
+hooks_Basics_fStub.c: sidl_RuntimeException_fStub.h
+hooks_Basics_fStub.c: sidl_BaseClass.h
+hooks_Basics_fStub.c: sidl_ClassInfo.h
+hooks_Basics_fStub.c: sidl_rmi_ProtocolFactory.h
+hooks_Basics_fStub.c: sidl_rmi_InstanceRegistry.h
+hooks_Basics_fStub.c: sidl_rmi_InstanceHandle.h
+hooks_Basics_fStub.c: sidl_rmi_Invocation.h
+hooks_Basics_fStub.c: sidl_rmi_Response.h
+hooks_Basics_fStub.c: sidl_rmi_ServerRegistry.h
+hooks_Basics_fStub.c: sidl_rmi_ConnectRegistry.h
+hooks_Basics_fStub.c: sidl_io_Serializable.h
+
+

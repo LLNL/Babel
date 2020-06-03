@@ -1,0 +1,393 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN"
+            "http://www.w3.org/TR/REC-html40/loose.dtd">
+<HTML>
+<HEAD>
+
+<META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<META name="GENERATOR" content="hevea 1.10">
+<LINK rel="stylesheet" type="text/css" href="index.css">
+<TITLE>XML Backend</TITLE>
+</HEAD>
+<BODY >
+<A HREF="index017.html"><IMG SRC="previous_motif.gif" ALT="Previous"></A>
+<A HREF="index-multipage.html"><IMG SRC="contents_motif.gif" ALT="Up"></A>
+<A HREF="index019.html"><IMG SRC="next_motif.gif" ALT="Next"></A>
+<HR>
+<H1 CLASS="chapter"><A NAME="htoc74">Chapter 16</A>  XML Backend</H1><UL>
+<LI><A HREF="index018.html#toc64">Introduction</A>
+</LI><LI><A HREF="index018.html#toc65">Purpose</A>
+</LI><LI><A HREF="index018.html#toc66">Basic Structure</A>
+</LI><LI><A HREF="index018.html#toc67">Command Line Options</A>
+</LI></UL>
+<P><A NAME="c:xml_backend"></A></P><P><BR>
+</P><H2 CLASS="section"><A NAME="toc64"></A><A NAME="htoc75">16.1</A>  Introduction</H2><P>
+This chapter introduces the XML representation supported by Babel. Here we
+describe the motivation for having an XML backend and the basic structure of 
+a conformant XML file. To illustrate, a few of the SIDL symbol XML files 
+will be presented.</P><P>Details regarding the layout of XML files can be obtained by referring to the 
+Document Type Definition (DTD) provided in Appendix <A HREF="index028.html#c:xml">C</A>. For more on 
+the type repositories, refer to[XML Repositories in 
+Section <A HREF="index008.html#s:basics_sidl">6.2</A>.</P><H2 CLASS="section"><A NAME="toc65"></A><A NAME="htoc76">16.2</A>  Purpose</H2><P>
+<A NAME="@default1830"></A>
+The XML backend is a key feature of Babel. It provides the basis upon which 
+the symbol, or type, repository depends. SIDL files should be translated into 
+their XML representations and stored in the type repository. This is the case
+for the SIDL interfaces and classes that are provided as part of the Babel 
+toolkit.</P><H2 CLASS="section"><A NAME="toc66"></A><A NAME="htoc77">16.3</A>  Basic Structure</H2><P>
+<A NAME="@default1831"></A>
+Each generated XML file specifies the interfaces for a given SIDL Symbol in an 
+expanded textual representation. Although the structure of a given file 
+depends upon the type of symbol it contains, the basic layout consists of a 
+set of common elements followed by symbol-specific elements. </P><H3 CLASS="subsection">Common Elements</H3><P>
+The common elements are <EM>prolog</EM>, <EM>document type</EM>, <EM>name</EM>, 
+<EM>metadata</EM>, and <EM>comment</EM>. These elements, which are described 
+below, are followed by symbol-specific information.</P><DL CLASS="description"><DT CLASS="dt-description">
+<B>Prolog.</B></DT><DD CLASS="dd-description"> The prolog simply identifies the XML version and 
+encoding scheme associated with the file.</DD><DT CLASS="dt-description"><B>Document Type.</B></DT><DD CLASS="dd-description"> The document type declaration states the 
+document contains a <EM>Symbol</EM> and it identifies the associated DTD (i. e., 
+<EM>sidl.dtd</EM>).</DD><DT CLASS="dt-description"><B>Name.</B></DT><DD CLASS="dd-description"> The symbol name is the first element within the symbol 
+tag pair and it identifies the name and version of the SIDL symbol that is 
+described in the file.</DD><DT CLASS="dt-description"><B>Metadata.</B></DT><DD CLASS="dd-description"> The metadata element identifies the date the XML file 
+was generated<SUP><A NAME="text25" HREF="#note25">1</A></SUP> along with a set of three key-value pair entries. The first, 
+<EM>source-url</EM>, identifies the URL of the SIDL file that was used to 
+generate the XML file. The second, <EM>source-line</EM>, identifies the line 
+within the SIDL file at which the symbol was first detected. Finally, 
+<EM>babel-version</EM> identifies the version of Babel that was used to generate 
+the XML file.</DD><DT CLASS="dt-description"><B>Comment.</B></DT><DD CLASS="dd-description"> The comment tag is used to save off any comment that 
+is associated with the symbol.</DD></DL><H3 CLASS="subsection">Packages</H3><P>
+<A NAME="@default1832"></A>
+In addition to the common elements, packages retain elements and attributes
+associated with SIDL packages. These include whether or not the package is 
+<EM>final</EM> along with a list of the symbols contained within the package. 
+The list of symbols consists of the tuple: name, type, and version.</P><P>For example, the XML representation of the toplevel SIDL package (i. e., 
+<FONT COLOR=maroon><I><TT>sidl</TT></I></FONT>) is:</P><DIV CLASS="flushright"><SPAN CLASS="textboxed"><FONT COLOR=purple><B>XML</B></FONT></SPAN></DIV><TABLE CLASS="lstframe" STYLE="padding:1ex;border-style:solid;"><TR><TD CLASS="lstlisting">&lt;?xml version="1.0" encoding="utf-8"?&gt;
+&lt;!DOCTYPE Symbol PUBLIC "-//CCA//sidl Symbol DTD v1.1//EN"
+  "/babel/share/repository/sidl.dtd"&gt;
+&lt;Symbol&gt;
+  &lt;SymbolName name="sidl" version="0.9.12" /&gt;
+  &lt;Metadata date="20051208 10:47:28 PST"&gt;
+    &lt;MetadataEntry key="source-url"
+    value="file:/babel/runtime/sidl/sidl.sidl" /&gt;
+    &lt;MetadataEntry key="babel-version" value="0.10.51" /&gt;
+    &lt;MetadataEntry key="xml-url"
+    value="/babel/share/repository/sidl-v0.9.12.xml" /&gt;
+    &lt;MetadataEntry key="source-line" value="39" /&gt;
+  &lt;/Metadata&gt;
+  &lt;Comment&gt;The
+  &lt;code&gt;sidl&lt;/code&gt;package contains the fundamental type and
+  interface definitions for the
+  &lt;code&gt;sidl&lt;/code&gt;interface definition language. It defines common
+  run-time libraries and common base classes and interfaces. Every
+  interface implicitly inherits from
+  &lt;code&gt;sidl.BaseInterface&lt;/code&gt;and every class implicitly
+  inherits from
+  &lt;code&gt;sidl.BaseClass&lt;/code&gt;.&lt;/Comment&gt;
+  &lt;Package final="false"&gt;
+    &lt;PackageSymbol name="BaseInterface" type="interface"
+    version="0.9.12" /&gt;
+    &lt;PackageSymbol name="BaseClass" type="class"
+    version="0.9.12" /&gt;
+    &lt;PackageSymbol name="io" type="package" version="0.9.12" /&gt;
+    &lt;PackageSymbol name="BaseException" type="interface"
+    version="0.9.12" /&gt;
+    &lt;PackageSymbol name="RuntimeException" type="interface"
+    version="0.9.12" /&gt;
+    &lt;PackageSymbol name="SIDLException" type="class"
+    version="0.9.12" /&gt;
+    &lt;PackageSymbol name="PreViolation" type="class"
+    version="0.9.12" /&gt;
+    &lt;PackageSymbol name="PostViolation" type="class"
+    version="0.9.12" /&gt;
+    &lt;PackageSymbol name="InvViolation" type="class"
+    version="0.9.12" /&gt;
+    &lt;PackageSymbol name="Scope" type="enum" version="0.9.12" /&gt;
+    &lt;PackageSymbol name="Resolve" type="enum" version="0.9.12" /&gt;
+    &lt;PackageSymbol name="DLL" type="class" version="0.9.12" /&gt;
+    &lt;PackageSymbol name="Finder" type="interface"
+    version="0.9.12" /&gt;
+    &lt;PackageSymbol name="DFinder" type="class" version="0.9.12" /&gt;
+    &lt;PackageSymbol name="Loader" type="class" version="0.9.12" /&gt;
+    &lt;PackageSymbol name="ClassInfo" type="interface"
+    version="0.9.12" /&gt;
+    &lt;PackageSymbol name="ClassInfoI" type="class"
+    version="0.9.12" /&gt;
+    &lt;PackageSymbol name="MemoryAllocationException" type="class"
+    version="0.9.12" /&gt;
+    &lt;PackageSymbol name="CastException" type="class"
+    version="0.9.12" /&gt;
+    &lt;PackageSymbol name="LangSpecificException" type="class"
+    version="0.9.12" /&gt;
+    &lt;PackageSymbol name="rmi" type="package" version="0.9.12" /&gt;
+  &lt;/Package&gt;
+&lt;/Symbol&gt;</TD></TR>
+</TABLE><H3 CLASS="subsection">Interfaces</H3><P>
+<A NAME="@default1833"></A>
+Similarly, the XML for interface symbols contain the common elements. In 
+addition, they retain elements and attributes associated with SIDL interfaces. 
+These include any extensions, parent interfaces it implements, and its methods.
+Method information includes its name, communication mode, short name, name 
+extension (for languages that don’t support method overloading), comment, 
+return type, argument list, and exception list.</P><P>For example, the XML representation of <FONT COLOR=maroon><I><TT>sidl.BaseInterface</TT></I></FONT> is:</P><DIV CLASS="flushright"><SPAN CLASS="textboxed"><FONT COLOR=purple><B>XML</B></FONT></SPAN></DIV><TABLE CLASS="lstframe" STYLE="padding:1ex;border-style:solid;"><TR><TD CLASS="lstlisting">&lt;?xml version="1.0" encoding="utf-8"?&gt;
+&lt;!DOCTYPE Symbol PUBLIC "-//CCA//sidl Symbol DTD v1.1//EN"
+  "/babel/share/repository/sidl.dtd"&gt;
+&lt;Symbol&gt;
+  &lt;SymbolName name="sidl.BaseInterface" version="0.9.12" /&gt;
+  &lt;Metadata date="20051208 10:47:28 PST"&gt;
+    &lt;MetadataEntry key="source-url"
+    value="file:/babel/runtime/sidl/sidl.sidl" /&gt;
+    &lt;MetadataEntry key="babel-version" value="0.10.51" /&gt;
+    &lt;MetadataEntry key="xml-url"
+    value="/babel/share/repository/sidl.BaseInterface-v0.9.12.xml" /&gt;
+    &lt;MetadataEntry key="source-line" value="46" /&gt;
+  &lt;/Metadata&gt;
+  &lt;Comment&gt;Every interface in
+  &lt;code&gt;sidl&lt;/code&gt;implicitly inherits from
+  &lt;code&gt;BaseInterface&lt;/code&gt;, and it is implemented by
+  &lt;code&gt;BaseClass&lt;/code&gt;below.&lt;/Comment&gt;
+  &lt;Interface&gt;
+    &lt;ExtendsBlock /&gt;
+    &lt;AllParentInterfaces /&gt;
+    &lt;MethodsBlock&gt;
+      &lt;Method communication="normal" copy="false"
+      definition="abstract" extension="" shortname="addRef"&gt;
+        &lt;Comment&gt;
+          &lt;p&gt;Add one to the intrinsic reference count in the
+          underlying object. Object in
+          &lt;code&gt;sidl&lt;/code&gt;have an intrinsic reference count.
+          Objects continue to exist as long as the reference count
+          is positive. Clients should call this method whenever
+          they create another ongoing reference to an object or
+          interface.&lt;/p&gt;
+          &lt;p&gt;This does not have a return value because there is no
+          language independent type that can refer to an interface
+          or a class.&lt;/p&gt;
+        &lt;/Comment&gt;
+        &lt;Type type="void" /&gt;
+        &lt;ArgumentList /&gt;
+        &lt;ThrowsList /&gt;
+        &lt;ImplicitThrowsList&gt;
+          &lt;SymbolName name="sidl.RuntimeException"
+          version="0.9.12" /&gt;
+        &lt;/ImplicitThrowsList&gt;
+      &lt;/Method&gt;
+      &lt;Method communication="normal" copy="false"
+      definition="abstract" extension="" shortname="deleteRef"&gt;
+        &lt;Comment&gt;Decrease by one the intrinsic reference count in
+        the underlying object, and delete the object if the
+        reference is non-positive. Objects in
+        &lt;code&gt;sidl&lt;/code&gt;have an intrinsic reference count. Clients
+        should call this method whenever they remove a reference to
+        an object or interface.&lt;/Comment&gt;
+        &lt;Type type="void" /&gt;
+        &lt;ArgumentList /&gt;
+        &lt;ThrowsList /&gt;
+        &lt;ImplicitThrowsList&gt;
+          &lt;SymbolName name="sidl.RuntimeException"
+          version="0.9.12" /&gt;
+        &lt;/ImplicitThrowsList&gt;
+      &lt;/Method&gt;
+      &lt;Method communication="normal" copy="false"
+      definition="abstract" extension="" shortname="isSame"&gt;
+        &lt;Comment&gt;Return true if and only if
+        &lt;code&gt;obj&lt;/code&gt;refers to the same object as this
+        object.&lt;/Comment&gt;
+        &lt;Type type="boolean" /&gt;
+        &lt;ArgumentList&gt;
+          &lt;Argument copy="false" mode="in" name="iobj"&gt;
+            &lt;Type type="symbol"&gt;
+              &lt;SymbolName name="sidl.BaseInterface"
+              version="0.9.12" /&gt;
+            &lt;/Type&gt;
+          &lt;/Argument&gt;
+        &lt;/ArgumentList&gt;
+        &lt;ThrowsList /&gt;
+        &lt;ImplicitThrowsList&gt;
+          &lt;SymbolName name="sidl.RuntimeException"
+          version="0.9.12" /&gt;
+        &lt;/ImplicitThrowsList&gt;
+      &lt;/Method&gt;
+      &lt;Method communication="normal" copy="false"
+      definition="abstract" extension="" shortname="isType"&gt;
+        &lt;Comment&gt;Return whether this object is an instance of the
+        specified type. The string name must be the
+        &lt;code&gt;sidl&lt;/code&gt;type name. This routine will return
+        &lt;code&gt;true&lt;/code&gt;if and only if a cast to the string type
+        name would succeed.&lt;/Comment&gt;
+        &lt;Type type="boolean" /&gt;
+        &lt;ArgumentList&gt;
+          &lt;Argument copy="false" mode="in" name="name"&gt;
+            &lt;Type type="string" /&gt;
+          &lt;/Argument&gt;
+        &lt;/ArgumentList&gt;
+        &lt;ThrowsList /&gt;
+        &lt;ImplicitThrowsList&gt;
+          &lt;SymbolName name="sidl.RuntimeException"
+          version="0.9.12" /&gt;
+        &lt;/ImplicitThrowsList&gt;
+      &lt;/Method&gt;
+      &lt;Method communication="normal" copy="false"
+      definition="abstract" extension="" shortname="getClassInfo"&gt;
+        &lt;Comment&gt;Return the meta-data about the class implementing
+        this interface.&lt;/Comment&gt;
+        &lt;Type type="symbol"&gt;
+          &lt;SymbolName name="sidl.ClassInfo" version="0.9.12" /&gt;
+        &lt;/Type&gt;
+        &lt;ArgumentList /&gt;
+        &lt;ThrowsList /&gt;
+        &lt;ImplicitThrowsList&gt;
+          &lt;SymbolName name="sidl.RuntimeException"
+          version="0.9.12" /&gt;
+        &lt;/ImplicitThrowsList&gt;
+      &lt;/Method&gt;
+    &lt;/MethodsBlock&gt;
+  &lt;/Interface&gt;
+&lt;/Symbol&gt;</TD></TR>
+</TABLE><H3 CLASS="subsection">Classes</H3><P>
+<A NAME="@default1834"></A>
+Class definitions are almost identical to that of interfaces except for
+additional attributes. The additional attribute, which include whether or 
+not the class is <EM>final</EM>. Recall that Babel/SIDL supports only single
+inheritance of classes; therefore, only a single class will appear in the
+extends block. If one does not appear in the original SIDL file, by default
+the class will extend <FONT COLOR=maroon><I><TT>sidl.Baseclase</TT></I></FONT>.</P><P>For example, the XML representation of <FONT COLOR=maroon><I><TT>sidl.BaseClass</TT></I></FONT> is:</P><DIV CLASS="flushright"><SPAN CLASS="textboxed"><FONT COLOR=purple><B>XML</B></FONT></SPAN></DIV><TABLE CLASS="lstframe" STYLE="padding:1ex;border-style:solid;"><TR><TD CLASS="lstlisting">&lt;?xml version="1.0" encoding="utf-8"?&gt;
+&lt;!DOCTYPE Symbol PUBLIC "-//CCA//sidl Symbol DTD v1.1//EN"
+  "/babel/share/repository/sidl.dtd"&gt;
+&lt;Symbol&gt;
+  &lt;SymbolName name="sidl.BaseClass" version="0.9.12" /&gt;
+  &lt;Metadata date="20051208 10:47:28 PST"&gt;
+    &lt;MetadataEntry key="source-url"
+    value="file:/babel/runtime/sidl/sidl.sidl" /&gt;
+    &lt;MetadataEntry key="babel-version" value="0.10.51" /&gt;
+    &lt;MetadataEntry key="xml-url"
+    value="/babel/share/repository/sidl.BaseClass-v0.9.12.xml" /&gt;
+    &lt;MetadataEntry key="source-line" value="97" /&gt;
+  &lt;/Metadata&gt;
+  &lt;Comment&gt;Every class implicitly inherits from
+  &lt;code&gt;BaseClass&lt;/code&gt;. This class implements the methods in
+  &lt;code&gt;BaseInterface&lt;/code&gt;.&lt;/Comment&gt;
+  &lt;Class abstract="false"&gt;
+    &lt;Extends /&gt;
+    &lt;ImplementsBlock&gt;
+      &lt;SymbolName name="sidl.BaseInterface" version="0.9.12" /&gt;
+    &lt;/ImplementsBlock&gt;
+    &lt;AllParentClasses /&gt;
+    &lt;AllParentInterfaces&gt;
+      &lt;SymbolName name="sidl.BaseInterface" version="0.9.12" /&gt;
+    &lt;/AllParentInterfaces&gt;
+    &lt;MethodsBlock&gt;
+      &lt;Method communication="normal" copy="false"
+      definition="final" extension="" shortname="addRef"&gt;
+        &lt;Comment&gt;
+          &lt;p&gt;Add one to the intrinsic reference count in the
+          underlying object. Object in
+          &lt;code&gt;sidl&lt;/code&gt;have an intrinsic reference count.
+          Objects continue to exist as long as the reference count
+          is positive. Clients should call this method whenever
+          they create another ongoing reference to an object or
+          interface.&lt;/p&gt;
+          &lt;p&gt;This does not have a return value because there is no
+          language independent type that can refer to an interface
+          or a class.&lt;/p&gt;
+        &lt;/Comment&gt;
+        &lt;Type type="void" /&gt;
+        &lt;ArgumentList /&gt;
+        &lt;ThrowsList /&gt;
+        &lt;ImplicitThrowsList&gt;
+          &lt;SymbolName name="sidl.RuntimeException"
+          version="0.9.12" /&gt;
+        &lt;/ImplicitThrowsList&gt;
+      &lt;/Method&gt;
+      &lt;Method communication="normal" copy="false"
+      definition="final" extension="" shortname="deleteRef"&gt;
+        &lt;Comment&gt;Decrease by one the intrinsic reference count in
+        the underlying object, and delete the object if the
+        reference is non-positive. Objects in
+        &lt;code&gt;sidl&lt;/code&gt;have an intrinsic reference count. Clients
+        should call this method whenever they remove a reference to
+        an object or interface.&lt;/Comment&gt;
+        &lt;Type type="void" /&gt;
+        &lt;ArgumentList /&gt;
+        &lt;ThrowsList /&gt;
+        &lt;ImplicitThrowsList&gt;
+          &lt;SymbolName name="sidl.RuntimeException"
+          version="0.9.12" /&gt;
+        &lt;/ImplicitThrowsList&gt;
+      &lt;/Method&gt;
+      &lt;Method communication="normal" copy="false"
+      definition="final" extension="" shortname="isSame"&gt;
+        &lt;Comment&gt;Return true if and only if
+        &lt;code&gt;obj&lt;/code&gt;refers to the same object as this
+        object.&lt;/Comment&gt;
+        &lt;Type type="boolean" /&gt;
+        &lt;ArgumentList&gt;
+          &lt;Argument copy="false" mode="in" name="iobj"&gt;
+            &lt;Type type="symbol"&gt;
+              &lt;SymbolName name="sidl.BaseInterface"
+              version="0.9.12" /&gt;
+            &lt;/Type&gt;
+          &lt;/Argument&gt;
+        &lt;/ArgumentList&gt;
+        &lt;ThrowsList /&gt;
+        &lt;ImplicitThrowsList&gt;
+          &lt;SymbolName name="sidl.RuntimeException"
+          version="0.9.12" /&gt;
+        &lt;/ImplicitThrowsList&gt;
+      &lt;/Method&gt;
+      &lt;Method communication="normal" copy="false"
+      definition="normal" extension="" shortname="isType"&gt;
+        &lt;Comment&gt;Return whether this object is an instance of the
+        specified type. The string name must be the
+        &lt;code&gt;sidl&lt;/code&gt;type name. This routine will return
+        &lt;code&gt;true&lt;/code&gt;if and only if a cast to the string type
+        name would succeed.&lt;/Comment&gt;
+        &lt;Type type="boolean" /&gt;
+        &lt;ArgumentList&gt;
+          &lt;Argument copy="false" mode="in" name="name"&gt;
+            &lt;Type type="string" /&gt;
+          &lt;/Argument&gt;
+        &lt;/ArgumentList&gt;
+        &lt;ThrowsList /&gt;
+        &lt;ImplicitThrowsList&gt;
+          &lt;SymbolName name="sidl.RuntimeException"
+          version="0.9.12" /&gt;
+        &lt;/ImplicitThrowsList&gt;
+      &lt;/Method&gt;
+      &lt;Method communication="normal" copy="false"
+      definition="final" extension="" shortname="getClassInfo"&gt;
+        &lt;Comment&gt;Return the meta-data about the class implementing
+        this interface.&lt;/Comment&gt;
+        &lt;Type type="symbol"&gt;
+          &lt;SymbolName name="sidl.ClassInfo" version="0.9.12" /&gt;
+        &lt;/Type&gt;
+        &lt;ArgumentList /&gt;
+        &lt;ThrowsList /&gt;
+        &lt;ImplicitThrowsList&gt;
+          &lt;SymbolName name="sidl.RuntimeException"
+          version="0.9.12" /&gt;
+        &lt;/ImplicitThrowsList&gt;
+      &lt;/Method&gt;
+    &lt;/MethodsBlock&gt;
+  &lt;/Class&gt;
+&lt;/Symbol&gt;</TD></TR>
+</TABLE><H2 CLASS="section"><A NAME="toc67"></A><A NAME="htoc78">16.4</A>  Command Line Options</H2><P>
+<A NAME="@default1835"></A></P><P>XML must be generated from a SIDL file. The Babel command line is as follows
+<SUP><A NAME="text26" HREF="#note26">2</A></SUP>:</P><BLOCKQUOTE CLASS="quotation"><TT>
+% <B>babel --exclude-external --text=XML file.sidl</B><BR>
+</TT></BLOCKQUOTE><P>
+or simply
+</P><BLOCKQUOTE CLASS="quotation"><TT>
+% <B>babel -E -tXML file.sidl</B><BR>
+</TT></BLOCKQUOTE><P>In both cases, the use of the default repository is assumed for resolving 
+symbols. In addition, the output will appear in the default output directory. 
+</P><HR CLASS="footnoterule"><DL CLASS="thefootnotes"><DT CLASS="dt-thefootnotes">
+<A NAME="note25" HREF="#text25">1</A></DT><DD CLASS="dd-thefootnotes">Assuming the “<TT>--suppress-timestamp</TT>” option
+was not used.
+</DD><DT CLASS="dt-thefootnotes"><A NAME="note26" HREF="#text26">2</A></DT><DD CLASS="dd-thefootnotes">For information on additional command line options, refer to 
+Section <A HREF="index006.html#s:basics_commandline">4.2</A>.
+</DD></DL>
+<HR>
+<A HREF="index017.html"><IMG SRC="previous_motif.gif" ALT="Previous"></A>
+<A HREF="index-multipage.html"><IMG SRC="contents_motif.gif" ALT="Up"></A>
+<A HREF="index019.html"><IMG SRC="next_motif.gif" ALT="Next"></A>
+</BODY>
+</HTML>

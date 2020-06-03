@@ -1,0 +1,4 @@
+BABEL_MAKEFILE_NAME = babel.make
+STUB_SRC_DIRS = .
+JAVA_SRC_DIRS = hooks/ synch/
+JAVA_SRC_FILES = synch/RegOut.java synch/ResultType.java hooks/Basics.java

@@ -1,0 +1,7 @@
+autom4te.cache/
+*/TAGS
+*.pyc
+regression/cronjobs/casc-linux.current
+Makefile.in
+configure
+*~

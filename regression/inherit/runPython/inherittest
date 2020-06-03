@@ -1,0 +1,403 @@
+#!/usr/local/bin/python
+#
+# File:        testexceptions
+# Copyright:   (c) 2001 Lawrence Livermore National Security, LLC
+# Revision:    @(#) $Revision: 6776 $
+# Date:        $Date: 2009-11-10 17:33:00 -0800 (Tue, 10 Nov 2009) $
+# Description: Exercise exceptions
+#
+# Try to exercise everything possible in Python.
+
+import Inherit.A
+import Inherit.B
+import Inherit.C
+import Inherit.D
+import Inherit.E
+import Inherit.E2
+import Inherit.F
+import Inherit.F2
+import Inherit.G
+import Inherit.G2
+import Inherit.H
+import Inherit.I
+import Inherit.J
+import Inherit.K
+import Inherit.L
+
+from synch.ResultType import *
+from synch import RegOut
+
+#basic RMI support
+remoteURL = ''
+
+def withRMI():
+  return remoteURL != ''
+
+def makeCObject():
+  if withRMI():
+    return Inherit.C.C(url=remoteURL)
+  else:
+    return Inherit.C.C()
+
+def makeDObject():
+  if withRMI():
+    return Inherit.D.D(url=remoteURL)
+  else:
+    return Inherit.D.D()
+
+def makeEObject():
+  if withRMI():
+    return Inherit.E.E(url=remoteURL)
+  else:
+    return Inherit.E.E()
+
+def makeE2Object():
+  if withRMI():
+    return Inherit.E2.E2(url=remoteURL)
+  else:
+    return Inherit.E2.E2()
+
+def makeFObject():
+  if withRMI():
+    return Inherit.F.F(url=remoteURL)
+  else:
+    return Inherit.F.F()
+
+def makeF2Object():
+  if withRMI():
+    return Inherit.F2.F2(url=remoteURL)
+  else:
+    return Inherit.F2.F2()
+
+def makeGObject():
+  if withRMI():
+    return Inherit.G.G(url=remoteURL)
+  else:
+    return Inherit.G.G()
+
+def makeG2Object():
+  if withRMI():
+    return Inherit.G2.G2(url=remoteURL)
+  else:
+    return Inherit.G2.G2()
+
+def makeIObject():
+  if withRMI():
+    return Inherit.I.I(url=remoteURL)
+  else:
+    return Inherit.I.I()
+
+def makeJObject():
+  if withRMI():
+    return Inherit.J.J(url=remoteURL)
+  else:
+    return Inherit.J.J()
+  
+def makeKObject():
+  if withRMI():
+    return Inherit.K.K(url=remoteURL)
+  else:
+    return Inherit.K.K()
+
+def makeLObject():
+  if withRMI():
+    return Inherit.L.L(url=remoteURL)
+  else:
+    return Inherit.L.L()
+
+class TestCounter:
+
+  def __init__(self, numparts = -1):
+    self.tracker = RegOut.RegOut()
+    self.partno = 0
+    self.tracker.setExpectations(numparts)
+
+  def describeTest(self, description):
+    self.partno = self.partno + 1
+    self.tracker.startPart(self.partno)
+    self.tracker.writeComment(description)
+
+  def fail(self):
+    self.tracker.forceFailure()
+
+  def evalTest(self, result, expected = 1):
+    if (result):
+      if (expected):
+        self.tracker.endPart(self.partno, PASS)
+      else:
+        self.tracker.endPart(self.partno, XPASS)
+    else:
+      if (expected):
+        self.tracker.endPart(self.partno, FAIL)
+      else:
+        self.tracker.endPart(self.partno, XFAIL)
+        
+  def finish(self):
+    self.tracker.close()
+      
+def driver(counter):
+  counter.describeTest('c.c() = "C.c"')
+  c = makeCObject()
+  counter.evalTest(c.c() == "C.c")
+
+  counter.describeTest('d.a() == "D.a" : inheritance of interface A')
+  d = makeDObject()
+  counter.evalTest(d.a() == "D.a")
+
+  counter.describeTest('d.d() == "D.d"')
+  counter.evalTest(d.d() == "D.d")
+
+  counter.describeTest("a = Inherit.A.A(d)")
+  a = Inherit.A.A(d)
+  counter.evalTest(a != None)
+
+  if (a):
+    counter.describeTest('a.a() = "D.a"')
+    counter.evalTest(a.a() == "D.a")
+
+  e = makeEObject()
+  counter.describeTest('e.c() == "C.c"')
+  counter.evalTest(e.c() == "C.c")
+
+  counter.describeTest('e.e() == "E.e"')
+  counter.evalTest(e.e() == 'E.e')
+
+  counter.describeTest("c = Inherit.C.C(e)")
+  c = Inherit.C.C(e)
+  counter.evalTest(c != None)
+
+  if (c):
+    counter.describeTest('c.c() == "C.c"')
+    counter.evalTest(c.c() == "C.c")
+
+  e2 = makeE2Object()
+  counter.describeTest('e2.c() == "E2.c"')
+  counter.evalTest(e2.c() == "E2.c")
+
+  counter.describeTest('e2.e() == "E2.c"')
+  counter.evalTest(e2.e() == "E2.e")
+
+  counter.describeTest('c = Inherit.C.C(e2)')
+  c = Inherit.C.C(e2)
+  counter.evalTest(c != None)
+  
+  if (c):
+    counter.describeTest('c.c() == "E2.c"')
+    counter.evalTest(c.c() == "E2.c")
+
+  counter.describeTest('Inherit.E2.m() == "E2.m"')
+  counter.evalTest(Inherit.E2.m() == "E2.m")
+
+  f = makeFObject()
+  counter.describeTest('f.a() == "F.a"')
+  counter.evalTest(f.a() == "F.a")
+  counter.describeTest('f.b() == "F.b"')
+  counter.evalTest(f.b() == "F.b")
+  counter.describeTest('f.c() == "C.c"')
+  counter.evalTest(f.c() == "C.c")
+  counter.describeTest('f.f() == "F.f"')
+  counter.evalTest(f.f() == "F.f")
+
+  counter.describeTest('a = Inherit.A.A(f)')
+  a = Inherit.A.A(f)
+  counter.evalTest(a != None)
+
+  counter.describeTest('a.a() == "F.a"')
+  counter.evalTest(a.a() == "F.a")
+
+  counter.describeTest('b = Inherit.B.B(f)')
+  b = Inherit.B.B(f)
+  counter.evalTest(b != None)
+
+  counter.describeTest('b.b() == "F.b"')
+  counter.evalTest(b.b() == "F.b")
+
+  counter.describeTest('c = Inherit.C.C(f)')
+  c = Inherit.C.C(f)
+  counter.evalTest(c != None)
+
+  counter.describeTest('c.c() == "C.c"')
+  counter.evalTest(c.c() == "C.c")
+
+  f2 = makeF2Object()
+  counter.describeTest('f2.a() == "F2.a"')
+  counter.evalTest(f2.a() == "F2.a")
+  counter.describeTest('f2.b() == "F2.b"')
+  counter.evalTest(f2.b() == "F2.b")
+  counter.describeTest('f2.c() == "F2.c"')
+  counter.evalTest(f2.c() == "F2.c")
+  counter.describeTest('f2.f() == "F2.f"')
+  counter.evalTest(f2.f() == "F2.f")
+
+  counter.describeTest('a = Inherit.A.A(f2)')
+  a = Inherit.A.A(f2)
+  counter.evalTest(a != None)
+
+  counter.describeTest('a.a() == "F2.a"')
+  counter.evalTest(a.a() == "F2.a")
+
+  counter.describeTest('b = Inherit.B.B(f2)')
+  b = Inherit.B.B(f2)
+  counter.evalTest(b != None)
+
+  counter.describeTest('b.b() == "F2.b"')
+  counter.evalTest(b.b() == "F2.b")
+
+  counter.describeTest('c = Inherit.C.C(f2)')
+  c = Inherit.C.C(f2)
+  counter.evalTest(c != None)
+
+  counter.describeTest('c.c() == "F2.c"')
+  counter.evalTest(c.c() == "F2.c")
+
+  g = makeGObject()
+  counter.describeTest('g.a() == "D.a"')
+  counter.evalTest(g.a() == "D.a")
+  counter.describeTest('g.d() == "D.d"')
+  counter.evalTest(g.d() == "D.d")
+  counter.describeTest('g.g() == "G.g"')
+  counter.evalTest(g.g() == "G.g")
+  
+  counter.describeTest('a = Inherit.A.A(g)')
+  a = Inherit.A.A(g)
+  counter.evalTest(a != None)
+
+  counter.describeTest('a.a() == "D.a"')
+  counter.evalTest(a.a() == "D.a")
+
+  counter.describeTest('d = Inherit.D.D(g)')
+  d = Inherit.D.D(g)
+  counter.evalTest(d != None)
+
+  counter.describeTest('d.a() == "D.a"')
+  counter.evalTest(d.a() == "D.a")
+  counter.describeTest('d.d() == "D.d"')
+  counter.evalTest(d.d() == "D.d")
+  
+  g2 = makeG2Object()
+  counter.describeTest('g2.a() == "G2.a"')
+  counter.evalTest(g2.a() == "G2.a")
+  counter.describeTest('g2.d() == "G2.d"')
+  counter.evalTest(g2.d() == "G2.d")
+  counter.describeTest('g2.g() == "G2.g"')
+  counter.evalTest(g2.g() == "G2.g")
+  
+  counter.describeTest('a = Inherit.A.A(g2)')
+  a = Inherit.A.A(g2)
+  counter.evalTest(a != None)
+
+  counter.describeTest('a.a() == "G2.a"')
+  counter.evalTest(a.a() == "G2.a")
+
+  counter.describeTest('d = Inherit.D.D(g2)')
+  d = Inherit.D.D(g2)
+  counter.evalTest(d != None)
+
+  counter.describeTest('d.a() == "G2.a"')
+  counter.evalTest(d.a() == "G2.a")
+  counter.describeTest('d.d() == "G2.d"')
+  counter.evalTest(d.d() == "G2.d")
+
+  counter.describeTest('i = Inherit.I.I()')
+  i = makeIObject()
+  counter.evalTest(i != None)
+  counter.describeTest('i.a() == "I.a"')
+  counter.evalTest(i.a() == "I.a")
+  counter.describeTest('i.h() == "I.h"')
+  counter.evalTest(i.h() == "I.h")
+
+  counter.describeTest('h = Inherit.H.H(i)')
+  h = Inherit.H.H(i)
+  counter.evalTest(h != None)
+  counter.describeTest('h.a() == "I.a"')
+  counter.evalTest(h.a() == "I.a")
+  counter.describeTest('h.h() == "I.h"')
+  counter.evalTest(h.h() == "I.h")
+
+  #test supers with J
+  counter.describeTest('j = Inherit.J.J()')
+  j = makeJObject()
+  counter.evalTest(j != None)
+  counter.describeTest('j.a() == "J.a"')
+  counter.evalTest(j.a() == "J.a")
+  counter.describeTest('j.b() == "J.b"')
+  counter.evalTest(j.b() == "J.b")
+  counter.describeTest('j.j() == "J.j"')
+  counter.evalTest(j.j() == "J.j")
+  
+  counter.describeTest('j.c() == "J.E2.c"')
+  counter.evalTest(j.c() == "J.E2.c")
+  counter.describeTest('j.e() == "J.E2.e"')
+  counter.evalTest(j.e() == "J.E2.e")
+
+  counter.describeTest('Inherit.J.m() == "E2.m"')
+  counter.evalTest(Inherit.J.m() == "E2.m")
+
+#test from clauses with K and L
+  counter.describeTest('k = Inherit.K.K()')
+  k = makeKObject()
+  counter.evalTest(k != None)
+  counter.describeTest('k.a() == "K.a"')
+  counter.evalTest(k.a() == "K.a")
+  counter.describeTest('k.a2(0) == "K.a2"')
+  counter.evalTest(k.a2(0) == "K.a2")
+  
+  counter.describeTest('k.() == "K.h"')
+  counter.evalTest(k.h() == "K.h")
+  counter.describeTest('k.k() == "K.k"')
+  counter.evalTest(k.k() == "K.k")
+
+  counter.describeTest('h = Inherit.H.H(k)')
+  h = Inherit.H.H(k)
+  counter.evalTest(h != None)
+  counter.describeTest('h.a() == "K.a"')
+  counter.evalTest(h.a() == "K.a")
+  counter.describeTest('h.h() == "K.h"')
+  counter.evalTest(h.h() == "K.h")
+
+  counter.describeTest('l = Inherit.L.L()')
+  l = makeLObject()
+  counter.evalTest(l != None)
+  counter.describeTest('l.a() == "L.a"')
+  counter.evalTest(l.aa() == "L.a")
+  counter.describeTest('l.a(0) == "L.a2"')
+  counter.evalTest(l.a2(0) == "L.a2")
+
+  counter.describeTest('l.l() == "L.l"')
+  counter.evalTest(l.l() == "L.l")
+
+  counter.describeTest('a = Inherit.A.A(l)')
+  a = Inherit.A.A(l)
+  counter.evalTest(a != None)
+  counter.describeTest('a.a() == "L.a"')
+  counter.evalTest(a.a() == "L.a")
+
+if __name__ == '__main__':
+  import sys
+  counter = TestCounter(77)
+  try:
+    # Parse the command line  to see if we are running RMI tests
+    for arg in sys.argv:
+      if arg.startswith("--url="):
+        remoteURL = arg[6:]
+        remoteURL = counter.tracker.replaceMagicVars(remoteURL, '')
+
+    if withRMI():
+      print 'using remote URL ' + remoteURL
+
+    # Setup RMI if necessary
+    if withRMI():
+      import sidl.rmi.ProtocolFactory
+      print 'registering RMI protocol simhandle'
+      if not sidl.rmi.ProtocolFactory.addProtocol('simhandle', 'sidlx.rmi.SimHandle'):
+        print('sidl.rmi.ProtocolFactor.addProtocol() failed')
+        sys.exit(2);
+    
+    driver(counter)
+  except:
+    (type, value, trace) = sys.exc_info()
+    counter.fail()
+    import traceback
+    traceback.print_exception(type, value, trace)
+  counter.finish()
+0

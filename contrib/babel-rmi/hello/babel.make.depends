@@ -1,0 +1,79 @@
+# IMPLHDRS dependencies.
+hello_World_Impl.h: /home/leek2/rmitest/hello/hello.sidl
+hello_World_Impl.h: sidl_header.h
+hello_World_Impl.h: hello_World.h
+hello_World_Impl.h: sidl_BaseClass.h
+hello_World_Impl.h: sidl_BaseInterface.h
+hello_World_Impl.h: sidl_ClassInfo.h
+hello_World_Impl.h: sidl_RuntimeException.h
+
+
+# IMPLSRCS dependencies.
+hello_World_Impl.c: /home/leek2/rmitest/hello/hello.sidl
+hello_World_Impl.c: hello_World_Impl.h
+hello_World_Impl.c: sidl_NotImplementedException.h
+hello_World_Impl.c: sidl_Exception.h
+
+
+# IORHDRS dependencies.
+hello_IOR.h: /home/leek2/rmitest/hello/hello.sidl
+hello_IOR.h: hello_World_IOR.h
+
+hello_World_IOR.h: /home/leek2/rmitest/hello/hello.sidl
+hello_World_IOR.h: sidl_header.h
+hello_World_IOR.h: sidl_BaseClass_IOR.h
+
+
+# IORSRCS dependencies.
+hello_World_IOR.c: /home/leek2/rmitest/hello/hello.sidl
+hello_World_IOR.c: hello_World_IOR.h
+hello_World_IOR.c: sidl_BaseClass_Impl.h
+hello_World_IOR.c: sidl_BaseClass.h
+hello_World_IOR.c: sidl_ClassInfo.h
+hello_World_IOR.c: sidl_ClassInfoI.h
+
+
+# SKELSRCS dependencies.
+hello_World_Skel.c: /home/leek2/rmitest/hello/hello.sidl
+hello_World_Skel.c: hello_World_IOR.h
+hello_World_Skel.c: hello_World.h
+
+
+# STUBHDRS dependencies.
+hello.h: /home/leek2/rmitest/hello/hello.sidl
+hello.h: hello_World.h
+
+hello_World.h: /home/leek2/rmitest/hello/hello.sidl
+hello_World.h: sidl_header.h
+hello_World.h: sidl_BaseException.h
+hello_World.h: sidl_BaseInterface.h
+hello_World.h: sidl_ClassInfo.h
+hello_World.h: sidl_RuntimeException.h
+hello_World.h: sidl_SIDLException.h
+hello_World.h: sidl_rmi_Call.h
+hello_World.h: sidl_rmi_Return.h
+hello_World.h: hello_World_IOR.h
+
+
+# STUBSRCS dependencies.
+hello_World_Stub.c: /home/leek2/rmitest/hello/hello.sidl
+hello_World_Stub.c: hello_World.h
+hello_World_Stub.c: hello_World_IOR.h
+hello_World_Stub.c: sidl_interface_IOR.h
+hello_World_Stub.c: sidl_rmi_InstanceHandle.h
+hello_World_Stub.c: sidl_rmi_ConnectRegistry.h
+hello_World_Stub.c: sidl_Exception.h
+hello_World_Stub.c: sidl_interface_IOR.h
+hello_World_Stub.c: sidl_BaseInterface_IOR.h
+hello_World_Stub.c: sidl_BaseClass.h
+hello_World_Stub.c: sidl_ClassInfo.h
+hello_World_Stub.c: sidl_rmi_ProtocolFactory.h
+hello_World_Stub.c: sidl_rmi_InstanceRegistry.h
+hello_World_Stub.c: sidl_rmi_InstanceHandle.h
+hello_World_Stub.c: sidl_rmi_Invocation.h
+hello_World_Stub.c: sidl_rmi_Response.h
+hello_World_Stub.c: sidl_rmi_ServerRegistry.h
+hello_World_Stub.c: sidl_rmi_ConnectRegistry.h
+hello_World_Stub.c: sidl_io_Serializable.h
+
+

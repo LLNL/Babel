@@ -1,0 +1,49 @@
+# IORHDRS dependencies.
+wrapper_User_IOR.h:                                                           \
+  /home/epperly/current/babel_fix_wrap/regression/wrapper/runSIDL/../wrapper.sidl
+wrapper_User_IOR.h: sidl_header.h
+wrapper_User_IOR.h: sidl_BaseClass_IOR.h
+
+
+# IORSRCS dependencies.
+wrapper_User_IOR.c:                                                           \
+  /home/epperly/current/babel_fix_wrap/regression/wrapper/runSIDL/../wrapper.sidl
+wrapper_User_IOR.c: wrapper_User_IOR.h
+wrapper_User_IOR.c: sidl_BaseClass_Impl.h
+wrapper_User_IOR.c: sidl_BaseClass.h
+wrapper_User_IOR.c: sidl_ClassInfo.h
+wrapper_User_IOR.c: sidl_ClassInfoI.h
+
+
+# LAUNCHSRCS dependencies.
+wrapper_User_pLaunch.c:                                                       \
+  /home/epperly/current/babel_fix_wrap/regression/wrapper/runSIDL/../wrapper.sidl
+wrapper_User_pLaunch.c: sidl_Python.h
+wrapper_User_pLaunch.c: sidl_Loader.h
+
+
+# PYMOD_HDRS dependencies.
+wrapper_User_Module.h:                                                        \
+  /home/epperly/current/babel_fix_wrap/regression/wrapper/runSIDL/../wrapper.sidl
+
+
+# SKELSRCS dependencies.
+wrapper_User_pSkel.c:                                                         \
+  /home/epperly/current/babel_fix_wrap/regression/wrapper/runSIDL/../wrapper.sidl
+wrapper_User_pSkel.c: wrapper_User_IOR.h
+wrapper_User_pSkel.c: sidlObjA.h
+wrapper_User_pSkel.c: sidlPyArrays.h
+wrapper_User_pSkel.c: oldnumeric.h
+wrapper_User_pSkel.c: Numeric/arrayobject.h
+wrapper_User_pSkel.c: sidl_header.h
+wrapper_User_pSkel.c: sidl_Python.h
+wrapper_User_pSkel.c: sidl_BaseInterface_Module.h
+wrapper_User_pSkel.c: sidl_rmi_NetworkException_Module.h
+wrapper_User_pSkel.c: sidl_LangSpecificException_Module.h
+wrapper_User_pSkel.c: wrapper_User_Module.h
+wrapper_User_pSkel.c: sidl_ClassInfo_Module.h
+wrapper_User_pSkel.c: sidl_RuntimeException_Module.h
+wrapper_User_pSkel.c: wrapper_Data_Module.h
+wrapper_User_pSkel.c: sidl_BaseClass_Module.h
+
+

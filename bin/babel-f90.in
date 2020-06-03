@@ -1,0 +1,696 @@
+#! /bin/sh
+#
+# Script to compile and link code that depends on Babel.
+# It is intended to be a drop-in replacement for compilers
+# similar to mpi* front-ends such as mpicc.
+
+prefix="@prefix@"
+exec_prefix="@exec_prefix@"
+bindir="@bindir@"
+BABELCONFIG="@bindir@/babel-config"
+
+# turns on levels of verbiosity
+# 0 => none
+# 1 => echo actual command
+# 2 => echo debugging info
+verbose=0
+
+# dry_run disables the final command being executed
+dry_run=false
+
+# Messages (includes errors, warnings, and remarks)
+# 2 => display and exit
+# 1 => display but do not exit
+# 0 => suppress entirely
+# note that internal errors are always fatal and cannot be suppresed.
+error_msg=2
+warning_msg=1
+remark_msg=0
+
+# The action may be one of the set {compile, link, preprocess }
+action=link
+
+# May be "static", "shared" or "both"
+linkage=both
+
+# interpretation of arguments is "strict" at first
+# (meaning error messages are produced at unrecognized flags)
+# Can be demoted to "scan" when -- argument is encountered
+interpret_args=strict
+
+args_all=
+
+# flag to inhibit complete preprocess/compile/assemble/link series
+# -E means stop after preprocessing (produces *.i)
+# -S preprocess and compile, do not assemble (produces *.s)
+# -c preprocess, compile and assemble, do not link (produces *.o)
+args_throttle=
+
+# can be "lib" iff -o XXX has a .a, .la, .so suffix
+# can be "obj" iff -o XXX has a .o .lo suffix
+outtype=exec
+
+args_preprocess=
+args_outfile=
+args_optim=
+args_defs=
+args_incl=
+mod_incl=
+args_libs=
+args_else=
+
+# can be set to false... which trys to preserve users arguments
+args_munging=true
+
+# set to true if Impl files are detected
+# (implies DLL if --shared or !--static)
+has_impl=false
+
+# may be set to false
+use_libtool=true
+
+# may be empty
+quiet_libtool="--quiet"
+
+libtool_opts=
+
+libtool_rpath=unknown
+
+libtool_release=unknown
+
+# the --tag argument for libtool (C++ changes this)
+lt_tag=FC
+
+have_mpi=false
+
+internal_error() 
+{ 
+   echo "$self_base: internal error: $1" >&2
+   exit 1
+}
+
+error() 
+{
+  if test $error_msg -ge 1; then
+    echo "$self_base: error: $1" >&2
+    if test $error_msg -ge 2; then 
+      exit 1
+    fi
+  fi
+}
+
+warn()
+{
+  if test $warning_msg -ge 1; then
+    echo "$self_base: warning: $1" >&2
+    if test $warning_msg -ge 2; then
+      exit 1
+    fi
+  fi
+}
+
+remark()
+{
+  if test $remark_msg -ge 1; then 
+    echo "$self_base: remark: $1" >&2
+    if test $remark_msg -ge 1; then 
+      exit 1
+    fi
+  fi 
+}
+
+# first arg is an integer maching verbiosity
+note() { 
+  if test $1 -le $verbose; then
+    shift
+    echo $@
+  fi
+}
+
+help_msg()
+{
+    cat <<EOF
+Usage: $self_base -c [OPTIONS] [COMPILER_ARGS]
+       $self_base -o <libsomething.a>  [OPTIONS] [COMPILER_ARGS]
+
+Where [OPTIONS] are listed below 
+
+ --modpath=P     adds search paths to F90 compiler
+ --help | -h     print this help
+ --dry-run | -n  show what this script would do, but don't do it
+ --verbose[=n]   enable extra verbiage 
+ --no-quiet       reveal the command being issued to compiler
+                 (same as --verbose=1)
+ --no-libtool    do not use babel-libtool
+ --no-quiet-libtool let libtool be more verbose
+ --libtool-opts  comma separated list of libtool options
+ --installdir=[path] recommended when linking dll's
+ --release=[version] recommended when linking dll's
+ --no-munge      do not reorder arguments
+ --              signals that all following arguments are intended
+                 for the compiler
+
+ Other useful flags include: 
+ --with-c
+ --with-cxx 
+ --with-python
+ --with-f77
+ --with-java
+ --with-mpi
+EOF
+}
+
+#handle shell problems with quotes and spaces
+enquote() { 
+args=
+while test $# -gt 0; do 
+   case "$1" in
+   *\"*)
+        qarg="'"$1"'"
+        args="$args $qarg"
+        ;;
+   *\'*)  
+        #'# <-- this bit works around emacs colorization confusion
+        qarg='\"'"$1"'\"'
+        args="$args $qarg"
+        ;;   
+   *" "*)
+        qarg="'"$1"'"
+        args="$args $qarg"
+        ;;
+   *)
+        args="$args $1"
+	;;
+  esac
+  shift
+done
+echo $args
+}
+
+echo_libs()
+{
+    constraint=`echo "$1" | sed -e 's/--[_a-zA-Z0-9\+]*-[_a-zA-Z0-9\+]*//'`
+    shift
+    Lcommands=
+    lcommands=
+    ocommands=
+    while test $# -gt 0; do
+	case "$1" in 
+	-L*)
+	    Lcommands="$Lcommands $1"
+	    ;;
+	-l*)
+	    lcommands="$lcommands $1"
+	    ;;
+	*)
+	    ocommands="$ocommands $1"
+	    ;;
+	esac
+	shift
+    done
+    if test -z "$constraint"; then
+	echo $Lcommands $lcommands $ocommands
+    elif test "$constraint" = "-L"; then
+	echo $Lcommands
+    elif test "$constraint" = "-l"; then
+	echo $lcommands
+    else
+	exit 1
+    fi
+    exit 0
+}
+
+# strip duplicates out of a list
+strip_duplicates() { 
+args=
+while test $# -gt 0; do
+  add_it=maybe
+  for i in $args; do
+      if test "$i" = "$1"; then
+         add_it=no
+      fi
+  done
+  if test $add_it = maybe; then
+      args="$args $1"
+  fi
+  shift
+done
+echo $args
+}
+
+#reverses a list of arguments
+reverse() { 
+args=
+while test $# -gt 0; do
+  args="$1 $args"
+  shift
+done
+echo $args
+}
+
+run () {
+  if test $verbose -gt 0 ; then
+      echo $@
+  fi
+  if test $dry_run = false; then
+      eval $@  
+  fi
+}
+
+run1 () {
+  if test $verbose -gt 1 ; then
+      echo $@
+  fi
+  if test $dry_run = false; then
+      eval $@ 
+  fi
+}
+
+run2 () {
+  if test $verbose -gt 2 ; then
+      echo $@
+  fi
+  if test $dry_run = false; then
+      eval $@ 
+  fi
+}
+
+self=$0
+self_base=`basename $self`
+MFLAG=`$BABELCONFIG --query-var=CHASM_FORTRAN_MFLAG`
+
+# error if ran without arguments:
+if test $# -eq 0; then
+    error "need more arguments (see '$self_base --help')."
+fi
+
+while test $# -gt 0; do
+    
+    # if option has an argument, split it out, else optarg= nothing
+    case "$1" in
+    -*=*) optarg=`echo "$1" | sed -e 's/[-_a-zA-Z0-9]*=//'`;;
+    *) optarg= ;;
+    esac
+
+    # if optarg has a space in it... add some quotes
+    case "$optarg" in 
+      *" "*) optarg="\'""$optarg""\'" ;;
+      *);;
+    esac
+
+    case "$1" in 
+    --help | -h ) 
+        if test $interpret_args = strict ; then
+	  help_msg && exit 0
+        else
+	  args_all="$args_all $1"
+        fi
+	;;
+    --dry-run | -n ) 
+        if test $interpret_args = strict ; then
+          if test $verbose -lt 1; then
+              verbose=1;
+          fi
+          dry_run=true;
+        else
+	  args_all="$args_all $1"
+        fi
+        ;;
+    --verbose*) 
+        if test $interpret_args = strict ; then
+          if test x"$optarg" = x; then
+             verbose=2
+          elif test "$optarg" -ge 0 -a "$optarg" -le 3; then
+	     verbose="$optarg";
+          else
+             error "Cannot set verboseness to $optarg"
+          fi	    
+        else
+	  args_all="$args_all $1"
+	fi
+	;;
+    -v | -v0 | -v1 | -v2 ) 
+	if test $interpret_args = strict ; then
+  	  if test "$1" = "-v"; then
+	      verbose=1;
+	  else
+	      verbose=`echo "$1" | sed -e 's/-v//'`
+	      echo "VERBOSE=$verbose"
+	  fi
+        else 
+  	  args_all="$args_all $1"
+        fi
+	;;
+    --no-quiet)
+	if test $interpret_args = strict ; then
+          verbose=1;
+        else
+          args_all="$args_all $1"
+        fi
+	;;
+    --no-libtool)
+	if test $interpret_args = strict ; then
+  	  use_libtool=false;
+        else
+          args_all="$args_all $1"
+        fi
+	;;
+    --no-quiet-libtool)
+        if test $interpret_args = strict; then
+           quiet_libtool="";
+        else
+           args_all="$args_all $1"
+        fi
+	;;
+    --libtool-opts*)
+        if test $interpret_args = strict; then
+	    tmp=`echo ,$optarg | sed 's/\,/ /g;'`
+	    libtool_opts="$libtool_opts $tmp"
+        else
+	    args_all="$args_all $1"
+	fi
+	;;
+    --installdir*)
+	if test $interpret_args = strict; then
+	    libtool_rpath=`enquote "$optarg"`
+        else
+	    args_all="$args_all $1"
+        fi
+	;;
+    --release*)
+	if test $interpret_args = strict; then
+	    libtool_release=`enquote "$optarg"`
+        else
+	    args_all="$args_all $1"
+        fi
+	;;
+    --with-c)
+        langs="$langs c"
+        ;;
+    --with-cxx)
+        langs="$langs cxx"
+        ;;
+    --with-java)
+        langs="$langs java"
+        ;;
+    --with-python)
+        langs="$langs py"
+        ;;
+    --with-f77)
+        langs="$langs f77"
+        ;;
+    --with-mpi)
+        have_mpi=true;
+        ;;
+    -c | -S ) # overrides default action=link
+        action=compile
+	if test -z "$args_throttle"; then
+	    args_throttle="$1"
+	else
+	    error "$Cannot have $args_throttle and $1 in same invocation"
+	fi
+	args_all="$args_all $1"
+	;;
+    -E | -M*) # overrides default action=link
+	action=preprocess
+	if test -z "$args_throttle"; then
+	    args_throttle="$1"
+	else
+	    error "$Cannot have $args_throttle and $1 in same invocation"
+	fi
+	;;
+    -o) # assign output file
+	outfile=`enquote "$2"`
+	case "$outfile" in
+	    *.la | *.a | *.so ) outtype=lib;;
+	    *.o | *.lo ) outtype=obj;;
+	    * ) outtype=exec ;;
+	esac
+	args_outfile="-o $outfile"
+	args_all="$args_all $1 "`enquote "$2"`
+	shift
+	;;
+    --) # stop strictly interpreting options
+	shift
+	args_else=$@
+	break
+	#if test $interpret_args = strict; then 
+ 	#    interpret_args=lax
+        #else
+	#    warning "encountered '--' a second time '--no-munge' "
+	#fi
+	;;
+   -g | -pg | -O* ) 
+	args_optim="$args_optim $1"
+	args_all="$args_all $1"
+	;;
+   -D* | -U* ) 
+        args_defs="$args_defs $1"
+	args_all="$args_all $1"
+	;;
+   -I* ) 
+	args_incl="$args_incl "`enquote "$1"`
+	args_all="$args_all "`enquote "$1"`
+	;;
+   --modpath*)
+        if test x$optarg != x; then 
+          mod_incl="$mod_incl $MFLAG"`enquote "$optarg"`
+          args_all="$args_all $MFLAG"`enquote "$optarg"`
+        fi
+        ;; 
+   -L* ) 
+	args_libdirs="$args_libdirs "`enquote "$1"`
+	args_all="$args_all "`enquote "$1"`
+        ;;
+   -l* )
+	args_libs="$args_libs "`enquote "$1"` 
+	args_all="$args_all "`enquote "$1"`
+        ;;
+   -W* | -f* | -b* ) 
+        args_misc="$args_misc "`enquote "$1"`
+	args_all="$args_all "`enquote "$1"`
+	;;
+   -shared )
+	linkage=shared
+        args_misc="$args_misc "`enquote "$1"`
+	args_all="$args_all "`enquote "$1"`
+	;;
+   -static )
+	linkage=static
+        args_misc="$args_misc "`enquote "$1"`
+	args_all="$args_all "`enquote "$1"`
+	;;
+   *.f90 | *.f95 | *.o | *.lo | *.a | *.so | *.la | *.i | *.s )
+        args_files="$args_files "`enquote "$1"`
+	args_all="$args_all "`enquote "$1"`
+	;;
+   *.F90 | *.F95 )
+        args_preprocess="$args_preprocess "`enquote "$1"`
+	args_all="$args_all "`enquote "$1"`	
+	;;
+   *) 
+	if test $interpret_args = strict; then
+          error "unrecognized option $1"
+        elif test $interpret_args = lax ; then
+	  args_all="$args_all $1"
+          args_misc="$args_misc $1"
+        else
+          internal_error "interpret_args=$interpret_args is illegal value"
+        fi
+	;;
+    esac
+    shift
+done
+
+CPP=`$BABELCONFIG --query-var=CPP`
+CC=`$BABELCONFIG --query-var=CC`
+CXX=`$BABELCONFIG --query-var=CXX`
+FC=`$BABELCONFIG --query-var=FC`
+prefix=`$BABELCONFIG --query-var=prefix`
+exec_prefix=`$BABELCONFIG --query-var=exec_prefix`
+sysconfdir=`$BABELCONFIG --query-var=sysconfdir`
+includedir=`$BABELCONFIG --query-var=includedir`
+libdir=`$BABELCONFIG --query-var=libdir`
+LIBTOOL="$bindir/babel-libtool"
+
+args_incl="$args_incl "`$BABELCONFIG --includes`
+args_incl="$args_incl "`$BABELCONFIG --includes-f90`
+args_incl="$args_incl "`$BABELCONFIG --includes-xml2`
+mod_incl="$mod_incl "`$BABELCONFIG --includes-f90-mod`
+args_defs="$args_defs "`$BABELCONFIG --flags-cpp`
+args_libdirs="$args_libdirs "`$BABELCONFIG --libs-f90-L`
+
+if test $verbose -gt 1; then
+  quiet_libtool="";
+fi
+
+for f in $args_files; do
+  case $f in
+    *Impl.lo)
+      has_impl=true;
+      break
+      ;;
+    *)
+    ;;
+  esac
+done
+
+if test $linkage != static -a $action == link -a $outtype = lib ; then 
+  if test $has_impl = true; then
+    args_misc="$args_misc -module -no-undefined"
+  else
+    args_misc="$args_misc -no-undefined"
+  fi
+  if test $libtool_rpath = unknown ; then
+
+    warn "DLL's can be sensitive to where they exist in the 
+          filesystem (meaning in some cases, a simple copy 
+          or move will break them). Assuming this DLL will remain
+          in '`pwd`/.libs'.  Recommend using
+                        --installdir=<path>
+          flag if you do not like this assumption."
+    args_misc="$args_misc -rpath `pwd`/.libs"
+  else 
+    args_misc="$args_misc -rpath $libtool_rpath"
+  fi
+  if test $libtool_release = unknown; then
+    warn "Trying to avoid versioning requirements on DLL's 
+          (not recommended for deployed code, but can be 
+          convienient for development/tests).  Recommend 
+          using the 
+                        --release=x.y.z 
+          flag for final distribution."
+    args_misc="$args_misc -avoid-version"
+  else
+    args_misc="$args_misc -release $libtool_release"
+  fi 
+fi
+
+for i in $langs; do
+  case $i in
+    cxx)
+       CC=$CXX
+       lt_tag="CXX"
+       # C++ linker takes care of the usual includes
+       args_defs="$args_defs "`$BABELCONFIG --flags-f90`
+       args_libdirs="$args_libdirs "`$BABELCONFIG --libs-f90-L`
+       args_libs="$args_libs "`$BABELCONFIG --libs-f90-l`
+       args_libs="$args_libs -lsidlstub_cxx"
+       ;;
+    java)
+       if ! $BABELCONFIG --with-java; then
+         error "$BABELCONFIG appears to be installed without java support"
+       fi
+       args_incl="$args_incl "`$BABELCONFIG --includes-jni`
+       args_defs="$args_defs "`$BABELCONFIG --flags-javac`
+       args_libdirs="$args_libdirs "`$BABELCONFIG --libs-java-L`
+       args_libs=`$BABELCONFIG --libs-java-l`" $args_libs"
+       args_libs="$args_libs -lsidlstub_java"
+       ;;
+    py)
+       if ! $BABELCONFIG --with-python; then
+         error "$BABELCONFIG appears to be installed without python support"
+       fi
+       args_incl="$args_incl "`$BABELCONFIG --includes-py`
+       args_defs="$args_defs "`$BABELCONFIG --flags-python`
+       args_libdirs="$args_libdirs "`$BABELCONFIG --libs-python-L`
+       args_libs=`$BABELCONFIG --libs-python-l`" $args_libs"
+       ;;
+    f90) 
+       if ! $BABELCONFIG --with-f90; then
+         error "$BABELCONFIG appears to be installed without F90/95 support"
+       fi
+       args_defs="$args_defs "`$BABELCONFIG --flags-f90`
+       args_libdirs="$args_libdirs "`$BABELCONFIG --libs-f90-L`
+       args_libs="$args_libs "`$BABELCONFIG --libs-f90-l`
+       ;;
+    f77)
+       if ! $BABELCONFIG --with-f77; then
+         error "$BABELCONFIG appears to be installed without F77 support"
+       fi
+       args_defs="$args_defs "`$BABELCONFIG --flags-f77`
+       args_libdirs="$args_libdirs "`$BABELCONFIG --libs-f77-L`
+       args_libs="$args_libs "`$BABELCONFIG --libs-f77-l`
+       args_libs="$args_libs -lsidlstub_f77"
+       ;;
+  esac
+done
+
+if test $have_mpi = true; then
+  args_defs="$args_defs "`$BABELCONFIG --query-var=MPI_FC_CFLAGS`
+  args_libdirs="$args_libdirs "`$BABELCONFIG --query-var=MPI_FC_LDFLAGS | echo_libs "-L" `
+  args_libs="$args_libs "`$BABELCONFIG --query-var=MPI_FC_LDFLAGS | echo_libs "-l"`
+fi
+
+args_libdirs="$args_libdirs -L$libdir"
+args_libs="$args_libs -lsidlstub_f90 -lsidl "`$BABELCONFIG --libs-f90-l`
+
+case "$action-$use_libtool" in
+    preprocess-false)
+      command="$CPP"
+      args_libdirs=
+      args_libs=
+      ;;
+    preprocess-true)
+      command="$LIBTOOL $quiet_libtool $libtool_opts --mode=compile --tag=$lt_tag $CPP"
+      args_libdirs=
+      args_libs=
+      ;;
+    compile-false)
+      command="$FC"
+      args_libdirs=
+      args_libs=
+      ;;
+    compile-true)
+      command="$LIBTOOL $quiet_libtool $libtool_opts --mode=compile --tag=$lt_tag $FC"
+      args_libdirs=
+      args_libs=
+      ;;
+    link-false)
+      command="$FC"
+      args_incl=
+      ;;
+    link-true)
+      command="$LIBTOOL $quiet_libtool $libtool_opts --mode=link --tag=$lt_tag $FC"
+      args_incl=
+      ;;
+esac
+
+args_incl=`strip_duplicates $args_incl`
+args_libdirs=`strip_duplicates $args_libdirs`
+args_libs=`reverse $args_libs`
+args_libs=`strip_duplicates $args_libs`
+args_libs=`reverse $args_libs`
+F90CPPSUFFIX=`$BABELCONFIG --query-var=F90CPPSUFFIX`
+
+case "$action-$args_munging" in 
+    compile-true) 
+	for i in $args_preprocess; do 
+	    b=`basename $i .F90`
+	    run1 $CPP $args_defs $args_incl -P -o $b.tmp -x c $i 
+	    run2 "sed -e 's/^#pragma.*$$//' < $b.tmp > $b$F90CPPSUFFIX" 
+	    if test x"$args_outfiles" = x ; then
+               args_outfile="-o $b.lo"
+            fi
+	    run $command $args_throttle $args_outfile $args_optim $args_misc $mod_incl $args_libdirs $b$F90CPPSUFFIX $args_libs $args_else
+	    run2 "rm -f $b.tmp $b$F90CPPSUFFIX"
+	done
+	for i in $args_files; do 
+	    b=`basename $i .F90`
+	    if test x"$args_outfiles" = x ; then
+               args_outfile="-o $b.lo"
+            fi
+	    run $command $args_throttle $args_outfile $args_optim $args_misc $mod_incl $args_libdirs $args_files $args_libs $args_else
+	done
+	;;
+    link-true)
+	run $command $args_throttle $args_outfile $args_optim $args_misc $mod_incl $args_defs $args_incl $args_libdirs $args_files $args_libs $args_else
+	;;
+    compile-false)
+	run $command $args_all
+	;;
+    link-false)
+	run $command $args_all
+	;;
+esac 
+exit $?

@@ -1,0 +1,3 @@
+in runCxx:
+runCxx2GNUplot
+convert -adjoin -loop 40 -delay 10 pressure0*.gif pressure_anim.gif

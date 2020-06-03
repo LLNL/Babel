@@ -1,0 +1,95 @@
+# IMPLHDRS dependencies.
+wrapper_User_Impl.hxx:                                                        \
+  /home/epperly/current/babel_fix_wrap/regression/wrapper/runSIDL/../wrapper.sidl
+wrapper_User_Impl.hxx: sidl_cxx.hxx
+wrapper_User_Impl.hxx: wrapper_User_IOR.h
+wrapper_User_Impl.hxx: sidl_BaseClass.hxx
+wrapper_User_Impl.hxx: sidl_BaseInterface.hxx
+wrapper_User_Impl.hxx: sidl_ClassInfo.hxx
+wrapper_User_Impl.hxx: wrapper_Data.hxx
+wrapper_User_Impl.hxx: wrapper_User.hxx
+
+
+# IMPLSRCS dependencies.
+wrapper_User_Impl.cxx:                                                        \
+  /home/epperly/current/babel_fix_wrap/regression/wrapper/runSIDL/../wrapper.sidl
+wrapper_User_Impl.cxx: wrapper_User_Impl.hxx
+wrapper_User_Impl.cxx: sidl_BaseInterface.hxx
+wrapper_User_Impl.cxx: sidl_ClassInfo.hxx
+wrapper_User_Impl.cxx: wrapper_Data.hxx
+wrapper_User_Impl.cxx: sidl_NotImplementedException.hxx
+
+
+# IORHDRS dependencies.
+wrapper_User_IOR.h:                                                           \
+  /home/epperly/current/babel_fix_wrap/regression/wrapper/runSIDL/../wrapper.sidl
+wrapper_User_IOR.h: sidl_header.h
+wrapper_User_IOR.h: sidl_BaseClass_IOR.h
+
+
+# IORSRCS dependencies.
+wrapper_User_IOR.c:                                                           \
+  /home/epperly/current/babel_fix_wrap/regression/wrapper/runSIDL/../wrapper.sidl
+wrapper_User_IOR.c: wrapper_User_IOR.h
+wrapper_User_IOR.c: sidl_BaseClass_Impl.h
+wrapper_User_IOR.c: sidl_BaseClass.h
+wrapper_User_IOR.c: sidl_ClassInfo.h
+wrapper_User_IOR.c: sidl_ClassInfoI.h
+
+
+# SKELSRCS dependencies.
+wrapper_User_Skel.cxx:                                                        \
+  /home/epperly/current/babel_fix_wrap/regression/wrapper/runSIDL/../wrapper.sidl
+wrapper_User_Skel.cxx: wrapper_User_Impl.hxx
+wrapper_User_Skel.cxx: wrapper_User_IOR.h
+wrapper_User_Skel.cxx: sidl_BaseException.hxx
+wrapper_User_Skel.cxx: sidl_LangSpecificException.hxx
+wrapper_User_Skel.cxx: sidl_BaseInterface.hxx
+wrapper_User_Skel.cxx: sidl_ClassInfo.hxx
+wrapper_User_Skel.cxx: wrapper_Data.hxx
+wrapper_User_Skel.cxx: sidl_String.h
+
+
+# STUBHDRS dependencies.
+wrapper_User.hxx:                                                             \
+  /home/epperly/current/babel_fix_wrap/regression/wrapper/runSIDL/../wrapper.sidl
+wrapper_User.hxx: sidl_cxx.hxx
+wrapper_User.hxx: sidl_cxx.hxx
+wrapper_User.hxx: wrapper_User_IOR.h
+wrapper_User.hxx: sidl_BaseClass.hxx
+wrapper_User.hxx: wrapper_Data.hxx
+
+
+# STUBSRCS dependencies.
+wrapper_User.cxx:                                                             \
+  /home/epperly/current/babel_fix_wrap/regression/wrapper/runSIDL/../wrapper.sidl
+wrapper_User.cxx: wrapper_User.hxx
+wrapper_User.cxx: sidl_BaseInterface.hxx
+wrapper_User.cxx: sidl_BaseClass.hxx
+wrapper_User.cxx: sidl_BaseException.hxx
+wrapper_User.cxx: sidl_LangSpecificException.hxx
+wrapper_User.cxx: sidl_RuntimeException.hxx
+wrapper_User.cxx: sidl_rmi_Call.hxx
+wrapper_User.cxx: sidl_rmi_Return.hxx
+wrapper_User.cxx: sidl_rmi_Ticket.hxx
+wrapper_User.cxx: sidl_rmi_InstanceHandle.hxx
+wrapper_User.cxx: sidl_String.h
+wrapper_User.cxx: sidl_rmi_ConnectRegistry.h
+wrapper_User.cxx: babel_config.h
+wrapper_User.cxx: sidl_Loader.hxx
+wrapper_User.cxx: sidl_DLL.hxx
+wrapper_User.cxx: sidl_BaseInterface.hxx
+wrapper_User.cxx: sidl_ClassInfo.hxx
+wrapper_User.cxx: wrapper_Data.hxx
+wrapper_User.cxx: sidl_BaseClass.h
+wrapper_User.cxx: sidl_ClassInfo.h
+wrapper_User.cxx: sidl_rmi_ProtocolFactory.h
+wrapper_User.cxx: sidl_rmi_InstanceRegistry.h
+wrapper_User.cxx: sidl_rmi_InstanceHandle.h
+wrapper_User.cxx: sidl_rmi_Invocation.h
+wrapper_User.cxx: sidl_rmi_Response.h
+wrapper_User.cxx: sidl_rmi_ServerRegistry.h
+wrapper_User.cxx: sidl_rmi_ConnectRegistry.h
+wrapper_User.cxx: sidl_io_Serializable.h
+
+

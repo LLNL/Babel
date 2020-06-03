@@ -1,0 +1,304 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN"
+            "http://www.w3.org/TR/REC-html40/loose.dtd">
+<HTML>
+<HEAD>
+
+<META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<META name="GENERATOR" content="hevea 1.10">
+<LINK rel="stylesheet" type="text/css" href="index.css">
+<TITLE>Basic Babel Code Generation</TITLE>
+</HEAD>
+<BODY >
+<A HREF="index005.html"><IMG SRC="previous_motif.gif" ALT="Previous"></A>
+<A HREF="index-multipage.html"><IMG SRC="contents_motif.gif" ALT="Up"></A>
+<A HREF="index007.html"><IMG SRC="next_motif.gif" ALT="Next"></A>
+<HR>
+<H1 CLASS="chapter"><A NAME="htoc13">Chapter 4</A>  Basic Babel Code Generation</H1><UL>
+<LI><A HREF="index006.html#toc16">Babel is a Compiler</A>
+</LI><LI><A HREF="index006.html#toc17">Command Line Options</A>
+</LI></UL>
+<P><A NAME="c:babel_basics"></A>
+<EM>This chapter describes the Babel code generator and its command line options.
+</EM></P><P><BR>
+</P><H2 CLASS="section"><A NAME="toc16"></A><A NAME="htoc14">4.1</A>  Babel is a Compiler</H2><P>
+Babel is a compiler. It takes symbols and their interfaces as input and 
+generates either code or a given textual representation. These
+interfaces may be specified in either Scientific Interface Definition Language 
+(SIDL) or Extensible Markup Language (XML). The form the output takes depends 
+upon the options specified on the command line. Refer to the 
+Section <A HREF="#s:basics_commandline">4.2</A> for details on command line options. More
+information on the supported bindings can be found in 
+Part <A HREF="index-multipage.html#p:supported_langs">II</A> of this document. </P><H2 CLASS="section"><A NAME="toc17"></A><A NAME="htoc15">4.2</A>  Command Line Options</H2><P><A NAME="s:basics_commandline"></A>
+<A NAME="@default80"></A><A NAME="@default81"></A>	</P><P>The entire Babel code generator is written in Java and
+compiled into a jar file. For convenience, a small script
+called <B><TT>babel</TT></B> is provided that <EM>should</EM>
+set the appropriate environment variables and invoke
+the Java Virtual Machine on the jar file. To test that
+the script and jar file are working together properly, 
+simply type <B><TT>babel <CODE>--</CODE>help</TT></B>.</P><H3 CLASS="subsection">Using Babel</H3><P>Babel requires exactly one of the following 
+mutually exclusive arguments on the command line unless you use the 
+<B><TT><CODE>--</CODE>multi</TT></B> option.
+</P><UL CLASS="itemize"><LI CLASS="li-itemize">
+<B><TT><CODE>--</CODE>help</TT></B>   :   Print options to stdout.
+</LI><LI CLASS="li-itemize"><B><TT><CODE>--</CODE>version</TT></B>   :   Print version of Babel.
+</LI><LI CLASS="li-itemize"><B><TT><CODE>--</CODE>text=</TT><FONT COLOR=maroon><I>form</I></FONT></B>   :   
+	Generate text equivalent (“sidl” or “xml”) of associated
+	package(s) or generate interface documentation with “html”.
+</LI><LI CLASS="li-itemize"><B><TT><CODE>--</CODE>client=</TT><FONT COLOR=maroon><I>lang</I></FONT></B>   :   
+	Generate client, or proxy, classes to access library.
+</LI><LI CLASS="li-itemize"><B><TT><CODE>--</CODE>server=</TT><FONT COLOR=maroon><I>lang</I></FONT></B>   :   
+	Generate the server and client classes to implement the library.
+</LI><LI CLASS="li-itemize"><B><TT><CODE>--</CODE>parse-check</TT></B>   :   
+	Check the SIDL file only.
+</LI></UL><P>
+By far, the three most common uses of Babel will be 
+to generate the Client-side proxies, Server-side
+implementations, and XML associated with the SIDL file.
+The last option is essentially used internally when the Babel runtime 
+library is being developed.</P><P>The <B><TT><CODE>--</CODE>multi</TT></B> option lets you generate multiple
+targets for a given set of files in a single run. Put it first on the
+command line, each <B><TT><CODE>--</CODE>client</TT></B> or <B><TT><CODE>--</CODE>server</TT></B> can have a different set of settings.</P><P>Additionally, there are a few supplemental arguments
+that complete the picture.
+</P><UL CLASS="itemize"><LI CLASS="li-itemize">
+<B><TT><CODE>--</CODE>output-directory=</TT><FONT COLOR=maroon><I>dir</I></FONT></B>   :  
+	Specifies the root directory associated with the
+	generated files. The default setting is 
+	the current working directory.
+</LI><LI CLASS="li-itemize"><B><TT><CODE>--</CODE>generate-hooks</TT></B>   :  
+Generate additional methods in the implementation files that
+	allow developers to put additional code to be called before 
+	and after the actual method call. These hooks are useful for
+	implementation-specific method invocation instrumentation. 
+Their execution can be disabled at run-time.
+</LI><LI CLASS="li-itemize"><B><TT><CODE>--</CODE>generate-subdirs</TT></B>   :  
+	Generates files in a directory tree
+	matching the packaging scope of the SIDL file. This
+	is on by default for languages that have this
+	requirement, such as Java and Python, but off
+	by default for languages that have no such
+	requirement. Hence, code generation for only the 
+latter languages (e. g. C, C++, F77, F90) is affected
+	by this option.
+</LI><LI CLASS="li-itemize"><B><TT><CODE>--</CODE>generate-subdirs-off</TT></B>   :  
+Turn the <B><TT><CODE>--</CODE>generate-subdirs</TT></B>
+	feature off. This is useful with 
+	<B><TT><CODE>--</CODE>multi</TT></B> option.
+</LI><LI CLASS="li-itemize"><B><TT><CODE>--</CODE>short-file-name</TT></B>   :   
+When the <CODE>--</CODE>generate-subdirs and
+<CODE>--</CODE>short-file-names options are
+used simultaneously, the generated file names will not include
+package names, just the class or interface symbol. Thus,
+either long or short names must be used in all clients or
+servers that have interdependencies; mixing short and long
+names will result in compile and/or runtime errors.
+</LI><LI CLASS="li-itemize"><B><TT><CODE>--</CODE>repository-path=</TT><FONT COLOR=maroon><I>path</I></FONT></B>   :  
+	Specifies a semicolon-separated list of directories,
+	or URLs<SUP><A NAME="text4" HREF="#note4">1</A></SUP>
+	to search for XML Type descriptions. The need for
+	these XML types is to resolve references in the 
+	SIDL file.
+	This option can be used multiple times on the same 
+command line. If appropriate, the Babel script 
+adds the default repository path to the command line 
+before dispatching to the Java Virtual Machine.
+</LI><LI CLASS="li-itemize"><B><TT><CODE>--</CODE>no-default-repository</TT></B>   :   
+	Prohibits the use of the default repository
+	in resolving symbols.
+</LI><LI CLASS="li-itemize"><B><TT><CODE>--</CODE>rename-splicers</TT></B>   :  
+	To improve some of the Babel 1.0 splicer blocks names were changed
+in Babel 1.4. This switch will automatically rename Babel 1.0 
+	splicer blocks to their new Babel 1.4 names.
+</LI><LI CLASS="li-itemize"><B><TT><CODE>--</CODE>suppress-contracts</TT></B>   :  
+	Refrain from generating checks associated with contracts 
+	specified in the SIDL file.
+</LI><LI CLASS="li-itemize"><B><TT><CODE>--</CODE>suppress-ior</TT></B>   :  
+Refrain from generating IOR source and header files.
+</LI><LI CLASS="li-itemize"><B><TT><CODE>--</CODE>suppress-timestamp</TT></B>   :  
+Suppresses the insertion of meta-information that 
+could result in generated files that would otherwise
+not differ from prior executions on the same, unchanged
+input file.
+	Typically Babel inserts meta-information such as
+	creation time into files it generates. Although
+	this information is useful, it does result in the 
+creation of excessive changes when using version control systems. 
+</LI><LI CLASS="li-itemize"><B><TT><CODE>--</CODE>exclude=</TT><FONT COLOR=maroon><I>regex</I></FONT></B>   :  
+	This options can be used multiple times. Each time you
+	add a regular expression that will be used to exclude
+	symbols from code generation. No code or XML will be
+	generated for any symbol matching the user provided
+	regular expression. This command line option requires
+	version 1.4.0 or later of the Java runtime environment.
+</LI><LI CLASS="li-itemize"><B><TT><CODE>--</CODE>cca-mode</TT></B>   :  
+This flag changes the contents of splicer blocks to
+	match the requirements for the Common Component Architecture (CCA).
+	Unimplemented methods throw exceptions, and there are some
+	extra indications for Bocca about which sections still
+	require editing.
+</LI><LI CLASS="li-itemize"><B><TT><CODE>--</CODE>comment-local-only</TT></B>   :  
+	This option reduces the amount of comments in stub
+	C header files. It will only include the doc comments
+	for locally defined methods. It will not include doc
+	comments for inherited methods.
+</LI><LI CLASS="li-itemize"><B><TT><CODE>--</CODE>hide-glue</TT></B>   :  
+This option causes all non-impl files to be generated
+	in a <TT>glue/</TT> subdirectory. This reduces the
+	“clutter” in the current directory.
+</LI><LI CLASS="li-itemize"><B><TT><CODE>--</CODE>hide-glue-off</TT></B>   :  
+Turn off the <B><TT><CODE>--</CODE>hide-glue</TT></B> setting.
+</LI><LI CLASS="li-itemize"><B><TT><CODE>--</CODE>language-subdir</TT></B>   :  
+This options causes all generated files to be stored in a 
+	language-dependent subdirectory; if the <B><TT><CODE>--</CODE>generate-subdirs</TT></B> option is also used, the language
+directory will be at the bottom of the hierarchy.
+</LI><LI CLASS="li-itemize"><B><TT><CODE>--</CODE>language-subdir-off</TT></B>   :  
+Turn the <B><TT><CODE>--</CODE>language-subdir</TT></B> setting
+	off.
+</LI><LI CLASS="li-itemize"><B><TT><CODE>--</CODE>make-prefix=</TT><FONT COLOR=maroon><I>prefix</I></FONT></B>   :  
+The string <FONT COLOR=maroon><I>prefix</I></FONT> is prepended to the name of
+	<TT>babel.make</TT> and the symbols defined inside <TT>babel.make</TT>
+	to allow Babel to be run multiple times in a single directory without
+	overwriting files.
+</LI><LI CLASS="li-itemize"><B><TT><CODE>--</CODE>makefile</TT></B>   :  
+This instructs Babel to generate a sample GNU Makefile named <TT>GNUmakefile</TT>.
+	The sample GNU Makefile uses <TT>babel-config</TT> to determine the appropriate build
+	flags. It’s meant to be a simple, example Makefile, and it will likely require
+	editing before incorporating it in a larger project build. It may not work 
+	correctly with other options that change where files are
+generated such as the <CODE>--</CODE><TT>hide-glue</TT> option.
+</LI><LI CLASS="li-itemize"><B><TT><CODE>--</CODE>exclude-external</TT></B>   :  
+This option causes code to be generated only for the symbols
+	specified on the command line. If you list a SIDL file
+	on the command line, all the symbols it contains will be 
+	included. No code is generated for symbols
+	on which the users symbols depend. This behavior is now the default 
+	behavior, so this option is not usually required.
+</LI><LI CLASS="li-itemize"><B><TT><CODE>--</CODE>include-referenced</TT></B>   :  
+This option causes code to be generated for symbols specified
+	on the command line and for all symbols referenced by symbols
+	on the command line. It is the opposite behavior to 
+	<B><TT><CODE>--</CODE>exclude-external</TT></B>.
+</LI><LI CLASS="li-itemize"><B><TT><CODE>--</CODE>cxx-ior-exception</TT></B>   :  
+	Earlier versions of the Babel C++ bindings checked the IOR
+	pointer in a given stub before making any calls on it. If the IOR was
+	null, a NullIORException was thrown. It was later found that in
+	certain cases these checks were taking an inordinent amount of time,
+	and since C++ does not normally check pointers before dereferencing
+	them, it was decided that this feature was out of line with the spirit
+	of C++. However, since some code had already been written that used
+	this feature, we could not completely eliminate the checks.
+	Therefore, this command line option was added. Calling babel
+	with it will generate C++ stubs with the
+	checks in them. This option has no effect on other languages. 
+</LI><LI CLASS="li-itemize"><B><TT><CODE>--</CODE>vpath=</TT><FONT COLOR=maroon><I>dir</I></FONT></B>   :   This
+option sets the root directory Babel searches first when trying to
+load implementation files to preserve splicer block contents in the hand
+edited implementation files. If you are generating server-side C for
+a concrete class <TT>x.y.z</TT> and you used <B><TT><CODE>--</CODE>vpath=/tmp</TT></B>, Babel would try to read splicer blocks from
+<TT>/tmp/x_y_z_Impl.h</TT> and <TT>/tmp/x_y_z_Impl.c</TT>. If it does
+not find either file in <TT>/tmp</TT>, it also checks the current
+directory. If you are using <B><TT><CODE>--</CODE>generate-subdirs</TT></B> with <B><TT><CODE>--</CODE>vpath</TT></B>, the
+vpath directory is the root of the tree, so for the example, Babel
+would search for <TT>/tmp/x/y/z_Impl.h</TT> and
+<TT>/tmp/x/y/z_Impl.c</TT>. When appropriate, Babel inserts
+<TT>#line</TT> directives to refer debuggers to the original
+file. As its name suggests, this option is useful when making vpath
+builds using make. Some people also use it to avoid spurious changes
+to the files managed by their revision control system.
+</LI></UL><H3 CLASS="subsection">Long and Short Forms</H3><BLOCKQUOTE CLASS="table"><DIV CLASS="center"><HR WIDTH="80%" SIZE=2></DIV>
+<DIV CLASS="caption"><TABLE CELLSPACING=6 CELLPADDING=0><TR><TD VALIGN=top ALIGN=left>Table 4.1: Command Line Arguments.</TD></TR>
+</TABLE></DIV><A NAME="tbl:basics_commandline_args"></A>
+<DIV CLASS="center">
+<TABLE BORDER=1 CELLSPACING=0 CELLPADDING=1><TR><TD ALIGN=left NOWRAP><B>SHORT FORM</B></TD><TD ALIGN=left NOWRAP><B>LONG FORM</B></TD><TD ALIGN=left NOWRAP><B>NOTES</B></TD></TR>
+<TR><TD ALIGN=left NOWRAP>-h</TD><TD ALIGN=left NOWRAP><CODE>--</CODE>help</TD><TD ALIGN=left NOWRAP>Print options to stdout.</TD></TR>
+<TR><TD ALIGN=left NOWRAP>-v</TD><TD ALIGN=left NOWRAP><CODE>--</CODE>version</TD><TD ALIGN=left NOWRAP>Print version of Babel.</TD></TR>
+<TR><TD ALIGN=left NOWRAP>-t<FONT COLOR=maroon><I>form</I></FONT></TD><TD ALIGN=left NOWRAP><CODE>--</CODE>text=<FONT COLOR=maroon><I>form</I></FONT></TD><TD ALIGN=left NOWRAP>Generate text.</TD></TR>
+<TR><TD ALIGN=left NOWRAP>-c<FONT COLOR=maroon><I>lang</I></FONT></TD><TD ALIGN=left NOWRAP><CODE>--</CODE>client=<FONT COLOR=maroon><I>lang</I></FONT></TD><TD ALIGN=left NOWRAP>Generate client classes.</TD></TR>
+<TR><TD ALIGN=left NOWRAP>-s<FONT COLOR=maroon><I>lang</I></FONT></TD><TD ALIGN=left NOWRAP><CODE>--</CODE>server=<FONT COLOR=maroon><I>lang</I></FONT></TD><TD ALIGN=left NOWRAP>Generate server and client classes.</TD></TR>
+<TR><TD ALIGN=left NOWRAP>-p</TD><TD ALIGN=left NOWRAP><CODE>--</CODE>parse-check</TD><TD ALIGN=left NOWRAP>Only check parsing of the SIDL file.</TD></TR>
+<TR><TD ALIGN=left NOWRAP>&nbsp;</TD><TD ALIGN=left NOWRAP><CODE>--</CODE>cca-mode</TD><TD ALIGN=left NOWRAP>New splicer blocks get CCA-required content.</TD></TR>
+<TR><TD ALIGN=left NOWRAP>-i</TD><TD ALIGN=left NOWRAP><CODE>--</CODE>generate-hooks</TD><TD ALIGN=left NOWRAP>Generate pre-/post-method hooks.</TD></TR>
+<TR><TD ALIGN=left NOWRAP>&nbsp;</TD><TD ALIGN=left NOWRAP><CODE>--</CODE>generate-sidl-stdlib</TD><TD ALIGN=left NOWRAP>Regenerate the Babel runtime library.</TD></TR>
+<TR><TD ALIGN=left NOWRAP>-o<FONT COLOR=maroon><I>dir</I></FONT></TD><TD ALIGN=left NOWRAP><CODE>--</CODE>output-directory=<FONT COLOR=maroon><I>dir</I></FONT></TD><TD ALIGN=left NOWRAP>Root directory to contain generated files.</TD></TR>
+<TR><TD ALIGN=left NOWRAP>-g</TD><TD ALIGN=left NOWRAP><CODE>--</CODE>generate-subdirs</TD><TD ALIGN=left NOWRAP>Generate sources in directory tree matching</TD></TR>
+<TR><TD ALIGN=left NOWRAP>&nbsp;</TD><TD ALIGN=left NOWRAP>&nbsp;</TD><TD ALIGN=left NOWRAP>SIDL packaging.</TD></TR>
+<TR><TD ALIGN=left NOWRAP>&nbsp;</TD><TD ALIGN=left NOWRAP><CODE>--</CODE>generate-subdirs-off</TD><TD ALIGN=left NOWRAP>Turn off generate-subdirs.</TD></TR>
+<TR><TD ALIGN=left NOWRAP>-m</TD><TD ALIGN=left NOWRAP><CODE>--</CODE>make-prefix=<FONT COLOR=maroon><I>prefix</I></FONT></TD><TD ALIGN=left NOWRAP>Prepend <FONT COLOR=maroon><I>prefix</I></FONT> to names for babel.make.</TD></TR>
+<TR><TD ALIGN=left NOWRAP>&nbsp;</TD><TD ALIGN=left NOWRAP><CODE>--</CODE>makefile</TD><TD ALIGN=left NOWRAP>Generate a simple GNU Makefile.</TD></TR>
+<TR><TD ALIGN=left NOWRAP>&nbsp;</TD><TD ALIGN=left NOWRAP><CODE>--</CODE>multi</TD><TD ALIGN=left NOWRAP>Generate multiple targets in a single run.</TD></TR>
+<TR><TD ALIGN=left NOWRAP>-R<FONT COLOR=maroon><I>path</I></FONT></TD><TD ALIGN=left NOWRAP><CODE>--</CODE>repository-path=<FONT COLOR=maroon><I>path</I></FONT></TD><TD ALIGN=left NOWRAP>Use specified XML repository(ies) to resolve</TD></TR>
+<TR><TD ALIGN=left NOWRAP>&nbsp;</TD><TD ALIGN=left NOWRAP>&nbsp;</TD><TD ALIGN=left NOWRAP>symbols.</TD></TR>
+<TR><TD ALIGN=left NOWRAP>-e<FONT COLOR=maroon><I>regex</I></FONT></TD><TD ALIGN=left NOWRAP><CODE>--</CODE>exclude=<FONT COLOR=maroon><I>regex</I></FONT></TD><TD ALIGN=left NOWRAP>Do not generate output for matching symbol(s).</TD></TR>
+<TR><TD ALIGN=left NOWRAP>&nbsp;</TD><TD ALIGN=left NOWRAP><CODE>--</CODE>no-default-repository</TD><TD ALIGN=left NOWRAP>Do not use the default repository to resolve</TD></TR>
+<TR><TD ALIGN=left NOWRAP>&nbsp;</TD><TD ALIGN=left NOWRAP>&nbsp;</TD><TD ALIGN=left NOWRAP>symbols.</TD></TR>
+<TR><TD ALIGN=left NOWRAP>&nbsp;</TD><TD ALIGN=left NOWRAP><CODE>--</CODE>rename-splicers</TD><TD ALIGN=left NOWRAP>Rename Babel 1.0 splicer blocks to their 1.4 names.</TD></TR>
+<TR><TD ALIGN=left NOWRAP>&nbsp;</TD><TD ALIGN=left NOWRAP><CODE>--</CODE>suppress-contracts</TD><TD ALIGN=left NOWRAP>Don’t generate contract checks in IOR files.</TD></TR>
+<TR><TD ALIGN=left NOWRAP>&nbsp;</TD><TD ALIGN=left NOWRAP><CODE>--</CODE>suppress-ior</TD><TD ALIGN=left NOWRAP>Don’t generate IOR files.</TD></TR>
+<TR><TD ALIGN=left NOWRAP>&nbsp;</TD><TD ALIGN=left NOWRAP><CODE>--</CODE>suppress-stubs</TD><TD ALIGN=left NOWRAP>Don’t generate client-side stub files.</TD></TR>
+<TR><TD ALIGN=left NOWRAP>&nbsp;</TD><TD ALIGN=left NOWRAP><CODE>--</CODE>suppress-timestamp</TD><TD ALIGN=left NOWRAP>Suppress time-related metadata generation.</TD></TR>
+<TR><TD ALIGN=left NOWRAP>&nbsp;</TD><TD ALIGN=left NOWRAP><CODE>--</CODE>comment-local-only</TD><TD ALIGN=left NOWRAP>Reduce doc comments in C stub
+header.</TD></TR>
+<TR><TD ALIGN=left NOWRAP>-E</TD><TD ALIGN=left NOWRAP><CODE>--</CODE>exclude-external</TD><TD ALIGN=left NOWRAP>Do not generate code for
+dependencies.</TD></TR>
+<TR><TD ALIGN=left NOWRAP>&nbsp;</TD><TD ALIGN=left NOWRAP><CODE>--</CODE>include-referenced</TD><TD ALIGN=left NOWRAP>Generate code for dependencies.</TD></TR>
+<TR><TD ALIGN=left NOWRAP>-u</TD><TD ALIGN=left NOWRAP><CODE>--</CODE>hide-glue</TD><TD ALIGN=left NOWRAP>Put glue code in a subdirectory.</TD></TR>
+<TR><TD ALIGN=left NOWRAP>&nbsp;</TD><TD ALIGN=left NOWRAP><CODE>--</CODE>hide-glue-off</TD><TD ALIGN=left NOWRAP>Turn off hide-glue.</TD></TR>
+<TR><TD ALIGN=left NOWRAP>-l</TD><TD ALIGN=left NOWRAP><CODE>--</CODE>language-subdir</TD><TD ALIGN=left NOWRAP>Put code in a language dependent directory.</TD></TR>
+<TR><TD ALIGN=left NOWRAP>&nbsp;</TD><TD ALIGN=left NOWRAP><CODE>--</CODE>language-subdir-off</TD><TD ALIGN=left NOWRAP>Turn off language-subdir.</TD></TR>
+<TR><TD ALIGN=left NOWRAP>-x</TD><TD ALIGN=left NOWRAP><CODE>--</CODE>cxx-ior-exception</TD><TD ALIGN=left NOWRAP>Include Null IOR checks in C++ Stubs.</TD></TR>
+<TR><TD ALIGN=left NOWRAP>-V</TD><TD ALIGN=left NOWRAP><CODE>--</CODE>vpath</TD><TD ALIGN=left NOWRAP>Set the impl (splicer block) root directory.</TD></TR>
+</TABLE>
+</DIV>
+<DIV CLASS="center"><HR WIDTH="80%" SIZE=2></DIV></BLOCKQUOTE><P>So far, we’ve shown described the long forms of command line
+arguments, starting with two hyphens “<B><TT><CODE>--</CODE></TT></B>”.
+There are also short forms for many of the more frequently<A NAME="@default82"></A> 
+used commands. See Table <A HREF="#tbl:basics_commandline_args">4.1</A>
+for details.</P><H3 CLASS="subsection">Examples</H3><P><A NAME="@default83"></A></P><P>To create a new XML version of a
+SIDL file, use the following command:
+</P><BLOCKQUOTE CLASS="quotation"><TT>
+% <B>babel -tXML -omydepot mystuff.sidl</B><BR>
+</TT></BLOCKQUOTE><P>To exclude code generation for types whose name begins with “MPI.”,
+use the following command:
+</P><BLOCKQUOTE CLASS="quotation"><TT>
+% <B>babel -sC++ –exclude=’^MPI\.’ mystuff.sidl</B><BR>
+</TT></BLOCKQUOTE><P>Now suppose a developer wants to implement a library
+in C++ that corresponds to these types in the SIDL file.
+</P><BLOCKQUOTE CLASS="quotation"><TT>
+% <B>babel -E -sC++ mystuff.sidl</B><BR>
+</TT></BLOCKQUOTE><P>Alternatively, the developer could also create C++ implementation
+files based on the XML repository. In this case, 
+a list of symbols to be implemented would need to be specified. Assuming that
+all of the types are in a package called “mystuff”, the following command can
+be issued: 
+</P><BLOCKQUOTE CLASS="quotation"><TT>
+% <B>babel -E -sC++ -Rmydepot mystuff</B><BR>
+</TT></BLOCKQUOTE><P>Now suppose a second developer wants to extend this
+software. A second SIDL file is created then 
+the implementation files in Fortran 90/95 are generated with the following command:
+</P><BLOCKQUOTE CLASS="quotation"><TT>
+% <B>babel -E -sf90 -Rmydepot newstuff.sidl</B><BR>
+</TT></BLOCKQUOTE><P>A user now can download both SIDL files and create their
+Python bindings to use both libraries with the following
+command:
+</P><BLOCKQUOTE CLASS="quotation"><TT>
+% <B>babel -cPython 
+-Rhttp://localhost/mystuff/mydepot;<BR>
+http://www.otherhost.com/newstuff
+mystuff newstuff</B><BR>
+</TT></BLOCKQUOTE><P>Finally, to generate SIDL files for each package based on the XML stored in the 
+repository, the following command is used:
+</P><BLOCKQUOTE CLASS="quotation"><TT>
+% <B>babel -tSIDL
+-Rhttp://localhost/mystuff/mydepot;<BR>
+http://www.otherhost.com/newstuff
+mystuff newstuff</B><BR>
+</TT></BLOCKQUOTE><HR CLASS="footnoterule"><DL CLASS="thefootnotes"><DT CLASS="dt-thefootnotes">
+<A NAME="note4" HREF="#text4">1</A></DT><DD CLASS="dd-thefootnotes">URLs have colons in them, so this
+	path has to be semi-colon separated, even though
+	UNIX paths are traditionally colon separated.
+</DD></DL>
+<HR>
+<A HREF="index005.html"><IMG SRC="previous_motif.gif" ALT="Previous"></A>
+<A HREF="index-multipage.html"><IMG SRC="contents_motif.gif" ALT="Up"></A>
+<A HREF="index007.html"><IMG SRC="next_motif.gif" ALT="Next"></A>
+</BODY>
+</HTML>

@@ -1,0 +1,12 @@
+# client_IORHDRS dependencies.
+wrapper_Data_IOR.h:                                                           \
+  /home/epperly/current/babel_fix_wrap/regression/wrapper/runSIDL/../wrapper.sidl
+wrapper_Data_IOR.h: sidl_header.h
+wrapper_Data_IOR.h: sidl_BaseClass_IOR.h
+
+
+# client_PYMOD_HDRS dependencies.
+wrapper_Data_Module.h:                                                        \
+  /home/epperly/current/babel_fix_wrap/regression/wrapper/runSIDL/../wrapper.sidl
+
+

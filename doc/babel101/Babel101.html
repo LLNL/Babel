@@ -1,0 +1,299 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html>
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="generator" content="HTML Tidy, see www.w3.org">
+   <meta name="GENERATOR" content="Mozilla/4.78 [en] (X11; U; Linux 2.4.18-c0smp i686) [Netscape]">
+   <title>Babel Tutorial 101</title>
+</head>
+<body link="#0000FF" vlink="#800080" lang="EN-US">
+
+<center>
+<h1>
+Babel Tutorial 101</h1></center>
+This tutorial will guide you through the process of writing the classic
+"Hello World!" example using the <b>Babel</b> tools.&nbsp; In the process,
+you will learn how to configure and install the
+<b>Babel</b> library, write
+a SIDL (Scientific Interface Definition Language) interface description
+file, generate the library implementation in C++, and write a C main program
+to call the library.&nbsp; You will also learn how to write a <b>Makefile</b>
+to compile and link the library and program.
+<p>This document is arranged as follows:
+<ul>
+<li>
+Getting the <b>Babel</b> Distribution</li>
+
+<li>
+Installing <b>Babel</b></li>
+
+<li>
+Writing a SIDL File</li>
+
+<li>
+Writing the Implementation</li>
+
+<li>
+Writing the Client</li>
+</ul>
+Please feel free to send any suggestions for improving this tutorial to
+<a href="mailto:components@llnl.gov">components@llnl.gov.</a>
+<h2>
+Getting the Babel Distribution</h2>
+You can obtain the <b>Babel</b> distribution through the Lawrence Livermore
+National Laboratory Component Technologies web site at <a href="http://www.llnl.gov/CASC/components">http://www.llnl.gov/CASC/components</a>.&nbsp;
+Follow the links to download the <b>Babel</b> distribution.&nbsp; We will
+place new <b>Babel</b> releases and news on this web site.&nbsp; Bug reports
+and feature requests may be submitted through the bug reporting database
+at <a href="http://www-casc.llnl.gov/bugs">http://www-casc.llnl.gov/bugs</a>
+or diirectly to the components team at <a href="mailto:components@llnl.gov">components@llnl.gov</a>.
+<h2>
+Installing Babel</h2>
+For the purposes of this tutorial, we will assume that you saved the <b>Babel</b>
+distribution tarball in your home directory and will install <b>Babel</b>
+into a subdirectory called
+<b>babel/.&nbsp;</b> The following commands
+will unpack the distribution into a directory called <b>babel-0.8.2</b>,
+probe configuration information for your system, and make and install the
+tools in your <b>babel/</b> subdirectory.
+<blockquote><tt>% gzcat babel-0.8.2.tar.gz | tar -xf -</tt>
+<br><tt>% cd babel-0.8.2</tt>
+<br><tt>% ./configure --prefix=$HOME/babel</tt>
+<br><tt>% gmake install</tt></blockquote>
+The <b>configure</b> script will probe your system for compilers and other
+required tools.&nbsp; Make sure your PATH environment variable includes
+Java, the C compiler, and the C++ compiler.&nbsp; We currently recommend
+using the GNU compilers <b>gcc</b> and
+<b>g++</b>.&nbsp; Although we are
+developing support for other compilers, the generation of C++ shared libraries
+is still somewhat platform-dependent.&nbsp; Future releases will more fully
+support other platforms and compilers.&nbsp; Currently, you must use GNU
+<b>make</b>
+to compile the <b>Babel</b> distribution, although we are modifying the
+build system to support non-GNU <b>make</b> programs.
+<p>If you have configuration troubles, please contact us at <a href="mailto:components@llnl.gov">components@llnl.gov</a>
+with a detailed description of the platform, environment, and the log file
+<b>config.log</b>
+from the configuration utility.
+<p>Assuming the "make install" completes successfully, the
+<b>babel/</b>
+subdirectory of your home directory will contain the following:
+<ul>
+<li>
+a <b>bin/</b> directory containing the main <b>babel</b> driver script</li>
+
+<li>
+a <b>doc/</b> directory with source code documentation, papers, talks,
+and this tutorial</li>
+
+<li>
+an <b>include/</b> directory with the C and C++ include files for the <b>Babel</b>
+run-time library</li>
+
+<li>
+a <b>lib/</b> directory with jar files for the <b>babel</b> tool along
+with the compiled SIDL run-time libraries</li>
+
+<li>
+a <b>runtime/ </b>directory with the SIDL run-time library</li>
+
+<li>
+a <b>share/</b> directory with <b>Babel</b> configuration files and the
+XML type repository for the SIDL run-time library</li>
+</ul>
+
+<h2>
+Writing a SIDL File</h2>
+Now that we have installed <b>Babel</b>, let's write the "Hello World!"
+application.&nbsp; The following procedure may seem to be the most complicated
+way to write the world's simplest program, but, of course, the same process
+will also work for significantly more complicated applications.
+<p>We will write the "Hello World!" program in a directory called
+<b>hello/</b>
+and place the client library in a subdirectory
+<b>hello/lib/</b>:
+<blockquote><tt>% mkdir hello</tt>
+<br><tt>% cd hello</tt>
+<br><tt>% mkdir lib</tt></blockquote>
+The first step is to write a SIDL file.&nbsp; Recall that SIDL is an interface
+definition language (IDL) that describes the calling interface for a scientific
+library.&nbsp; It is used by the
+<b>Babel</b> tools to generate glue code
+that hooks together different&nbsp; programming languages.&nbsp; A complete
+description of SIDL is beyond the scope of this introductory tutorial.&nbsp;
+Other documentation covers the SIDL <a href="grammar.html">grammar</a>,
+<a href="SIDLF77.html">Fortran
+77</a>, and <a href="SIDLCxx.html">C++</a> bindings. In addition, a <a href="hypre.html">sample
+SIDL file</a> for the <i><a href="http://www.llnl.gov/CASC/hypre">hypre</a></i>
+library has been provided.
+<p>For this particular application, we will write a SIDL file that contains
+a class <b>World</b> in a package <b>Hello</b>.&nbsp; Method <b>getMsg</b>
+in class <b>World</b> returns a string containing the traditional computer
+greeting.&nbsp; Using your favorite editor, create a file called <b>hello.sidl</b>
+in the
+<b>hello/</b> directory:
+<blockquote><tt>package Hello version 1.0 {</tt>
+<br><tt>&nbsp; class World {</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; string getMsg();</tt>
+<br><tt>&nbsp; }</tt>
+<br><tt>}</tt></blockquote>
+The <b>package</b> statement provides a namespace for class
+<b>World</b>,
+which contains only one method,
+<b>getMsg</b>.&nbsp; The <b>version</b>
+clause identifies this as version 1.0 of the <b>Hello</b> package.
+<h2>
+Writing the Implementation</h2>
+We will write the implementation in the <b>lib/</b> subdirectory of
+<b>hello/</b>.&nbsp;
+The first step is to run the <b>babel</b> shell script to generate the
+library implementation code for our SIDL file.&nbsp; We will implement
+the library in C++.&nbsp; The command to generate the <b>Babel</b> library
+code is:
+<blockquote><tt>% cd lib</tt>
+<br><tt>% $HOME/babel/bin/babel -R$MYREP -sC++ ../hello.sidl</tt></blockquote>
+In this <b>babel</b> command, the "-sC++" flag indicates that we wish to
+generate server side C++ bindings.&nbsp; The "-R" flag indicates that the
+repository for other symbols (such as the base SIDL symbols) is in the
+directory $MYREP.&nbsp; The "--help" flag lists other <b>babel</b> command-line
+options.&nbsp; You may also refer to the <a href="babelcmd.html">command
+line documentation.</a>
+<p>This command will generate a large number of C and C++ header and source
+files.&nbsp; The files that begin with "Hello" correspond to our sample
+program.&nbsp; The files that begin with "SIDL" are part of the C++ interface
+to the SIDL run-time library.&nbsp; The file names that contain "IOR" or
+"Skel" are part of the <b>Babel</b> glue code.&nbsp; The file <b>babel.make</b>
+is a <b>Makefile</b> fragment that will simplify writing the
+<b>Makefile</b>
+necessary to compile the library.&nbsp; You may ignore the <b>babel.make</b>
+file if you wish.&nbsp; The only files that should be modified are those
+headers and sources that end with "Impl." <b>Babel</b> generates these
+implementation files as a starting point for developers.&nbsp; These files
+will contain the implementation of the <b>Hello</b> library.
+<p>Every implementation file contains many pairs of comment "splicer" lines
+such as the following:
+<blockquote><tt>string</tt>
+<br><tt>Hello::World_impl::getMsg()</tt>
+<br><tt>throw ()</tt>
+<br><tt>{</tt>
+<br><tt>&nbsp; // DO-NOT-DELETE splicer.begin(Hello.World.getMsg)</tt>
+<br><tt>&nbsp; // insert implementation here</tt>
+<br><tt>&nbsp; // DO-NOT-DELETE splicer.end(Hello.World.getMsg)</tt>
+<br><tt>}</tt></blockquote>
+Any modifications between these splicer lines will be saved between invocations
+of the <b>babel</b> tool.&nbsp; Any changes outside the splicer lines will
+be lost.&nbsp; Thus, it is easy to add new methods to the <b>hello.sidl</b>
+file without the loss of your modifications when <b>babel</b> regenerates
+its code.
+<p>For our <b>hello</b> application, the implementation is trivial.&nbsp;
+Add the following <b>return</b> statement between the splicer lines in
+the <b>Hello_World_Impl.cc</b> file:
+<blockquote><tt>string</tt>
+<br><tt>Hello::World_impl::getMsg()</tt>
+<br><tt>throw ()</tt>
+<br><tt>{</tt>
+<br><tt>&nbsp; // DO-NOT-DELETE splicer.begin(Hello.World.getMsg)</tt>
+<br><tt>&nbsp; return string("Hello World!");</tt>
+<br><tt>&nbsp; // DO-NOT-DELETE splicer.end(Hello.World.getMsg)</tt>
+<br><tt>}</tt></blockquote>
+To keep the <b>Makefile</b> simple, we will use the GNU gcc and g++ compilers.&nbsp;
+The following <b>Makefile</b> will compile the library files and create
+a shared library named <b>libhello.so</b>:
+<blockquote><tt>.cc.o:</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; g++ -fPIC -I$(HOME)/babel/include -c $&lt;</tt>
+<br><tt>.c.o:</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; gcc -fPIC -I$(HOME)/babel/include -c $&lt;</tt>
+<p><tt>include babel.make</tt>
+<br><tt>OBJS = ${IMPLSRCS:.cc=.o} ${IORSRCS:.c=.o} \</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ${SKELSRCS:.cc=.o} ${STUBSRCS:.cc=.o}</tt>
+<p><tt>libhello.so: ${OBJS}</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; g++ -shared -o $@ ${OBJS}</tt>
+<p><tt>clean:</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; ${RM} *.o libhello.so</tt></blockquote>
+You do not necessarily need to create a shared library for this example;
+you may generate a standard static library (e.g.,
+<b>libhello.a</b>).&nbsp;
+However, in general, you must generate a shared library if you will be
+calling your library from Python or Java.&nbsp; To create the shared library
+archive
+<b>libhello.so</b>, simply execute <b>make</b>:
+<blockquote><tt>% gmake libhello.so</tt></blockquote>
+
+<h2>
+Writing the Client</h2>
+We will write the client in the main <b>hello/</b> subdirectory.&nbsp;
+The main program will be written in C.&nbsp; File <b>hello.c</b> is as
+follows:
+<blockquote><tt>#include &lt;stdio.h></tt>
+<br><tt>#include "Hello_World.h"</tt>
+<p><tt>int main(int argc, char** argv)</tt>
+<br><tt>{</tt>
+<br><tt>&nbsp; Hello_World h = Hello_World__create();</tt>
+<br><tt>&nbsp; char* msg = Hello_World_getMsg(h);</tt>
+<br><tt>&nbsp; printf("%s\n", msg);</tt>
+<br><tt>&nbsp; Hello_World_deleteRef(h);</tt>
+<br><tt>&nbsp; free(msg);</tt>
+<br><tt>}</tt></blockquote>
+This code creates the <b>Hello_World</b> object, calls the
+<b>getMsg</b>
+method, prints the ubiquitous saying, decrements the reference count for
+the object, and frees the message string. To generate the C glue code necessary
+to call the library, we run the
+<b>babel</b> tool again, this time specifying
+C as the target language:
+<blockquote><tt>% $HOME/babel/bin/babel -cC -R$MYREPO hello.sidl</tt></blockquote>
+The "-cC" flag tells the <b>babel</b> code generator to create only the
+C client&nbsp; code, not the entire library implementation.&nbsp; The library
+<b>libhello.so</b>
+already contains the necessary IOR, skeleton, and implementation object
+files. We compile the <b>hello</b> program using the following
+<b>Makefile</b>:
+<blockquote><tt>.c.o:</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; gcc -I$(HOME)/babel/include -Ilib -c $&lt;</tt>
+<p><tt>include babel.make</tt>
+<br><tt>OBJS = hello.o ${STUBSRCS:.c=.o}</tt>
+<p><tt>hello: ${OBJS}</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; gcc ${OBJS} -o $@ \</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; -Rlib -Llib -lhello \</tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; -R$(HOME)/babel/lib -L$(HOME)/babel/lib
+-lsidl</tt>
+<p><tt>clean:</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; ${RM} *.o hello</tt></blockquote>
+Note that the "-R" flags in the above Makefile snippet tell the dynamic
+library loader where to find the <b>hello</b> and <b>sidl</b> shared libraries.&nbsp;
+You could achieve the same behavior through environment variables such
+as LD_LIBRARY_PATH. Finally, we make the executable and run it:
+<blockquote><tt>% make hello</tt>
+<br><tt>% ./hello</tt>
+<br><tt>Hello World!</tt></blockquote>
+Congratulations!&nbsp; You are now ready to develop a parallel scalable
+linear solver package.
+<h2>
+Environment Variables</h2>
+The following environment variables may affect the runtime behavior of
+a program using BABEL:
+<dl>
+<dt>
+<tt>SIDL_DLL_PATH</tt></dt>
+
+<dd>
+The stub code for some of the languages loads the implementation of the
+class or interface at runtime using
+<tt>dlopen</tt> or something similar.
+When searching for an implementation, it will search all the shared libraries/dynamic
+link libraries found in the <b>semicolon</b> separated list of directories.
+This is particular necessary for Python clients. The <b>semicolon</b> is
+used because someday we may use URIs instead simple file directories.</dd>
+
+<dt>
+<tt>LD_LIBRARY_PATH</tt></dt>
+
+<dd>
+Many Unix-like operating systems will search the
+<b>colon</b> separated
+list of directories in this environment variable to find shared libraries/dynamic
+link libraries.</dd>
+</dl>
+
+</body>
+</html>

@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+   File:        config.dtd
+   Package:     configuration database
+   Copyright:   (c) 2000 Lawrence Livermore National Security, LLC
+   Revision:    @(#) $Id: config.dtd 6171 2007-10-08 23:39:28Z epperly $
+   Description: DTD for the machine configuration database
+
+   This file describes the DTD for the Babel machine configuration database.
+
+   The XML metadata description file metadata.xml defines the languages
+   supported by the Babel compiler and the allowable options and parameters
+   for the configurations supported by each language.  In this XML document,
+   we define configurations that associate particular values with each
+   allowable option.  These configurations are given the name profile.
+   Each configuration may be named by multiple profile elements that
+   describe the environments for which those choices are valid.
+
+   The root element is <Configuration>.
+-->
+
+<!--
+   Configuration Element
+
+   Configuration is the root element for all machine configuration XML
+   schema.  A configuration contains any number of Language elements that
+   represent the programming languages supported by the Babel compiler.
+-->
+
+<!ELEMENT Configuration (Language)*>
+
+<!--
+   Language Element
+
+   Language elements may be empty or consist of a number of profiles along
+   with an options block.  An empty element indicates that there are no
+   machine configuration options for that language.  If not empty, then
+   one or more Profile elements are used to provide a name for the set
+   of configuration options defined by Options.  The language name attribute
+   must match the language name in the metadata.xml XML description.
+-->
+
+<!ELEMENT Language ((Profile)+, Options)?>
+<!ATTLIST Language name CDATA #REQUIRED>
+
+<!--
+   Profile Element
+
+   The Profile element defines a profile name that will be used to select
+   the configuration options.  A profile must contain a description and
+   may contain additional architecture and compiler information.
+-->
+
+<!ELEMENT Profile (Description, (Architecture)?, (Compiler)?)>
+<!ATTLIST Profile name CDATA #REQUIRED>
+
+<!--
+   Description Element
+
+   A Description element describes a profile.  It requires a summary
+   attribute and may contain a longer HTML-lite comment.
+-->
+
+<!ENTITY % html-lite SYSTEM "html-lite.dtd">
+%html-lite;
+
+<!ELEMENT Description %html-block;>
+<!ATTLIST Description summary CDATA #REQUIRED>
+
+<!--
+   Architecture Element
+
+   The Architecture element describes the machine architecture.  It contains
+   three attributes:
+
+      cpu     required description of the machine hardware (sparc or i686)
+      os      required description of the operating system (SunOS or Linux)
+      release optional release of the operating system (5.7 or 2.0.34)
+
+   If the release is not provided, then the value "default" is used.
+-->
+
+<!ELEMENT Architecture EMPTY>
+<!ATTLIST Architecture cpu     CDATA #REQUIRED
+                       os      CDATA #REQUIRED
+                       release CDATA "default">
+
+<!--
+   Compiler Element
+
+   The Compiler element describes the compiler for which the profile is
+   defined.  The compiler attributes include the compiler name and the
+   compiler version (which defaults to "default" if none is provided).
+-->
+
+<!ELEMENT Compiler EMPTY>
+<!ATTLIST Compiler name    CDATA #REQUIRED
+                   version CDATA "default">
+
+<!--
+   Options and Selection Elements
+
+   An Options element groups a collection of Selection elements.  Each
+   Selection element contains a required option attribute and a required
+   value attribute.  Both the option and value must be valid selections
+   for this language, as defined by the metadata XML description.
+-->
+
+<!ELEMENT Options (Selection)+>
+
+<!ELEMENT Selection EMPTY>
+<!ATTLIST Selection option CDATA #REQUIRED
+                    value  CDATA #REQUIRED>

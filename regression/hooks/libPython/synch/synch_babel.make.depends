@@ -1,0 +1,36 @@
+# synch_PYMOD_SRCS dependencies.
+synch_RegOut_Module.c:                                                        \
+  /home/epperly/current/babel_fix_hooks/regression/hooks/libPython/../../output/output.sidl
+synch_RegOut_Module.c: sidl_BaseClass.h
+synch_RegOut_Module.c: sidl_ClassInfo.h
+synch_RegOut_Module.c: sidl_rmi_ProtocolFactory.h
+synch_RegOut_Module.c: sidl_rmi_InstanceRegistry.h
+synch_RegOut_Module.c: sidl_rmi_InstanceHandle.h
+synch_RegOut_Module.c: sidl_rmi_Invocation.h
+synch_RegOut_Module.c: sidl_rmi_Response.h
+synch_RegOut_Module.c: sidl_rmi_ServerRegistry.h
+synch_RegOut_Module.c: sidl_rmi_ConnectRegistry.h
+synch_RegOut_Module.c: sidl_io_Serializable.h
+synch_RegOut_Module.c: synch_RegOut_Module.h
+synch_RegOut_Module.c: synch_RegOut_IOR.h
+synch_RegOut_Module.c: sidlObjA.h
+synch_RegOut_Module.c: sidlPyArrays.h
+synch_RegOut_Module.c: oldnumeric.h
+synch_RegOut_Module.c: Numeric/arrayobject.h
+synch_RegOut_Module.c: sidl_Loader.h
+synch_RegOut_Module.c: sidl_header.h
+synch_RegOut_Module.c: sidl_interface_IOR.h
+synch_RegOut_Module.c: sidl_rmi_NetworkException_Module.h
+synch_RegOut_Module.c: sidl_BaseClass_Module.h
+synch_RegOut_Module.c: sidl_BaseInterface_Module.h
+synch_RegOut_Module.c: sidl_ClassInfo_Module.h
+synch_RegOut_Module.c: sidl_RuntimeException_Module.h
+synch_RegOut_Module.c: sidl_rmi_Call_Module.h
+synch_RegOut_Module.c: sidl_rmi_Return_Module.h
+synch_RegOut_Module.c: sidl_rmi_Ticket_Module.h
+
+
+# synch_PYTHONADMIN dependencies.
+
+# synch_PYTHONSRC dependencies.
+

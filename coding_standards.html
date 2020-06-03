@@ -1,0 +1,329 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<head>
+<meta name="generator" content=
+"HTML Tidy for Linux/x86 (vers 1 September 2005), see www.w3.org">
+<meta http-equiv="Content-Type" content=
+"text/html; charset=us-ascii">
+<meta name="GENERATOR" content=
+"Mozilla/4.75 [en] (X11; U; SunOS 5.7 sun4u) [Netscape]">
+<title>Babel Coding Conventions</title>
+</head>
+<body text="#000000" bgcolor="#C4D7FF" link="#0000EE" vlink=
+"#551A8B" alink="#FF0000">
+<h1><b><font size="+3">Software Coding Conentions</font></b></h1>
+<hr width="100%">
+<p>This page describes the coding conventions for the components
+project. The conventions on this page are intended to improve
+the readability of the software, allowing team members and external
+users to understand the code more quickly and thoroughly. All
+code is required to follow the conventions on this page.
+Other, more detailed conventions, can be found in the <a href=
+"http://java.sun.com/docs/codeconv/html/CodeConvTOC.doc.html">Java
+Code Conventions</a> by Sun and in the <a href=
+"http://java.sun.com/products/jdk/javadoc/writingdoccomments/index.html">
+Javadoc guidelines</a>. These conventions will be enforced
+through code reviews.</p>
+<h2><a name="Java_Conventions" id="Java_Conventions"></a>Java
+Conventions</h2>
+<p>The conventions in this file supplement standard Java
+conventions, such as using packages to manage namespaces and
+placing only one class or interface per Java source file.</p>
+<h2><a name="File_Headers" id="File_Headers"></a>File Headers</h2>
+<p>All files must begin with a header section that contains basic
+information about the file. For non-LLNL contributors, the
+copyright holder won't be UC or LLNS, LLC. Please contribute source
+under the Lesser GNU Public License. The header format is as
+follows:</p>
+<blockquote><tt><font size="-1">//</font></tt><br>
+<tt><font size="-1">//
+File:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; the filename for
+this file</font></tt><br>
+<tt><font size="-1">// Package:&nbsp;&nbsp;&nbsp;&nbsp; package in
+the distribution (e.g., GOV.llnl.babel.parser)</font></tt><br>
+<tt><font size="-1">// Copyright:&nbsp;&nbsp; (c) 1998-2000 Lawrence Livermore National Security, LLC</font></tt><br>
+<tt><font size="-1">// Revision:&nbsp;&nbsp;&nbsp; @(#) $Id:
+conventions.html,v 1.4 2000/04/25 20:09:28 skohn Exp
+$</font></tt><br>
+<tt><font size="-1">// Description: one-line description of
+file</font></tt><br>
+<tt><font size="-1">//</font></tt></blockquote>
+For example, the header for file <tt>Class.java</tt> in the
+gov<tt>.llnl.babel.ast</tt> package is:
+<blockquote><tt><font size="-1">//</font></tt><br>
+<tt><font size="-1">//
+File:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Class.java</font></tt><br>
+<tt><font size="-1">// Package:&nbsp;&nbsp;&nbsp;&nbsp;
+gov.llnl.babel.ast</font></tt><br>
+<tt><font size="-1">// Copyright:&nbsp;&nbsp; (c) 1998-2000 Lawrence Livermore National Security, LLC</font></tt><br>
+<tt><font size="-1">// Revision:&nbsp;&nbsp;&nbsp; @(#) $Id:
+conventions.html,v 1.4 2000/04/25 20:09:28 skohn Exp
+$</font></tt><br>
+<tt><font size="-1">// Description: AST node for an IDL class
+description</font></tt><br>
+<tt><font size="-1">//</font></tt></blockquote>
+The Release and Revision entries are automatically updated by the
+Subversion system; <tt>Id</tt> by a date and author
+string. The <tt>@(#)</tt> is included for the SCCS
+<b>what</b> command. In files for which <tt>//</tt> cannot be
+used to begin a comment, use the comment tokens appropriate for
+that file. For example, headers in makefiles should use
+<tt>##</tt>:
+<blockquote><tt><font size="-1">##</font></tt><br>
+<tt><font size="-1">##
+File:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Makefile.in</font></tt><br>
+<tt><font size="-1">## Package:&nbsp;&nbsp;&nbsp;&nbsp;
+gov.llnl.babel.ast</font></tt><br>
+<tt><font size="-1">## Copyright:&nbsp;&nbsp; (c) 1998-2000 Lawrence Livermore National Security, LLC</font></tt><br>
+<tt><font size="-1">## Revision:&nbsp;&nbsp;&nbsp; @(#) $Id:
+conventions.html,v 1.4 2000/04/25 20:09:28 skohn Exp
+$</font></tt><br>
+<tt><font size="-1">## Description: makefile for the ast
+package</font></tt><br>
+<tt><font size="-1">##</font></tt></blockquote>
+and C files should use <tt>/*</tt> and <tt>*/</tt>:
+<blockquote><tt><font size="-1">/*</font></tt><br>
+<tt><font size="-1">&nbsp;*
+File:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+file.c</font></tt><br>
+<tt><font size="-1">&nbsp;* Package:&nbsp;&nbsp;&nbsp;&nbsp; Babel
+run-time support code</font></tt><br>
+<tt><font size="-1">&nbsp;* Copyright:&nbsp;&nbsp; (c) 1998-2000
+Lawrence Livermore National Security, LLC</font></tt><br>
+<tt><font size="-1">&nbsp;* Revision:&nbsp;&nbsp;&nbsp; @(#) $Id:
+1.4 $</font></tt><br>
+<tt><font size="-1">&nbsp;* Description: A C file in the run-time
+support package</font></tt><br>
+<tt><font size="-1">&nbsp;*/</font></tt></blockquote>
+<h2><a name="Formatting" id="Formatting"></a>Formatting</h2>
+While the following conventions may appear a bit pedantic, a
+well-formatted code projects an image of professionalism and help
+us read each others code.
+<ul>
+<li>Do not use <i>any</i> tabs in a source file. Use
+spaces.</li>
+<li>Indent each new scope by <i>two</i> spaces.</li>
+<li>No single line of code may be longer than 80 characters;
+instead, break and format the line by hand.</li>
+<li>Comments should align with the indentation scope of the
+code.</li>
+<li>Curly braces should appear at the end of the line (preceeded by
+a space) and the curly brace that closes the scope should align
+with the beginning of the indentation scope.</li>
+<li>Use single spaces to separate logical pieces of code (e.g.,
+methods within a class).</li>
+</ul>
+The following is an example of a well-formated code fragment (note:
+header omitted):
+<blockquote><tt><font size="-1">/**</font></tt><br>
+<tt><font size="-1">&nbsp;* The &lt;code&gt;Foo&lt;/code&gt; class
+demonstrates proper formatting conventions.</font></tt><br>
+<tt><font size="-1">&nbsp;*/</font></tt><br>
+<tt><font size="-1">public class Foo extends Bar {</font></tt>
+<p><tt><font size="-1">&nbsp;&nbsp; /**</font></tt><br>
+<tt><font size="-1">&nbsp;&nbsp;&nbsp; * The Foo constructor does
+nothing interesting but demonstrate an if block.</font></tt><br>
+<tt><font size="-1">&nbsp;&nbsp;&nbsp; */</font></tt><br>
+<tt><font size="-1">&nbsp;&nbsp; public Foo() {</font></tt><br>
+<tt><font size="-1">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; if (something)
+{</font></tt></p>
+<p><tt><font size=
+"-1">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+/*</font></tt><br>
+<tt><font size=
+"-1">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; * I
+would assume something interesting happens in this
+block.</font></tt><br>
+<tt><font size=
+"-1">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+*/</font></tt><br>
+<tt><font size=
+"-1">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; if (something
+else) {</font></tt><br>
+<tt><font size=
+"-1">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+...</font></tt><br>
+<tt><font size=
+"-1">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+}</font></tt><br>
+<tt><font size="-1">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+}</font></tt><br>
+<tt><font size="-1">&nbsp;&nbsp; }</font></tt><br>
+<tt><font size="-1">}</font></tt></p>
+</blockquote>
+<h2><a name="Braces" id="Braces"></a>Braces</h2>
+Curly braces "{}" are <i>requred</i> for all scoping of <b>if</b>,
+<b>else</b>, <b>while</b>, and <b>for</b> constructs. For
+example, the following piece of code:
+<blockquote><tt>if (test)</tt><br>
+<tt>&nbsp;&nbsp; doSomething();</tt></blockquote>
+should be re-written as:
+<blockquote><tt>if (test) {</tt><br>
+<tt>&nbsp;&nbsp; doSomething();</tt><br>
+<tt>}</tt></blockquote>
+The first case (without the braces) can be confusing if
+<tt>doSomething</tt> is followed by other code. The only
+exception to this rule is when the <i>entire</i> clause can be
+clearly written on <i>one</i> line, as in the following:
+<blockquote><tt>if (test) doSomething();</tt></blockquote>
+Nested <tt>if</tt> statements should be formatted as follows:
+<blockquote><tt>if (testA) {</tt><br>
+<tt>&nbsp;&nbsp; doResultA();</tt><br>
+<tt>} else if (testB) {</tt><br>
+<tt>&nbsp;&nbsp; doResultB();</tt><br>
+<tt>} else ... {</tt><br>
+<tt>&nbsp;&nbsp; ...</tt><br>
+<tt>} else {</tt><br>
+<tt>&nbsp;&nbsp; doFinalElse();</tt><br>
+<tt>}</tt></blockquote>
+<h2><a name="Comments" id="Comments"></a>Comments</h2>
+<p>
+<i>All</i> classes and public methods must be commented using
+JavaDoc comments <tt>/** */</tt>. The comment should clearly
+describe the purpose of the code, any necessary preconditions or
+postconditions, and assumptions. Because most Java methods
+are relatively short, there will be few in-code comments. If,
+however, a method becomes longer than perhaps ten lines or if the
+algorithm/logic is complicated, then it might be necessary to
+include comments within the method implementation. Use <tt>/*
+*/</tt> for in-code comments as shown in the <a href=
+"#Formatting">Formatting</a> section.</p>
+
+<p>
+<strong>Do not use comments to remove or deactivate code!</strong>
+Delete unwanted code. Commented out code is extremely confusing to
+those who edit the code after you. All our changes are archive in a
+source code repository, so we can always look at the repo for old code.
+</p>
+
+<h2><a name="Naming_Conventions" id="Naming_Conventions"></a>Naming
+Conventions</h2>
+<p>The following list describes naming conventions for packages,
+classes and interfaces, methods, data members, and method arguments
+and local variables. Many of these conventions follow
+standard Java practice and many are suggestions from the Lakos book
+that have proven to be useful.</p>
+<ul>
+<li>All package names must be short, lower-case strings without
+underscores.</li>
+<li>All class and interface names will consist of a concatenation
+of words that begin with a capital letter and do not include
+underscores. Examples include <tt>ObjectType</tt> or
+<tt>ParserClass</tt>.</li>
+<li>All methods will begin with a lower-case letter.
+Additional words in the method name will start with a capital
+letter. No underscores may be used in method names. In
+general, a method name will be of the form <i>verbNoun</i>, as in
+<tt>getMethodNames</tt> or <tt>isBooleanType</tt>.</li>
+<li>All data members of a class must be private or-in justfiable
+cases-protected. Data members should use all lower-case
+characters with words separated by underscores. All data
+members must start with "d_" and all static data members must start
+with "s_". This convention helps to distinguish between data
+members, local variables, and subroutine arguments (see Lakos).
+<i>Note:</i> static final public data members intended as
+constants or enumerated types should use the standard Java
+convention of all upper-case letters instead of the "s_"
+convention.</li>
+<li>Local variables and subroutine arguments must use lower-case
+names with words separated by underscores.</li>
+</ul>
+The following code sample demonstrates these conventions:
+<blockquote><tt><font size="-1">public class ObjectType
+{</font></tt><br>
+<tt><font size="-1">&nbsp;&nbsp; public static final int BLUE =
+1;</font></tt><br>
+<tt><font size="-1">&nbsp;&nbsp; public static final int RED&nbsp;
+= 2;</font></tt>
+<p><tt><font size="-1">&nbsp;&nbsp; private static String
+s_class_name = "ObjectType";</font></tt></p>
+<p><tt><font size="-1">&nbsp;&nbsp; private String
+d_name;</font></tt><br>
+<tt><font size="-1">&nbsp;&nbsp; ...</font></tt><br>
+<tt><font size="-1">&nbsp;&nbsp; public void setName(String name)
+{</font></tt><br>
+<tt><font size="-1">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; d_name =
+name;</font></tt><br>
+<tt><font size="-1">&nbsp;&nbsp; }</font></tt></p>
+<p><tt><font size="-1">&nbsp;&nbsp; public void
+setInheritanceRelationship(ObjectType some_type) {</font></tt><br>
+<tt><font size="-1">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; String
+some_string = "...";</font></tt><br>
+<tt><font size="-1">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+...</font></tt><br>
+<tt><font size="-1">&nbsp;&nbsp; }</font></tt><br>
+<tt><font size="-1">}</font></tt></p>
+</blockquote>
+<h2><a name="Resources" id="Resources"></a>Resource
+utilization</h2>
+All temporary resource allocations other than memory (i.e. files,
+network connections, a URL connection, and database connections)
+should be done using the following try...finally pattern or the
+equivalent:
+<blockquote>
+<pre>
+FileInputStream in = null;
+try{
+   in = new FileInputStream(/* appropriate argument */);
+   // insert code using "in" here
+}
+// insert any catch clauses you want here
+finally {
+   if (in != null){
+      try {
+         in.close();
+      }
+      catch(IOException ioe){ /* ignore */ }
+   }
+}
+</pre></blockquote>
+The situation is similar for an output file. Thing get more
+complicated when you layer several I/O classes as Java encourages:
+<blockquote>
+<pre>
+FileOutputStream out = null;
+BufferedOutputStream buf = null;
+try{
+   out = new FileOutputStream(/* appropriate argument */);
+   buf = new BufferedOutputStream(out);
+   // insert code using "buf" here
+}
+// insert any catch clauses you want here
+finally {
+   if (buf != null){
+      try {
+         buf.close();
+      }
+      catch (IOException ioe) { /* ignore */ }
+   }
+   if (out != null){
+      try {
+         out.close();
+      }
+      catch(IOException ioe){ /* ignore */ }
+   }
+}
+</pre></blockquote>
+<p><tt>buf</tt> has to be closed before <tt>out</tt>, so any
+buffered output is flushed to <tt>out</tt>. If you're not worried
+about runtime errors or exceptions, this can be simplified because
+the only thing that <tt>new BufferedOutputStream</tt> could throw
+is a runtime error or exception. Don't blame me. I didn't
+write the language. Just keep telling yourself, "Java is elegant;
+garbage collection is good."</p>
+<h2><a name="Exit" id="Exit"></a>No System.exit(), Runtime.exit()
+or Runtime.halt() calls outside of main()</h2>
+<p>Programmers should never call System.exit(), Runtime.exit(), or
+Runtime.halt() outside the static void main() driver method. Throw
+an exception instead; that's what they are there for.</p>
+<h2><a name="Tools" id="Tools"></a>Editing tools</h2>
+<p>This <a type="text/plain" charset="ISO-8859-1" href=
+"sample.emacs">.emacs file</a> tries to encourage these style
+guidlines.</p>
+<hr width="100%">
+<br>
+<b>Last Updated:</b> Oct. 8, 2007
+</body>
+</html>

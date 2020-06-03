@@ -1,0 +1,70 @@
+# IORHDRS dependencies.
+hooks_Basics_IOR.h:                                                           \
+  /home/epperly/current/babel_fix_hooks/regression/hooks/libJava/../hooks.sidl
+hooks_Basics_IOR.h: sidl_header.h
+hooks_Basics_IOR.h: sidl_BaseClass_IOR.h
+
+hooks_IOR.h:                                                                  \
+  /home/epperly/current/babel_fix_hooks/regression/hooks/libJava/../hooks.sidl
+hooks_IOR.h: hooks_Basics_IOR.h
+
+
+# IORSRCS dependencies.
+hooks_Basics_IOR.c:                                                           \
+  /home/epperly/current/babel_fix_hooks/regression/hooks/libJava/../hooks.sidl
+hooks_Basics_IOR.c: hooks_Basics_IOR.h
+hooks_Basics_IOR.c: sidl_BaseClass_Impl.h
+hooks_Basics_IOR.c: sidl_BaseClass.h
+hooks_Basics_IOR.c: sidl_ClassInfo.h
+hooks_Basics_IOR.c: sidl_ClassInfoI.h
+
+
+# SKELSRCS dependencies.
+hooks_Basics_jniSkel.c:                                                       \
+  /home/epperly/current/babel_fix_hooks/regression/hooks/libJava/../hooks.sidl
+hooks_Basics_jniSkel.c: sidl_Java.h
+hooks_Basics_jniSkel.c: sidl_Loader.h
+hooks_Basics_jniSkel.c: sidl_String.h
+hooks_Basics_jniSkel.c: hooks_Basics_IOR.h
+hooks_Basics_jniSkel.c: babel_config.h
+hooks_Basics_jniSkel.c: sidl_Exception.h
+hooks_Basics_jniSkel.c: sidl_BaseException.h
+hooks_Basics_jniSkel.c: sidl_LangSpecificException.h
+hooks_Basics_jniSkel.c: hooks_Basics_jniStub.h
+hooks_Basics_jniSkel.c: sidl_BaseClass_jniStub.h
+hooks_Basics_jniSkel.c: sidl_BaseInterface_jniStub.h
+hooks_Basics_jniSkel.c: sidl_ClassInfo_jniStub.h
+hooks_Basics_jniSkel.c: sidl_RuntimeException_jniStub.h
+
+
+# STUBHDRS dependencies.
+hooks_Basics_jniStub.h:                                                       \
+  /home/epperly/current/babel_fix_hooks/regression/hooks/libJava/../hooks.sidl
+hooks_Basics_jniStub.h: hooks_Basics_IOR.h
+
+
+# STUBSRCS dependencies.
+hooks_Basics_jniStub.c:                                                       \
+  /home/epperly/current/babel_fix_hooks/regression/hooks/libJava/../hooks.sidl
+hooks_Basics_jniStub.c: sidl_Java.h
+hooks_Basics_jniStub.c: sidl_Loader.h
+hooks_Basics_jniStub.c: sidl_String.h
+hooks_Basics_jniStub.c: hooks_Basics_IOR.h
+hooks_Basics_jniStub.c: babel_config.h
+hooks_Basics_jniStub.c: hooks_Basics_jniStub.h
+hooks_Basics_jniStub.c: sidl_BaseClass_jniStub.h
+hooks_Basics_jniStub.c: sidl_BaseInterface_jniStub.h
+hooks_Basics_jniStub.c: sidl_ClassInfo_jniStub.h
+hooks_Basics_jniStub.c: sidl_RuntimeException_jniStub.h
+hooks_Basics_jniStub.c: sidl_BaseClass.h
+hooks_Basics_jniStub.c: sidl_ClassInfo.h
+hooks_Basics_jniStub.c: sidl_rmi_ProtocolFactory.h
+hooks_Basics_jniStub.c: sidl_rmi_InstanceRegistry.h
+hooks_Basics_jniStub.c: sidl_rmi_InstanceHandle.h
+hooks_Basics_jniStub.c: sidl_rmi_Invocation.h
+hooks_Basics_jniStub.c: sidl_rmi_Response.h
+hooks_Basics_jniStub.c: sidl_rmi_ServerRegistry.h
+hooks_Basics_jniStub.c: sidl_rmi_ConnectRegistry.h
+hooks_Basics_jniStub.c: sidl_io_Serializable.h
+
+

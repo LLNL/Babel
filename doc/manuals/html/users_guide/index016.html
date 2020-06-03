@@ -1,0 +1,780 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN"
+            "http://www.w3.org/TR/REC-html40/loose.dtd">
+<HTML>
+<HEAD>
+
+<META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<META name="GENERATOR" content="hevea 1.10">
+<LINK rel="stylesheet" type="text/css" href="index.css">
+<TITLE>Python Bindings</TITLE>
+</HEAD>
+<BODY >
+<A HREF="index015.html"><IMG SRC="previous_motif.gif" ALT="Previous"></A>
+<A HREF="index-multipage.html"><IMG SRC="contents_motif.gif" ALT="Up"></A>
+<A HREF="index017.html"><IMG SRC="next_motif.gif" ALT="Next"></A>
+<HR>
+<H1 CLASS="chapter"><A NAME="htoc63">Chapter 14</A>  Python Bindings</H1><UL>
+<LI><A HREF="index016.html#toc55">Introduction</A>
+</LI><LI><A HREF="index016.html#toc56">Basics</A>
+</LI><LI><A HREF="index016.html#toc57">Client-side</A>
+</LI><LI><A HREF="index016.html#toc58">Implementation-side</A>
+</LI></UL>
+<P><A NAME="c:python"></A></P><P><BR>
+</P><H2 CLASS="section"><A NAME="toc55"></A><A NAME="htoc64">14.1</A>  Introduction</H2><P>This chapter gives an overview of the Python bindings for SIDL. Common aspects
+of the bindings, such as the mapping of SIDL data types to their Python
+representatives, are presented in Section <A HREF="#s:python:basics">14.2</A>.
+Issues of concern to callers written in Python are addressed in the 
+client-side bindings discussion in Section <A HREF="#s:python:client">14.3</A>, while 
+issues for callees written in Python are in 
+Section <A HREF="#s:python:implementation">14.4</A>, which describes the implementation-side
+bindings.</P><P><EM><B>NOTE</B>:
+Babel requires a Python shared library. Because Python 2.3 has a
+configure/build system that builds shared libraries on many
+architectures, use of Python 2.3 or beyond is recommended.
+</EM></P><H2 CLASS="section"><A NAME="toc56"></A><A NAME="htoc65">14.2</A>  Basics</H2><P><A NAME="s:python:basics"></A></P><P>As with any programming language-neutral technology, translations must
+be made between abstract constructs supported by the technology and the
+corresponding concrete constructs in the native programming language.
+Due to the need to identify types in a global context,
+Subsection <A HREF="#ss:python:namespace">14.2.1</A> describes the convention used to establish
+name spaces.
+Conventions for generating language-specific method signatures are given
+in Subsection <A HREF="#ss:python:signatures">14.2.2</A>.
+The mapping of SIDL fundamental types is given in 
+Subsection <A HREF="#ss:python:types">14.2.3</A>.
+Finally, the process of casting between different types is described
+in Subsection <A HREF="#ss:python:casting">14.2.4</A>.</P><H3 CLASS="subsection">14.2.1  Name space</H3><P><A NAME="ss:python:namespace"></A>
+<A NAME="@default1655"></A>
+<A NAME="@default1656"></A></P><P>As in the case of Java, the SIDL name space maps easily into Python packages
+and modules. That is, the SIDL package and interface/class hierarchy maps to 
+a corresponding Python hierarchy. For example, a class <TT>Z</TT> in 
+a SIDL specification with the top-most package <TT>X</TT> and nested, parent 
+package <TT>Y</TT> maps to a Python package <TT>X</TT> with module <TT>Y</TT> that 
+contains method <TT>Z</TT>. The class is then identified as <TT>X.Y.Z</TT> in 
+Python.
+<A NAME="@default1657"></A></P><H3 CLASS="subsection">14.2.2  Method signatures</H3><P><A NAME="ss:python:signatures"></A>
+<A NAME="@default1658"></A>
+<A NAME="@default1659"></A></P><P>Despite the natural name space mapping, the goal to make language bindings
+as natural as possible led to some variation for Python method signatures.
+While the method name is used directly — where the full name<A NAME="@default1660"></A>
+(i. e., the short name with the extension appended) is used for overloaded 
+methods — there are some differences for its 
+arguments. Specifically, arguments to the method include only the specified
+<FONT COLOR=maroon><I><TT>in</TT></I></FONT> and <FONT COLOR=maroon><I><TT>inout</TT></I></FONT> arguments, while the return 
+value<A NAME="@default1661"></A> of the Python method includes the SIDL 
+return value in addition to the <FONT COLOR=maroon><I><TT>inout</TT></I></FONT> and <FONT COLOR=maroon><I><TT>out</TT></I></FONT> parameters. 
+(This will, hopefully, seem natural to Python programmers.) 
+For example, the following SIDL declaration for method <TT>passeverywhere</TT>
+of class <TT>Cdouble</TT> within the <TT>Args</TT> package is:
+<A NAME="@default1662"></A></P><DIV CLASS="flushright"><SPAN CLASS="textboxed"><FONT COLOR=purple><B>SIDL</B></FONT></SPAN></DIV><TABLE CLASS="lstframe" STYLE="padding:1ex;border-style:solid;"><TR><TD CLASS="lstlisting"><FONT COLOR=maroon><I><B>double</B> passeverywhere( <B>in double</B> d1, <B>out double</B> d2, <B>inout double</B> d3 );</I></FONT></TD></TR>
+</TABLE><P>The corresponding calling signature — based on Python’s built-in 
+documentation capability — is:</P><DIV CLASS="flushright"><SPAN CLASS="textboxed"><FONT COLOR=purple><B>Python</B></FONT></SPAN></DIV><TABLE CLASS="lstframe" STYLE="padding:1ex;border-style:solid;"><TR><TD CLASS="lstlisting">passeverywhere(<B>in</B> double d1,
+               inout double d3)
+RETURNS
+   (double _return,
+    out double d2,
+    inout double d3)</TD></TR>
+</TABLE><P>Whenever the SIDL specification includes a return type, the corresponding
+Python signature will include an <TT>_return</TT> as the first value of
+the Python’s <TT>RETURNS</TT> value<A NAME="@default1663"></A>.
+Starting <TT>_return</TT> with an underbar is used to indicate the argument 
+is not a parameter since Python parameter names cannot begin with an underbar. 
+More information on Python’s built-in documentation capability is given in
+Subsection <A HREF="#ss:python:objectmanagement">14.3.4</A>.</P><P><EM><B>NOTE</B>:
+As discussed in Subsection <A HREF="#sss:python:arrays">14.2.3</A>, methods passing raw SIDL 
+arrays (or r-arrays) do not have index arguments in Python.
+</EM><A NAME="@default1664"></A><A NAME="@default1665"></A>
+</P><H3 CLASS="subsection">14.2.3  Data types</H3><P><A NAME="ss:python:types"></A>
+<A NAME="@default1666"></A><A NAME="@default1667"></A></P><P>Unlike the other bindings, a straightforward mapping of SIDL to Python types 
+does not exist. Consequently, this subsection describes key data types. </P><H4 CLASS="subsubsection">Long</H4><P><A NAME="sss:python:long"></A>
+<A NAME="@default1668"></A><A NAME="@default1669"></A>
+<A NAME="@default1670"></A><A NAME="@default1671"></A></P><P>As stated in Section <A HREF="index008.html#ssec:basics:fundamental:numbers">6.3</A>, SIDL <FONT COLOR=maroon><I><TT>long</TT></I></FONT>s
+are equivalent to those in C. Hence, they map to 64-bit integers in the
+middleware. However, since Python’s unlimited precision integer data type
+is used in the bindings, the behaviour is not exactly like 64-bit integers
+(i. e., there is no overflow). </P><P><EM><B>NOTE</B>:
+For Python versions before 2.2, the code needs to guarantee that a Python 
+unlimited precision integer is used whenever a SIDL <FONT COLOR=maroon><TT><I>long</I></TT></FONT> is needed. 
+For example, calling <TT>isPrime</TT><A NAME="@default1672"></A> — whose SIDL 
+signature is <TT>bool isPrime(long num)</TT> — as <TT>isPrime(1)</TT> will 
+fail. However, calling <TT>isPrime(1L)</TT> will succeed.
+</EM></P><H4 CLASS="subsubsection">Integers</H4><P><A NAME="sss:python:int"></A>
+<A NAME="@default1673"></A><A NAME="@default1674"></A>
+<A NAME="@default1675"></A><A NAME="@default1676"></A></P><P>As stated in Section <A HREF="index008.html#ssec:basics:fundamental:numbers">6.3</A>, SIDL <FONT COLOR=maroon><I><TT>int</TT></I></FONT>s
+for Python are equivalent to those in C. Hence, they map to a 32-bit 
+integer.</P><H4 CLASS="subsubsection">Exceptions</H4><P><A NAME="sss:python:exceptions"></A>
+<A NAME="@default1677"></A><A NAME="@default1678"></A></P><P>Python exceptions must be Python classes; they cannot be C extension
+types — the mechanism used to wrap SIDL objects as Python
+objects. Because of this, Babel defines an exception class for each
+SIDL type that implements <TT>sidl.BaseException</TT>. For a type
+called <TT>X.Y.Z</TT>, the Python exception class is named
+<TT>X.Y.Z._Exception</TT>. 
+<A NAME="@default1679"></A></P><P><EM><B>NOTE</B>:
+In Babel 0.10.2 and previous releases, the Python exception class was 
+named <TT>X.Y.Z.Exception</TT>, but this name can potentially collide with 
+the class constructor or a static method named <TT>Exception</TT>. For 
+backwards compatibility, Babel defines <TT>X.Y.Z.Exception</TT> if the 
+name <TT>Exception</TT> is not used in the class.
+</EM></P><H4 CLASS="subsubsection">Enumerations</H4><P><A NAME="sss:python:enum"></A>
+<A NAME="@default1680"></A><A NAME="@default1681"></A>
+<A NAME="@default1682"></A><A NAME="@default1683"></A></P><H4 CLASS="subsubsection">Arrays</H4><P><A NAME="sss:python:arrays"></A>
+<A NAME="@default1684"></A><A NAME="@default1685"></A>
+<A NAME="@default1686"></A><A NAME="@default1687"></A>
+<A NAME="@default1688"></A><A NAME="@default1689"></A></P><P>As discussed in Section <A HREF="index008.html#s:arrays">6.4</A>, SIDL supports both normal and raw
+arrays (i. e., r-arrays). Both types of arrays are treated the same in 
+Python bindings. That is, they both map to their NumPy or Numeric
+Python equivalents. In the case of SIDL <FONT COLOR=maroon><I><TT>long</TT></I></FONT>s, an array of
+64-bit integers may be used if NumPy or Numeric Python supports 64-bit
+integers; otherwise, an array of Python’s indefinite precision
+integers (i. e., integers with unlimited bits) are used.</P><P><EM><B>NOTE</B>:
+The SIDL array API is not supported in these bindings; instead, 
+those in NumPy or Numeric Python must be used. With Babel 1.1.0 and
+later, Babel supports either the new NumPy or the deprecated Numeric
+Python. To determine which Babel is configured to use, you can use the
+following:</EM></P><DIV CLASS="flushright"><SPAN CLASS="textboxed"><FONT COLOR=purple><B>Python</B></FONT></SPAN></DIV><TABLE CLASS="lstframe" STYLE="padding:1ex;border-style:solid;"><TR><TD CLASS="lstlisting"><B>import</B> sidlPyArray
+<B>if</B> sidlPyArray.type == "numpy":
+  <B>import</B> numpy
+<B>else</B>:
+  <B>if</B> sidlPyArray.type == "numeric":
+    <B>import</B> numeric</TD></TR>
+</TABLE><H4 CLASS="subsubsection">Opaque</H4><P><A NAME="sss:python:opaque"></A>
+<A NAME="@default1690"></A>
+<A NAME="@default1691"></A></P><P>There is no way to access the value of a SIDL <FONT COLOR=maroon><I><TT>opaque</TT></I></FONT> in Python.
+The Python value <TT>None</TT> can be passed as an incoming
+<FONT COLOR=maroon><I><TT>opaque</TT></I></FONT> parameter. You can also pass in an <FONT COLOR=maroon><I><TT>opaque</TT></I></FONT> value
+that was returned by previous Babel method invocation. Babel maps SIDL
+<FONT COLOR=maroon><I><TT>opaque</TT></I></FONT> to the Python <TT>CObject</TT> type — a type that is
+only accessible from Python C extension modules.</P><H3 CLASS="subsection">14.2.4  Type casting</H3><P><A NAME="ss:python:casting"></A>
+<A NAME="@default1692"></A><A NAME="@default1693"></A>
+<A NAME="@default1694"></A><A NAME="@default1695"></A></P><P>Given an object, <TT>obj</TT>, it is possible to determine if it is an 
+instance of a SIDL class or interface whose fully qualified name is 
+<TT>X.Y.Z</TT> as follows:
+<A NAME="@default1696"></A></P><BLOCKQUOTE CLASS="quotation"><TT>
+&gt;&gt;&gt; <B>import X.Y.Z</B><BR>
+&gt;&gt;&gt; <B>zobj = X.Y.Z.Z(obj)</B><BR>
+</TT></BLOCKQUOTE><P>Of course, the import is not needed if <TT>X.Y.Z</TT> has already been imported. 
+If <TT>zobj</TT> is not equal to <TT>None</TT>, the cast was successful.</P><H2 CLASS="section"><A NAME="toc57"></A><A NAME="htoc66">14.3</A>  Client-side</H2><P><A NAME="s:python:client"></A>
+<A NAME="@default1697"></A></P><P>This section summarizes aspects of generating and using the Python bindings
+associated with software wrapped with Babel’s language interoperability
+middleware. The bindings generation process and required environment variables
+are presented before the process for importing SIDL-specified constructs 
+is described.
+Object management and invocation of static and overloaded methods are
+also summarized. The process of catching exceptions is then discussed.
+Finally, the processes for enabling and disabling implementation-specific
+pre- and post-method instrumentation — referred to as “hooks” —
+are illustrated.</P><H3 CLASS="subsection">14.3.1  Bindings generation</H3><P><A NAME="ss:python:clientgen"></A>
+<A NAME="@default1698"></A>
+<A NAME="@default1699"></A><A NAME="@default1700"></A></P><P>Building Python bindings requires an installation with Python compiled
+as a shared or dynamically linked library. The standard Python build only
+creates the necessary shared library on a few platforms — none of
+which are target platforms for Babel. Some Linux distributions include
+a Python shared library, and it is possible to make a Python shared
+library on Solaris. The Python shared library should contain the
+objects from <TT>libpythonm.n.a</TT> where <TT>m.n</TT> is the version of
+Python being used. Since making a shared library is different on each 
+platform, the process is not covered here.</P><P>To generate client-side bindings, Babel must be run as follows<SUP><A NAME="text21" HREF="#note21">1</A></SUP>:
+<A NAME="@default1701"></A></P><BLOCKQUOTE CLASS="quotation"><TT>
+% <B>babel --exclude-external --client=python file.sidl</B><BR>
+</TT></BLOCKQUOTE><P>
+or simply
+</P><BLOCKQUOTE CLASS="quotation"><TT>
+% <B>babel -E -c=python file.sidl</B><BR>
+</TT></BLOCKQUOTE><P>This creates the Intermediate Object Representation (IOR) files in the current 
+directory and a tree of
+subdirectories based on the package hierarchy found in <TT>file.sidl</TT>. 
+It also creates module (i. e., <TT>_Module.c</TT>) files in the appropriate
+subdirectories.
+In most cases, the IOR, <TT>_pSkel.c</TT>, and <TT>_pLaunch.c</TT> files must 
+be compiled and place in a shared library.</P><H3 CLASS="subsection">14.3.2  Environment variables</H3><P>
+<A NAME="@default1702"></A><A NAME="@default1703"></A>
+<A NAME="@default1704"></A><A NAME="@default1705"></A></P><P>There are three environment variables associated with running
+Python with Babel on many systems. Each, described below, 
+identifies path-related directories that must be set properly 
+for various tools. It is assumed Babel was already installed 
+in directories rooted at <TT>$PREFIX</TT>.</P><DL CLASS="description"><DT CLASS="dt-description">
+<B><TT>PYTHONPATH</TT>.</B></DT><DD CLASS="dd-description">
+The <TT>PYTHONPATH</TT><A NAME="@default1706"></A> environment variable 
+needs to contain <TT>$PREFIX/python</TT> and the directory where
+work is being done. </DD><DT CLASS="dt-description"><B><TT>LD_LIBRARY_PATH (or system-specific alternative)</TT>.</B></DT><DD CLASS="dd-description">
+Many systems require the <TT>LD_LIBRARY_PATH</TT><A NAME="@default1707"></A> 
+environment variable contain <TT>$PREFIX/lib</TT>. Others, however, use
+different variables. AIX, for example, uses <TT>LIBPATH</TT> instead. The 
+point is to include <TT>$PREFIX/lib</TT> in the search path used to locate 
+shared/dynamic link libraries.</DD><DT CLASS="dt-description"><B><TT>SIDL_DLL_PATH</TT>.</B></DT><DD CLASS="dd-description">
+The <TT>SIDL_DLL_PATH</TT><A NAME="@default1708"></A> environment variable
+is typically required to contain the path to the directory holding
+the shared/dynamic link library containing the implementation of SIDL
+objects. This is a semicolon-separated path variable.</DD></DL><H3 CLASS="subsection">14.3.3  Imports</H3><P>
+<A NAME="@default1709"></A><A NAME="@default1710"></A>
+The following command is used to import a class named <TT>X.Y.Z</TT>:
+<A NAME="@default1711"></A></P><BLOCKQUOTE CLASS="quotation"><TT>
+&gt;&gt;&gt; <B>import X.Y.Z</B><BR>
+</TT></BLOCKQUOTE><P>Alternatively,</P><BLOCKQUOTE CLASS="quotation"><TT>
+&gt;&gt;&gt; <B>from X.Y.Z import *</B><BR>
+</TT></BLOCKQUOTE><P>can be used but there can be no name space collisions.</P><H4 CLASS="subsubsection">Common problems</H4><P>
+<A NAME="@default1712"></A>
+<A NAME="@default1713"></A></P><P>This subsection elaborates on a few of the common problems (and possible
+solutions) that occur when importing SIDL-specified extensions.</P><DL CLASS="description"><DT CLASS="dt-description">
+<B>ImportError: undefined function.</B></DT><DD CLASS="dd-description">
+The following illustrates an error that can arise that appears to be
+associated with an undefined function:
+<A NAME="@default1714"></A>
+<A NAME="@default1715"></A><A NAME="@default1716"></A><BLOCKQUOTE CLASS="quotation"><TT>
+&gt;&gt;&gt; <B>import X.Y.Zmodule</B><BR>
+ Traceback (innermost last):<BR>
+ File "&lt;stdin&gt;", line 1, in ?<BR>
+ ImportError: dynamic module does not define init function (initZmodule)<BR>
+</TT></BLOCKQUOTE><P>This could be a matter of an incorrect import or a problem with the 
+environment. Consider the following:</P><DL CLASS="description"><DT CLASS="dt-description">
+<B>Is the name of your SIDL interface (or class) <TT>X.Y.Z</TT> or <TT>X.Y.Zmodule</TT>?</B></DT><DD CLASS="dd-description">
+In the former case, the command should be <B><TT>import X.Y.Z</TT></B> instead.
+<A NAME="@default1717"></A></DD><DT CLASS="dt-description"><B>Is <TT>PYTHONPATH</TT> set properly?</B></DT><DD CLASS="dd-description">
+Make sure this environment variable contains directories for all 
+required Python shared libraries.</DD></DL><P>If the answers to these questions do not solve the problem, 
+submit a bug report for Babel. </P></DD><DT CLASS="dt-description"><B>Fatal Python error: class load</B></DT><DD CLASS="dd-description">
+If the class fails to load, for example, the following occurs:
+<A NAME="@default1718"></A><BLOCKQUOTE CLASS="quotation"><TT>
+&gt;&gt;&gt; <B>import X.Y.Z</B><BR>
+Fatal Python error: Cannot load implementation for SIDL class X.Y.Z<BR>
+Abort (core dumped)<BR>
+</TT></BLOCKQUOTE><P>then the Python stub code — the code that links Python to SIDL’s 
+independent object representation (IOR) — failed in its attempt to load 
+the shared or dynamically linked library that contains the implementation 
+of SIDL class <TT>X.Y.Z</TT>. 
+This is likely to be a path problem so consider the following:</P><DL CLASS="description"><DT CLASS="dt-description">
+<B>Is <TT>SIDL_DLL_PATH</TT> set properly?</B></DT><DD CLASS="dd-description">
+Make sure it lists all directories where the shared (or dynamic) link 
+libraries for the required SIDL objects and interfaces are stored. </DD><DT CLASS="dt-description"><B>Is <TT>LD_LIBRARY_PATH</TT> set properly?</B></DT><DD CLASS="dd-description">
+Make sure this environment variable (or whatever your machine’s mechanism for
+locating shared library files) also includes the directory in which the SIDL 
+runtime resides.</DD></DL></DD><DT CLASS="dt-description"><B>Fatal Python error: interface load.</B></DT><DD CLASS="dd-description">
+If the following error occurs:
+<A NAME="@default1719"></A><BLOCKQUOTE CLASS="quotation"><TT>
+&gt;&gt;&gt; <B>import X.Y.Z</B><BR>
+Fatal Python error: Cannot load implementation for SIDL interface X.Y.Z<BR>
+Abort (core dumped)<BR>
+</TT></BLOCKQUOTE><P>it is the same problem described for the fatal error encountered when
+attempting to load a SIDL class.</P></DD></DL><H3 CLASS="subsection">14.3.4  Object management</H3><P><A NAME="ss:python:objectmanagement"></A>
+<A NAME="@default1720"></A>
+<A NAME="@default1721"></A>
+<A NAME="@default1722"></A><A NAME="@default1723"></A></P><P>Once the Python extension module is built and imported, an instance 
+can be created. 
+For example, given the <TT>Args.Cdouble</TT> example in 
+Subsection <A HREF="#ss:python:signatures">14.2.2</A> with the method <TT>passeverywhere</TT>,
+the process for instantiating the class and printing its calling signature
+is:
+<A NAME="@default1724"></A>
+<A NAME="@default1725"></A><A NAME="@default1726"></A>
+<A NAME="@default1727"></A></P><DIV CLASS="flushright"><SPAN CLASS="textboxed"><FONT COLOR=purple><B>Python</B></FONT></SPAN></DIV><TABLE CLASS="lstframe" STYLE="padding:1ex;border-style:solid;"><TR><TD CLASS="lstlisting">$ python
+&gt;&gt;&gt; <B>import</B> Args.Cdouble
+&gt;&gt;&gt; obj = Args.Cdouble.Cdouble()
+&gt;&gt;&gt; <B>print</B> obj.passeverywhere.__doc__
+passeverywhere(<B>in</B> double d1,
+               inout double d3)
+RETURNS
+   (double _return,
+    out double d2,
+    inout double d3)</TD></TR>
+</TABLE><P>In this case the last part of the class name is repeated when assigning
+the instance to <TT>obj</TT>.
+Any SIDL document comments (i. e. comments enclosed in <TT>/** */</TT>) will
+appear below the signature documentation.</P><P>In some cases, the Python extension module may be named
+<TT>Cdoublemodule.so</TT> instead of simply <TT>Cdouble.so</TT>. 
+This might result in the temptation to <B><TT>import Args.Cdoublemodule</TT></B>
+instead of <B><TT>import Args.Cdouble</TT></B>; <EM>resist!</EM></P><H3 CLASS="subsection">14.3.5  Static methods</H3><P>
+<A NAME="@default1728"></A>
+<A NAME="@default1729"></A></P><P>Static methods of a SIDL-specified class are available in Python. Since
+they are associated with a class, they reside in its name space. </P><H3 CLASS="subsection">14.3.6  Overloaded methods</H3><P>
+<A NAME="@default1730"></A>
+<A NAME="@default1731"></A></P><P>Examples of calls to SIDL overloaded methods are based on the 
+<TT>overload_sample.sidl</TT> file shown in Section <A HREF="index008.html#sec:overloading">6.7</A>. 
+Recall that the file describes three versions of the <TT>getValue</TT> method. 
+The first takes no arguments, the second takes an integer argument, and the 
+third takes a boolean. Each is called in the code snippet below:
+<A NAME="@default1732"></A>
+<A NAME="@default1733"></A><A NAME="@default1734"></A>
+<A NAME="@default1735"></A><A NAME="@default1736"></A></P><DIV CLASS="flushright"><SPAN CLASS="textboxed"><FONT COLOR=purple><B>Python</B></FONT></SPAN></DIV><TABLE CLASS="lstframe" STYLE="padding:1ex;border-style:solid;"><TR><TD CLASS="lstlisting">
+  b1 = 1
+  i1 = 1
+
+  t = Overload.Sample.Sample()
+
+  nresult = t.getValue()
+  iresult = t.getValueInt(i1)
+  bresult = t.getValueBool(b1)</TD></TR>
+</TABLE><H3 CLASS="subsection">14.3.7  Exception catching</H3><P><A NAME="ss:python:exceptioncatching"></A>
+<A NAME="@default1737"></A><A NAME="@default1738"></A>
+<A NAME="@default1739"></A></P><P>SIDL exceptions are caught very much like normal Python exceptions 
+except the Python exception class of the SIDL type must be used. 
+The exception value holds the SIDL object as attribute <TT>exception</TT>. 
+Below is an example of catching exceptions from a call to <TT>getFib</TT>. 
+<A NAME="@default1740"></A>
+<A NAME="@default1741"></A><A NAME="@default1742"></A>
+<A NAME="@default1743"></A></P><DIV CLASS="flushright"><SPAN CLASS="textboxed"><FONT COLOR=purple><B>Python</B></FONT></SPAN></DIV><TABLE CLASS="lstframe" STYLE="padding:1ex;border-style:solid;"><TR><TD CLASS="lstlisting">  <B>try</B>:
+    fib.getFib(-1, 10, 10, 0)
+  <B>except</B> ExceptionTest.NegativeValueException._Exception:
+    (etype, eobj, etb) = sys.exc_info()
+    <FONT COLOR="blue"><I># eobj is the SIDL exception object</I></FONT>
+    <B>print</B> eobj.exception.getNote()  <FONT COLOR="blue"><I># show the exception comment</I></FONT>
+    <B>print</B> eobj.exception.getTrace() <FONT COLOR="blue"><I># and traceback</I></FONT></TD></TR>
+</TABLE><P>Note that <TT>eobj.exception</TT> is an instance of
+<TT>ExceptionTest.NegativeValueException.NegativeValueException</TT>,
+the Python type corresponding to the SIDL type
+<TT>ExceptionTest.NegativeValueException</TT>.</P><H3 CLASS="subsection">14.3.8  Hooks execution</H3><P><A NAME="ss:python:sethooks"></A>
+<A NAME="@default1744"></A><A NAME="@default1745"></A>
+<A NAME="@default1746"></A><A NAME="@default1747"></A>
+<A NAME="@default1748"></A><A NAME="@default1749"></A></P><P>If a given component supports pre- and post-method invocation instrumentation,
+also known as “hooks”, their execution can be enabled or disabled at
+runtime through the built-in <TT>_set_hooks</TT> method. For example,
+given the following SIDL specification:</P><DIV CLASS="flushright"><SPAN CLASS="textboxed"><FONT COLOR=purple><B>SIDL</B></FONT></SPAN></DIV><TABLE CLASS="lstframe" STYLE="padding:1ex;border-style:solid;"><TR><TD CLASS="lstlisting"><FONT COLOR=maroon><I><B>package</B> hooks <B>version</B> 1.0
+{
+  <B>class</B> Basics {
+    /**
+     * Basic illustration of hooks for static methods.
+     */
+    <B>static int</B> aStaticMeth(<B>in int</B> i, <B>out int</B> o, <B>inout int</B> io);
+
+    /**
+     * Basic illustration of hooks for static methods.
+     */
+    <B>int</B> aNonStaticMeth(<B>in int</B> i, <B>out int</B> o, <B>inout int</B> io);
+  }
+}</I></FONT></TD></TR>
+</TABLE><P>which has a single static function and a member function for the
+<TT>Basics</TT> class, the processes for enabling and disabling
+execution of the implementation-specific hooks are:</P><DIV CLASS="flushright"><SPAN CLASS="textboxed"><FONT COLOR=purple><B>Python</B></FONT></SPAN></DIV><TABLE CLASS="lstframe" STYLE="padding:1ex;border-style:solid;"><TR><TD CLASS="lstlisting">
+  obj = hooks.Basics.Basics()
+
+<FONT COLOR="blue"><I>#
+# Enable hooks execution (enabled by default)
+# ...for non-static methods
+#</I></FONT>
+    hooks.Basics._set_hooks_static(1)
+<FONT COLOR="blue"><I>#
+# ...for static methods
+#</I></FONT>
+    obj._set_hooks(1)
+
+<FONT COLOR="blue"><I>#
+# ...do something important...
+#
+
+#
+# Disable hooks execution
+# ...for non-static methods
+#</I></FONT>
+    hooks.Basics._set_hooks_static(0)
+<FONT COLOR="blue"><I>#
+# ...for static methods
+#</I></FONT>
+    obj._set_hooks(0)
+
+<FONT COLOR="blue"><I>#
+# ...do something important...
+#</I></FONT></TD></TR>
+</TABLE><P>It is important to keep in mind that the <TT>_set_hooks_static</TT>
+method must be used to enable/disable invocation of hooks for static 
+methods and the <TT>_set_hooks</TT> method must be used for those of
+non-static methods. Also, Babel does not provide client access to the
+<TT>_pre</TT> and <TT>_post</TT> methods; therefore, they cannot be invoked
+directly. More information on the instrumentation process is provided
+in Subsection <A HREF="index010.html#ss:c:hooksimpl">8.4.5</A>.</P><H3 CLASS="subsection">14.3.9  Contract enforcement</H3><P><A NAME="ss:python:contract_enforcement"></A>
+<A NAME="@default1750"></A> 
+<A NAME="@default1751"></A>
+<A NAME="@default1752"></A></P><P>Interface contracts specify the expected behaviors of clients and servers
+of interface and class methods. 
+Once specified, contracts can automatically be enforced at runtime.
+This section provides an example of a specification and associated code
+snippets for performing basic, traditional contract enforcement —
+introduced in Section <A HREF="index008.html#ss:intro_contract_enforcement">6.5</A> — within a
+Python client. </P><P>A SIDL specification, including preconditions and postconditions, for
+calculating the sum of two vectors is given below.
+(Refer to Section <A HREF="index008.html#s:ifc_contracts">6.5</A> for an introduction to the contract
+syntax.)
+According to the preconditions,
+<A NAME="@default1753"></A><A NAME="@default1754"></A>
+<A NAME="@default1755"></A>
+all callers are expected to provide two one-dimensional, SIDL arrays of the
+same size as arguments.
+The postconditions
+<A NAME="@default1756"></A><A NAME="@default1757"></A>
+<A NAME="@default1758"></A>
+specify that all implementations are expected to return a non-null,
+one-dimensional array of the same size (as the first SIDL array),
+assuming the preconditions are satisfied.</P><P><A NAME="@default1759"></A>
+<A NAME="@default1760"></A>
+<A NAME="@default1761"></A>
+<A NAME="@default1762"></A><A NAME="@default1763"></A>
+<A NAME="@default1764"></A>
+<A NAME="@default1765"></A>
+<A NAME="@default1766"></A>
+<A NAME="@default1767"></A>
+<A NAME="@default1768"></A>
+<A NAME="@default1769"></A>
+<A NAME="@default1770"></A>
+<A NAME="@default1771"></A>
+<A NAME="@default1772"></A>
+</P><DIV CLASS="flushright"><SPAN CLASS="textboxed"><FONT COLOR=purple><B>SIDL</B></FONT></SPAN></DIV><TABLE CLASS="lstframe" STYLE="padding:1ex;border-style:solid;"><TR><TD CLASS="lstlisting"><FONT COLOR=maroon><I><B>package</B> vect <B>version</B> 1.0 {
+  <B>class</B> Utils {
+    /* ... */
+
+    /**
+     * Return the sum of the specified vectors.
+     */
+    <B>static array</B>&lt;<B>double</B>&gt; vuSum(<B>in array</B>&lt;<B>double</B>&gt; u, <B>in array</B>&lt;<B>double</B>&gt; v)
+      <B>throws</B>
+        sidl.PreViolation, sidl.PostViolation;
+      <B>require</B>
+        not_null_u: u != null;
+        u_is_1d : dimen(u) == 1;
+        not_null_v: v != null;
+        v_is_1d : dimen(v) == 1;
+        same_size: size(u) == size(v);
+      <B>ensure</B>
+        no_side_effects : is pure;
+        result_not_null: result != null;
+        result_is_1d : dimen(result) == 1;
+        result_correct_size: size(result) == size(u);
+  }
+
+    /* ... */
+}</I></FONT></TD></TR>
+</TABLE><P>An example of a Python client calling the method is given below.
+The code snippet illustrates declaring and creating the arrays;
+enabling full contract enforcement (i. e., checking all contract
+clauses); executing <TT>vuSum</TT>; and handling contract violation
+exceptions is given below.</P><P><A NAME="@default1773"></A>
+<A NAME="@default1774"></A>
+<A NAME="@default1775"></A>
+<A NAME="@default1776"></A>
+<A NAME="@default1777"></A>
+<A NAME="@default1778"></A>
+<A NAME="@default1779"></A>
+<A NAME="@default1780"></A>
+<A NAME="@default1781"></A>
+<A NAME="@default1782"></A>
+<A NAME="@default1783"></A>
+<A NAME="@default1784"></A>
+<A NAME="@default1785"></A>
+<A NAME="@default1786"></A>
+<A NAME="@default1787"></A>
+<A NAME="@default1788"></A>
+<A NAME="@default1789"></A>
+<A NAME="@default1790"></A>
+<A NAME="@default1791"></A>
+</P><DIV CLASS="flushright"><SPAN CLASS="textboxed"><FONT COLOR=purple><B>Python</B></FONT></SPAN></DIV><TABLE CLASS="lstframe" STYLE="padding:1ex;border-style:solid;"><TR><TD CLASS="lstlisting"><B>import</B> sidl.EnfPolicy
+<B>import</B> sidl.PostViolation
+<B>import</B> sidl.PreViolation
+<B>import</B> vect.Utils
+
+<B>import</B> sidl.ContractClass
+ALL_TYPES      = sidl.ContractClass.ALLCLASSES
+PRECONDITIONS  = sidl.ContractClass.PRECONDS
+POSTCONDITIONS = sidl.ContractClass.POSTCONDS
+
+<B>import</B> sidlPyArrays
+<B>if</B> sidlPyArrays.type == "numpy":
+  <B>from</B> numpy <B>import</B> zeros, float64, ndarray
+  ArrayType = ndarray
+<B>elif</B> sidlPyArrays.type == "numeric":
+  <B>import</B> Numeric
+  zeros = Numeric.zeros
+  float64 = Numeric.Float64
+  ArrayType = Numeric.ArrayType
+
+<B>def</B> savespace(o):
+  <B>try</B>:
+    o.savespace(1)
+  <B>except</B> AttributeError:
+    <B>pass
+
+def</B> createDouble(len):
+  result = None
+  <B>if</B> (len &gt;= 0):
+    result = zeros((len, ), float64)
+    savespace(result)
+  <B>return</B> result
+
+<FONT COLOR="blue"><I># ...</I></FONT>
+
+  u  = createDouble(MAX_SIZE)
+  v  = createDouble(MAX_SIZE)
+
+<FONT COLOR="blue"><I># Initialize u and v.
+
+#
+# Enable FULL contract enforcement. </I></FONT>
+  <B>try</B>:
+    sidl.EnfPolicy.setEnforceAll(ALL_TYPES, TRUE)
+  <B>except</B>:
+<FONT COLOR="blue"><I>#   Handle the exception
+
+# Do something meaningful before execute method.</I></FONT>
+
+  <B>try</B>:
+    x  = vect.Utils.vuSum(u, v)
+    <B>if</B> (x != None):
+<FONT COLOR="blue"><I>#     Do something with the result, x.</I></FONT>
+  <B>except</B>:
+    (excType, excObj, ExcTb) = sys.exc_info()
+    <B>if</B> (excObj):
+      <B>try</B>:
+        <B>if</B> (excObj.exception.isType("sidl.PreViolation")):
+<FONT COLOR="blue"><I>#         Handle precondition violation</I></FONT>
+        <B>elif</B> (excObj.exception.isType("sidl.PostViolation")):
+<FONT COLOR="blue"><I>#         Handle postcondition violation</I></FONT>
+        <B>else</B>:
+<FONT COLOR="blue"><I>#         Handle unexpected exception</I></FONT>
+      <B>except</B>:
+<FONT COLOR="blue"><I>#       Handle exception 
+
+# ...</I></FONT></TD></TR>
+</TABLE><P>Alternative enforcement options can be set, as described in
+Section <A HREF="index008.html#ss:intro_contract_enforcement">6.5</A>, through the two
+basic helper methods: <TT>setEnforceAll</TT> and <TT>setEnforceNone</TT>.
+The code snippet below shows the Python calls associated with the traditional
+options of enabling only precondition enforcement, enabling postcondition
+enforcement, or completely disabling contract enforcement.</P><P><A NAME="@default1792"></A>
+<A NAME="@default1793"></A>
+<A NAME="@default1794"></A>
+<A NAME="@default1795"></A>
+<A NAME="@default1796"></A>
+<A NAME="@default1797"></A>
+<A NAME="@default1798"></A>
+<A NAME="@default1799"></A>
+<A NAME="@default1800"></A>
+<A NAME="@default1801"></A>
+</P><DIV CLASS="flushright"><SPAN CLASS="textboxed"><FONT COLOR=purple><B>Python</B></FONT></SPAN></DIV><TABLE CLASS="lstframe" STYLE="padding:1ex;border-style:solid;"><TR><TD CLASS="lstlisting"><B>import</B> sidl.EnfPolicy
+<B>import</B> sidl.ContractClass
+
+<FONT COLOR="blue"><I>#
+# Enable only precondition contract enforcement. 
+# (Useful when only need to ensure callers comply with contract.)</I></FONT>
+  <B>try</B>:
+    sidl.EnfPolicy.setEnforceAll(sidl.ContractClass.PRECONDS, FALSE)
+  <B>except</B>:
+<FONT COLOR="blue"><I>#   Handle the exception
+
+#
+# Enable only postcondition contract enforcement. 
+# (Useful when only need to ensure implementation(s) comply with contract.)</I></FONT>
+  <B>try</B>:
+    sidl.EnfPolicy.setEnforceAll(sidl.ContractClass.POSTCONDS, FALSE)
+  <B>except</B>:
+<FONT COLOR="blue"><I>#   Handle the exception
+
+#
+# Disable contract enforcement. 
+# (Should only be used when have confidence in caller AND implementation.)</I></FONT>
+  <B>try</B>:
+    sidl.EnfPolicy.setEnforceNone(FALSE)
+  <B>except</B>:
+<FONT COLOR="blue"><I>#   Handle the exception</I></FONT></TD></TR>
+</TABLE><P>This section illustrates the basic interfaces and processes for
+traditional interface contract enforcement for a Python client.
+Additional enforcement policy options and methods as well as more
+information regarding the specification and enforcement of contracts
+can be found in Chapter <A HREF="index023.html#c:contracts">21</A>.</P><H2 CLASS="section"><A NAME="toc58"></A><A NAME="htoc67">14.4</A>  Implementation-side</H2><P><A NAME="s:python:implementation"></A>
+<A NAME="@default1802"></A></P><P>This section summarizes aspects of generating and wrapping software
+written in Python. The bindings generation process is presented first.
+The process for defining and managing that data is then discussed. 
+The process of throwing exceptions in the implementation is then
+illustrated.
+Finally, the results of generating implementations with pre- and post-method
+“hooks” are shown.</P><H3 CLASS="subsection">14.4.1  Bindings generation</H3><P><A NAME="ss:python:implgen"></A>
+<A NAME="@default1803"></A>
+<A NAME="@default1804"></A><A NAME="@default1805"></A></P><P>As mentioned in Subsection <A HREF="#ss:python:clientgen">14.3.1</A>, Python must
+have been compiled as a shared or dynamically linked library.
+To implement an object in Python, Babel must first create
+the Python implementation-side bindings<SUP><A NAME="text22" HREF="#note22">2</A></SUP> as
+follows:
+<A NAME="@default1806"></A></P><BLOCKQUOTE CLASS="quotation"><TT>
+% <B>babel --exclude-external --server=python file.sidl</B><BR>
+</TT></BLOCKQUOTE><P>
+or simply
+</P><BLOCKQUOTE CLASS="quotation"><TT>
+% <B>babel -E -s=python file.sidl</B><BR>
+</TT></BLOCKQUOTE><P>This creates the IOR, Python skeletons (i. e., <TT>_pSkel.c</TT>), and Python 
+launch (i. e., <TT>_pLaunch.c</TT>) files in the current directory. 
+In most cases, the IOR, <TT>_pSkel.c</TT>, and <TT>_pLaunch.c</TT> files must 
+be compiled and place in a shared library.
+It also creates a tree of subdirectories based on the package hierarchy found 
+in <TT>file.sidl</TT> in which it generates Python extension modules for the 
+client-side binding (i. e., <TT>_Module.c</TT>) and implementation (i. e., 
+<TT>_Impl.py</TT>) files. The implementation files need to be filled in, as
+described in Subsection <A HREF="#ss:python:impldetails">14.4.2</A>, and extension modules 
+compiled as discussed in Subsection <A HREF="#ss:python:extbuild">14.4.3</A>.</P><H3 CLASS="subsection">14.4.2  Bindings implementation</H3><P><A NAME="ss:python:impldetails"></A>
+<A NAME="@default1807"></A></P><P>Implementation details must be added to the “Impl” files generated in
+Subsection <A HREF="#ss:python:implgen">14.4.1</A>. Changes to these files must be made between
+code splicer pairs to ensure their retention in subsequent invocations of
+Babel. In fact,
+Babel generates everything except the code that appears between splicer
+blocks (i. e., <TT>splicer.begin</TT> and <TT>splicer.end</TT> comments). 
+That is, it creates a class definition and empty methods in files whose 
+names end in <TT>_Impl.py</TT>. Code placed within matching splicer pairs
+will be preserved in subsequent executions of Babel while changes outside 
+them will be lost.</P><P>Using the example from Subsection <A HREF="#ss:python:signatures">14.2.2</A>, the 
+splicer blocks and implementation details for <TT>passeverywhere</TT> 
+are:
+<A NAME="@default1808"></A>
+<A NAME="@default1809"></A><A NAME="@default1810"></A></P><DIV CLASS="flushright"><SPAN CLASS="textboxed"><FONT COLOR=purple><B>Python</B></FONT></SPAN></DIV><TABLE CLASS="lstframe" STYLE="padding:1ex;border-style:solid;"><TR><TD CLASS="lstlisting">  <B>def</B> passeverywhere(self, d1, d3):
+    <FONT COLOR="blue"><I>#
+    # SIDL EXPECTED INCOMING TYPES
+    # ============================
+    # double d1
+    # double d3
+    #
+
+    #
+    # SIDL EXPECTED RETURN VALUE(s)
+    # =============================
+    # (_return, d2, d3)
+    # double _return
+    # double d2
+    # double d3
+    #
+
+    # DO-NOT-DELETE splicer.begin(passeverywhere)</I></FONT>
+    <B>if</B> (d1 == 3.14):
+      retval = 3.14
+    <B>else</B>:
+      retval = 0
+    <B>return</B> (retval, 3.14, -d3)
+    <FONT COLOR="blue"><I># DO-NOT-DELETE splicer.end(passeverywhere)</I></FONT></TD></TR>
+</TABLE><H3 CLASS="subsection">14.4.3  Python Extension Modules</H3><P><A NAME="ss:python:extbuild"></A>
+<A NAME="@default1811"></A></P><P>Babel creates a <TT>setup.py</TT> file that can be used to build the 
+Python extension modules that you create. <TT>setup.py</TT> uses the
+Python distutils package to build the Python extension modules. The
+following are two extra command line arguments:</P><UL CLASS="itemize"><LI CLASS="li-itemize">
+<TT>--include-dirs=</TT> — 
+Use this to specify extra directories for the preprocessor
+include path. That is, use it like <TT>-I</TT> is used for 
+most C compilers.
+</LI><LI CLASS="li-itemize"><TT>--library-dirs=</TT> — 
+Use this to specify extra directories for static or shared
+libraries. That is, use it like <TT>-L</TT> is used for most 
+C compilers/loaders.
+</LI></UL><P>The directory containing the SIDL runtime and Python headers 
+is normally specified with <TT>--include-dirs=</TT>. The 
+directory where <TT>libsidl.so</TT> is stored must also be specified.
+The following is a hypothetical example:</P><BLOCKQUOTE CLASS="quotation"><TT>
+setup.py --include-dirs=/usr/local/include<BR>
+ --include-dirs=/usr/local/include/python<BR>
+ --library-dirs=/usr/local/lib build_ext --inplace
+</TT></BLOCKQUOTE><P>although any real installation is unlikely to actually use those settings.</P><H3 CLASS="subsection">14.4.4  Private data</H3><P>
+<A NAME="@default1812"></A>
+<A NAME="@default1813"></A></P><P>Any variables declared in the implementation source file will, by virtue
+of Babel’s encapsulation, be private. 
+</P><P><EM><B>NOTE</B>:
+Python does not support the built-in, class-wide <TT>_load()</TT> method 
+used for one-time initialization in the other language bindings.
+</EM></P><H3 CLASS="subsection">14.4.5  Exception throwing</H3><P>
+<A NAME="@default1814"></A><A NAME="@default1815"></A></P><P>Recall Subsection <A HREF="#sss:python:exceptions">14.2.3</A> discussed issues associated
+with support for SIDL exceptions. 
+Below is an example snippet of code for throwing the exceptions that are
+caught in the Subsection <A HREF="#ss:python:exceptioncatching">14.3.7</A> example.
+The <TT>setNote</TT> method provides a useful error message,
+and the <TT>add</TT> method helps provide a multi-language traceback
+capability — provided each layer of the call stack calls <TT>add</TT>.
+<A NAME="@default1816"></A>
+<A NAME="@default1817"></A><A NAME="@default1818"></A>
+<A NAME="@default1819"></A><A NAME="@default1820"></A></P><DIV CLASS="flushright"><SPAN CLASS="textboxed"><FONT COLOR=purple><B>Python</B></FONT></SPAN></DIV><TABLE CLASS="lstframe" STYLE="padding:1ex;border-style:solid;"><TR><TD CLASS="lstlisting">  <B>def</B> getFib(self, n, max_depth, max_value, depth):
+    <FONT COLOR="blue"><I># sidl EXPECTED INCOMING TYPES
+    # ============================
+    # int n, max_depth, max_value, depth
+    #
+    # sidl EXPECTED RETURN VALUE(s)
+    # =============================
+    # int _return
+    # DO-NOT-DELETE splicer.begin(getFib)</I></FONT>
+    <B>if</B> (n &lt; 0):
+      ex = ExceptionTest.NegativeValueException.NegativeValueException()
+      ex.setNote("n negative")
+      ex.add(__name__, 0, "ExceptionTest.Fib.getFib")
+      <B>raise</B> ExceptionTest.NegativeValueException._Exception, ex
+    <FONT COLOR="blue"><I># numerous lines deleted
+    # DO-NOT-DELETE splicer.end(getFib)</I></FONT></TD></TR>
+</TABLE><H3 CLASS="subsection">14.4.6  Hooks implementation</H3><P><A NAME="ss:python:hooksimpl"></A>
+<A NAME="@default1821"></A><A NAME="@default1822"></A>
+<A NAME="@default1823"></A>
+<A NAME="@default1824"></A><A NAME="@default1825"></A>
+<A NAME="@default1826"></A><A NAME="@default1827"></A></P><P>As discussed in Subsection <A HREF="#ss:python:sethooks">14.3.8</A>, when hooks execution
+is enabled, implementation-specific instrumentation is executed. Using
+the <B><TT><CODE>--</CODE>generate-hooks</TT></B> option on the Babel
+command line when generating implementation-side bindings results
+in the automatic generation of a <TT>_pre</TT> and <TT>_post</TT>
+method for every static and non-static method associated with each class
+in the specification. For the <TT>aStaticMethod</TT> specified in
+Subsection <A HREF="#ss:python:sethooks">14.3.8</A>, the generated <TT>_pre</TT> method
+implementation is:</P><DIV CLASS="flushright"><SPAN CLASS="textboxed"><FONT COLOR=purple><B>Python</B></FONT></SPAN></DIV><TABLE CLASS="lstframe" STYLE="padding:1ex;border-style:solid;"><TR><TD CLASS="lstlisting"><B>def</B> aStaticMeth_pre(i, io):
+  <FONT COLOR="blue"><I>#
+  # sidl EXPECTED INCOMING TYPES
+  # ============================
+  # int i
+  # int io
+  #
+
+  #
+  # sidl EXPECTED RETURN VALUE(s)
+  # =============================
+  # # None
+  #</I></FONT>
+
+  """\
+Basic illustration of hooks for static methods.
+"""
+  <FONT COLOR="blue"><I># DO-NOT-DELETE splicer.begin(aStaticMeth_pre)
+  # 
+  # Add instrumentation here to be executed immediately prior
+  # to dispatch to aStaticMeth().
+  # </I></FONT>
+  <B>return</B>
+  <FONT COLOR="blue"><I># DO-NOT-DELETE splicer.end(aStaticMeth_pre)</I></FONT></TD></TR>
+</TABLE><P>while that of the <TT>_post</TT> method is:</P><DIV CLASS="flushright"><SPAN CLASS="textboxed"><FONT COLOR=purple><B>Python</B></FONT></SPAN></DIV><TABLE CLASS="lstframe" STYLE="padding:1ex;border-style:solid;"><TR><TD CLASS="lstlisting"><B>def</B> aStaticMeth_post(i, o, io, _retval):
+  <FONT COLOR="blue"><I>#
+  # sidl EXPECTED INCOMING TYPES
+  # ============================
+  # int i
+  # int o
+  # int io
+  # int _retval
+  #
+
+  #
+  # sidl EXPECTED RETURN VALUE(s)
+  # =============================
+  # # None
+  #</I></FONT>
+
+  """\
+Basic illustration of hooks for static methods.
+"""
+  <FONT COLOR="blue"><I># DO-NOT-DELETE splicer.begin(aStaticMeth_post)
+  #
+  # Add instrumentation here to be executed immediately after
+  # return from dispatch to aStaticMeth().
+  # </I></FONT>
+  <B>return</B>
+  <FONT COLOR="blue"><I># DO-NOT-DELETE splicer.end(aStaticMeth_post)</I></FONT></TD></TR>
+</TABLE><P>Per the normal implementation process, the desired instrumentation
+should be added within the splicer blocks of
+<TT>aStaticMethod_pre</TT> and
+<TT>aStaticMethod_post</TT>. As stated in the comments
+within those blocks, <TT>aStaticMethod_pre</TT> will be
+executed immediately prior to dispatch to <TT>aStaticMethod</TT> when the
+latter is invoked by a client. Assuming no exceptions are encountered,
+<TT>aStaticMethod_post</TT> is executed immediately upon
+return from <TT>aStaticMethod</TT>.
+</P><HR CLASS="footnoterule"><DL CLASS="thefootnotes"><DT CLASS="dt-thefootnotes">
+<A NAME="note21" HREF="#text21">1</A></DT><DD CLASS="dd-thefootnotes">For 
+information on additional command line options, refer to 
+Section <A HREF="index006.html#s:basics_commandline">4.2</A>.
+</DD><DT CLASS="dt-thefootnotes"><A NAME="note22" HREF="#text22">2</A></DT><DD CLASS="dd-thefootnotes">For information on additional 
+command line options, refer to Section <A HREF="index006.html#s:basics_commandline">4.2</A>.
+</DD></DL>
+<HR>
+<A HREF="index015.html"><IMG SRC="previous_motif.gif" ALT="Previous"></A>
+<A HREF="index-multipage.html"><IMG SRC="contents_motif.gif" ALT="Up"></A>
+<A HREF="index017.html"><IMG SRC="next_motif.gif" ALT="Next"></A>
+</BODY>
+</HTML>

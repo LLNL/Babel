@@ -1,0 +1,45 @@
+Babel Development Principles                             -*- markdown -*-
+October 15, 2002
+
+Contributors of Babel code are expected to adhere to the development
+principles outlined below. Any violations can result in the
+corresponding code changes being rolled out of the code
+base. Questions and changes to these principles should be directed to
+the Components team at components@llnl.gov.
+
+
+DESIGN PRINCIPLES
+=================
+
+* New features must be implementable in all target languages and have
+  a working regression test in every language.
+
+* SIDL must remain language and compiler independent.
+
+* All calls must be dispatched through the IOR.
+
+* The core system (i.e., IOR and run-time library) must remain in ANSI
+  C to maximize portability.
+
+* Static linking must be supported to ensure operation on some current
+  and future platforms. Dynamic linking should be supported where
+  possible.
+
+
+OPERATING PRINCIPLES
+====================
+
+* Ensure regression tests complete successfully on at least one
+  supported platform prior to performing a commit of a non-trivial
+  (i.e., <= 5 lines) change.
+
+* When writing new code that does not impact the rest of the system or
+  when fixing broken code, developers should use their discretion to
+  determine how much testing is necessary.
+
+* Coordinate with the Babel development team (via email to
+  babel-dev@llnl.gov) prior to committing any code that breaks the
+  build.
+
+* Write/update the documentation for any new or modified features.
+  (Note: this responsibility can be delegated.)

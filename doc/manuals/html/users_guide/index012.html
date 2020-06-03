@@ -1,0 +1,943 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN"
+            "http://www.w3.org/TR/REC-html40/loose.dtd">
+<HTML>
+<HEAD>
+
+<META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<META name="GENERATOR" content="hevea 1.10">
+<LINK rel="stylesheet" type="text/css" href="index.css">
+<TITLE>FORTRAN 77 Bindings</TITLE>
+</HEAD>
+<BODY >
+<A HREF="index011.html"><IMG SRC="previous_motif.gif" ALT="Previous"></A>
+<A HREF="index-multipage.html"><IMG SRC="contents_motif.gif" ALT="Up"></A>
+<A HREF="index013.html"><IMG SRC="next_motif.gif" ALT="Next"></A>
+<HR>
+<H1 CLASS="chapter"><A NAME="htoc43">Chapter 10</A>  FORTRAN 77 Bindings</H1><UL>
+<LI><A HREF="index012.html#toc39">Introduction</A>
+</LI><LI><A HREF="index012.html#toc40">Basics</A>
+</LI><LI><A HREF="index012.html#toc41">Client-side</A>
+</LI><LI><A HREF="index012.html#toc42">Implementation-side</A>
+</LI></UL>
+<P><A NAME="c:f77"></A></P><P><BR>
+</P><H2 CLASS="section"><A NAME="toc39"></A><A NAME="htoc44">10.1</A>  Introduction</H2><P>
+This chapter provides an overview of the <SPAN STYLE="font-variant:small-caps">fortran 77</SPAN> bindings for SIDL. 
+Common aspects of the bindings, such as the mapping of SIDL data types 
+to their native <SPAN STYLE="font-variant:small-caps">fortran 77</SPAN> representatives, are presented in 
+Section <A HREF="#s:f77:basics">10.2</A>.
+Issues of concern to <SPAN STYLE="font-variant:small-caps">fortran 77</SPAN> callers are addressed in the client-side
+bindings discussion in Section <A HREF="#s:f77:client">10.3</A>, while <SPAN STYLE="font-variant:small-caps">fortran 77</SPAN> 
+callees would benefit from a review of implementation-side issues in
+Section <A HREF="#s:f77:implementation">10.4</A>.</P><H2 CLASS="section"><A NAME="toc40"></A><A NAME="htoc45">10.2</A>  Basics</H2><P><A NAME="s:f77:basics"></A></P><P>This section summarizes basic features that are common to both client and
+implementation bindings. 
+Conventions used to protect the global name space are described in 
+Subsection <A HREF="#ss:f77:namespace">10.2.1</A>, while those associated with the generation
+of subroutines from methods are given in Subsection <A HREF="#ss:f77:signatures">10.2.2</A>.
+Translations between SIDL and native <SPAN STYLE="font-variant:small-caps">fortran 77</SPAN> constructs are 
+described in Subsection <A HREF="#ss:f77:types">10.2.3</A>. 
+Finally, the process of casting between different types is illustrated
+in Subsection <A HREF="#ss:f77:casting">10.2.4</A>.</P><H3 CLASS="subsection">10.2.1  Name space</H3><P><A NAME="ss:f77:namespace"></A>
+<A NAME="@default751"></A>
+<A NAME="@default752"></A></P><P>As with C bindings, the language does not have built-in mechanisms for 
+protecting the global name space. As a result, <SPAN STYLE="font-variant:small-caps">fortran 77</SPAN> bindings
+also attempt to avoid collisions by incorporating relevant naming 
+information from the package and class. Since interfaces and classes map
+to <TT>INTEGER*8</TT>, there are no naming issues associated with these
+SIDL types. However, as discussed in Subsection <A HREF="#ss:f77:signatures">10.2.2</A>, 
+name space issues do arise for methods.</P><H3 CLASS="subsection">10.2.2  Method signatures</H3><P><A NAME="ss:f77:signatures"></A>
+<A NAME="@default753"></A>
+<A NAME="@default754"></A></P><P>All SIDL methods are implemented as <SPAN STYLE="font-variant:small-caps">fortran 77</SPAN>
+subroutines<A NAME="@default755"></A> regardless 
+of whether they have return values.
+The name of a subroutine used to call a SIDL method is a
+concatenation of the package, class (or interface), and method
+name, where each part is separated by an underscore. If the
+method is specified as overloaded (i. e., has a name extension), the
+extension is appended to the name part. An additional string is appended 
+to further
+distinguish between client-side methods (to be invoked) and the
+implementation-side, where the former end in “_f” while the latter
+end in “_fi”.</P><P>As for arguments,
+the object (or interface) pointer is automatically inserted as the first
+parameter in the signature of non-static methods. This parameter
+operates like an <FONT COLOR=maroon><I><TT>in</TT></I></FONT> parameter. 
+When a method has a return value, a variable to hold the return value should 
+be passed as an argument following the formally declared arguments.
+This extra argument behaves like an <FONT COLOR=maroon><I><TT>out</TT></I></FONT> parameter.
+With the addition of remote method invocation (RMI) support, all methods 
+now implicitly throw exceptions.<A NAME="@default756"></A>
+Hence, an extra <FONT COLOR=maroon><I><TT>out</TT></I></FONT> parameter for the exception is automatically added 
+at the end of the signature.
+<A NAME="@default757"></A><A NAME="@default758"></A></P><P>The following SIDL method — taken from regression tests — is an
+example of a method that can throw multiple exception types:
+<A NAME="@default759"></A></P><DIV CLASS="flushright"><SPAN CLASS="textboxed"><FONT COLOR=purple><B>SIDL</B></FONT></SPAN></DIV><TABLE CLASS="lstframe" STYLE="padding:1ex;border-style:solid;"><TR><TD CLASS="lstlisting"><FONT COLOR=maroon><I><B>int</B> getFib(<B>in int</B> n, <B>in int</B> max_depth, <B>in int</B> max_value, <B>in int</B> depth)
+    <B>throws</B> NegativeValueException, FibException;</I></FONT></TD></TR>
+</TABLE><P>The corresponding <SPAN STYLE="font-variant:small-caps">fortran 77</SPAN> API is:</P><DIV CLASS="flushright"><FONT COLOR=purple><B><SPAN CLASS="textboxed"><SPAN STYLE="font-variant:small-caps">fortran</SPAN> 77</SPAN></B></FONT></DIV><TABLE CLASS="lstframe" STYLE="padding:1ex;border-style:solid;"><TR><TD CLASS="lstlisting">        subroutine ExceptionTest_Fib_getFib_f(self, n, max_depth,
+     &amp;     max_value, depth, retval, exception)
+        implicit none
+C        in ExceptionTest.Fib self
+        integer*8 self
+C        in int n
+        integer*4 n
+C        in int max_depth
+        integer*4 max_depth
+C        in int max_value
+        integer*4 max_value
+C        in int depth
+        integer*4 depth
+C        out int retval
+        integer*4 retval
+C        out sidl.BaseInterface exception
+        integer*8 exception
+        end</TD></TR>
+</TABLE><P>Note the addition of the object (i. e., <TT>self</TT>), 
+return (i. e., <TT>retval</TT>), and exception (i. e., <TT>exception</TT>) 
+parameters.</P><H3 CLASS="subsection">10.2.3  Data types</H3><P><A NAME="ss:f77:types"></A>
+<A NAME="@default760"></A><A NAME="@default761"></A></P><BLOCKQUOTE CLASS="table"><DIV CLASS="center"><HR WIDTH="80%" SIZE=2></DIV>
+<DIV CLASS="center">
+<DIV CLASS="caption"><TABLE CELLSPACING=6 CELLPADDING=0><TR><TD VALIGN=top ALIGN=left>Table 10.1: SIDL to <SPAN STYLE="font-variant:small-caps">fortran 77</SPAN> Type Mappings</TD></TR>
+</TABLE></DIV><A NAME="tbl:f77:types"></A>
+<TABLE BORDER=1 CELLSPACING=0 CELLPADDING=1><TR><TD ALIGN=left NOWRAP> <B>SIDL TYPE</B></TD><TD ALIGN=left NOWRAP><B><SPAN STYLE="font-variant:small-caps">fortran 77</SPAN> TYPE</B></TD></TR>
+<TR><TD ALIGN=left NOWRAP> <FONT COLOR=maroon><I><TT>int</TT></I></FONT></TD><TD ALIGN=left NOWRAP><TT>INTEGER*4</TT>		<A NAME="@default762"></A></TD></TR>
+<TR><TD ALIGN=left NOWRAP> <FONT COLOR=maroon><I><TT>long</TT></I></FONT></TD><TD ALIGN=left NOWRAP><TT>INTEGER*8</TT>		<A NAME="@default763"></A></TD></TR>
+<TR><TD ALIGN=left NOWRAP> <FONT COLOR=maroon><I><TT>float</TT></I></FONT></TD><TD ALIGN=left NOWRAP><TT>REAL</TT>			<A NAME="@default764"></A></TD></TR>
+<TR><TD ALIGN=left NOWRAP> <FONT COLOR=maroon><I><TT>double</TT></I></FONT></TD><TD ALIGN=left NOWRAP><TT>DOUBLE PRECISION</TT>	<A NAME="@default765"></A></TD></TR>
+<TR><TD ALIGN=left NOWRAP> <FONT COLOR=maroon><I><TT>bool</TT></I></FONT></TD><TD ALIGN=left NOWRAP><TT>LOGICAL</TT>		<A NAME="@default766"></A></TD></TR>
+<TR><TD ALIGN=left NOWRAP> <FONT COLOR=maroon><I><TT>char</TT></I></FONT></TD><TD ALIGN=left NOWRAP><TT>CHARACTER*1</TT>		<A NAME="@default767"></A></TD></TR>
+<TR><TD ALIGN=left NOWRAP> <FONT COLOR=maroon><I><TT>string</TT></I></FONT></TD><TD ALIGN=left NOWRAP><TT>CHARACTER*(*)</TT>		<A NAME="@default768"></A></TD></TR>
+<TR><TD ALIGN=left NOWRAP> <FONT COLOR=maroon><I><TT>fcomplex</TT></I></FONT></TD><TD ALIGN=left NOWRAP><TT>COMPLEX</TT>		<A NAME="@default769"></A></TD></TR>
+<TR><TD ALIGN=left NOWRAP> <FONT COLOR=maroon><I><TT>dcomplex</TT></I></FONT></TD><TD ALIGN=left NOWRAP><TT>DOUBLE COMPLEX</TT>	<A NAME="@default770"></A></TD></TR>
+<TR><TD ALIGN=left NOWRAP> <FONT COLOR=maroon><I><TT>enum</TT></I></FONT></TD><TD ALIGN=left NOWRAP><TT>INTEGER</TT>		<A NAME="@default771"></A></TD></TR>
+<TR><TD ALIGN=left NOWRAP> <FONT COLOR=maroon><I><TT>opaque</TT></I></FONT></TD><TD ALIGN=left NOWRAP><TT>INTEGER*8</TT>		<A NAME="@default772"></A><A NAME="@default773"></A></TD></TR>
+<TR><TD ALIGN=left NOWRAP> <FONT COLOR=maroon><I><TT>interface</TT></I></FONT></TD><TD ALIGN=left NOWRAP><TT>INTEGER*8</TT>		<A NAME="@default774"></A></TD></TR>
+<TR><TD ALIGN=left NOWRAP> <FONT COLOR=maroon><I><TT>class</TT></I></FONT></TD><TD ALIGN=left NOWRAP><TT>INTEGER*8</TT>		<A NAME="@default775"></A></TD></TR>
+<TR><TD ALIGN=left NOWRAP> <FONT COLOR=maroon><I><TT>array</TT></I></FONT></TD><TD ALIGN=left NOWRAP><TT>INTEGER*8</TT>		<A NAME="@default776"></A></TD></TR>
+</TABLE>
+</DIV>
+<DIV CLASS="center"><HR WIDTH="80%" SIZE=2></DIV></BLOCKQUOTE><P>Basic SIDL types are mapped into <SPAN STYLE="font-variant:small-caps">fortran 77</SPAN> according to 
+Table <A HREF="#tbl:f77:types">10.1</A><A NAME="@default777"></A>. 
+The remainder of this subsection elaborates on mappings of strings, 
+pointers, enumerations, and arrays.</P><H4 CLASS="subsubsection">Strings</H4><P><A NAME="sss:f77:strings"></A>
+<A NAME="@default778"></A><A NAME="@default779"></A>
+<A NAME="@default780"></A><A NAME="@default781"></A></P><P>When mapping the SIDL string type into <SPAN STYLE="font-variant:small-caps">fortran 77</SPAN>, some capability was 
+sacrificed to make it possible to use normal looking <SPAN STYLE="font-variant:small-caps">fortran 77</SPAN> string handling.
+<A NAME="@default782"></A> One difference is that all
+<SPAN STYLE="font-variant:small-caps">fortran 77</SPAN> strings have a limited fixed size. Specifically, <FONT COLOR=maroon><I><TT>out</TT></I></FONT> string
+parameters are automatically limited to 512 characters each. </P><P><EM><B>NOTE</B>:
+Modification of the value of <TT>SIDL_F77_STR_MINSIZE</TT> in 
+<TT>runtime/sidl/babel_config.h</TT> prior to configuring Babel 
+can be used to change the string size limitation.
+</EM></P><H4 CLASS="subsubsection">Pointers</H4><P><A NAME="sss:f77:pointers"></A>
+<A NAME="@default783"></A><A NAME="@default784"></A>
+<A NAME="@default785"></A><A NAME="@default786"></A></P><P><A NAME="@default787"></A><A NAME="@default788"></A><A NAME="@default789"></A><A NAME="@default790"></A>
+<A NAME="@default791"></A>
+<A NAME="@default792"></A>
+<A NAME="@default793"></A>
+<A NAME="@default794"></A>
+Pointer types, such as opaque, interface, class, and array, translate into
+64-bit integers to enable <SPAN STYLE="font-variant:small-caps">fortran 77</SPAN> code portability between systems 
+with 32-bit and 64-bit address spaces. 
+On a 32-bit system, the upper 32 bits of these quantities are ignored. 
+Systems with more than 64-bit pointers aren’t currently supported.
+<A NAME="@default795"></A></P><P>Generally, clients should treat opaque, interface, class, and array values 
+as black boxes. 
+However, there is one value that is special. 
+A value of zero for any of these quantities indicates the pointer does 
+not refer to an object, thus making zero the <SPAN STYLE="font-variant:small-caps">fortran 77</SPAN> equivalent of 
+<TT>NULL</TT>. Any nonzero value is or should be a valid object reference.
+Developers should initialize values to be passed as 
+<FONT COLOR=maroon><I><TT>in</TT></I></FONT> or <FONT COLOR=maroon><I><TT>inout</TT></I></FONT> parameters to zero or a valid object reference.</P><H4 CLASS="subsubsection">Enumerations</H4><P><A NAME="sss:f77:enum"></A>
+<A NAME="@default796"></A><A NAME="@default797"></A>
+<A NAME="@default798"></A><A NAME="@default799"></A></P><P>SIDL enumerations map to integer values. For compilers that support some
+form of inclusion, constants are defined in an inclusion file. 
+Specifically, Babel will
+generate <SPAN STYLE="font-variant:small-caps">fortran 77</SPAN> include files in the style of DEC FORTRAN (Compaq
+FORTRAN? (now HP FORTRAN???)) <TT>%INCLUDE</TT>. These files are named
+by taking the fully qualified name<A NAME="@default800"></A> of the <FONT COLOR=maroon><I><TT>enum</TT></I></FONT>, 
+changing the periods to underscores, and appending <TT>.inc</TT>. </P><P>Given the specification of a <FONT COLOR=maroon><I><TT>car</TT></I></FONT> enumeration type from 
+Section <A HREF="index008.html#ssec:basics:fundamental:enums">6.3</A>, the corresponding 
+include file is:
+<A NAME="@default801"></A><A NAME="@default802"></A></P><DIV CLASS="flushright"><FONT COLOR=purple><B><SPAN CLASS="textboxed"><SPAN STYLE="font-variant:small-caps">fortran</SPAN> 77</SPAN></B></FONT></DIV><TABLE CLASS="lstframe" STYLE="padding:1ex;border-style:solid;"><TR><TD CLASS="lstlisting">
+C       File:          enums_car.inc
+C       Symbol:        enums.car-v1.0
+C       Symbol Type:   enumeration
+C       Babel Version: 0.5.0
+C       Description:   Automatically generated; changes will be lost
+C
+C       babel-version = 0.5.0
+C       source-line   = 25
+C
+        integer porsche
+        parameter (porsche = 911)
+        integer ford
+        parameter (ford = 150)
+        integer mercedes
+        parameter (mercedes = 550)</TD></TR>
+</TABLE><P>The following snippet illustrates the inclusion of the file and an assignment of
+the <TT>mercedes</TT> constant:</P><DIV CLASS="flushright"><FONT COLOR=purple><B><SPAN CLASS="textboxed"><SPAN STYLE="font-variant:small-caps">fortran</SPAN> 77</SPAN></B></FONT></DIV><TABLE CLASS="lstframe" STYLE="padding:1ex;border-style:solid;"><TR><TD CLASS="lstlisting">        integer*4 myCar
+
+C       include the enumeration constants file
+        include 'enums_car.inc'
+
+        myCar = mercedes</TD></TR>
+</TABLE><H4 CLASS="subsubsection">Arrays</H4><P><A NAME="sss:f77:arrays"></A>
+<A NAME="@default803"></A><A NAME="@default804"></A>
+<A NAME="@default805"></A><A NAME="@default806"></A></P><P>As discussed in Section <A HREF="index008.html#s:arrays">6.4</A>, SIDL supports both normal and raw
+arrays (i. e., r-arrays). Normal SIDL arrays can be used by any supported
+language; whereas, r-arrays are restricted to numeric types and use in
+languages such as C, C++, and Fortran. This subsection discusses both
+within the context of <SPAN STYLE="font-variant:small-caps">fortran 77</SPAN> bindings. More information on the FORTRAN
+77 version of the SIDL array API can be found in 
+Subsection <A HREF="index008.html#ss:basics:array:api">6.4</A>.</P><P>The difference in how normal SIDL arrays and r-arrays are accessed is profound. 
+A normal SIDL array is passed as an
+<TT>integer*8</TT>, and accessed using an API or
+by converting the array data to an index into a known array. 
+R-arrays<A NAME="@default807"></A><A NAME="@default808"></A>
+appear like normal <SPAN STYLE="font-variant:small-caps">fortran 77</SPAN> arrays, so there is a big incentive to
+use r-arrays for performance purposes, when appropriate.</P><P>The client-side interface for the <TT>solve</TT> example introduced in
+Section <A HREF="index008.html#ss:r-arrays">6.4</A> behaves as if it is a <SPAN STYLE="font-variant:small-caps">fortran 77</SPAN> function
+with the following declarations:
+<A NAME="@default809"></A></P><DIV CLASS="flushright"><FONT COLOR=purple><B><SPAN CLASS="textboxed"><SPAN STYLE="font-variant:small-caps">fortran</SPAN> 77</SPAN></B></FONT></DIV><TABLE CLASS="lstframe" STYLE="padding:1ex;border-style:solid;"><TR><TD CLASS="lstlisting">        subroutine num_Linsol_solve_f(self, A, x, m, n, exception)
+        implicit none
+C       in num.Linsol self
+        integer*8 self
+C       in int m, n
+        integer*4 m, n
+C       out sidl.BaseInterface exception
+        integer*8 exception
+C       in rarray&lt;double,2&gt; A(m,n)
+        double precision A(0:m-1, 0:n-1)
+C       inout rarray&lt;double&gt; x(n)
+        double precision x(0:n-1)
+        end</TD></TR>
+</TABLE><P><EM><B>NOTE</B>:
+Array indices go from
+<B>0</B> to <TT>m</TT>−1 instead of the normal 1 to <TT>m</TT>. This
+was a concession to the C/C++ programmers who have to deal with the
+fact that <TT>A</TT> is stored in column-major order.
+</EM></P><P>The remainder of this section is dedicated to describing how normal
+SIDL arrays are accessed. The normal SIDL C function API is available 
+to create, destroy, and access array elements and meta-data — with 
+<TT>_f</TT> appended to subroutine names but no extra exception arguments.</P><P>For <FONT COLOR=maroon><I><TT>dcomplex</TT></I></FONT>, <FONT COLOR=maroon><I><TT>double</TT></I></FONT>, <FONT COLOR=maroon><I><TT>fcomplex</TT></I></FONT>,
+<FONT COLOR=maroon><I><TT>float</TT></I></FONT>, <FONT COLOR=maroon><I><TT>int</TT></I></FONT>, and <FONT COLOR=maroon><I><TT>long</TT></I></FONT> SIDL types, 
+a method is provided to get direct access to array elements. 
+For other types, you must use the array API to access elements.
+For SIDL type <TT>X</TT>, a <SPAN STYLE="font-variant:small-caps">fortran 77</SPAN> function called
+<TT>sidl_X__array_access_f</TT> provides direct access, as illustrated
+below. This will
+<B>not</B> work if your <SPAN STYLE="font-variant:small-caps">fortran 77</SPAN> compiler does array bounds checking,
+however.
+<A NAME="@default810"></A>
+<A NAME="@default811"></A><A NAME="@default812"></A>
+<A NAME="@default813"></A><A NAME="@default814"></A>
+<A NAME="@default815"></A><A NAME="@default816"></A>
+<A NAME="@default817"></A><A NAME="@default818"></A>
+<A NAME="@default819"></A><A NAME="@default820"></A>
+<A NAME="@default821"></A><A NAME="@default822"></A></P><DIV CLASS="flushright"><FONT COLOR=purple><B><SPAN CLASS="textboxed"><SPAN STYLE="font-variant:small-caps">fortran</SPAN> 77</SPAN></B></FONT></DIV><TABLE CLASS="lstframe" STYLE="padding:1ex;border-style:solid;"><TR><TD CLASS="lstlisting">        integer*4 lower(1), upper(1), stride(1), i, index(1)
+        integer*4 value, refarray(1), modval
+        integer*8 nextprime, refindex, tmp
+        lower(1) = 0
+        value = 0
+        upper(1) = len - 1
+        call sidl_int__array_create_f(1, lower, upper, retval)
+        call sidl_int__array_access_f(retval, refarray, lower,
+     $       upper, stride, refindex)
+        do i = 0, len - 1
+           tmp = value
+           value = nextprime(tmp)
+           modval = mod(i, 3)
+           if (modval .eq. 0) then
+              call sidl_int__array_set1_f(retval, i, value)
+           else
+              if (modval .eq. 1) then
+                 index(1) = i
+                 call sidl_int__array_set_f(retval, index, value)
+              else
+C this is equivalent to the sidl_int__array_set_f(retval, index, value)
+                 refarray(refindex + stride(1)*(i - lower(1))) =
+     $                value
+              endif
+           endif
+        enddo</TD></TR>
+</TABLE><P>To access a two-dimensional array, the expression referring to element
+<TT>i</TT>, <TT>j</TT> is: </P><DIV CLASS="flushright"><FONT COLOR=purple><B><SPAN CLASS="textboxed"><SPAN STYLE="font-variant:small-caps">fortran</SPAN> 77</SPAN></B></FONT></DIV><TABLE CLASS="lstframe" STYLE="padding:1ex;border-style:solid;"><TR><TD CLASS="lstlisting">       refarray(refindex + stride(1) * (i - lower(1)) + stride(2) *
+    $   (j - lower(2))</TD></TR>
+</TABLE><P>The expression referring to element <TT>i</TT>, <TT>j</TT>, <TT>k</TT> 
+of a three-dimensional array is: </P><DIV CLASS="flushright"><FONT COLOR=purple><B><SPAN CLASS="textboxed"><SPAN STYLE="font-variant:small-caps">fortran</SPAN> 77</SPAN></B></FONT></DIV><TABLE CLASS="lstframe" STYLE="padding:1ex;border-style:solid;"><TR><TD CLASS="lstlisting">       refarray(refindex + stride(1) * (i - lower(1)) + stride(2) *
+    $   (j - lower(2)) + stride(3) * (k - lower(3))</TD></TR>
+</TABLE><P>Software packages such as LINPACK or BLAS can be called, but 
+the stride should be checked to make sure the array is suitably packed.
+<TT>stride(i)</TT><A NAME="@default823"></A> indicates the distance between elements in 
+dimension
+<TT>i</TT>, where a value of 1 means elements are packed densely in dimension
+<TT>i</TT>. Negative stride values are possible and, when an array is
+a slice of another array, there may be no dimension with a stride of 1. </P><P><EM><B>NOTE</B>:
+For a <FONT COLOR=maroon><TT><I>dcomplex</I></TT></FONT><A NAME="@default824"></A> array, the reference array should be a 
+Fortran array of <TT>REAL*8</TT> instead of a Fortran array of double complex 
+to avoid potential alignment problems. For a <FONT COLOR=maroon><TT><I>fcomplex</I></TT></FONT><A NAME="@default825"></A>
+array, the reference array is a <TT>COMPLEX*8</TT> because we don’t anticipate 
+an alignment problem in this case.
+</EM></P><H3 CLASS="subsection">10.2.4  Type casting</H3><P><A NAME="ss:f77:casting"></A>
+<A NAME="@default826"></A><A NAME="@default827"></A>
+<A NAME="@default828"></A><A NAME="@default829"></A></P><P>Babel automatically generates two methods for casting between
+interfaces and classes: <TT>_cast()</TT> and <TT>_cast2()</TT>.
+The <TT>_cast()</TT> method, which tries to convert its opaque argument to 
+the type of the class indicated by the method name, is static. 
+Similarly, the non-static <TT>_cast2()</TT> method attempts to convert an 
+object pointer to the named type — specified as a string.
+For example, the following code snippet creates an instance of 
+<TT>sidl.BaseClass</TT> then casts it to <TT>sidl.BaseInterface</TT> using
+each of the two methods:
+<A NAME="@default830"></A><A NAME="@default831"></A>
+<A NAME="@default832"></A></P><DIV CLASS="flushright"><FONT COLOR=purple><B><SPAN CLASS="textboxed"><SPAN STYLE="font-variant:small-caps">fortran</SPAN> 77</SPAN></B></FONT></DIV><TABLE CLASS="lstframe" STYLE="padding:1ex;border-style:solid;"><TR><TD CLASS="lstlisting">      integer*8 object, interface, except
+      call sidl_BaseClass__create_f(object, except)
+      call sidl_BaseInterface__cast_f(object, interface, except)
+c     the following call to _cast2 is equivalent to the previous _cast call
+      call sidl_BaseClass__cast2_f(object, 'sidl.BaseInterface',
+     $     interface, except)</TD></TR>
+</TABLE><P>In either case, a zero <TT>except</TT> means the cast was successful
+and the returned reference (i. e., <TT>interface</TT>)
+should be non-zero. Since Babel 0.11.0, both methods increment the 
+reference count when they are able to successfully
+cast the object. The caller then owns the returned reference.</P><H2 CLASS="section"><A NAME="toc41"></A><A NAME="htoc46">10.3</A>  Client-side</H2><P><A NAME="s:f77:client"></A>
+<A NAME="@default833"></A></P><P>This section summarizes aspects of generating and using the <SPAN STYLE="font-variant:small-caps">fortran 77</SPAN> bindings
+associated with software wrapped with Babel’s language interoperability
+middleware. The bindings generation process is presented before summarizing
+object management and invocation of static and overloaded methods. 
+The process of catching exceptions is then discussed.
+Finally, the processes for enabling and disabling implementation-specific
+pre- and post-method instrumentation — referred to as “hooks” —
+are illustrated.</P><H3 CLASS="subsection">10.3.1  Bindings generation</H3><P>
+<A NAME="@default834"></A>
+<A NAME="@default835"></A><A NAME="@default836"></A></P><P>The basic command line for creating the <SPAN STYLE="font-variant:small-caps">fortran 77</SPAN> stubs for a SIDL 
+file (called “file.sidl”) is <SUP><A NAME="text16" HREF="#note16">1</A></SUP>:
+<A NAME="@default837"></A></P><BLOCKQUOTE CLASS="quotation"><TT>
+% <B>babel --exclude-external --client=f77 file.sidl</B><BR>
+</TT></BLOCKQUOTE><P>
+or simply
+</P><BLOCKQUOTE CLASS="quotation"><TT>
+% <B>babel -E -c=f77 file.sidl</B><BR>
+</TT></BLOCKQUOTE><P>The command results in the creation of a makefile fragment, called 
+<TT>babel.make</TT>, numerous C header and source files, and some FORTRAN 
+77 files. Files ending in <TT>_fStub.c</TT> are the <SPAN STYLE="font-variant:small-caps">fortran 77</SPAN> stubs 
+that allow <SPAN STYLE="font-variant:small-caps">fortran 77</SPAN> to call a SIDL method. 
+These files (i. e. those listed in <TT>STUBSRCS</TT> in <TT>babel.make</TT>),
+need to be compiled and linked into the application.</P><P>Normally, IOR files (i. e., those ending in <TT>_IOR.c</TT>) are linked 
+together with the
+implementation file, so do not need to be compiled.
+Files with the <TT>.fif</TT> extension are documentation
+for <SPAN STYLE="font-variant:small-caps">fortran 77</SPAN> programmers showing how the class and
+interface would have been defined if they were implemented in FORTRAN
+77. Consequently, <TT>.fif</TT> files are only for reference, so should 
+<B>not</B> be compiled.</P><H3 CLASS="subsection">10.3.2  Object management</H3><P>
+<A NAME="@default838"></A>
+<A NAME="@default839"></A></P><P>SIDL-specified objects are managed through explicit creation and
+reference counting<A NAME="@default840"></A>. Babel automatically generates 
+an <TT>_create</TT> method for concrete classes. The method is used to 
+instantiate the class and return the
+associated reference. The owner of the instance is responsible for 
+its proper disposal.
+In other words, when processing with the object is done, the owner must 
+invoke <TT>deleteRef</TT> on it. Similarly, any object references returned 
+by a subroutine call must be deleted or given to another part of the code 
+that will take ownership of and, therefore, responsibility 
+for <TT>deleteRef</TT>’ing it. </P><P>For example, the following calls <TT>deleteRef()</TT> using the 
+<FONT COLOR=maroon><I><TT>sidl.BaseInterface</TT></I></FONT> version of the method:
+<A NAME="@default841"></A>
+<A NAME="@default842"></A><A NAME="@default843"></A></P><DIV CLASS="flushright"><FONT COLOR=purple><B><SPAN CLASS="textboxed"><SPAN STYLE="font-variant:small-caps">fortran</SPAN> 77</SPAN></B></FONT></DIV><TABLE CLASS="lstframe" STYLE="padding:1ex;border-style:solid;"><TR><TD CLASS="lstlisting">       integer*8 interface1, except
+C      code to initialize interface1 here
+       call sidl_BaseInterface_deleteRef_f(interface1, except)</TD></TR>
+</TABLE><P>When it is necessary to determine if two references point to the same object,
+the built-in <TT>isSame</TT> method can be used. For example, the following
+attempts to determine if <TT>interface1</TT> and <TT>interface2</TT> point to
+the same object:
+<A NAME="@default844"></A><A NAME="@default845"></A></P><DIV CLASS="flushright"><FONT COLOR=purple><B><SPAN CLASS="textboxed"><SPAN STYLE="font-variant:small-caps">fortran</SPAN> 77</SPAN></B></FONT></DIV><TABLE CLASS="lstframe" STYLE="padding:1ex;border-style:solid;"><TR><TD CLASS="lstlisting">       integer*8 interface1, interface2, except
+       logical areSame
+C      code to initialize interface1 and interface2 here
+       call sidl_BaseInterface_isSame_f(interface1,
+     $     interface2, areSame, except)
+C      now areSame holds the return value</TD></TR>
+</TABLE><P>Similarly, it is sometimes necessary to find out if a given method is of a
+specific type. One case in point is when trying to determine if an exception
+is of a given type. The built-in <TT>isType</TT> method is provided for that
+purpose. For example, the following tries to determin if <TT>interface1</TT>
+is of type <TT>x.y.z</TT>:
+<A NAME="@default846"></A><A NAME="@default847"></A></P><DIV CLASS="flushright"><FONT COLOR=purple><B><SPAN CLASS="textboxed"><SPAN STYLE="font-variant:small-caps">fortran</SPAN> 77</SPAN></B></FONT></DIV><TABLE CLASS="lstframe" STYLE="padding:1ex;border-style:solid;"><TR><TD CLASS="lstlisting">       integer*8 interface1, except
+       logical typeMatch
+C      code to initialize interface1 here
+       call sidl_BaseInterface_isType_f(interface1, 'x.y.z',
+     $   typeMatch, except)</TD></TR>
+</TABLE><P>Along those same lines, it is possible to find the name of a SIDL class that
+implements a particular interface. Using a sequence of calls with
+<FONT COLOR=maroon><I><TT>sidl.BaseInterface</TT></I></FONT> interface, this can be accomplished as follows:
+<A NAME="@default848"></A>
+<A NAME="@default849"></A>
+<A NAME="@default850"></A><A NAME="@default851"></A>
+<A NAME="@default852"></A><A NAME="@default853"></A>
+<A NAME="@default854"></A><A NAME="@default855"></A></P><DIV CLASS="flushright"><FONT COLOR=purple><B><SPAN CLASS="textboxed"><SPAN STYLE="font-variant:small-caps">fortran</SPAN> 77</SPAN></B></FONT></DIV><TABLE CLASS="lstframe" STYLE="padding:1ex;border-style:solid;"><TR><TD CLASS="lstlisting">       integer*8 interface1, classinfo, except
+       character*256 className
+C      code to initialize interface1 here
+       call sidl_BaseInterface_getClassInfo_f(interface1,
+     $   classinfo, except)
+       call sidl_ClassInfo_getName_f(classinfo, className, except)
+       call sidl_BaseInterface_deleteRef_f(classinfo, except)</TD></TR>
+</TABLE><H3 CLASS="subsection">10.3.3  Static methods</H3><P>
+<A NAME="@default856"></A>
+<A NAME="@default857"></A></P><P>Below is an example illustrating a call to <TT>addSearchPath()</TT>, which
+is a static method in the <FONT COLOR=maroon><I><TT>sidl.Loader</TT></I></FONT> class. 
+<A NAME="@default858"></A>
+<A NAME="@default859"></A>
+<A NAME="@default860"></A><A NAME="@default861"></A></P><DIV CLASS="flushright"><FONT COLOR=purple><B><SPAN CLASS="textboxed"><SPAN STYLE="font-variant:small-caps">fortran</SPAN> 77</SPAN></B></FONT></DIV><TABLE CLASS="lstframe" STYLE="padding:1ex;border-style:solid;"><TR><TD CLASS="lstlisting">      integer*8 except
+      call sidl_Loader_addSearchPath_f('/try/looking/here', except)</TD></TR>
+</TABLE><P>Note the function is invoked directly, without an object reference
+argument.</P><H3 CLASS="subsection">10.3.4  Overloaded methods</H3><P>
+<A NAME="@default862"></A>
+<A NAME="@default863"></A></P><P>Examples of calls to SIDL overloaded methods are based on the 
+<TT>overload_sample.sidl</TT> file shown in Section <A HREF="index008.html#sec:overloading">6.7</A>. 
+Recall that the file describes three versions of the <TT>getValue</TT> method. 
+The first takes no arguments, the second takes an integer, and the 
+third a boolean. Each is called in the code snippet below:
+<A NAME="@default864"></A>
+<A NAME="@default865"></A><A NAME="@default866"></A>
+<A NAME="@default867"></A><A NAME="@default868"></A></P><DIV CLASS="flushright"><FONT COLOR=purple><B><SPAN CLASS="textboxed"><SPAN STYLE="font-variant:small-caps">fortran</SPAN> 77</SPAN></B></FONT></DIV><TABLE CLASS="lstframe" STYLE="padding:1ex;border-style:solid;"><TR><TD CLASS="lstlisting">      integer*8 t, except
+      logical b1, bretval
+      integer*4 i1, iretval
+
+      call Overload_Sample__create_f (t, except)
+
+      call Overload_Sample_getValue_f (t, iretval, except)
+      call Overload_Sample_getValueInt_f (t, i1, iretval, except)
+      call Overload_Sample_getValueBool_f (t, b1, bretval, except)</TD></TR>
+</TABLE><H3 CLASS="subsection">10.3.5  Exception catching</H3><P><A NAME="ss:f77:exceptioncatching"></A>
+<A NAME="@default869"></A><A NAME="@default870"></A>
+<A NAME="@default871"></A></P><P>Since all methods can now throw <FONT COLOR=maroon><I><TT>sidl.RuntimeException</TT></I></FONT>
+<A NAME="@default872"></A>, Babel ensures there is an
+<FONT COLOR=maroon><I><TT>out</TT></I></FONT> argument to hold an exception. If not explicitly specified,
+Babel will automatically add the argument.
+For maximum backward compatibility, the base exception argument type
+is <FONT COLOR=maroon><I><TT>sidl.BaseInterface</TT></I></FONT>, while the base exception class is
+<FONT COLOR=maroon><I><TT>sidl.SIDLException</TT></I></FONT>. The exception argument appears after the
+return value when both occur in a method. </P><P>After the call, the client
+should test this argument. If a function does not test the exception
+argument, thrown exceptions will be utterly ignored — not propagated
+to higher level functions. If the exception parameter is non-zero, an
+exception was thrown by the method, and the caller should respond
+appropriately. When an exception is thrown, the value of all other
+arguments is undefined (so should be ignored).</P><P>One approach to exception handling is to pass the exception on to the
+caller. In this case, <FONT COLOR=maroon><I><TT>sidl.BaseException.add</TT></I></FONT> 
+should be called to add another line in the stack trace for the exception.
+<FONT COLOR=maroon><I><TT>sidl.BaseException</TT></I></FONT> defines two methods that can be helpful when
+reporting exceptions to end users: <TT>getNote</TT> and
+<TT>getTrace</TT>. <TT>getNote</TT> often provides some indication of what
+went wrong. Its contents are provided by the implementor of the
+called function, so it can be empty. Similarly, <TT>getTrace</TT>
+provides a summary of the call stack. Again, 
+implementors are responsible for providing the information.</P><P>Alternatively, the caller could try to determine which exception was thrown
+through casting the argument. A successful cast
+indicates the type of exception that has occurred. 
+An example of this process is illustrated below, though not all exceptions
+associated with the method are checked. 
+The SIDL specification and corresponding <SPAN STYLE="font-variant:small-caps">fortran 77</SPAN> API are given in
+Section <A HREF="#ss:f77:signatures">10.2.2</A>.
+<A NAME="@default873"></A>
+<A NAME="@default874"></A><A NAME="@default875"></A>
+<A NAME="@default876"></A><A NAME="@default877"></A>
+<A NAME="@default878"></A><A NAME="@default879"></A>
+<A NAME="@default880"></A>
+<A NAME="@default881"></A><A NAME="@default882"></A></P><DIV CLASS="flushright"><FONT COLOR=purple><B><SPAN CLASS="textboxed"><SPAN STYLE="font-variant:small-caps">fortran</SPAN> 77</SPAN></B></FONT></DIV><TABLE CLASS="lstframe" STYLE="padding:1ex;border-style:solid;"><TR><TD CLASS="lstlisting">       integer*8 fib, except, except2, except3
+       integer*4 index, maxdepth, maxval, depth, result
+       call ExceptionTest_Fib__create_f(fib, except)
+       if (except .ne. 0) then
+C         do something with a runtime exception
+       endif
+       index = 4
+       maxdepth = 100
+       maxvalue = 32000
+       depth = 0
+       call ExceptionTest_getFib_f(fib, index, maxdepth,
+     $       maxvalue, depth, result, except)
+       if (except .ne. 0) then
+         call ExceptionTest_FibException__cast_f(except, except2, except3)
+         if (except2 .ne. 0) then
+c           do something here with the FibException
+            call ExceptionTest_FibException_deleteRef_f(except2, except3)
+         else
+           call ExceptionTest_NegativeValueException__cast_f
+     $           (exception, except2, except3)
+c          do something here with the NegativeValueException
+            call ExceptionTest_NegativeValueException_
+     $           deleteRef_f(except2, except3)
+         endif
+         call sidl_BaseException_deleteRef_f(except, except3)
+       else
+         write (*,*) 'getFib for ', index, ' returned ', result
+       endif
+       call ExceptionTest_Fib_deleteRef_f(fib, except)</TD></TR>
+</TABLE><P>If one of the
+possible exception types is a subclass of another, casting to the subclass 
+should be attempted before casting to the superclass — assuming
+that the distinction between the two exception types results in
+different exception recovery behavior. </P><H3 CLASS="subsection">10.3.6  Hooks execution</H3><P><A NAME="ss:f77:sethooks"></A>
+<A NAME="@default883"></A><A NAME="@default884"></A>
+<A NAME="@default885"></A><A NAME="@default886"></A>
+<A NAME="@default887"></A><A NAME="@default888"></A></P><P>If a given component supports pre- and post-method invocation instrumentation,
+also known as “hooks”, their execution can be enabled or disabled at
+runtime through the built-in <TT>_set_hooks</TT> method. For example,
+given the following SIDL specification:</P><DIV CLASS="flushright"><SPAN CLASS="textboxed"><FONT COLOR=purple><B>SIDL</B></FONT></SPAN></DIV><TABLE CLASS="lstframe" STYLE="padding:1ex;border-style:solid;"><TR><TD CLASS="lstlisting"><FONT COLOR=maroon><I><B>package</B> hooks <B>version</B> 1.0
+{
+  <B>class</B> Basics {
+    /**
+     * Basic illustration of hooks for static methods.
+     */
+    <B>static int</B> aStaticMeth(<B>in int</B> i, <B>out int</B> o, <B>inout int</B> io);
+
+    /**
+     * Basic illustration of hooks for static methods.
+     */
+    <B>int</B> aNonStaticMeth(<B>in int</B> i, <B>out int</B> o, <B>inout int</B> io);
+  }
+}</I></FONT></TD></TR>
+</TABLE><P>which has a single static function and a member function for the
+<TT>Basics</TT> class, the processes for enabling and disabling
+execution of the implementation-specific hooks are:</P><DIV CLASS="flushright"><FONT COLOR=purple><B><SPAN CLASS="textboxed"><SPAN STYLE="font-variant:small-caps">fortran</SPAN> 77</SPAN></B></FONT></DIV><TABLE CLASS="lstframe" STYLE="padding:1ex;border-style:solid;"><TR><TD CLASS="lstlisting">      integer*8 obj, except
+
+      call hooks_Basics__create_f (obj, except)
+c
+c     Enable hooks execution (enabled by default)
+c     ...for static methods
+c
+      call hooks_Basics__set_hooks_static_f (1, except)
+c
+c     ...for non-static methods
+c
+      call hooks_Basics__set_hooks_f (obj, 1, except)
+
+c
+c     ...do something meaningful...
+c
+
+c
+c     Disable hooks execution
+c     ...for static methods
+c
+      call hooks_Basics__set_hooks_static_f (0, except)
+c
+c     ...for non-static methods
+c
+      call hooks_Basics__set_hooks_f (obj, 0, except)
+
+c
+c     ...do something meaningful...
+c</TD></TR>
+</TABLE><P>It is important to keep in mind that the 
+<TT>_set_hooks_static</TT>
+method must be used to enable/disable invocation of hooks for static 
+methods and the <TT>_set_hooks</TT> method must be used for 
+those of non-static methods. Also, Babel does not provide client access 
+to the <TT>_pre</TT> and <TT>_post</TT> methods; therefore, they cannot 
+be invoked directly. More information on the instrumentation process 
+is provided in Subsection <A HREF="#ss:f77:hooksimpl">10.4.5</A>.</P><H3 CLASS="subsection">10.3.7  Contract enforcement</H3><P><A NAME="ss:f77:contract_enforcement"></A>
+<A NAME="@default889"></A>
+<A NAME="@default890"></A>
+<A NAME="@default891"></A></P><P>Interface contracts specify the expected behaviors of callers (or clients)
+and callees (or servers) of methods defined for interfaces and classes.
+Once specified, contracts are optionally enforced at runtime, through checks
+automatically integrated into the middleware generated by the Babel compiler.
+This section provides an example of a specification and code snippets for
+performing basic, traditional contract enforcement — introduced in
+Section <A HREF="index008.html#ss:intro_contract_enforcement">6.5</A> — in a <SPAN STYLE="font-variant:small-caps">fortran 77</SPAN> client.</P><P>A SIDL specification, including preconditions and postconditions, for
+calculating the sum of two vectors is given below.
+(Refer to Section <A HREF="index008.html#s:ifc_contracts">6.5</A> for an introduction to the contract
+syntax.)
+According to the preconditions,
+<A NAME="@default892"></A><A NAME="@default893"></A>
+<A NAME="@default894"></A>
+all callers are expected to provide two one-dimensional, SIDL arrays of the
+same size as arguments.
+The postconditions
+<A NAME="@default895"></A><A NAME="@default896"></A>
+<A NAME="@default897"></A>
+specify that all implementations are expected to return a non-null, 
+one-dimensional array of the same size (as the first SIDL array), 
+assuming the preconditions are satisfied.</P><P><A NAME="@default898"></A>
+<A NAME="@default899"></A>
+<A NAME="@default900"></A>
+<A NAME="@default901"></A><A NAME="@default902"></A>
+<A NAME="@default903"></A>
+<A NAME="@default904"></A>
+<A NAME="@default905"></A>
+<A NAME="@default906"></A>
+<A NAME="@default907"></A>
+<A NAME="@default908"></A>
+<A NAME="@default909"></A>
+<A NAME="@default910"></A>
+<A NAME="@default911"></A>
+</P><DIV CLASS="flushright"><SPAN CLASS="textboxed"><FONT COLOR=purple><B>SIDL</B></FONT></SPAN></DIV><TABLE CLASS="lstframe" STYLE="padding:1ex;border-style:solid;"><TR><TD CLASS="lstlisting"><FONT COLOR=maroon><I><B>package</B> vect <B>version</B> 1.0 {
+  <B>class</B> Utils {
+    /* ... */
+
+    /**
+     * Return the sum of the specified vectors.
+     */
+    <B>static array</B>&lt;<B>double</B>&gt; vuSum(<B>in array</B>&lt;<B>double</B>&gt; u, <B>in array</B>&lt;<B>double</B>&gt; v)
+      <B>throws</B>
+        sidl.PreViolation, sidl.PostViolation;
+      <B>require</B>
+        not_null_u: u != null;
+        u_is_1d : dimen(u) == 1;
+        not_null_v: v != null;
+        v_is_1d : dimen(v) == 1;
+        same_size: size(u) == size(v);
+      <B>ensure</B>
+        no_side_effects : is pure;
+        result_not_null: result != null;
+        result_is_1d : dimen(result) == 1;
+        result_correct_size: size(result) == size(u);
+  }
+
+    /* ... */
+}</I></FONT></TD></TR>
+</TABLE><P>An example of a <SPAN STYLE="font-variant:small-caps">fortran 77</SPAN> client invoking the method is given below. 
+The code snippet illustrates declaring and creating the arrays; enabling 
+full contract enforcement (i. e., checking all contract clauses); 
+executing <TT>vuSum</TT>; handling contract violation exceptions; 
+and cleaning up references is given below.</P><P><A NAME="@default912"></A>
+<A NAME="@default913"></A>
+<A NAME="@default914"></A>
+<A NAME="@default915"></A>
+<A NAME="@default916"></A>
+<A NAME="@default917"></A>
+<A NAME="@default918"></A>
+<A NAME="@default919"></A>
+<A NAME="@default920"></A>
+<A NAME="@default921"></A>
+<A NAME="@default922"></A>
+<A NAME="@default923"></A>
+<A NAME="@default924"></A>
+<A NAME="@default925"></A>
+<A NAME="@default926"></A>
+<A NAME="@default927"></A>
+<A NAME="@default928"></A>
+<A NAME="@default929"></A>
+<A NAME="@default930"></A>
+</P><DIV CLASS="flushright"><FONT COLOR=purple><B><SPAN CLASS="textboxed"><SPAN STYLE="font-variant:small-caps">fortran</SPAN> 77</SPAN></B></FONT></DIV><TABLE CLASS="lstframe" STYLE="padding:1ex;border-style:solid;"><TR><TD CLASS="lstlisting">      integer*8 exc, tae
+      integer*8 u, v, x
+      include 'sidl_ContractClass.inc'
+
+      call createDouble(MAX_SIZE, u)
+      call createDouble(MAX_SIZE, v)
+
+C     Initialize u and v.
+
+C     Enable FULL contract enforcement.
+      call sidl_EnfPolicy_setEnforceAll_f(ALLCLASSES, .true.,
+     $                                    exc)
+      if (exc .ne. 0) then
+C       Handle the exception
+      endif
+
+C     Do something meaningful before executing the method.
+
+      call vect_Utils_vuSum_f(u, v, x, exc)
+      if (exc .ne. 0) then
+C       Handle the exception
+      endif
+
+C     Do something meaningful with the result, x.
+
+      call sidl_double__array_deleteRef_f(u, tae)
+      call sidl_double__array_deleteRef_f(v, tae)
+      if (x .ne. 0) then
+        call sidl_double__array_deleteRef_f(x, tae)
+      endif
+      end</TD></TR>
+</TABLE><P>Alternative enforcement options can be set, as described in
+Section <A HREF="index008.html#ss:intro_contract_enforcement">6.5</A>, through the two
+basic helper methods: <TT>setEnforceAll</TT> and <TT>setEnforceNone</TT>.
+The code snippet below shows the <SPAN STYLE="font-variant:small-caps">fortran 77</SPAN> calls associated with the 
+traditional options of enabling only precondition enforcement, enabling 
+postcondition enforcement, or completely disabling contract enforcement.</P><P><A NAME="@default931"></A>
+<A NAME="@default932"></A>
+<A NAME="@default933"></A>
+<A NAME="@default934"></A>
+<A NAME="@default935"></A>
+<A NAME="@default936"></A>
+<A NAME="@default937"></A>
+<A NAME="@default938"></A>
+<A NAME="@default939"></A>
+<A NAME="@default940"></A></P><DIV CLASS="flushright"><FONT COLOR=purple><B><SPAN CLASS="textboxed"><SPAN STYLE="font-variant:small-caps">fortran</SPAN> 77</SPAN></B></FONT></DIV><TABLE CLASS="lstframe" STYLE="padding:1ex;border-style:solid;"><TR><TD CLASS="lstlisting">      include 'sidl_ContractClass.inc'
+
+C
+C     Enable only precondition contract enforcement.
+C     (Useful when only need to ensure callers comply with contract.)
+C
+      call sidl_EnfPolicy_setEnforceAll_f(PRECONDS, .false., exception)
+      if (exception .ne. 0)
+C       Handle the exception
+      endif
+
+
+C
+C     Enable only postcondition contract enforcement.
+C     (Useful when only need to ensure implementation(s) comply with contract.)
+C
+      call sidl_EnfPolicy_setEnforceAll_f(POSTCONDS, .false., exception)
+      if (exception .ne. 0)
+C       Handle the exception
+      endif
+
+C
+C     Disable contract enforcement.
+C     (Should only be used when have confidence in caller AND implementation.)
+C
+      call sidl_EnfPolicy_setEnforceNone_f(.false., exception)
+      if (exception .ne. 0)
+C       Handle the exception
+      endif</TD></TR>
+</TABLE><P>This section illustrates the basic interfaces and processes for
+traditional interface contract enforcement for a <SPAN STYLE="font-variant:small-caps">fortran 77</SPAN> client.
+Additional enforcement policy options and methods as well as more
+information regarding the specification and enforcement of contracts
+can be found in Chapter <A HREF="index023.html#c:contracts">21</A>.</P><H2 CLASS="section"><A NAME="toc42"></A><A NAME="htoc47">10.4</A>  Implementation-side</H2><P><A NAME="s:f77:implementation"></A>
+<A NAME="@default941"></A></P><P>This section summarizes aspects of generating and wrapping software
+written in <SPAN STYLE="font-variant:small-caps">fortran 77</SPAN>. The bindings generation and basic implementation 
+processes are presented first.
+Since access to object state requires special steps in <SPAN STYLE="font-variant:small-caps">fortran 77</SPAN>, the process
+for defining and managing that data is discussed. Throwing
+exceptions in the implementation is then illustrated.
+Finally, the results of generating implementations with pre- and post-method
+“hooks” are shown.</P><H3 CLASS="subsection">10.4.1  Bindings generation</H3><P><A NAME="ss:f77:implgen"></A>
+<A NAME="@default942"></A>
+<A NAME="@default943"></A><A NAME="@default944"></A></P><P>Much of the information associated with generating client-side bindings 
+is pertinent to implementing a SIDL class in <SPAN STYLE="font-variant:small-caps">fortran 77</SPAN>. (Recall
+Table <A HREF="#tbl:f77:types">10.1</A> listed the type mappings.) If the implementation
+calls other SIDL methods, client-side caller rules must be followed.</P><P>Implementation-side bindings are generated by the following call to Babel:
+<A NAME="@default945"></A></P><BLOCKQUOTE CLASS="quotation"><TT>
+% <B>babel --exclude-external --server=f77 file.sidl</B><BR>
+</TT></BLOCKQUOTE><P>
+or simply
+</P><BLOCKQUOTE CLASS="quotation"><TT>
+% <B>babel -E -s=f77 file.sidl</B><BR>
+</TT></BLOCKQUOTE><P>As a result, a makefile fragment called <TT>babel.make</TT>, numerous C 
+header and source files, and some <SPAN STYLE="font-variant:small-caps">fortran 77</SPAN> source files are created. 
+Implementation details must be added to the <SPAN STYLE="font-variant:small-caps">fortran 77</SPAN> “Impl” files,
+whose names end with <TT>_Impl.f</TT>. 
+More on this matter is provided in Subsection <A HREF="#ss:f77:implfill">10.4.2</A>.</P><H3 CLASS="subsection">10.4.2  Bindings implementation</H3><P><A NAME="ss:f77:implfill"></A>
+<A NAME="@default946"></A></P><P>Implementation details must be added to the “Impl” files generated in
+Subsection <A HREF="#ss:f77:implgen">10.4.1</A>. Changes to these files must be made between
+code splicer pairs to ensure their retention in subsequent invocations of
+Babel. Below is an example of a code splicer pair. 
+<A NAME="@default947"></A><A NAME="@default948"></A></P><DIV CLASS="flushright"><FONT COLOR=purple><B><SPAN CLASS="textboxed"><SPAN STYLE="font-variant:small-caps">fortran</SPAN> 77</SPAN></B></FONT></DIV><TABLE CLASS="lstframe" STYLE="padding:1ex;border-style:solid;"><TR><TD CLASS="lstlisting">C       DO-NOT-DELETE splicer.begin(_miscellaneous_code_start)
+C       Insert-Code-Here {_miscellaneous_code_start} (extra code)
+C       DO-NOT-DELETE splicer.end(_miscellaneous_code_start)</TD></TR>
+</TABLE><P>where the “C Insert-Code-Here...” line should be replaced
+with the implementation.
+Examples of filling in these splicer blocks are provided in the subsections
+to follow.</P><H3 CLASS="subsection">10.4.3  Private data</H3><P>
+<A NAME="@default949"></A>
+<A NAME="@default950"></A></P><P>Any variables declared in the implementation source file will, by
+virtue of Babel’s encapsulation, be private. 
+Special initialization procedures can be added to
+the built-in <TT>_load()</TT> method that is guaranteed to be called
+exactly once per class to set global class data — <EM>before</EM> any 
+user-defined methods can even be invoked. Alternatively,
+if private data (sometimes referred to as state) needs to be added 
+to a <SPAN STYLE="font-variant:small-caps">fortran 77</SPAN> class, SIDL arrays 
+can be used to store the data. This is certainly not the
+only way to implement a <SPAN STYLE="font-variant:small-caps">fortran 77</SPAN> class with state, but it’s one 
+that will work wherever Babel works. </P><P>The SIDL IOR keeps a pointer (i. e., a C <TT>void *</TT>) for each object
+in order to support private data. Like their C equivalents, each
+<SPAN STYLE="font-variant:small-caps">fortran 77</SPAN> skeleton provides two functions for accessing the private
+pointer. Although the pointer arguments to the methods are
+64-bit integers in <SPAN STYLE="font-variant:small-caps">fortran 77</SPAN>, the number of bits actually
+stored by the IOR is determined by <TT>sizeof(void *)</TT>.
+Babel/SIDL does not provide a low level mechanism for <SPAN STYLE="font-variant:small-caps">fortran 77</SPAN> to
+allocate memory to use for the private data pointer.</P><P>The following example illustrates the process of managing private data
+using the automatically generated constructor subroutine, <TT>_ctor</TT>:
+<A NAME="@default951"></A>
+<A NAME="@default952"></A>
+<A NAME="@default953"></A><A NAME="@default954"></A>
+<A NAME="@default955"></A><A NAME="@default956"></A>
+<A NAME="@default957"></A><A NAME="@default958"></A>
+<A NAME="@default959"></A><A NAME="@default960"></A></P><DIV CLASS="flushright"><FONT COLOR=purple><B><SPAN CLASS="textboxed"><SPAN STYLE="font-variant:small-caps">fortran</SPAN> 77</SPAN></B></FONT></DIV><TABLE CLASS="lstframe" STYLE="padding:1ex;border-style:solid;"><TR><TD CLASS="lstlisting">        subroutine example_withState__ctor_fi(self, exception)
+        implicit none
+        integer*8 self, exception
+C       DO-NOT-DELETE splicer.begin(example.withState._ctor)
+        integer*8 statearray, logarray, dblarray
+        call sidl_opaque__array_create1d_f(2, statearray)
+        call sidl_bool__array_create1d_f(3, logarray)
+        call sidl_double__array_create1d_f(2, dblarray)
+        if ((statearray .ne. 0) .and. (logarray .ne. 0) .and.
+     $       (dblarray .ne. 0)) then
+           call sidl_opaque__array_set1_f(statearray, 0, logarray)
+           call sidl_opaque__array_set1_f(statearray, 1, dblarray)
+        else
+C          a real implementation would not leak memory like this one
+           statearray = 0
+        endif
+        call example_withState__set_data_f(self, statearray)
+C       DO-NOT-DELETE splicer.end(example.withState._ctor)
+        end</TD></TR>
+</TABLE><P>Of course, it is up to the implementation to associate 
+elements of the arrays with particular state variables. For example,
+element 0 of the double array could be the kinematic
+viscosity and element 1 the airspeed velocity of an unladen
+swallow.<A NAME="@default961"></A> Element 0 of the boolean array could specify 
+African (true) or
+European (false). The destructor implementation for this class could look 
+something like:
+<A NAME="@default962"></A>
+<A NAME="@default963"></A><A NAME="@default964"></A>
+<A NAME="@default965"></A><A NAME="@default966"></A>
+<A NAME="@default967"></A><A NAME="@default968"></A>
+<A NAME="@default969"></A><A NAME="@default970"></A></P><DIV CLASS="flushright"><FONT COLOR=purple><B><SPAN CLASS="textboxed"><SPAN STYLE="font-variant:small-caps">fortran</SPAN> 77</SPAN></B></FONT></DIV><TABLE CLASS="lstframe" STYLE="padding:1ex;border-style:solid;"><TR><TD CLASS="lstlisting">        subroutine example_withState__dtor_fi(self, exception)
+        implicit none
+        integer*8 self, exception
+C       DO-NOT-DELETE splicer.begin(example.withState._dtor)
+        integer*8 statearray, logarray, dblarray
+        call example_withState__get_data_f(self, statearray)
+        if (statearray .ne. 0) then
+           call sidl_opaque__array_get1_f(statearray, 0, logarray)
+           call sidl_opaque__array_get1_f(statearray, 1, dblarray)
+           call sidl_bool__array_deleteRef_f(logarray)
+           call sidl_double__array_deleteRef_f(dblarray)
+           call sidl_opaque__array_deleteRef_f(statearray)
+C       the following two lines are not strictly necessary
+           statearray = 0
+           call example_withState__set_data_f(self, statearray)
+        endif
+C       DO-NOT-DELETE splicer.end(example.withState._dtor)
+        end</TD></TR>
+</TABLE><P>Continuing with this example, an accessor function for the airspeed velocity 
+of an unladen swallow could be implemented as follows:
+<A NAME="@default971"></A>
+<A NAME="@default972"></A><A NAME="@default973"></A>
+<A NAME="@default974"></A><A NAME="@default975"></A></P><DIV CLASS="flushright"><FONT COLOR=purple><B><SPAN CLASS="textboxed"><SPAN STYLE="font-variant:small-caps">fortran</SPAN> 77</SPAN></B></FONT></DIV><TABLE CLASS="lstframe" STYLE="padding:1ex;border-style:solid;"><TR><TD CLASS="lstlisting">        subroutine example_withState_getAirspeedVelocity_fi(
+     $     self, velocity, exception)
+        implicit none
+        integer*8 self, exception
+        real*8 velocity
+C       DO-NOT-DELETE splicer.begin(example.withState.getAirspeedVelocity)
+        integer*8 statearray, dblarray
+        call example_withState__get_data_f(self, statearray)
+        if (statearray .ne. 0) then
+           call sidl_opaque__array_get1_f(statearray, 1, dblarray)
+           call sidl_double__array_get1_f(dblarray, 1, velocity)
+        endif
+C       DO-NOT-DELETE splicer.end(example.withState.getAirspeedVelocity)
+        end</TD></TR>
+</TABLE><H3 CLASS="subsection">10.4.4  Exception throwing</H3><P><A NAME="ss:f77:exceptionthrowing"></A>
+<A NAME="@default976"></A><A NAME="@default977"></A></P><P>Continuing with the Fibonocci example used in 
+Subsections <A HREF="#ss:f77:signatures">10.2.2</A> and <A HREF="#ss:f77:exceptioncatching">10.3.5</A>, 
+the <SPAN STYLE="font-variant:small-caps">fortran 77</SPAN> code that throws the exceptions is:
+<A NAME="@default978"></A>
+<A NAME="@default979"></A><A NAME="@default980"></A></P><DIV CLASS="flushright"><FONT COLOR=purple><B><SPAN CLASS="textboxed"><SPAN STYLE="font-variant:small-caps">fortran</SPAN> 77</SPAN></B></FONT></DIV><TABLE CLASS="lstframe" STYLE="padding:1ex;border-style:solid;"><TR><TD CLASS="lstlisting">        subroutine ExceptionTest_Fib_getFib_fi(self, n, max_depth,
+     &amp;     max_value, depth, retval, exception)
+        implicit none
+        integer*8 self, exception, ignored
+        integer*4 n, max_depth, max_value, depth, retval
+C       DO-NOT-DELETE splicer.begin(ExceptionTest.Fib.getFib)
+        character*(*) myfilename
+        parameter(myfilename='ExceptionTest_Fib_Impl.f')
+C ...lines of code deleted...
+        if (n .lt. 0) then
+          call ExceptionTest_NegativeValueException__create_f(exception
+     $          ,ignored)
+          if (exception .ne. 0) then
+            call ExceptionTest_NegativeValueException_setNote_f(
+     $             exception,
+     $             'called with negative n', ignored)
+            call ExceptionTest_NegativeValueException_add_f(
+     $             exception,
+     $             myfilename,
+     $             57,
+     $             'ExceptionTest_Fib_getFib_impl', ignored)
+            return
+          endif
+C ...lines of code deleted...
+C       DO-NOT-DELETE splicer.end(ExceptionTest.Fib.getFib)
+        end</TD></TR>
+</TABLE><P>Not all exceptions are thrown in this example in order to
+keep its length down. The interested reader is encouraged to refer
+to the corresponding regression tests for the complete routine.</P><P>When an exception is thrown, the implementation should 
+<TT>deleteRef</TT> any references it was planning to return to the
+caller because the caller is instructed to ignore any returned values
+under those circumstances. In general, when throwing an exception, 
+it is good practice to set all <FONT COLOR=maroon><I><TT>out</TT></I></FONT>
+and <FONT COLOR=maroon><I><TT>inout</TT></I></FONT> array, class, and interface arguments to zero before
+returning. This makes things work out
+better for clients who forget to check if an exception occurred or
+willfully choose to ignore it.</P><P><EM><B>NOTE</B>:
+It is typically 
+safe to assume that calling <TT>deleteRef</TT>, <TT>_cast</TT> or
+<TT>_cast2</TT> on an exception will never cause an exception to be
+thrown because returned exceptions are always local.
+</EM></P><H3 CLASS="subsection">10.4.5  Hooks implementation</H3><P><A NAME="ss:f77:hooksimpl"></A>
+<A NAME="@default981"></A><A NAME="@default982"></A>
+<A NAME="@default983"></A>
+<A NAME="@default984"></A><A NAME="@default985"></A>
+<A NAME="@default986"></A><A NAME="@default987"></A></P><P>As discussed in Subsection <A HREF="#ss:f77:sethooks">10.3.6</A>, when hooks execution
+is enabled, implementation-specific instrumentation is executed. Using
+the <B><TT><CODE>--</CODE>generate-hooks</TT></B> option on the Babel
+command line when generating implementation-side bindings results
+in the automatic generation of a <TT>_pre</TT> and <TT>_post</TT>
+method for every static and non-static method associated with each class
+in the specification. For the <TT>aStaticMethod</TT> specified in
+Subsection <A HREF="#ss:f77:sethooks">10.3.6</A>, the generated <TT>_pre</TT> method
+implementation is:</P><DIV CLASS="flushright"><FONT COLOR=purple><B><SPAN CLASS="textboxed"><SPAN STYLE="font-variant:small-caps">fortran</SPAN> 77</SPAN></B></FONT></DIV><TABLE CLASS="lstframe" STYLE="padding:1ex;border-style:solid;"><TR><TD CLASS="lstlisting">        subroutine hooks_Basics_aStaticMeth_pre_fi(i, io, exception)
+        implicit none
+C        in int i
+        integer*4 i
+C        in int io
+        integer*4 io
+C        out sidl.BaseInterface exception
+        integer*8 exception
+
+C       DO-NOT-DELETE splicer.begin(hooks.Basics.aStaticMeth_pre)
+C
+C       Add instrumentation here to be executed immediately prior
+C       to dispatch to aStaticMeth().
+C
+C       DO-NOT-DELETE splicer.end(hooks.Basics.aStaticMeth_pre)
+        end</TD></TR>
+</TABLE><P>while that of the <TT>_post</TT> method is:</P><DIV CLASS="flushright"><FONT COLOR=purple><B><SPAN CLASS="textboxed"><SPAN STYLE="font-variant:small-caps">fortran</SPAN> 77</SPAN></B></FONT></DIV><TABLE CLASS="lstframe" STYLE="padding:1ex;border-style:solid;"><TR><TD CLASS="lstlisting">        subroutine hooks_Basics_aStaticMeth_post_fi(i, o, io, retval,
+     &amp;     exception)
+        implicit none
+C        in int i
+        integer*4 i
+C        in int o
+        integer*4 o
+C        in int io
+        integer*4 io
+C        in int retval
+        integer*4 retval
+C        out sidl.BaseInterface exception
+        integer*8 exception
+
+C       DO-NOT-DELETE splicer.begin(hooks.Basics.aStaticMeth_post)
+C
+C       Add instrumentation here to be executed immediately after
+C       return from dispatch to aStaticMeth().
+C
+        return
+C       DO-NOT-DELETE splicer.end(hooks.Basics.aStaticMeth_post)
+        end</TD></TR>
+</TABLE><P>Per the normal implementation process, the desired instrumentation
+should be added within the splicer blocks of
+<TT>aStaticMethod_pre</TT> and
+<TT>aStaticMethod_post</TT>. As stated in the comments
+within those blocks, <TT>aStaticMethod_pre</TT> will be
+executed immediately prior to dispatch to <TT>aStaticMethod</TT> when the
+latter is invoked by a client. Assuming no exceptions are encountered,
+<TT>aStaticMethod_post</TT> is executed immediately upon
+return from <TT>aStaticMethod</TT>.
+</P><HR CLASS="footnoterule"><DL CLASS="thefootnotes"><DT CLASS="dt-thefootnotes">
+<A NAME="note16" HREF="#text16">1</A></DT><DD CLASS="dd-thefootnotes">For information on additional 
+command line options, refer to Section <A HREF="index006.html#s:basics_commandline">4.2</A>.
+</DD></DL>
+<HR>
+<A HREF="index011.html"><IMG SRC="previous_motif.gif" ALT="Previous"></A>
+<A HREF="index-multipage.html"><IMG SRC="contents_motif.gif" ALT="Up"></A>
+<A HREF="index013.html"><IMG SRC="next_motif.gif" ALT="Next"></A>
+</BODY>
+</HTML>

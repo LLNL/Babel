@@ -1,0 +1,934 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN"
+            "http://www.w3.org/TR/REC-html40/loose.dtd">
+<HTML>
+<HEAD>
+
+<META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<META name="GENERATOR" content="hevea 1.10">
+<LINK rel="stylesheet" type="text/css" href="index.css">
+<TITLE>C++ Bindings</TITLE>
+</HEAD>
+<BODY >
+<A HREF="index010.html"><IMG SRC="previous_motif.gif" ALT="Previous"></A>
+<A HREF="index-multipage.html"><IMG SRC="contents_motif.gif" ALT="Up"></A>
+<A HREF="index012.html"><IMG SRC="next_motif.gif" ALT="Next"></A>
+<HR>
+<H1 CLASS="chapter"><A NAME="htoc38">Chapter 9</A>  C++ Bindings</H1><UL>
+<LI><A HREF="index011.html#toc35">Introduction</A>
+</LI><LI><A HREF="index011.html#toc36">Basics</A>
+</LI><LI><A HREF="index011.html#toc37">Client-side</A>
+</LI><LI><A HREF="index011.html#toc38">Implementation-side</A>
+</LI></UL>
+<P><A NAME="c:cxx"></A></P><P><BR>
+</P><H2 CLASS="section"><A NAME="toc35"></A><A NAME="htoc39">9.1</A>  Introduction</H2><P>This chapter gives an overview of the C++ bindings for SIDL as of Babel 1.0.
+The original C++ bindings, available in the first public release 
+(0.5.0 in July 2001), underwent a significant redesign thanks to Steve
+Parker at the University of Utah. The result became known as the Utah C++ 
+(i. e., initially tagged UCxx) alternative to the 
+original bindings (0.10.0 January 2005). As of 1.0.0, the Utah 
+version is the only binding released for C++.</P><P>Common aspects of those bindings, such as the mapping of SIDL data types to 
+their C++ counterparts, are presented in Section <A HREF="#s:cxx:basics">9.2</A>.
+Issues of concern to callers written in C++ are addressed in the 
+client-side discussion in Section <A HREF="#s:cxx:client">9.3</A>, while issues for callees 
+appear in the implementation-side discussion in 
+Section <A HREF="#s:cxx:implementation">9.4</A>.</P><H2 CLASS="section"><A NAME="toc36"></A><A NAME="htoc40">9.2</A>  Basics</H2><P><A NAME="s:cxx:basics"></A></P><P>This section summarizes basic features that are common to both client and
+implementation bindings.
+Subsection <A HREF="#ss:cxx:namespace">9.2.1</A> describes conventions used to establish
+name spaces, while those associated with the generation
+of subroutines from methods are given in Subsection <A HREF="#ss:cxx:signatures">9.2.2</A>.
+The mapping of fundamental and key SIDL types is given in 
+Subsection <A HREF="#ss:cxx:types">9.2.3</A>. 
+Finally, casting between different types is discussed in 
+Subsection <A HREF="#ss:cxx:casting">9.2.4</A>.</P><H3 CLASS="subsection">9.2.1  Name space</H3><P><A NAME="ss:cxx:namespace"></A>
+<A NAME="@default564"></A>
+<A NAME="@default565"></A></P><P>The C++ bindings take advantage of language features to protect the global
+name space. In particular, SIDL packages are mapped to C++ name spaces.
+Interfaces and classes are mapped to 
+proxy classes, called “stubs”, which serve as the firewall 
+between the application in C++ and Babel’s internal workings. 
+Static SIDL methods are translated into static C++ member functions,
+while non-static methods are mapped to non-static C++ member functions.</P><P><EM><B>NOTE</B>:
+For backward compatibility, as of the 1.0 release, the
+<TT>SIDL_USE_UCXX</TT>, <TT>UCXX</TT>, and <TT>UCXX_LOCAL</TT> 
+preprocessor macros are undefined. <TT>SIDL_USE_UCXX</TT> is used in
+<TT>#ifdef SIDL_USE_CXX</TT>/<TT>#endif</TT> blocks to specify 
+the <TT>ucxx</TT> name space. Hence, <TT>UCXX</TT> was to be used where 
+<TT>::ucxx</TT> would normally appear and <TT>UCXX_LOCAL</TT> where 
+<TT>ucxx::</TT> would appear.
+</EM></P><H3 CLASS="subsection">9.2.2  Method signatures</H3><P><A NAME="ss:cxx:signatures"></A>
+<A NAME="@default566"></A></P><P>Since the bindings are able to map well into C++ language constructs,
+C++ method signatures correspond very closely to those in the specification.
+Adapted from the Babel regression tests, the following is an example of a 
+package called <TT>ExceptionTest</TT> that has a class named <TT>Fib</TT> with 
+a method, <TT>getFib</TT>, declared in SIDL as follows:
+<A NAME="@default567"></A></P><DIV CLASS="flushright"><SPAN CLASS="textboxed"><FONT COLOR=purple><B>SIDL</B></FONT></SPAN></DIV><TABLE CLASS="lstframe" STYLE="padding:1ex;border-style:solid;"><TR><TD CLASS="lstlisting"><FONT COLOR=maroon><I><B>int</B> getFib(<B>in int</B> n, <B>in int</B> max_depth, <B>in int</B> max_value, <B>in int</B> depth)
+  <B>throws</B> NegativeValueException, FibException;</I></FONT></TD></TR>
+</TABLE><P>The corresponding C++ method signature is:</P><DIV CLASS="flushright"><SPAN CLASS="textboxed"><FONT COLOR=purple><B>C++</B></FONT></SPAN></DIV><TABLE CLASS="lstframe" STYLE="padding:1ex;border-style:solid;"><TR><TD CLASS="lstlisting">int32_t
+getFib (/* in */int32_t n, /* in */int32_t max_depth,
+        /* in */int32_t max_value, /* in */int32_t depth
+)
+// throws:
+//     ::ExceptionTest::FibException
+//     ::ExceptionTest::NegativeValueException
+//     ::sidl::RuntimeException
+;</TD></TR>
+</TABLE><H3 CLASS="subsection">9.2.3  Data types</H3><P><A NAME="ss:cxx:types"></A>
+<A NAME="@default568"></A>
+<A NAME="@default569"></A></P><BLOCKQUOTE CLASS="table"><DIV CLASS="center"><HR WIDTH="80%" SIZE=2></DIV>
+<DIV CLASS="caption"><TABLE CELLSPACING=6 CELLPADDING=0><TR><TD VALIGN=top ALIGN=left>Table 9.1: SIDL to C++ Type Mappings</TD></TR>
+</TABLE></DIV><A NAME="tbl:cxx:types"></A>
+<DIV CLASS="center">
+<TABLE BORDER=1 CELLSPACING=0 CELLPADDING=1><TR><TD ALIGN=left NOWRAP> <B>SIDL TYPE</B></TD><TD ALIGN=left NOWRAP><B>C++ TYPE</B></TD></TR>
+<TR><TD ALIGN=left NOWRAP> <FONT COLOR=maroon><I><TT>int</TT></I></FONT></TD><TD ALIGN=left NOWRAP><TT>int32_t</TT> <A NAME="@default570"></A></TD></TR>
+<TR><TD ALIGN=left NOWRAP> <FONT COLOR=maroon><I><TT>long</TT></I></FONT></TD><TD ALIGN=left NOWRAP><TT>int64_t</TT> <A NAME="@default571"></A></TD></TR>
+<TR><TD ALIGN=left NOWRAP> <FONT COLOR=maroon><I><TT>float</TT></I></FONT></TD><TD ALIGN=left NOWRAP><TT>float</TT> <A NAME="@default572"></A></TD></TR>
+<TR><TD ALIGN=left NOWRAP> <FONT COLOR=maroon><I><TT>double</TT></I></FONT></TD><TD ALIGN=left NOWRAP><TT>double</TT> <A NAME="@default573"></A></TD></TR>
+<TR><TD ALIGN=left NOWRAP> <FONT COLOR=maroon><I><TT>bool</TT></I></FONT></TD><TD ALIGN=left NOWRAP><TT>bool</TT> <A NAME="@default574"></A></TD></TR>
+<TR><TD ALIGN=left NOWRAP> <FONT COLOR=maroon><I><TT>char</TT></I></FONT></TD><TD ALIGN=left NOWRAP><TT>char</TT> <A NAME="@default575"></A></TD></TR>
+<TR><TD ALIGN=left NOWRAP> <FONT COLOR=maroon><I><TT>string</TT></I></FONT></TD><TD ALIGN=left NOWRAP><TT>std::string</TT> <A NAME="@default576"></A></TD></TR>
+<TR><TD ALIGN=left NOWRAP> <FONT COLOR=maroon><I><TT>fcomplex</TT></I></FONT></TD><TD ALIGN=left NOWRAP><TT>sidl::fcomplex</TT> <A NAME="@default577"></A></TD></TR>
+<TR><TD ALIGN=left NOWRAP> <FONT COLOR=maroon><I><TT>dcomplex</TT></I></FONT></TD><TD ALIGN=left NOWRAP><TT>sidl::dcomplex</TT> <A NAME="@default578"></A></TD></TR>
+<TR><TD ALIGN=left NOWRAP> <FONT COLOR=maroon><I><TT>enum</TT></I></FONT></TD><TD ALIGN=left NOWRAP><TT>enum</TT> <A NAME="@default579"></A></TD></TR>
+<TR><TD ALIGN=left NOWRAP> <FONT COLOR=maroon><I><TT>opaque</TT></I></FONT></TD><TD ALIGN=left NOWRAP><TT>sidl::opaque</TT> <A NAME="@default580"></A><A NAME="@default581"></A></TD></TR>
+<TR><TD ALIGN=left NOWRAP> <FONT COLOR=maroon><I><TT>interface</TT></I></FONT></TD><TD ALIGN=left NOWRAP><TT>class</TT> <A NAME="@default582"></A></TD></TR>
+<TR><TD ALIGN=left NOWRAP> <FONT COLOR=maroon><I><TT>class</TT></I></FONT></TD><TD ALIGN=left NOWRAP><TT>class</TT> <A NAME="@default583"></A></TD></TR>
+<TR><TD ALIGN=left NOWRAP> <FONT COLOR=maroon><I><TT>array</TT></I></FONT></TD><TD ALIGN=left NOWRAP><TT>sidl::array</TT> (template specialization) <A NAME="@default584"></A></TD></TR>
+</TABLE>
+</DIV>
+<DIV CLASS="center"><HR WIDTH="80%" SIZE=2></DIV></BLOCKQUOTE><P>Basic SIDL types are mapped into C++ according to 
+Table <A HREF="#tbl:cxx:types">9.1</A>. The remainder of this subsection 
+illustrates the use of enumerations and arrays.</P><H4 CLASS="subsubsection">Enumerations</H4><P><A NAME="sss:cxx:enums"></A>
+<A NAME="@default585"></A><A NAME="@default586"></A>
+<A NAME="@default587"></A><A NAME="@default588"></A></P><P>Since SIDL enumerations map to C++ enumerations, their use is fairly
+straight-forward. The appropriate header file must be included.
+The naming convention for enumerations is for <TT>enums</TT> to be the
+name space followed by the specified enumeration type as the name of 
+the enumeration. A given enumeration value name starts with
+the enumeration type and the name of the constant, with an underscore as
+the separator.
+For example, a variable can be assigned the <TT>blue</TT> constant for 
+the <TT>color</TT> enumeration of the sample in 
+Subsection <A HREF="index008.html#ssec:basics:fundamental:enums">6.3</A> as follows:
+<A NAME="@default589"></A><A NAME="@default590"></A></P><DIV CLASS="flushright"><SPAN CLASS="textboxed"><FONT COLOR=purple><B>C++</B></FONT></SPAN></DIV><TABLE CLASS="lstframe" STYLE="padding:1ex;border-style:solid;"><TR><TD CLASS="lstlisting">#include "enums_color.hxx"
+
+/* ...deleted lines... */
+enums::color myColor = enums::color_blue;</TD></TR>
+</TABLE><H4 CLASS="subsubsection">Arrays</H4><P><A NAME="sss:cxx:arrays"></A>
+<A NAME="@default591"></A>
+<A NAME="@default592"></A><A NAME="@default593"></A></P><P>As discussed in Section <A HREF="index008.html#s:arrays">6.4</A>, SIDL supports both normal and raw
+arrays (i. e., r-arrays). Normal SIDL arrays can be used by any supported
+language; whereas, r-arrays are restricted to numeric types. This subsection 
+discusses both within the context of C++ bindings. </P><P><A NAME="@default594"></A><A NAME="@default595"></A>
+Although it is feasible to expose the underlying C array API to create, 
+destroy and access normal array elements and meta-data, the C++ bindings
+provide a <TT>sidl::array&lt;T&gt;</TT> template mechanism that is more in keeping 
+with C++ idioms. 
+For SIDL built-in types, template specializations of <TT>sidl::array&lt;T&gt;</TT>
+are defined in <TT>sidl_ucxx.hxx</TT><A NAME="@default596"></A>. 
+The array template is specialized in the corresponding stub header for
+SIDL interfaces and classes.
+The extensive use of template specialization is used in an effort 
+to hide details that the array implementation shifts between
+the C++ type externally, and the C-based types stored in the IOR.
+(See <TT>basearray</TT> in <TT>sidl_ucxx.hxx</TT> for the traits classes 
+and grungy implementation details.) 
+For example, the process to create a one-dimensional SIDL array of prime 
+numbers is:
+<A NAME="@default597"></A>
+<A NAME="@default598"></A><A NAME="@default599"></A>
+<A NAME="@default600"></A><A NAME="@default601"></A>
+<A NAME="@default602"></A><A NAME="@default603"></A></P><DIV CLASS="flushright"><SPAN CLASS="textboxed"><FONT COLOR=purple><B>C++</B></FONT></SPAN></DIV><TABLE CLASS="lstframe" STYLE="padding:1ex;border-style:solid;"><TR><TD CLASS="lstlisting">int32_t len = 10; // array length=10
+int32_t dim = 1;  // one dimensional
+int32_t lower[1] = {0}; // zero offset
+int32_t upper[1] = {len-1};
+int32_t prime = nextPrime(0);
+
+// create a SIDL array of primes.
+sidl::array&lt;int32_t&gt; a = sidl::array&lt;int32_t&gt;::createRow(dim, lower, upper);
+for( int i=0; i&lt;len; ++i ) {
+   prime = nextPrime( prime );
+   a.set(i, v);
+}</TD></TR>
+</TABLE><P>Of course, the example above is only one way to create an array. 
+The list of member functions for all C++ array classes is: </P><DIV CLASS="flushright"><SPAN CLASS="textboxed"><FONT COLOR=purple><B>C++</B></FONT></SPAN></DIV><TABLE CLASS="lstframe" STYLE="padding:1ex;border-style:solid;"><TR><TD CLASS="lstlisting">// constructors
+array ( ior_array_t * src ); // internal
+array ( const array &amp; src ); // copy constructor
+
+// destructor
+~array() ;
+
+// create row-size of 1 to 7 dimensions
+static array&lt;T&gt;
+createRow( int32_t dimen, const int32_t lower[],
+           const int32_t upper[]);
+
+// create column-wise of 1 to 7 dimensions
+static array&lt;T&gt;
+createCol( int32_t dimen, const int32_t lower[],
+           const int32_t upper[]);
+
+// create 1-D array of specified length
+static array&lt;T&gt; create1d( int32_t len );
+
+// create 1-D array of specified length and init
+static array&lt;T&gt; create1d(int32_t len, ior_item_internal_t data)
+
+// create 2-D array of specified extents
+static array&lt;T&gt; create2dCol( int32_t m, int32_t n);
+
+// create 2-D array of specified extents
+static array&lt;T&gt; create2dRow( int32_t m, int32_t n);
+
+// get a slice of the array
+array&lt;T&gt;
+slice( int32_t dimen, const int32_t numElem[],
+       const int32_t *srcStart = 0,
+       const int32_t *srcStride = 0,
+       const int32_t *newStart = 0);
+
+void borrow( item_ior_t * first_element, int32_t dimen,
+        const int32_t lower[], const int32_t upper[],
+        const int32_t stride[]);
+
+void ensure( int32_t dimen, array_ordering ordering );
+
+void addRef();
+
+void deleteRef();
+
+// get/set
+cxx_item_t get(int32_t i);
+cxx_item_t get(int32_t i1, int32_t i2);
+cxx_item_t get(int32_t i1, int32_t i2, int32_t i3);
+cxx_item_t get(int32_t i1, int32_t i2, int32_t i3,
+                       int32_t i4);
+cxx_item_t get(int32_t i1, int32_t i2, int32_t i3,
+                       int32_t i4, int32_t i5);
+cxx_item_t get(int32_t i1, int32_t i2, int32_t i3,
+                       int32_t i4, int32_t i5, int32_t i6);
+cxx_item_t get(int32_t i1, int32_t i2, int32_t i3,
+                       int32_t i4, int32_t i5, int32_t i6, int32_t i7);
+cxx_item_t get(const int32_t *indices);
+
+void set(int32_t i, cxx_item_t elem);
+void set(int32_t i1, int32_t i2, cxx_item_t elem);
+void set(int32_t i1, int32_t i2, int32_t i3,
+         cxx_item_t elem);
+void set(int32_t i1, int32_t i2, int32_t i3, int32_t i4,
+         cxx_item_t elem);
+void set(int32_t i1, int32_t i2, int32_t i3, int32_t i4,
+         int32_t i5, cxx_item_t elem);
+void set(int32_t i1, int32_t i2, int32_t i3, int32_t i4,
+         int32_t i5, int32_t i6, cxx_item_t elem);
+void set(int32_t i1, int32_t i2, int32_t i3, int32_t i4,
+         int32_t i5, int32_t i6, int32_t i7, cxx_item_t elem);
+void set(const int32_t *indices, cxx_item_t elem);
+
+// [] overloaded to be same as get(i)
+cxx_item_t operator[](int32_t i) const ;
+
+bool is1dPacked() const;
+
+// returns STL forward iterator iff 1DPacked, else null
+iterator begin();
+
+// returns STL forward iterator iff 1DPacked, else null
+const_iterator begin();
+
+// returns STL forward iterator iff 1DPacked, else null
+iterator end();
+
+// returns STL forward iterator iff 1DPacked, else null
+const_iterator end();
+
+const int32_t* first() const;
+
+int32_t* first();
+
+void copy( const array&lt; T &gt;&amp; src );
+
+
+// other accessors
+int32_t dimen() const;
+
+int32_t lower( int32_t dim ) const;
+
+int32_t upper( int32_t dim ) const;
+
+int32_t stride( int32_t dim ) const;
+
+bool _is_nil() const;
+
+bool _not_nil() const;
+
+// get a const pointer to the actual array ior
+const array_ior_t* _get_ior() const;
+
+// get a non-const pointer to the actual array ior
+array_ior_t* _get_ior();
+
+void _set_ior( ior_array_t * s);
+
+array&amp; operator =(const array &amp;rhs);
+
+array&amp; operator =(const basearray &amp;rhs);</TD></TR>
+</TABLE><P>where 
+<TT>cxx_array_t</TT>, 
+<TT>cxx_item_t</TT>,
+<TT>ior_array_t</TT>,
+<TT>ior_item_t</TT>,
+<TT>ior_item_internal_t</TT>,
+<TT>iterator</TT>,<BR>
+<TT>const_iterator</TT>,
+<TT>pointer</TT>, and 
+<TT>value_type</TT> are all public typedefs in the array class.
+Table <A HREF="index008.html#tbl:basics:arrayfuncs">6.3</A> provides a brief description of each 
+function in the array API.</P><P>The values of these typedefs are determined by traits classes,
+which are a fairly standard, albeit advanced, C++ templating
+idiom. Refer to any advanced C++ text for a detailed explanation.
+Both the <TT>array_traits&lt;&gt;</TT> and <TT>array&lt;&gt;</TT>
+template specializations for <TT>int32_t</TT> are reproduced below.
+More built-in types and the UCxx stubs for user-defined types can be 
+found in <TT>sidl_ucxx.hxx</TT><A NAME="@default604"></A>.</P><DIV CLASS="flushright"><SPAN CLASS="textboxed"><FONT COLOR=purple><B>C++</B></FONT></SPAN></DIV><TABLE CLASS="lstframe" STYLE="padding:1ex;border-style:solid;"><TR><TD CLASS="lstlisting"> // template specialization for array_traits&lt;int32_t&gt;
+  template&lt;&gt;
+  struct array_traits&lt;int32_t&gt; {
+    typedef array&lt;int32_t&gt;                            cxx_array_t;
+    typedef int32_t                               cxx_item_t;
+    typedef struct sidl_int__array                       ior_array_t;
+    typedef int32_t                               ior_item_t;
+    typedef const int32_t*      ior_item_internal_t;
+    typedef cxx_item_t                               value_type;
+    typedef value_type*                              pointer;
+    typedef const value_type*                        const_pointer;
+  };
+ template&lt;&gt;
+  class array&lt; int32_t &gt;
+    : public basearray
+  {
+  public:
+    typedef basearray                                  Base;
+    typedef array_traits&lt;int32_t&gt;::cxx_array_t          cxx_array_t;
+    typedef array_traits&lt;int32_t&gt;::cxx_item_t           cxx_item_t;
+    typedef array_traits&lt;int32_t&gt;::ior_array_t          ior_array_t;
+    typedef array_traits&lt;int32_t&gt;::ior_item_t           ior_item_t;
+    typedef array_traits&lt;int32_t&gt;::ior_item_internal_t  ior_item_internal_t;
+    typedef array_iter&lt; array_traits&lt;int32_t&gt; &gt;         iterator;
+    typedef const_array_iter&lt; array_traits&lt;int32_t&gt; &gt;   const_iterator;
+    typedef array_traits&lt; int32_t &gt; ::pointer         pointer;
+    typedef array_traits&lt; int32_t &gt; ::value_type      value_type;
+
+    // lots of methods to follow
+  }</TD></TR>
+</TABLE><P>The C++ mapping for r-arrays is essentially identical to the mapping
+for C (see Section <A HREF="index010.html#sss:c:arrays">8.2.3</A>). The only difference is that the
+C++ client header provides an overloaded version of each method
+containing an r-array taking normal SIDL arrays instead of raw
+data. 
+<A NAME="@default605"></A>
+For example, the <TT>solve</TT> method from
+Section <A HREF="index008.html#ss:r-arrays">6.4</A> produces the following code in the
+header file.
+<A NAME="@default606"></A></P><DIV CLASS="flushright"><SPAN CLASS="textboxed"><FONT COLOR=purple><B>C++</B></FONT></SPAN></DIV><TABLE CLASS="lstframe" STYLE="padding:1ex;border-style:solid;"><TR><TD CLASS="lstlisting">    void solve (/*in*/    double* A,
+                /*inout*/ double* x,
+                /*in*/    double* b,
+                /*in*/    int32_t m,
+                /*in*/    int32_t n) throw ();
+
+    void solve (/*in*/    ::sidl::array&lt;double&gt; A,
+                /*inout*/ ::sidl::array&lt;double&gt;&amp; x,
+                /*in*/    ::sidl::array&lt;double&gt; b) throw();</TD></TR>
+</TABLE><P>Multi-dimensional arrays, such as <TT>A</TT> in the above example,
+are stored in column-major order. Babel provides macros to
+access r-array data correctly. In this case, for example, 
+<TT>RarrayElem2(A, i, j, m)</TT> can be used to access the element in row <TT>i</TT>
+and column <TT>j</TT>. In addition, memory can be accessed by stride one 
+by making the row index the inner loop and the column index the outer.
+Similar macros are available in <TT>sidlArray.h</TT> for arrays of dimension 
+1 through 7.</P><H3 CLASS="subsection">9.2.4  Type casting</H3><P><A NAME="ss:cxx:casting"></A>
+<A NAME="@default607"></A><A NAME="@default608"></A>
+<A NAME="@default609"></A></P><P>There are two forms of type casting: upcasting and downcasting. 
+Upcasting involves casting from a derived, or subclass, to a more general
+base class. As a result, it is safely handled with simple assignment.
+Downcasting works in the other direction; that is, it involves casting 
+an instance of a base class to a more specific subclass.
+It should be done with <TT>sidl::babel_cast&lt;&gt;()</TT>. 
+Downcasts are successful if the resulting pointer is non-<TT>NULL</TT>.
+This can be checked by a call using either <TT>_is_nil()</TT> — for
+determining cast failure — or <TT>_not_nil()</TT> — for success.</P><P><EM><B>NOTE</B>:</EM>
+Never<EM> 
+use <TT>dynamic_cast&lt;&gt;()</TT> on a SIDL object since Babel’s runtime 
+system needs to be involved in verifying the legality of the downcast.
+</EM></P><H2 CLASS="section"><A NAME="toc37"></A><A NAME="htoc41">9.3</A>  Client-side</H2><P><A NAME="s:cxx:client"></A>
+<A NAME="@default610"></A></P><P>This section summarizes aspects of generating and using the C++ bindings
+associated with software wrapped with Babel’s language interoperability
+middleware. The bindings generation process is presented before the 
+convention used to name C++ header files is described. Object management
+and invocation of static and overloaded methods are also summarized. 
+The process of catching exceptions is then discussed.
+Finally, the processes for enabling and disabling implementation-specific
+pre- and post-method instrumentation — referred to as “hooks” —
+are illustrated.</P><H3 CLASS="subsection">9.3.1  Bindings generation</H3><P>
+<A NAME="@default611"></A>
+<A NAME="@default612"></A><A NAME="@default613"></A></P><P>To create the C++ stubs from a SIDL file, invoke Babel as follows<SUP><A NAME="text15" HREF="#note15">1</A></SUP>:
+<A NAME="@default614"></A></P><BLOCKQUOTE CLASS="quotation"><TT>
+% <B>babel --exclude-external --client=C++ file.sidl</B><BR>
+</TT></BLOCKQUOTE><P>
+or simply 
+</P><BLOCKQUOTE CLASS="quotation"><TT>
+% <B>babel -E -cC++ file.sidl</B><BR>
+</TT></BLOCKQUOTE><P>This will create a <TT>babel.make</TT> file, some C headers and sources, 
+and many C++ headers and sources. Files ending in “.c” or “.h” are in C, 
+files ending in “.cxx” or “.hxx” are the C++ binding. 
+The files will need to be compiled and linked together to use the C++ stubs. </P><P>There is one command line option particular to this language binding.
+Using the option <TT>--cxx-ior-exception</TT> (or it’s short form <TT>-x</TT>)
+will generate C++ Babel stubs that check for a null IOR whenever a
+method is called on them. If a method is called on a stub holding a
+null IOR, it will throw a <TT>NullIORException</TT>. If this option is not
+passed to Babel, the program will simply crash, as C++ would do
+normally with a null pointer.</P><H3 CLASS="subsection">9.3.2  Header files</H3><P>
+<A NAME="@default615"></A>
+<A NAME="@default616"></A></P><P>All C++ code generated by Babel <TT>#include</TT>’s a file called
+"<TT>sidl_ucxx.hh</TT>".<A NAME="@default617"></A><A NAME="@default618"></A> 
+<A NAME="@default619"></A><A NAME="@default620"></A>
+This file includes <TT>babel_config.h</TT>, the C header file that defines 
+configuration information. Finally, <TT>sidl_ucxx.hh</TT> defines some 
+C++ classes in the SIDL name space, such as:</P><UL CLASS="itemize"><LI CLASS="li-itemize">
+<TT>UCXX ::sidl::StubBase</TT> [implementation detail] Common base class for all 
+	C++ stubs (proxy classes)<A NAME="@default621"></A>.
+</LI><LI CLASS="li-itemize">template&lt;T,U,V&gt; UCXX ::sidl::basearray [implementation detail] 
+	Common base class for all C++ array 
+	classes.<A NAME="@default622"></A>
+</LI><LI CLASS="li-itemize">typedefs for <TT>UCXX ::sidl::fcomplex</TT>, <TT>UCXX ::sidl::dcomplex</TT>, and <TT>UCXX ::sidl::opaque</TT><A NAME="@default623"></A>
+	 (usually <TT>std::complex</TT>, <TT>std::complex</TT> and <TT>void*</TT>, respectively).
+</LI><LI CLASS="li-itemize"><TT>template&lt;T&gt; UCXX ::sidl::array</TT> Template array type for SIDL arrays. 
+</LI><LI CLASS="li-itemize">template specializations [implementation detail] 
+	specialization of arrays of all SIDL types are defined in this file. 
+</LI></UL><P><EM><B>NOTE</B>:
+C++ headers 
+have a ".hh"<A NAME="@default624"></A> or a “.hxx”<A NAME="@default625"></A>
+suffix to distinguish them from C header files.
+In pre-Babel 0.11, all C++ bindings used the “.hh” suffix.
+Since Babel 0.11, the “.hh” suffix was exclusively for the original, 
+deprecated
+binding, while “.hxx” was introduced for the current, UCxx binding.
+</EM></P><H3 CLASS="subsection">9.3.3  Object management</H3><P>
+<A NAME="@default626"></A>
+<A NAME="@default627"></A></P><P>SIDL-specified objects are managed through explicit creation with explicit
+reference counting<A NAME="@default628"></A> basically unnecessary.
+Babel automatically generates a static method called <TT>_create</TT>
+that must be invoked to instantiate a concrete class. 
+The default constructor creates the equivalent of a <TT>NULL</TT> pointer. 
+Below is an example, using standard Babel classes, that creates an object
+of the base class then upcasts it to its parent interface.
+<A NAME="@default629"></A>
+<A NAME="@default630"></A><A NAME="@default631"></A><A NAME="@default632"></A>
+<A NAME="@default633"></A><A NAME="@default634"></A>
+<A NAME="@default635"></A><A NAME="@default636"></A></P><DIV CLASS="flushright"><SPAN CLASS="textboxed"><FONT COLOR=purple><B>C++</B></FONT></SPAN></DIV><TABLE CLASS="lstframe" STYLE="padding:1ex;border-style:solid;"><TR><TD CLASS="lstlisting">#ifdef SIDL_USE_UCXX
+using namespace ucxx;
+#endif
+
+sidl::BaseClass object = sidl::BaseClass::_create();
+sidl::BaseInterface interface = object;</TD></TR>
+</TABLE><P>SIDL C++ stubs can be treated as smart-pointers.
+Constructors, destructors, and operators are overloaded making explicit
+calls to <TT>addRef()</TT> or <TT>deleteRef()</TT> rarely needed.</P><H3 CLASS="subsection">9.3.4  Static methods</H3><P>
+<A NAME="@default637"></A>
+<A NAME="@default638"></A></P><P>As one would expect, proxy (or “stub”) classes maintain minimal state so that,
+unlike C or <SPAN STYLE="font-variant:small-caps">fortran 77</SPAN>, there is no special context argument added to 
+non-static member functions. 
+An example call to the static <TT>addSearchPath</TT> method of the 
+<TT>sidl.Loader</TT> class is:
+<A NAME="@default639"></A>
+<A NAME="@default640"></A>
+<A NAME="@default641"></A><A NAME="@default642"></A></P><DIV CLASS="flushright"><SPAN CLASS="textboxed"><FONT COLOR=purple><B>C++</B></FONT></SPAN></DIV><TABLE CLASS="lstframe" STYLE="padding:1ex;border-style:solid;"><TR><TD CLASS="lstlisting">#ifdef SIDL_USE_UCXX
+using namespace ucxx;
+#endif
+
+std::string s("/try/looking/here");
+sidl::Loader::addSearchPath( s );</TD></TR>
+</TABLE><P>Note the function is invoked directly, through the use of its class name,
+rather than through an instance.</P><H3 CLASS="subsection">9.3.5  Overloaded methods</H3><P>
+<A NAME="@default643"></A>
+<A NAME="@default644"></A></P><P>Since C++ is an object-oriented language, the language is much
+more amenable to the SIDL programming model and less demanding
+of the programmer than bindings to non-OO languages, such as C 
+and <SPAN STYLE="font-variant:small-caps">fortran 77</SPAN>. </P><P>The basic process of invoking overloaded methods is illustrated below based on 
+the <TT>overload_sample.sidl</TT> file shown in Section <A HREF="index008.html#sec:overloading">6.7</A>.
+Recall that the file describes three versions of the <TT>getValue</TT> method. 
+The first takes no arguments, the second an integer, and the 
+third a boolean. 
+<A NAME="@default645"></A>
+<A NAME="@default646"></A><A NAME="@default647"></A>
+<A NAME="@default648"></A><A NAME="@default649"></A></P><DIV CLASS="flushright"><SPAN CLASS="textboxed"><FONT COLOR=purple><B>C++</B></FONT></SPAN></DIV><TABLE CLASS="lstframe" STYLE="padding:1ex;border-style:solid;"><TR><TD CLASS="lstlisting">#ifdef SIDL_USE_UCXX
+using namespace ucxx;
+#endif
+
+bool b1, bresult;
+int  i1, iresult, nresult;
+
+Overload::Sample t  = Overload::Sample::_create();
+
+nresult = t.getValue();
+bresult = t.getValue(b1);
+iresult = t.getValue(i1);</TD></TR>
+</TABLE><H3 CLASS="subsection">9.3.6  Exception catching</H3><P>
+<A NAME="@default650"></A><A NAME="@default651"></A>
+<A NAME="@default652"></A></P><P>Since all methods can now throw <TT>sidl.RuntimeException</TT>, Babel 
+ensures there is an <TT>out</TT> argument to hold an exception. If not
+explicitly specified, Babel will automatically add the argument.
+Using the example shown in Subsection <A HREF="#ss:cxx:signatures">9.2.2</A>,
+a C++ code fragment (from the regression tests) that utilizes the
+<TT>getFib</TT> method is:
+<A NAME="@default653"></A>
+<A NAME="@default654"></A><A NAME="@default655"></A>
+<A NAME="@default656"></A>
+<A NAME="@default657"></A><A NAME="@default658"></A></P><DIV CLASS="flushright"><SPAN CLASS="textboxed"><FONT COLOR=purple><B>C++</B></FONT></SPAN></DIV><TABLE CLASS="lstframe" STYLE="padding:1ex;border-style:solid;"><TR><TD CLASS="lstlisting">#ifdef SIDL_USE_UCXX
+using namespace ucxx;
+#endif
+
+/* ...lines deleted... */
+ExceptionTest::Fib fib = ExceptionTest::Fib::_create();
+try {
+  int result = fib.getFib( 4, 100, 32000, 0 );
+  cout &lt;&lt; "Result of fib.getFib() = " &lt;&lt; result &lt;&lt; endl;
+} catch ( ExceptionTest::NegativeValueException  e ) {
+  // ...
+} catch ( ExceptionTest::FibException e ) {
+  // ...
+}
+/* ...lines deleted... */</TD></TR>
+</TABLE><P>Note that SIDL exceptions map well into C++ exceptions allowing native 
+exception mechanisms to be employed.</P><H3 CLASS="subsection">9.3.7  Hooks execution</H3><P><A NAME="ss:cxx:sethooks"></A>
+<A NAME="@default659"></A><A NAME="@default660"></A>
+<A NAME="@default661"></A><A NAME="@default662"></A>
+<A NAME="@default663"></A><A NAME="@default664"></A></P><P>If a given component supports pre- and post-method invocation instrumentation,
+also known as “hooks”, their execution can be enabled or disabled at
+runtime through the built-in <TT>_set_hooks</TT> method. For example,
+given the following SIDL specification:</P><DIV CLASS="flushright"><SPAN CLASS="textboxed"><FONT COLOR=purple><B>SIDL</B></FONT></SPAN></DIV><TABLE CLASS="lstframe" STYLE="padding:1ex;border-style:solid;"><TR><TD CLASS="lstlisting"><FONT COLOR=maroon><I><B>package</B> hooks <B>version</B> 1.0
+{
+  <B>class</B> Basics {
+    /**
+     * Basic illustration of hooks for static methods.
+     */
+    <B>static int</B> aStaticMeth(<B>in int</B> i, <B>out int</B> o, <B>inout int</B> io);
+
+    /**
+     * Basic illustration of hooks for static methods.
+     */
+    <B>int</B> aNonStaticMeth(<B>in int</B> i, <B>out int</B> o, <B>inout int</B> io);
+  }
+}</I></FONT></TD></TR>
+</TABLE><P>which has a single static function and a member function for the
+<TT>Basics</TT> class, the processes for enabling and disabling 
+execution of the implementation-specific hooks are:</P><DIV CLASS="flushright"><SPAN CLASS="textboxed"><FONT COLOR=purple><B>C++</B></FONT></SPAN></DIV><TABLE CLASS="lstframe" STYLE="padding:1ex;border-style:solid;"><TR><TD CLASS="lstlisting">#ifdef SIDL_USE_UCXX
+using namespace ucxx;
+#endif
+
+    try {
+      hooks::Basics obj = hooks::Basics::_create();
+
+      /* Enable hooks execution (enabled by default) */
+      /* ... for static methods */
+      hooks::Basics::_set_hooks_static(TRUE);
+
+      /* ... for non-static methods */
+      obj._set_hooks(TRUE);
+
+
+      /* ...do something meaningful... */
+
+
+      /* Disable hooks execution (on by default) */
+      /* ... for static methods */
+      hooks::Basics::_set_hooks_static(FALSE);
+
+      /* ... for non-static methods */
+      obj._set_hooks(FALSE);
+
+
+      /* ...do something meaningful... */
+
+    } catch (::sidl::RuntimeException e) {
+      cout &lt;&lt; e.getNote() &lt;&lt; endl;
+    }</TD></TR>
+</TABLE><P>It is important to keep in mind that the 
+<TT>_set_hooks_static</TT> 
+method must be used to enable/disable invocation of hooks for static 
+methods and the <TT>_set_hooks</TT> method must be used for 
+those of non-static methods. Also, Babel does not provide client 
+access to the <TT>_pre</TT> and <TT>_post</TT> methods; therefore, 
+they cannot be invoked directly. More information on the instrumentation 
+process is provided in Subsection <A HREF="#ss:cxx:hooksimpl">9.4.5</A>.</P><H3 CLASS="subsection">9.3.8  Contract enforcement</H3><P><A NAME="ss:cxx:contract_enforcement"></A>
+<A NAME="@default665"></A>
+<A NAME="@default666"></A>
+<A NAME="@default667"></A></P><P>Interface contracts specify the expected behaviors of clients and servers
+of interface and class methods.
+Once specified, contracts can automatically be enforced at runtime.
+This section provides an example of a specification and associated code 
+snippets for performing basic, traditional contract enforcement — 
+introduced in Section <A HREF="index008.html#ss:intro_contract_enforcement">6.5</A> — within a 
+C++ client.</P><P>A SIDL specification, including preconditions and postconditions, for
+calculating the sum of two vectors is given below.
+(Refer to Section <A HREF="index008.html#s:ifc_contracts">6.5</A> for an introduction to the contract
+syntax.)
+According to the preconditions,
+<A NAME="@default668"></A><A NAME="@default669"></A>
+<A NAME="@default670"></A>
+all callers are expected to provide two one-dimensional, SIDL arrays of the
+same size as arguments.
+The postconditions 
+<A NAME="@default671"></A><A NAME="@default672"></A>
+<A NAME="@default673"></A>
+specify that all implementations are expected to return a non-null, 
+one-dimensional array of the same size (as the first SIDL array), 
+assuming the preconditions are satisfied.</P><P><A NAME="@default674"></A>
+<A NAME="@default675"></A>
+<A NAME="@default676"></A>
+<A NAME="@default677"></A><A NAME="@default678"></A>
+<A NAME="@default679"></A>
+<A NAME="@default680"></A>
+<A NAME="@default681"></A>
+<A NAME="@default682"></A>
+<A NAME="@default683"></A>
+<A NAME="@default684"></A>
+<A NAME="@default685"></A>
+<A NAME="@default686"></A>
+<A NAME="@default687"></A>
+</P><DIV CLASS="flushright"><SPAN CLASS="textboxed"><FONT COLOR=purple><B>SIDL</B></FONT></SPAN></DIV><TABLE CLASS="lstframe" STYLE="padding:1ex;border-style:solid;"><TR><TD CLASS="lstlisting"><FONT COLOR=maroon><I><B>package</B> vect <B>version</B> 1.0 {
+  <B>class</B> Utils {
+    /* ... */
+
+    /**
+     * Return the sum of the specified vectors.
+     */
+    <B>static array</B>&lt;<B>double</B>&gt; vuSum(<B>in array</B>&lt;<B>double</B>&gt; u, <B>in array</B>&lt;<B>double</B>&gt; v)
+      <B>throws</B>
+        sidl.PreViolation, sidl.PostViolation;
+      <B>require</B>
+        not_null_u: u != null;
+        u_is_1d : dimen(u) == 1;
+        not_null_v: v != null;
+        v_is_1d : dimen(v) == 1;
+        same_size: size(u) == size(v);
+      <B>ensure</B>
+        no_side_effects : is pure;
+        result_not_null: result != null;
+        result_is_1d : dimen(result) == 1;
+        result_correct_size: size(result) == size(u);
+  }
+
+    /* ... */
+}</I></FONT></TD></TR>
+</TABLE><P>An example of a C++ client calling the method is given below. 
+The code snippet illustrates declaring and creating the arrays; 
+enabling full contract enforcement (i. e., checking all contract 
+clauses); executing <TT>vuSum</TT>; handling contract violation 
+exceptions; and cleaning up references is given below.</P><P><A NAME="@default688"></A>
+<A NAME="@default689"></A>
+<A NAME="@default690"></A>
+<A NAME="@default691"></A>
+<A NAME="@default692"></A>
+<A NAME="@default693"></A>
+<A NAME="@default694"></A>
+<A NAME="@default695"></A>
+<A NAME="@default696"></A>
+<A NAME="@default697"></A>
+<A NAME="@default698"></A>
+<A NAME="@default699"></A>
+<A NAME="@default700"></A>
+<A NAME="@default701"></A>
+<A NAME="@default702"></A>
+<A NAME="@default703"></A>
+<A NAME="@default704"></A>
+<A NAME="@default705"></A>
+<A NAME="@default706"></A>
+</P><DIV CLASS="flushright"><SPAN CLASS="textboxed"><FONT COLOR=purple><B>C++</B></FONT></SPAN></DIV><TABLE CLASS="lstframe" STYLE="padding:1ex;border-style:solid;"><TR><TD CLASS="lstlisting">#include "sidl_EnfPolicy.hxx"
+
+/* ... */
+{
+  ::sidl::array&lt;double&gt; u  = ::sidl::array&lt;double&gt;::create1d(max_size);
+  ::sidl::array&lt;double&gt; v  = ::sidl::array&lt;double&gt;::create1d(max_size);
+  ::sidl::array&lt;double&gt; x;
+
+  /* Initialize u and v. */
+
+  /* Enable FULL contract enforcement. */
+  ::sidl::EnfPolicy::setEnforceAll(::sidl::ContractClass_ALLCLASSES, true);
+
+  /* Do something meaningful before execute method. */
+
+  try {
+    x = vect::Utils::vuSum(u, v);
+    if (x) {
+      /* Do something useful with the result, x. */
+    }
+  } catch ( ::sidl::PreViolation preExc ) {
+    std::cerr&lt;preExc.getNote()&lt;&lt;std::endl;
+  } catch ( ::sidl::PostViolation postExc ) {
+    std::cerr&lt;postExc.getNote()&lt;&lt;std::endl;
+  } catch (...) {
+    std::cerr&lt;"Caught unexpected exception."&lt;&lt;std::endl;
+    /* Do something meaningful. */
+  }
+
+  if (x) { x.deleteRef(); }
+  u.deleteRef();
+  v.deleteRef();
+  return 0;
+}</TD></TR>
+</TABLE><P>Alternative enforcement options can be set, as described in
+Section <A HREF="index008.html#ss:intro_contract_enforcement">6.5</A>, through the two
+basic helper methods: <TT>setEnforceAll</TT> and <TT>setEnforceNone</TT>.
+The code snippet below shows the C++ calls associated with the traditional
+options of enabling only precondition enforcement, enabling postcondition
+enforcement, or completely disabling contract enforcement.</P><P><A NAME="@default707"></A>
+<A NAME="@default708"></A>
+<A NAME="@default709"></A>
+<A NAME="@default710"></A>
+<A NAME="@default711"></A>
+<A NAME="@default712"></A>
+<A NAME="@default713"></A>
+<A NAME="@default714"></A>
+<A NAME="@default715"></A>
+<A NAME="@default716"></A>
+</P><DIV CLASS="flushright"><SPAN CLASS="textboxed"><FONT COLOR=purple><B>C++</B></FONT></SPAN></DIV><TABLE CLASS="lstframe" STYLE="padding:1ex;border-style:solid;"><TR><TD CLASS="lstlisting">#include "sidl_EnfPolicy.hxx"
+
+  /* ... */
+
+  /*
+   * Enable only precondition contract enforcement.
+   * (Useful when only need to ensure callers comply with contract.)
+   */
+  ::sidl::EnfPolicy::setEnforceAll(::sidl::ContractClass_PRECONDS, false);
+
+  /*
+   * Enable only postcondition contract enforcement.
+   * (Useful when only need to ensure implementation(s) comply with contract.)
+   */
+  ::sidl::EnfPolicy::setEnforceAll(::sidl::ContractClass_POSTCONDS, false);
+
+  /*
+   * Disable contract enforcement.
+   * (Should only be used when have confidence in caller AND implementation.)
+   */
+  ::sidl::EnfPolicy::setEnforceNone(false);</TD></TR>
+</TABLE><P>This section illustrates the basic interfaces and processes for
+traditional interface contract enforcement for a C++ client.
+Additional enforcement policy options and methods as well as more
+information regarding the specification and enforcement of contracts
+can be found in Chapter <A HREF="index023.html#c:contracts">21</A>.</P><H2 CLASS="section"><A NAME="toc38"></A><A NAME="htoc42">9.4</A>  Implementation-side</H2><P><A NAME="s:cxx:implementation"></A>
+<A NAME="@default717"></A></P><P>This section summarizes aspects of generating and wrapping software written
+in C++. The bindings generation and basic implementation processes are 
+presented first. Accessing private data is then discussed before illustrating 
+the process of throwing exceptions.
+Finally, the results of generating implementations with pre- and post-method
+“hooks” are illustrated.</P><H3 CLASS="subsection">9.4.1  Bindings generation</H3><P><A NAME="ss:cxx:implgen"></A>
+<A NAME="@default718"></A>
+<A NAME="@default719"></A><A NAME="@default720"></A></P><P>Much of the information for generating client-side bindings is pertinent to 
+implementing a SIDL class in C++. 
+SIDL type mappings are listed in Table <A HREF="#tbl:cxx:types">9.1</A>.
+An implementation can call other SIDL methods, in which case 
+the rules for client calls must be followed. </P><P>To create the implementation, a valid SIDL file must be generated by invoking
+Babel as follows: 
+<A NAME="@default721"></A></P><BLOCKQUOTE CLASS="quotation"><TT>
+% <B>babel --exclude-external --server=C++ file.sidl</B><BR>
+</TT></BLOCKQUOTE><P>
+or simply
+</P><BLOCKQUOTE CLASS="quotation"><TT>
+% <B>babel -E -sC++ file.sidl</B><BR>
+</TT></BLOCKQUOTE><P>As a result, a makefile fragment called <TT>babel.make</TT>, several C header 
+and source files, and numerous C++ header and source files are created.
+The only files that need to be hand-edited are the C++ “Impl” files 
+(i. e., header and source files that end in <TT>_Impl.hxx</TT> or 
+<TT>_Impl.cxx</TT>). 
+More on this in Subsection <A HREF="#ss:cxx:implfill">9.4.2</A>.</P><H3 CLASS="subsection">9.4.2  Bindings implementation</H3><P><A NAME="ss:cxx:implfill"></A>
+<A NAME="@default722"></A></P><P>Implementation details must be added to the “Impl” files generated in
+Subsection <A HREF="#ss:cxx:implgen">9.4.1</A>. Changes to these files must be made between
+code splicer pairs to ensure their retention in subsequent invocations of
+Babel. Below is an example of a code splicer pair in C++. 
+The actual implementation needs to replace the “// Insert code here...” line.
+<A NAME="@default723"></A><A NAME="@default724"></A>
+<A NAME="@default725"></A></P><DIV CLASS="flushright"><SPAN CLASS="textboxed"><FONT COLOR=purple><B>C++</B></FONT></SPAN></DIV><TABLE CLASS="lstframe" STYLE="padding:1ex;border-style:solid;"><TR><TD CLASS="lstlisting">void MyPackage::MyClass_impl::myMethod_impl() {
+    // DO-NOT-DELETE splicer.begin(MyPackage.MyClass.myMethod)
+    // Insert code here...
+    // DO-NOT-DELETE splicer.end(MyPackage.MyClass.myMethod)
+}</TD></TR>
+</TABLE><P>It is important to understand where and why splicer blocks occur. 
+Splicer blocks appear at the beginning and end of each “Impl” header and 
+source file to allow
+developers to add <TT>#include</TT>’s and other miscellaneous items,
+respectively.
+In the headers, there is a splicer block that allows a user to make the “Impl”
+class inherit from some other class. From SIDL’s point of view this is
+private inheritance — meaning that it is useful for inheriting implementation
+details — since they cannot be automatically exposed to the SIDL method 
+dispatch mechanism. There is a splicer block inside the class definition for 
+developers to add any desired data members. 
+In the source files, splicer blocks appear in each method implementation. 
+Examples of filling in these splicer blocks are provided in the subsections
+to follow.</P><H3 CLASS="subsection">9.4.3  Private data</H3><P><A NAME="ss:cxx:privatedata"></A>
+<A NAME="@default726"></A>
+<A NAME="@default727"></A></P><P>Any variables declared in the implementation source file will, by virtue
+of Babel’s encapsulation, be private. The data can be global to the class —
+as in static variables declared within the <TT>_includes</TT> splicer block
+at the top of the class’s <TT>_Impl.cxx</TT> file — or “local” to an 
+instance.
+In the former case, special initialization procedures can be added to
+the built-in <TT>_load()</TT> method that is guaranteed to be called
+exactly once per class — <EM>before</EM> any user-defined methods
+can even be invoked. The latter case relies on the class-specific
+name space automatically generated in the implementation’s header
+file. As illustrated in the <TT>foo.bar</TT> example below, the implementor 
+is free to define suitable contents.
+<A NAME="@default728"></A></P><DIV CLASS="flushright"><SPAN CLASS="textboxed"><FONT COLOR=purple><B>C++</B></FONT></SPAN></DIV><TABLE CLASS="lstframe" STYLE="padding:1ex;border-style:solid;"><TR><TD CLASS="lstlisting">namespace foo {
+
+  /**
+   * Symbol "foo.bar" (version 0.1)
+   */
+  class bar_impl : public virtual ::foo::bar
+  // DO-NOT-DELETE splicer.begin(foo.bar._inherits)
+  // Put additional inheritance here...
+  // DO-NOT-DELETE splicer.end(foo.bar._inherits)
+  {
+
+  // All data marked protected will be accessable by
+  // descendant Impl classes
+  protected:
+    bool _wrapped;
+
+    // DO-NOT-DELETE splicer.begin(foo.bar._implementation)
+    char*  d_timestamp;
+    // DO-NOT-DELETE splicer.end(foo.bar._implementation)
+
+  public:
+    /* ...lines deleted... */
+  }
+}</TD></TR>
+</TABLE><P>If the object has no state, these functions are typically empty. 
+The built-in <TT>_ctor()</TT> method is invoked upon instantiation. 
+Hence, private data should be initialized in the method. For example:
+<A NAME="@default729"></A>
+<A NAME="@default730"></A><A NAME="@default731"></A>
+<A NAME="@default732"></A></P><DIV CLASS="flushright"><SPAN CLASS="textboxed"><FONT COLOR=purple><B>C++</B></FONT></SPAN></DIV><TABLE CLASS="lstframe" STYLE="padding:1ex;border-style:solid;"><TR><TD CLASS="lstlisting">void foo::bar_impl::_ctor() {
+  // DO-NOT-DELETE splicer.begin(foo.bar._ctor)
+  time_t currTime = time(NULL);
+  sidl_String_strdup(d_timestamp, ctime(&amp;currTime));
+  // DO-NOT-DELETE splicer.end(foo.bar._ctor)
+}</TD></TR>
+</TABLE><P>To avoid leaking memory, private data must be released during
+instance destruction. This is accomplished through the built-in
+<TT>_dtor()</TT> method. The memory is then freed as follows:
+<A NAME="@default733"></A>
+<A NAME="@default734"></A><A NAME="@default735"></A>
+<A NAME="@default736"></A></P><DIV CLASS="flushright"><SPAN CLASS="textboxed"><FONT COLOR=purple><B>C++</B></FONT></SPAN></DIV><TABLE CLASS="lstframe" STYLE="padding:1ex;border-style:solid;"><TR><TD CLASS="lstlisting">void foo::bar_impl::_dtor() {
+  // DO-NOT-DELETE splicer.begin(foo.bar._dtor)
+  sidl_String_free(d_timestamp);
+  // DO-NOT-DELETE splicer.end(foo.bar._dtor)
+}</TD></TR>
+</TABLE><P>Hence, Babel supports the declaration and maintenance of private
+data on class and instance basis.</P><H3 CLASS="subsection">9.4.4  Exception throwing</H3><P>
+<A NAME="@default737"></A>
+<A NAME="@default738"></A></P><P>The example below shows the standard way to throw an exception in C++. Use
+of <TT>setNote</TT> and <TT>add</TT> methods
+is not strictly required; however, they do provide information that may be
+helpful in debugging or error reporting.
+<A NAME="@default739"></A>
+<A NAME="@default740"></A><A NAME="@default741"></A>
+<A NAME="@default742"></A><A NAME="@default743"></A></P><DIV CLASS="flushright"><SPAN CLASS="textboxed"><FONT COLOR=purple><B>C++</B></FONT></SPAN></DIV><TABLE CLASS="lstframe" STYLE="padding:1ex;border-style:solid;"><TR><TD CLASS="lstlisting">int32_t
+ExceptionTest::Fib_impl::getFib_impl (
+  /*in*/ int32_t n,
+  /*in*/ int32_t max_depth,
+  /*in*/ int32_t max_value,
+  /*in*/ int32_t depth )
+// throws:
+//     ::ExceptionTest::FibException
+//     ::ExceptionTest::NegativeValueException
+//     ::sidl::RuntimeException
+{
+  // DO-NOT-DELETE splicer.begin(ExceptionTest.Fib.getFib)
+  if (n &lt; 0) {
+    UCXX ::ExceptionTest::NegativeValueException ex =
+      UCXX ::ExceptionTest::NegativeValueException::_create();
+    ex.setNote("n negative");
+    ex.add(__FILE__, __LINE__, "ExceptionTest::Fib_impl::getFib");
+    throw ex;
+
+  } else if (depth &gt; max_depth) {
+    UCXX ::ExceptionTest::TooDeepException ex =
+      UCXX ::ExceptionTest::TooDeepException::_create();
+    ex.setNote("too deep");
+    ex.add(__FILE__, __LINE__, "ExceptionTest::Fib_impl::getFib");
+    throw ex;
+
+  } else if (n == 0) {
+    return 1;
+
+  } else if (n == 1) {
+    return 1;
+
+  } else {
+    int32_t a = getFib(n-1, max_depth, max_value, depth+1);
+    int32_t b = getFib(n-2, max_depth, max_value, depth+1);
+    if (a + b &gt; max_value) {
+      UCXX ::ExceptionTest::TooBigException ex =
+        UCXX ::ExceptionTest::TooBigException::_create();
+      ex.setNote("too big");
+      ex.add(__FILE__, __LINE__, "ExceptionTest::Fib_impl::getFib");
+      throw ex;
+    }
+    return a + b;
+  }
+  // DO-NOT-DELETE splicer.end(ExceptionTest.Fib.getFib)
+}</TD></TR>
+</TABLE><H3 CLASS="subsection">9.4.5  Hooks implementation</H3><P><A NAME="ss:cxx:hooksimpl"></A>
+<A NAME="@default744"></A><A NAME="@default745"></A>
+<A NAME="@default746"></A>
+<A NAME="@default747"></A><A NAME="@default748"></A>
+<A NAME="@default749"></A><A NAME="@default750"></A></P><P>As discussed in Subsection <A HREF="#ss:cxx:sethooks">9.3.7</A>, when hooks execution 
+is enabled, implementation-specific instrumentation is executed. Using 
+the <B><TT><CODE>--</CODE>generate-hooks</TT></B> option on the Babel
+command line when generating implementation-side bindings results
+in the automatic generation of a <TT>_pre</TT> and <TT>_post</TT>
+method for every static and non-static method associated with each class
+in the specification. For the <TT>aStaticMethod</TT> specified in 
+Subsection <A HREF="#ss:cxx:sethooks">9.3.7</A>, the generated <TT>_pre</TT> method 
+implementation is:</P><DIV CLASS="flushright"><SPAN CLASS="textboxed"><FONT COLOR=purple><B>C++</B></FONT></SPAN></DIV><TABLE CLASS="lstframe" STYLE="padding:1ex;border-style:solid;"><TR><TD CLASS="lstlisting">void
+hooks::Basics_impl::aStaticMeth_pre_impl(int32_t i, int32_t io )
+{
+  // DO-NOT-DELETE splicer.begin(hooks.Basics.aStaticMeth_pre)
+  /*
+   * Add instrumentation here to be executed immediately prior
+   * to dispatch to aStaticMeth().
+   */
+  // DO-NOT-DELETE splicer.end(hooks.Basics.aStaticMeth_pre)
+}</TD></TR>
+</TABLE><P>while that of the <TT>_post</TT> method is:</P><DIV CLASS="flushright"><SPAN CLASS="textboxed"><FONT COLOR=purple><B>C++</B></FONT></SPAN></DIV><TABLE CLASS="lstframe" STYLE="padding:1ex;border-style:solid;"><TR><TD CLASS="lstlisting">void
+hooks::Basics_impl::aStaticMeth_post_impl(int32_t i, int32_t o, int32_t io,
+                                          int32_t _retval)
+{
+  // DO-NOT-DELETE splicer.begin(hooks.Basics.aStaticMeth_post)
+  /*
+   * Add instrumentation here to be executed immediately after
+   * return from dispatch to aStaticMeth().
+   */
+  // DO-NOT-DELETE splicer.end(hooks.Basics.aStaticMeth_post)
+}</TD></TR>
+</TABLE><P>Per the normal implementation process, the desired instrumentation
+should be added within the splicer blocks of
+<TT>aStaticMethod_pre</TT> and
+<TT>aStaticMethod_post</TT>. As stated in the comments
+within those blocks, <TT>aStaticMethod_pre</TT> will be
+executed immediately prior to dispatch to <TT>aStaticMethod</TT> when the
+latter is invoked by a client. Assuming no exceptions are encountered,
+<TT>aStaticMethod_post</TT> is executed immediately upon
+return from <TT>aStaticMethod</TT>.</P><HR CLASS="footnoterule"><DL CLASS="thefootnotes"><DT CLASS="dt-thefootnotes">
+<A NAME="note15" HREF="#text15">1</A></DT><DD CLASS="dd-thefootnotes">For 
+information on additional command line options, refer to 
+Section <A HREF="index006.html#s:basics_commandline">4.2</A>.
+</DD></DL>
+<HR>
+<A HREF="index010.html"><IMG SRC="previous_motif.gif" ALT="Previous"></A>
+<A HREF="index-multipage.html"><IMG SRC="contents_motif.gif" ALT="Up"></A>
+<A HREF="index012.html"><IMG SRC="next_motif.gif" ALT="Next"></A>
+</BODY>
+</HTML>

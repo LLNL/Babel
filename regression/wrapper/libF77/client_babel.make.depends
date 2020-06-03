@@ -1,0 +1,51 @@
+# client_IORHDRS dependencies.
+wrapper_Data_IOR.h:                                                           \
+  /home/epperly/current/babel_fix_wrap/regression/wrapper/runSIDL/../wrapper.sidl
+wrapper_Data_IOR.h: sidl_header.h
+wrapper_Data_IOR.h: sidl_BaseClass_IOR.h
+
+
+# client_STUBDOCS dependencies.
+wrapper_Data.fif:                                                             \
+  /home/epperly/current/babel_fix_wrap/regression/wrapper/runSIDL/../wrapper.sidl
+
+
+# client_STUBHDRS dependencies.
+wrapper_Data_fStub.h:                                                         \
+  /home/epperly/current/babel_fix_wrap/regression/wrapper/runSIDL/../wrapper.sidl
+wrapper_Data_fStub.h: wrapper_Data_IOR.h
+
+
+# client_STUBSRCS dependencies.
+wrapper_Data_fStub.c:                                                         \
+  /home/epperly/current/babel_fix_wrap/regression/wrapper/runSIDL/../wrapper.sidl
+wrapper_Data_fStub.c: wrapper_Data_fStub.h
+wrapper_Data_fStub.c: sidlfortran.h
+wrapper_Data_fStub.c: sidl_header.h
+wrapper_Data_fStub.c: sidl_interface_IOR.h
+wrapper_Data_fStub.c: sidl_Exception.h
+wrapper_Data_fStub.c: babel_config.h
+wrapper_Data_fStub.c: sidl_Loader.h
+wrapper_Data_fStub.c: wrapper_Data_IOR.h
+wrapper_Data_fStub.c: sidl_BaseException_IOR.h
+wrapper_Data_fStub.c: sidl_BaseInterface_IOR.h
+wrapper_Data_fStub.c: sidl_ClassInfo_IOR.h
+wrapper_Data_fStub.c: sidl_RuntimeException_IOR.h
+wrapper_Data_fStub.c: sidl_rmi_ConnectRegistry.h
+wrapper_Data_fStub.c: sidl_BaseClass_fStub.h
+wrapper_Data_fStub.c: sidl_BaseInterface_fStub.h
+wrapper_Data_fStub.c: sidl_ClassInfo_fStub.h
+wrapper_Data_fStub.c: sidl_RuntimeException_fStub.h
+wrapper_Data_fStub.c: wrapper_Data_fStub.h
+wrapper_Data_fStub.c: sidl_BaseClass.h
+wrapper_Data_fStub.c: sidl_ClassInfo.h
+wrapper_Data_fStub.c: sidl_rmi_ProtocolFactory.h
+wrapper_Data_fStub.c: sidl_rmi_InstanceRegistry.h
+wrapper_Data_fStub.c: sidl_rmi_InstanceHandle.h
+wrapper_Data_fStub.c: sidl_rmi_Invocation.h
+wrapper_Data_fStub.c: sidl_rmi_Response.h
+wrapper_Data_fStub.c: sidl_rmi_ServerRegistry.h
+wrapper_Data_fStub.c: sidl_rmi_ConnectRegistry.h
+wrapper_Data_fStub.c: sidl_io_Serializable.h
+
+

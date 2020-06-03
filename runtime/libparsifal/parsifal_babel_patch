@@ -1,0 +1,400 @@
+diff -uNr libparsifal-1.0.0.orig/include/libparsifal/bistream.h libparsifal-1.0.0/include/libparsifal/bistream.h
+--- libparsifal-1.0.0.orig/include/libparsifal/bistream.h	2005-11-02 11:18:14.000000000 -0800
++++ libparsifal-1.0.0/include/libparsifal/bistream.h	2007-02-27 12:10:58.000000000 -0800
+@@ -10,6 +10,7 @@
+ #ifdef ICONV_SUPPORT
+ #include "iconv.h"
+ #endif
++#include "pns.h"
+ 
+ #ifndef BYTE
+  #define BYTE unsigned char
+diff -uNr libparsifal-1.0.0.orig/include/libparsifal/Makefile.am libparsifal-1.0.0/include/libparsifal/Makefile.am
+--- libparsifal-1.0.0.orig/include/libparsifal/Makefile.am	2005-01-31 16:26:24.000000000 -0800
++++ libparsifal-1.0.0/include/libparsifal/Makefile.am	2007-02-28 09:26:34.000000000 -0800
+@@ -1,5 +1,5 @@
+ parsifaldir=$(prefix)/include/libparsifal
+-parsifal_HEADERS = bistream.h \
++parsifal_HEADERS = pns.h bistream.h \
+ 	xmlhash.h \
+ 	parsifal.h \
+ 	xmlvect.h \
+diff -uNr libparsifal-1.0.0.orig/include/libparsifal/parsifal.h libparsifal-1.0.0/include/libparsifal/parsifal.h
+--- libparsifal-1.0.0.orig/include/libparsifal/parsifal.h	2005-11-02 11:18:14.000000000 -0800
++++ libparsifal-1.0.0/include/libparsifal/parsifal.h	2007-02-28 09:01:13.000000000 -0800
+@@ -26,6 +26,7 @@
+    extern "C" {
+ #endif
+ 
++#include "pns.h"
+ #include "bistream.h"
+ #include "xmlhash.h"
+ #include "xmlvect.h"
+diff -uNr libparsifal-1.0.0.orig/include/libparsifal/pns.h libparsifal-1.0.0/include/libparsifal/pns.h
+--- libparsifal-1.0.0.orig/include/libparsifal/pns.h	1969-12-31 16:00:00.000000000 -0800
++++ libparsifal-1.0.0/include/libparsifal/pns.h	2007-03-02 13:24:41.000000000 -0800
+@@ -0,0 +1,107 @@
++/* generated code. do not edit. */
++/*===========================================================================
++  Parsifal XML Parser namespace definition
++  Copyright (c) 2007 Benjamin Allan
++
++  This header allows parsifal to be moved to any prefix
++  by rerunning makeNamespaceHeader.sh.
++
++  We choose to do this by redefining the public symbols found in the compiled
++  binary rather than changing every line in the library source.
++
++  If _PNS is not defined in the compiler flags, this file does nothing.
++
++  To use the prefix in parsifal development mode (defining new 
++  public functions), do the following:
++
++  (.) Complete the regular build with the options you need to obtain a 
++  library (.a or .so) with the symbols that need prefixes added.
++
++  (.) Regenerate pns.h with the new prefix, e.g.
++	makeNamespaceHeader.sh libparsifal.a > include/libparsifal/pns.h babel_
++   
++  (.) To build with the prefix support:
++      make clean; ./configure CFLAGS=-D_PNS {otheroptions}; make; make install
++
++  Regular libparsifal and one in an alternate namespace should 
++  be non-overlapping at link time with the exception of stricmp replacements. 
++  We're assuming stricmp won't be changing across libparsifal versions.
++  We're assuming libparsifal defines no functions starting with _.
++
++  We should incorporate prefix into the library name, but this requires
++  significant autotools regeneration to achieve.
++
++  DISCLAIMER
++  ----------
++
++  This program is distributed in the hope that it will be useful, but
++  WITHOUT ANY WARRANTY; without even the implied warranty of
++  Merchantability or fitness for a particular purpose. Please use it AT
++  YOUR OWN RISK.
++===========================================================================*/
++
++#ifndef PNS__H
++#define PNS__H
++
++#ifdef _PNS
++#define PNS_PREFIX babel_
++
++#define BufferedIStream_AppendBytes babel_BufferedIStream_AppendBytes
++#define BufferedIStream_EncodeBuffer babel_BufferedIStream_EncodeBuffer
++#define BufferedIStream_Free babel_BufferedIStream_Free
++#define BufferedIStream_Init babel_BufferedIStream_Init
++#define BufferedIStream_Peek babel_BufferedIStream_Peek
++#define BufferedIStream_ResetBuf babel_BufferedIStream_ResetBuf
++#define Latin1ToUtf8 babel_Latin1ToUtf8
++#define Utf8ToUtf8 babel_Utf8ToUtf8
++#define XMLHTable_Create babel_XMLHTable_Create
++#define XMLHTable_Destroy babel_XMLHTable_Destroy
++#define XMLHTable_Enumerate babel_XMLHTable_Enumerate
++#define XMLHTable_Insert babel_XMLHTable_Insert
++#define XMLHTable_Lookup babel_XMLHTable_Lookup
++#define XMLHTable_Remove babel_XMLHTable_Remove
++#define XMLIsNameChar babel_XMLIsNameChar
++#define XMLIsNameStartChar babel_XMLIsNameStartChar
++#define XMLNormalizeBuf babel_XMLNormalizeBuf
++#define XMLParser_Create babel_XMLParser_Create
++#define XMLParser_Free babel_XMLParser_Free
++#define XMLParser_GetContextBytes babel_XMLParser_GetContextBytes
++#define XMLParser_GetCurrentColumn babel_XMLParser_GetCurrentColumn
++#define XMLParser_GetCurrentEntity babel_XMLParser_GetCurrentEntity
++#define XMLParser_GetCurrentLine babel_XMLParser_GetCurrentLine
++#define XMLParser_GetNamedItem babel_XMLParser_GetNamedItem
++#define XMLParser_GetPrefixMapping babel_XMLParser_GetPrefixMapping
++#define XMLParser_GetPublicID babel_XMLParser_GetPublicID
++#define XMLParser_GetSystemID babel_XMLParser_GetSystemID
++#define XMLParser_GetVersionString babel_XMLParser_GetVersionString
++#define XMLParser_Parse babel_XMLParser_Parse
++#define XMLParser_SetExternalSubset babel_XMLParser_SetExternalSubset
++#define xmlMemdup babel_xmlMemdup
++#define XMLStringbuf_Append babel_XMLStringbuf_Append
++#define XMLStringbuf_AppendCh babel_XMLStringbuf_AppendCh
++#define XMLStringbuf_Free babel_XMLStringbuf_Free
++#define XMLStringbuf_Init babel_XMLStringbuf_Init
++#define XMLStringbuf_InitUsePool babel_XMLStringbuf_InitUsePool
++#define XMLStringbuf_SetLength babel_XMLStringbuf_SetLength
++#define XMLStringbuf_ToString babel_XMLStringbuf_ToString
++#define XMLVector_Append babel_XMLVector_Append
++#define XMLVector_Create babel_XMLVector_Create
++#define XMLVector_Free babel_XMLVector_Free
++#define XMLVector_Get babel_XMLVector_Get
++#define XMLVector_InsertBefore babel_XMLVector_InsertBefore
++#define XMLVector_Remove babel_XMLVector_Remove
++#define XMLVector_Replace babel_XMLVector_Replace
++#define XMLVector_Resize babel_XMLVector_Resize
++#define XMLPool_Alloc babel_XMLPool_Alloc
++#define XMLPool_Create babel_XMLPool_Create
++#define XMLPool_Free babel_XMLPool_Free
++#define XMLPool_FreePool babel_XMLPool_FreePool
++#define DTDValidate_Characters babel_DTDValidate_Characters
++#define DTDValidate_EndElement babel_DTDValidate_EndElement
++#define DTDValidate_IgnorableWhitespace babel_DTDValidate_IgnorableWhitespace
++#define DTDValidate_StartElement babel_DTDValidate_StartElement
++#define XMLParser_CreateDTDValidator babel_XMLParser_CreateDTDValidator
++#define XMLParser_FreeDTDValidator babel_XMLParser_FreeDTDValidator
++#define XMLParser_ParseValidateDTD babel_XMLParser_ParseValidateDTD
++#endif /* _PNS */
++#endif /* PNS__H */
+diff -uNr libparsifal-1.0.0.orig/include/libparsifal/xmlhash.h libparsifal-1.0.0/include/libparsifal/xmlhash.h
+--- libparsifal-1.0.0.orig/include/libparsifal/xmlhash.h	2005-11-02 11:18:14.000000000 -0800
++++ libparsifal-1.0.0/include/libparsifal/xmlhash.h	2007-02-27 12:08:35.000000000 -0800
+@@ -4,6 +4,7 @@
+ #define XMLHASH__H
+ 
+ #include <stddef.h>           /* For size_t     */
++#include "pns.h"
+ 
+ #ifndef XMLAPI
+ #define XMLAPI
+diff -uNr libparsifal-1.0.0.orig/include/libparsifal/xmlpool.h libparsifal-1.0.0/include/libparsifal/xmlpool.h
+--- libparsifal-1.0.0.orig/include/libparsifal/xmlpool.h	2005-11-02 11:18:14.000000000 -0800
++++ libparsifal-1.0.0/include/libparsifal/xmlpool.h	2007-02-27 12:08:58.000000000 -0800
+@@ -10,6 +10,7 @@
+ #define XMLPOOL__H
+ 
+ #include <stddef.h>
++#include "pns.h"
+ 
+ #ifndef XMLAPI
+ #define XMLAPI
+diff -uNr libparsifal-1.0.0.orig/include/libparsifal/xmlsbuf.h libparsifal-1.0.0/include/libparsifal/xmlsbuf.h
+--- libparsifal-1.0.0.orig/include/libparsifal/xmlsbuf.h	2005-11-02 11:18:14.000000000 -0800
++++ libparsifal-1.0.0/include/libparsifal/xmlsbuf.h	2007-02-27 12:09:21.000000000 -0800
+@@ -6,6 +6,7 @@
+ #define XMLSBUF__H
+ 
+ #include <stddef.h>
++#include "pns.h"
+ #include "xmlpool.h"
+ 
+ #ifndef XMLAPI
+diff -uNr libparsifal-1.0.0.orig/include/libparsifal/xmlvect.h libparsifal-1.0.0/include/libparsifal/xmlvect.h
+--- libparsifal-1.0.0.orig/include/libparsifal/xmlvect.h	2005-11-02 11:18:14.000000000 -0800
++++ libparsifal-1.0.0/include/libparsifal/xmlvect.h	2007-02-27 12:09:52.000000000 -0800
+@@ -6,6 +6,7 @@
+ #define XMLVECTOR__H
+ 
+ #include <stddef.h>
++#include "pns.h"
+ 
+ #ifndef XMLAPI
+ #define XMLAPI
+diff -uNr libparsifal-1.0.0.orig/makeNamespaceHeader.sh libparsifal-1.0.0/makeNamespaceHeader.sh
+--- libparsifal-1.0.0.orig/makeNamespaceHeader.sh	1969-12-31 16:00:00.000000000 -0800
++++ libparsifal-1.0.0/makeNamespaceHeader.sh	2007-03-02 13:24:28.000000000 -0800
+@@ -0,0 +1,89 @@
++#!/bin/sh
++# a script to provide a pns.h with any prefix desired.
++
++function gen() {
++cat <<EOF
++/* generated code. do not edit. */
++/*===========================================================================
++  Parsifal XML Parser namespace definition
++  Copyright (c) 2007 Benjamin Allan
++
++  This header allows parsifal to be moved to any prefix
++  by rerunning makeNamespaceHeader.sh.
++
++  We choose to do this by redefining the public symbols found in the compiled
++  binary rather than changing every line in the library source.
++
++  If _PNS is not defined in the compiler flags, this file does nothing.
++
++  To use the prefix in parsifal development mode (defining new 
++  public functions), do the following:
++
++  (.) Complete the regular build with the options you need to obtain a 
++  library (.a or .so) with the symbols that need prefixes added.
++
++  (.) Regenerate pns.h with the new prefix, e.g.
++	makeNamespaceHeader.sh libparsifal.a > include/libparsifal/pns.h babel_
++   
++  (.) To build with the prefix support:
++      make clean; ./configure CFLAGS=-D_PNS {otheroptions}; make; make install
++
++  Regular libparsifal and one in an alternate namespace should 
++  be non-overlapping at link time with the exception of stricmp replacements. 
++  We're assuming stricmp won't be changing across libparsifal versions.
++  We're assuming libparsifal defines no functions starting with _.
++
++  We should incorporate prefix into the library name, but this requires
++  significant autotools regeneration to achieve.
++
++  DISCLAIMER
++  ----------
++
++  This program is distributed in the hope that it will be useful, but
++  WITHOUT ANY WARRANTY; without even the implied warranty of
++  Merchantability or fitness for a particular purpose. Please use it AT
++  YOUR OWN RISK.
++===========================================================================*/
++
++#ifndef PNS__H
++#define PNS__H
++
++#ifdef _PNS
++#define PNS_PREFIX $2
++
++EOF
++# get public symbols, except those starting with _ and  stricmp and macroize
++	sub="s/^.*/#define & $2&/g"
++	nm $1 | grep ' T ' | \
++		sed -e 's/.* T //g' |\
++		grep -v '^_' |\
++		grep -v stricmp |\
++		sed -e "$sub"
++
++cat <<EOF
++#endif /* _PNS */
++#endif /* PNS__H */
++EOF
++}
++
++# begin main program
++
++if ! test "x$#" = "x2"; then
++	echo "$0: usage: $0 <inputlibrary> <prefix>"
++	echo "generates pns.h to stdout from public functions in library."
++	exit 1
++fi
++
++if ! test -e $1; then
++	echo "$0: input library $1 not found."
++        exit 1;
++fi
++
++if test "x$2" = "x"; then
++ 	echo "$0: prefix cannot be the empty string."
++	exit 1;
++fi
++
++gen $*
++
++exit 0
+diff -uNr libparsifal-1.0.0.orig/samples/nselements/build.bat libparsifal-1.0.0/samples/nselements/build.bat
+--- libparsifal-1.0.0.orig/samples/nselements/build.bat	1969-12-31 16:00:00.000000000 -0800
++++ libparsifal-1.0.0/samples/nselements/build.bat	2005-11-02 11:18:14.000000000 -0800
+@@ -0,0 +1,4 @@
++@echo off
++set LIB=..\..\win32\lib;%LIB%
++cl /W3 /nologo /DXMLAPI=__declspec(dllimport) /I..\..\include /Fe..\..\win32\bin\elements elements.c parsifal.lib
++@echo Run it using: win32\bin\elements ^< document.xml
+Files libparsifal-1.0.0.orig/samples/nselements/elements and libparsifal-1.0.0/samples/nselements/elements differ
+diff -uNr libparsifal-1.0.0.orig/samples/nselements/Makefile libparsifal-1.0.0/samples/nselements/Makefile
+--- libparsifal-1.0.0.orig/samples/nselements/Makefile	1969-12-31 16:00:00.000000000 -0800
++++ libparsifal-1.0.0/samples/nselements/Makefile	2007-02-28 09:27:24.000000000 -0800
+@@ -0,0 +1,25 @@
++APP = nselements
++all: $(APP)
++## install root location:
++PREFIX=/usr/local
++## libraries to link with:
++LIBS = -lparsifal -L$(HOME)//babel_testing/xml/install/babel_parsifal/lib -Wl,-rpath,$(HOME)/babel_testing/xml/install/babel_parsifal/lib
++
++CC = gcc
++CFLAGS = -Wall -g -I$(HOME)/babel_testing/xml/install/babel_parsifal/include -D_PNS
++CPPFLAGS = -I/usr/include
++BIN_INSTALL_DIR=$(PREFIX)/bin
++
++$(APP): $(APP).o
++	$(CC) $(CFLAGS) $(LIBS) $(APP).c -o $(APP)
++
++install: $(APP)
++	install -D -m555 $(APP) $(BIN_INSTALL_DIR)/$(APP)
++
++uninstall:
++	rm -f $(BIN_INSTALL_DIR)/$(APP)
++
++clean:
++	rm -f $(APP).o
++
++.PHONY: all clean
+Files libparsifal-1.0.0.orig/samples/nselements/nselements and libparsifal-1.0.0/samples/nselements/nselements differ
+diff -uNr libparsifal-1.0.0.orig/samples/nselements/nselements.c libparsifal-1.0.0/samples/nselements/nselements.c
+--- libparsifal-1.0.0.orig/samples/nselements/nselements.c	1969-12-31 16:00:00.000000000 -0800
++++ libparsifal-1.0.0/samples/nselements/nselements.c	2005-11-02 11:18:14.000000000 -0800
+@@ -0,0 +1,56 @@
++#include <stdio.h>
++#include "libparsifal/parsifal.h"
++
++int StartElement(void *UserData, const XMLCH *uri, const XMLCH *localName, const XMLCH *qName, LPXMLVECTOR atts);
++int EndElement(void *UserData, const XMLCH *uri, const XMLCH *localName, const XMLCH *qName);
++void ErrorHandler(LPXMLPARSER parser) {} /* dummy, only for switching ErrorString etc. on */
++
++int cstream(BYTE *buf, int cBytes, int *cBytesActual, void *inputData);
++
++int cstream(BYTE *buf, int cBytes, int *cBytesActual, void *inputData)
++{
++	*cBytesActual = fread(buf, 1, cBytes, (FILE*)inputData);	
++	return (*cBytesActual < cBytes);
++}
++
++int StartElement(void *UserData, const XMLCH *uri, const XMLCH *localName, const XMLCH *qName, LPXMLVECTOR atts)
++{
++	int i;
++  	int *depthPtr = UserData;
++  	for (i = 0; i < *depthPtr; i++)
++    	putchar('\t');
++  	puts(qName);
++  	*depthPtr += 1;
++	return 0;
++}
++
++int EndElement(void *UserData, const XMLCH *uri, const XMLCH *localName, const XMLCH *qName)
++{	
++	int *depthPtr = UserData;
++	*depthPtr -= 1;
++	return 0;
++}
++
++int main(int argc, char* argv[])
++{	
++	LPXMLPARSER parser;		
++	int depth = 0;
++
++	if (!XMLParser_Create(&parser)) {
++		printf("Error creating parser!\n");
++		return 1;
++	}
++
++	parser->errorHandler = ErrorHandler;
++	parser->startElementHandler = StartElement;
++	parser->endElementHandler = EndElement;	
++	parser->UserData = &depth;
++
++	if (!XMLParser_Parse(parser, cstream, stdin, 0))
++		printf("Error: %s\nLine: %d Col: %d\n", 
++			parser->ErrorString, parser->ErrorLine, parser->ErrorColumn);
++			
++	XMLParser_Free(parser);
++	return 0;
++}
++
+diff -uNr libparsifal-1.0.0.orig/samples/nselements/README libparsifal-1.0.0/samples/nselements/README
+--- libparsifal-1.0.0.orig/samples/nselements/README	1969-12-31 16:00:00.000000000 -0800
++++ libparsifal-1.0.0/samples/nselements/README	2005-11-02 11:18:14.000000000 -0800
+@@ -0,0 +1,17 @@
++ELEMENTS.C SAMPLE
++-----------------
++
++This sample is rip off from Expat XML parser elements sample.
++It reads XML document from stdin and reports tag names with
++some indentation into stdout.
++
++WIN32
++
++    VC6 users can build sample by running build.bat.
++    Executable will be build into WIN32\BIN directory by default.
++
++UNIX
++
++    make
++    make install
++    elements < document.xml

@@ -1,0 +1,3 @@
+synch_BABEL_MAKEFILE_NAME = synch_babel.make
+synch_PYTHON_SETUP_NAME = synch_setup.py
+synch_PYSETUP_DIRS = ./

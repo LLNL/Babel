@@ -1,0 +1,32 @@
+# IORHDRS dependencies.
+hooks_Basics_IOR.h:                                                           \
+  /home/leek2/babel/btest/vpath/regression/hooks/runPython/../../../../babel/regression/hooks/runPython/../hooks.sidl
+hooks_Basics_IOR.h: sidl_header.h
+hooks_Basics_IOR.h: sidl_BaseClass_IOR.h
+
+hooks_IOR.h:                                                                  \
+  /home/leek2/babel/btest/vpath/regression/hooks/runPython/../../../../babel/regression/hooks/runPython/../hooks.sidl
+hooks_IOR.h: hooks_Basics_IOR.h
+
+synch_IOR.h:                                                                  \
+  /home/leek2/babel/btest/vpath/regression/hooks/runPython/../../../../babel/regression/hooks/runPython/../../output/output.sidl
+synch_IOR.h: synch_RegOut_IOR.h
+synch_IOR.h: synch_ResultType_IOR.h
+
+synch_RegOut_IOR.h:                                                           \
+  /home/leek2/babel/btest/vpath/regression/hooks/runPython/../../../../babel/regression/hooks/runPython/../../output/output.sidl
+synch_RegOut_IOR.h: sidl_header.h
+synch_RegOut_IOR.h: sidl_BaseClass_IOR.h
+synch_RegOut_IOR.h: synch_ResultType_IOR.h
+
+synch_ResultType_IOR.h: sidlType.h
+
+
+# PYMOD_HDRS dependencies.
+hooks_Basics_Module.h:                                                        \
+  /home/leek2/babel/btest/vpath/regression/hooks/runPython/../../../../babel/regression/hooks/runPython/../hooks.sidl
+
+synch_RegOut_Module.h:                                                        \
+  /home/leek2/babel/btest/vpath/regression/hooks/runPython/../../../../babel/regression/hooks/runPython/../../output/output.sidl
+
+

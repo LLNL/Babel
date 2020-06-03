@@ -1,0 +1,202 @@
+# IMPLMODULESRCS dependencies.
+hooks_Basics_Mod.F90:                                                         \
+  /home/epperly/current/babel_fix_hooks/regression/hooks/libF90/../hooks.sidl
+hooks_Basics_Mod.F90: sidl_BaseInterface_fAbbrev.h
+hooks_Basics_Mod.F90: hooks_Basics_fAbbrev.h
+hooks_Basics_Mod.F90: hooks_Basics
+hooks_Basics_Mod.F90: sidl_BaseInterface
+
+
+# IMPLSRCS dependencies.
+hooks_Basics_Impl.F90:                                                        \
+  /home/epperly/current/babel_fix_hooks/regression/hooks/libF90/../hooks.sidl
+hooks_Basics_Impl.F90: sidl_NotImplementedException_fAbbrev.h
+hooks_Basics_Impl.F90: hooks_Basics_fAbbrev.h
+hooks_Basics_Impl.F90: sidl_ClassInfo_fAbbrev.h
+hooks_Basics_Impl.F90: sidl_BaseInterface_fAbbrev.h
+hooks_Basics_Impl.F90: sidl_RuntimeException_fAbbrev.h
+hooks_Basics_Impl.F90: sidl_BaseException_fAbbrev.h
+hooks_Basics_Impl.F90: sidl_BaseClass_fAbbrev.h
+hooks_Basics_Impl.F90: sidl
+hooks_Basics_Impl.F90: sidl_NotImplementedException
+hooks_Basics_Impl.F90: sidl_BaseInterface
+hooks_Basics_Impl.F90: sidl_RuntimeException
+hooks_Basics_Impl.F90: hooks_Basics
+hooks_Basics_Impl.F90: hooks_Basics_impl
+hooks_Basics_Impl.F90: sidl
+hooks_Basics_Impl.F90: sidl_NotImplementedException
+hooks_Basics_Impl.F90: sidl_BaseInterface
+hooks_Basics_Impl.F90: sidl_RuntimeException
+hooks_Basics_Impl.F90: hooks_Basics
+hooks_Basics_Impl.F90: hooks_Basics_impl
+hooks_Basics_Impl.F90: sidl
+hooks_Basics_Impl.F90: sidl_NotImplementedException
+hooks_Basics_Impl.F90: sidl_BaseInterface
+hooks_Basics_Impl.F90: sidl_RuntimeException
+hooks_Basics_Impl.F90: hooks_Basics
+hooks_Basics_Impl.F90: hooks_Basics_impl
+hooks_Basics_Impl.F90: sidl
+hooks_Basics_Impl.F90: sidl_NotImplementedException
+hooks_Basics_Impl.F90: sidl_BaseInterface
+hooks_Basics_Impl.F90: sidl_RuntimeException
+hooks_Basics_Impl.F90: hooks_Basics
+hooks_Basics_Impl.F90: hooks_Basics_impl
+hooks_Basics_Impl.F90: sidl
+hooks_Basics_Impl.F90: sidl_NotImplementedException
+hooks_Basics_Impl.F90: sidl_BaseInterface
+hooks_Basics_Impl.F90: sidl_RuntimeException
+hooks_Basics_Impl.F90: hooks_Basics
+hooks_Basics_Impl.F90: hooks_Basics_impl
+hooks_Basics_Impl.F90: sidl
+hooks_Basics_Impl.F90: sidl_NotImplementedException
+hooks_Basics_Impl.F90: sidl_BaseInterface
+hooks_Basics_Impl.F90: sidl_RuntimeException
+hooks_Basics_Impl.F90: hooks_Basics
+hooks_Basics_Impl.F90: hooks_Basics_impl
+hooks_Basics_Impl.F90: sidl
+hooks_Basics_Impl.F90: sidl_NotImplementedException
+hooks_Basics_Impl.F90: sidl_BaseInterface
+hooks_Basics_Impl.F90: sidl_RuntimeException
+hooks_Basics_Impl.F90: hooks_Basics
+hooks_Basics_Impl.F90: hooks_Basics_impl
+hooks_Basics_Impl.F90: sidl
+hooks_Basics_Impl.F90: sidl_NotImplementedException
+hooks_Basics_Impl.F90: sidl_BaseInterface
+hooks_Basics_Impl.F90: sidl_RuntimeException
+hooks_Basics_Impl.F90: hooks_Basics
+hooks_Basics_Impl.F90: hooks_Basics_impl
+hooks_Basics_Impl.F90: sidl
+hooks_Basics_Impl.F90: sidl_NotImplementedException
+hooks_Basics_Impl.F90: sidl_BaseInterface
+hooks_Basics_Impl.F90: sidl_RuntimeException
+hooks_Basics_Impl.F90: hooks_Basics
+hooks_Basics_Impl.F90: hooks_Basics_impl
+hooks_Basics_Impl.F90: sidl
+hooks_Basics_Impl.F90: sidl_NotImplementedException
+hooks_Basics_Impl.F90: sidl_BaseInterface
+hooks_Basics_Impl.F90: sidl_RuntimeException
+hooks_Basics_Impl.F90: hooks_Basics
+hooks_Basics_Impl.F90: hooks_Basics_impl
+
+
+# IORHDRS dependencies.
+hooks_Basics_IOR.h:                                                           \
+  /home/epperly/current/babel_fix_hooks/regression/hooks/libF90/../hooks.sidl
+hooks_Basics_IOR.h: sidl_header.h
+hooks_Basics_IOR.h: sidl_BaseClass_IOR.h
+
+hooks_IOR.h:                                                                  \
+  /home/epperly/current/babel_fix_hooks/regression/hooks/libF90/../hooks.sidl
+hooks_IOR.h: hooks_Basics_IOR.h
+
+
+# IORSRCS dependencies.
+hooks_Basics_IOR.c:                                                           \
+  /home/epperly/current/babel_fix_hooks/regression/hooks/libF90/../hooks.sidl
+hooks_Basics_IOR.c: hooks_Basics_IOR.h
+hooks_Basics_IOR.c: sidl_BaseClass_Impl.h
+hooks_Basics_IOR.c: sidl_BaseClass.h
+hooks_Basics_IOR.c: sidl_ClassInfo.h
+hooks_Basics_IOR.c: sidl_ClassInfoI.h
+
+
+# SKELSRCS dependencies.
+hooks_Basics_fSkel.c:                                                         \
+  /home/epperly/current/babel_fix_hooks/regression/hooks/libF90/../hooks.sidl
+hooks_Basics_fSkel.c: hooks_Basics_fStub.h
+hooks_Basics_fSkel.c: sidlfortran.h
+hooks_Basics_fSkel.c: sidlf90array.h
+hooks_Basics_fSkel.c: sidl_header.h
+hooks_Basics_fSkel.c: sidl_interface_IOR.h
+hooks_Basics_fSkel.c: sidl_Exception.h
+hooks_Basics_fSkel.c: babel_config.h
+hooks_Basics_fSkel.c: sidl_Loader.h
+hooks_Basics_fSkel.c: hooks_Basics_IOR.h
+hooks_Basics_fSkel.c: hooks_Basics_fAbbrev.h
+hooks_Basics_fSkel.c: sidl_BaseException_IOR.h
+hooks_Basics_fSkel.c: sidl_BaseInterface_IOR.h
+hooks_Basics_fSkel.c: sidl_ClassInfo_IOR.h
+hooks_Basics_fSkel.c: sidl_RuntimeException_IOR.h
+hooks_Basics_fSkel.c: sidl_rmi_ConnectRegistry.h
+hooks_Basics_fSkel.c: hooks_Basics_fStub.h
+hooks_Basics_fSkel.c: sidl_BaseClass_fStub.h
+hooks_Basics_fSkel.c: sidl_BaseInterface_fStub.h
+hooks_Basics_fSkel.c: sidl_ClassInfo_fStub.h
+hooks_Basics_fSkel.c: sidl_RuntimeException_fStub.h
+
+
+# STUBHDRS dependencies.
+hooks_Basics_fAbbrev.h:                                                       \
+  /home/epperly/current/babel_fix_hooks/regression/hooks/libF90/../hooks.sidl
+
+hooks_Basics_fStub.h:                                                         \
+  /home/epperly/current/babel_fix_hooks/regression/hooks/libF90/../hooks.sidl
+hooks_Basics_fStub.h: hooks_Basics_IOR.h
+
+
+# STUBMODULESRCS dependencies.
+hooks_Basics.F90:                                                             \
+  /home/epperly/current/babel_fix_hooks/regression/hooks/libF90/../hooks.sidl
+hooks_Basics.F90: hooks_Basics_fAbbrev.h
+hooks_Basics.F90: sidl_ClassInfo_fAbbrev.h
+hooks_Basics.F90: sidl_BaseInterface_fAbbrev.h
+hooks_Basics.F90: sidl_RuntimeException_fAbbrev.h
+hooks_Basics.F90: sidl_BaseException_fAbbrev.h
+hooks_Basics.F90: sidl_BaseClass_fAbbrev.h
+hooks_Basics.F90: sidl
+hooks_Basics.F90: hooks_Basics_type
+hooks_Basics.F90: sidl_ClassInfo_type
+hooks_Basics.F90: sidl_BaseInterface_type
+hooks_Basics.F90: sidl_RuntimeException_type
+hooks_Basics.F90: sidl_BaseException_type
+hooks_Basics.F90: sidl_BaseClass_type
+hooks_Basics.F90: sidl_rmi_Call_type
+hooks_Basics.F90: sidl_rmi_Return_type
+hooks_Basics.F90: sidl_rmi_Ticket_type
+hooks_Basics.F90: sidl
+hooks_Basics.F90: hooks_Basics_type
+hooks_Basics.F90: sidl_array_type
+
+
+# STUBSRCS dependencies.
+hooks_Basics_fStub.c:                                                         \
+  /home/epperly/current/babel_fix_hooks/regression/hooks/libF90/../hooks.sidl
+hooks_Basics_fStub.c: hooks_Basics_fStub.h
+hooks_Basics_fStub.c: sidlfortran.h
+hooks_Basics_fStub.c: sidlf90array.h
+hooks_Basics_fStub.c: sidl_header.h
+hooks_Basics_fStub.c: sidl_interface_IOR.h
+hooks_Basics_fStub.c: sidl_Exception.h
+hooks_Basics_fStub.c: babel_config.h
+hooks_Basics_fStub.c: sidl_Loader.h
+hooks_Basics_fStub.c: hooks_Basics_IOR.h
+hooks_Basics_fStub.c: hooks_Basics_fAbbrev.h
+hooks_Basics_fStub.c: sidl_BaseException_IOR.h
+hooks_Basics_fStub.c: sidl_BaseInterface_IOR.h
+hooks_Basics_fStub.c: sidl_ClassInfo_IOR.h
+hooks_Basics_fStub.c: sidl_RuntimeException_IOR.h
+hooks_Basics_fStub.c: sidl_rmi_ConnectRegistry.h
+hooks_Basics_fStub.c: hooks_Basics_fStub.h
+hooks_Basics_fStub.c: sidl_BaseClass_fStub.h
+hooks_Basics_fStub.c: sidl_BaseInterface_fStub.h
+hooks_Basics_fStub.c: sidl_ClassInfo_fStub.h
+hooks_Basics_fStub.c: sidl_RuntimeException_fStub.h
+hooks_Basics_fStub.c: sidl_BaseClass.h
+hooks_Basics_fStub.c: sidl_ClassInfo.h
+hooks_Basics_fStub.c: sidl_rmi_ProtocolFactory.h
+hooks_Basics_fStub.c: sidl_rmi_InstanceRegistry.h
+hooks_Basics_fStub.c: sidl_rmi_InstanceHandle.h
+hooks_Basics_fStub.c: sidl_rmi_Invocation.h
+hooks_Basics_fStub.c: sidl_rmi_Response.h
+hooks_Basics_fStub.c: sidl_rmi_ServerRegistry.h
+hooks_Basics_fStub.c: sidl_rmi_ConnectRegistry.h
+hooks_Basics_fStub.c: sidl_io_Serializable.h
+
+
+# TYPEMODULESRCS dependencies.
+hooks_Basics_type.F90:                                                        \
+  /home/epperly/current/babel_fix_hooks/regression/hooks/libF90/../hooks.sidl
+hooks_Basics_type.F90: hooks_Basics_fAbbrev.h
+hooks_Basics_type.F90: sidl
+
+

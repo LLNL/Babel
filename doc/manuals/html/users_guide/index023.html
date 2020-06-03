@@ -1,0 +1,1205 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN"
+            "http://www.w3.org/TR/REC-html40/loose.dtd">
+<HTML>
+<HEAD>
+
+<META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<META name="GENERATOR" content="hevea 1.10">
+<LINK rel="stylesheet" type="text/css" href="index.css">
+<TITLE>Interface Contracts</TITLE>
+</HEAD>
+<BODY >
+<A HREF="index022.html"><IMG SRC="previous_motif.gif" ALT="Previous"></A>
+<A HREF="index-multipage.html"><IMG SRC="contents_motif.gif" ALT="Up"></A>
+<A HREF="index024.html"><IMG SRC="next_motif.gif" ALT="Next"></A>
+<HR>
+<H1 CLASS="chapter"><A NAME="htoc106">Chapter 21</A>  Interface Contracts</H1><UL>
+<LI><A HREF="index023.html#toc90">Introduction</A>
+</LI><LI><A HREF="index023.html#toc91">Specifications</A>
+</LI><LI><A HREF="index023.html#toc92">Enforcement</A>
+</LI><LI><A HREF="index023.html#toc93">Summary</A>
+</LI></UL>
+<P><A NAME="c:contracts"></A>
+<A NAME="@default1926"></A>
+<A NAME="@default1927"></A></P><P><BR>
+</P><H2 CLASS="section"><A NAME="toc90"></A><A NAME="htoc107">21.1</A>  Introduction</H2><P><A NAME="s:contracts_intro"></A>
+Interface contracts help improve software quality through their support
+for the explicit definition and enforcement of expected behaviors at call 
+boundaries.
+<EM>Quality</EM>, as defined by the Institute of Electrical and Electronics 
+Engineers (IEEE) [<A ></A>], is the degree to which a system, component, 
+or process meets its specifications, needs, or expectations.
+Therefore, interface contracts may be used to address quality in terms of 
+defining the expected behaviors of callers (or clients) and callee’s
+(i. e., servers or implementations) of methods.
+Specifications, in the form of executable assertions, have a long history 
+of adding value to the software development process by helping ensure 
+software is implemented and used correctly.
+Parnas [<A ></A>] advocated machine testable, implementation-neutral 
+component specifications in 1971. 
+Thirty years later, Baudry <EM>et al</EM>. [<A ></A>] found components
+with high encapsulation and well-defined, contractually-specified
+interfaces to be more effective at improving the quality of systems
+than implementation-dependent assertions used for defensive
+programming.
+Babel supports both the optional specification and automated enforcement 
+of interface contracts.</P><P>Executable, programming language-neutral constraints on the (public) 
+methods of interfaces and classes are supported in SIDL.
+These specifications define the software behaviors required and expected
+at call boundaries regardless of the programming language(s) used to 
+implement the methods.
+The associated constraints may be checked at runtime through a variety 
+of enforcement options intended for different phases of the software 
+life cycle.</P><H2 CLASS="section"><A NAME="toc91"></A><A NAME="htoc108">21.2</A>  Specifications</H2><P><A NAME="s:contracts_specs"></A>
+<A NAME="@default1928"></A>
+<A NAME="@default1929"></A></P><P>Interface contracts consist of one or more clauses defining expected 
+behaviors at method call boundaries.
+The behaviors are specified through assertions, which may include 
+built-in or user-defined function calls.
+An example for calculating the sum of two vectors<SUP><A NAME="text29" HREF="#note29">1</A></SUP> is shown below. 
+All callers of this method are required to provide two one-dimensional, SIDL 
+arrays of the same size and, assuming the preconditions are satisfied, all 
+implementations are expected to ensure they return a non-null, one-dimensional 
+array of the same size (as the first SIDL array).
+The specification includes the invocation of two built-in functions: 
+<TT>dimen</TT> and <TT>size</TT>.
+Violations of an assertion within a clause results in the raising of a 
+clause-specific exception; namely, <TT>sidl.PreViolation</TT> if
+the caller violates the contract or <TT>sidl.PostViolation</TT> 
+if the implementation violates the contract.
+Hence, this example defines constraints that are to hold immediately 
+prior to (or preconditions on) and immediately upon return from (or
+postconditions of) executing the <TT>vuSum</TT> method defined in the
+<TT>Utils</TT> class within the <TT>vect</TT> package.</P><P><A NAME="@default1930"></A>
+<A NAME="@default1931"></A>
+<A NAME="@default1932"></A>
+<A NAME="@default1933"></A><A NAME="@default1934"></A>
+<A NAME="@default1935"></A>
+<A NAME="@default1936"></A>
+<A NAME="@default1937"></A>
+<A NAME="@default1938"></A>
+<A NAME="@default1939"></A>
+<A NAME="@default1940"></A>
+<A NAME="@default1941"></A>
+<A NAME="@default1942"></A>
+<A NAME="@default1943"></A>
+</P><DIV CLASS="flushright"><SPAN CLASS="textboxed"><FONT COLOR=purple><B>SIDL</B></FONT></SPAN></DIV><TABLE CLASS="lstframe" STYLE="padding:1ex;border-style:solid;"><TR><TD CLASS="lstlisting"><FONT COLOR=maroon><I><B>package</B> vect <B>version</B> 1.0 {
+  <B>class</B> Utils {
+    /* ... */
+
+    /**
+     * Return the sum of the specified vectors.
+     */
+    <B>static array</B>&lt;<B>double</B>&gt; vuSum(<B>in array</B>&lt;<B>double</B>&gt; u, <B>in array</B>&lt;<B>double</B>&gt; v)
+      <B>throws</B>
+        sidl.PreViolation, sidl.PostViolation;
+      <B>require</B>
+        not_null_u: u != null;
+        u_is_1d : dimen(u) == 1;
+        not_null_v: v != null;
+        v_is_1d : dimen(v) == 1;
+        same_size: size(u) == size(v);
+      <B>ensure</B>
+        no_side_effects : is pure;
+        result_not_null: result != null;
+        result_is_1d : dimen(result) == 1;
+        result_correct_size: size(result) == size(u);
+  }
+
+    /* ... */
+}</I></FONT></TD></TR>
+</TABLE><P>The remainder of this section elaborates on the contents of contract clauses.
+Clauses consist of assertion expressions specified using an Eiffel-inspired
+syntax.
+SIDL expressions may contain basic and advanced operations as well as
+built-in and user-defined function calls. 
+The detection of contract violations result in the automatic raising of
+clause-specific exceptions.</P><H3 CLASS="subsection">21.2.1  Contract Clauses</H3><P><A NAME="ss:contract_clauses"></A>
+<A NAME="@default1944"></A>
+<A NAME="@default1945"></A></P><P>There are three types of contract clauses associated with interfaces:
+preconditions, postconditions, and class invariants.
+<EM>Preconditions</EM> declare constraints on invocation of a method while
+<A NAME="@default1946"></A>
+<A NAME="@default1947"></A><A NAME="@default1948"></A>
+<EM>postconditions</EM> constrain its effects.
+<A NAME="@default1949"></A>
+<A NAME="@default1950"></A><A NAME="@default1951"></A>
+Class invariants specify properties unchanged throughout the life of an 
+instance of a class so apply to all of the defined methods.
+<A NAME="@default1952"></A><A NAME="@default1953"></A>
+<A NAME="@default1954"></A>
+While all three clause types share a common format for specifying these
+constraints<SUP><A NAME="text30" HREF="#note30">2</A></SUP>, their location with the specification varies.</P><P>As introduced in Section <A HREF="index008.html#ss:intro_contract_clauses">6.5</A>, the format of
+a contract clause starts with a clause keyword followed by one or more
+assertion expressions. 
+The syntax was borrowed from the classic Eiffel [<A ></A>] clauses
+established by Bertrand Meyer.
+The figure below shows the SIDL format, including all supported clause types. 
+Each expression may be preceded by a label.
+If thoughtfully written, the label can provide a succinct “description” of
+the purpose of the assertion to aid debugging, since labels are automatically 
+included in the exception message of a violated contract clause.
+Expressions are described in Section <A HREF="#ss:contracts_expressions">21.2.2</A>.</P><P><A NAME="@default1955"></A>
+<A NAME="@default1956"></A>
+
+</P><TABLE CLASS="lstframe" STYLE="padding:1ex;border-style:solid;"><TR><TD CLASS="lstlisting">   &lt;require | ensure | invariant&gt;
+      [label-1:]  &lt;assertion-expression-1&gt;;
+     [[label-2:]  &lt;assertion-expression-2&gt;;
+                           ...
+      [label-n:]  &lt;assertion-expression-n&gt;;]</TD></TR>
+</TABLE><P>Since preconditions and postconditions are associated with specific methods,
+their definitions are optional extensions in SIDL.
+The figure below shows the basic structure of a SIDL method specification,
+including the relative locations of the preconditions, or <TT>require</TT>, 
+and postconditions, or <TT>ensure</TT>, clauses. 
+When contract clauses are added to the specification, each method’s
+<TT>throws</TT> clause <EM>must</EM> explicitly list the appropriate
+contract clause violation exception<SUP><A NAME="text31" HREF="#note31">3</A></SUP>.
+Exceptions are described in Section <A HREF="#ss:contracts_violations">21.2.3</A>.</P><P><A NAME="@default1957"></A>
+<A NAME="@default1958"></A>
+
+</P><TABLE CLASS="lstframe" STYLE="padding:1ex;border-style:solid;"><TR><TD CLASS="lstlisting">    [&lt;type&gt;] &lt;identifier&gt; ( [&lt;parameters&gt;] ) [throws &lt;exception&gt;];
+      [require &lt;contract-clause-expressions&gt;]
+      [ensure &lt;contract-clause-expressions&gt;]</TD></TR>
+</TABLE><P>Class invariants apply to all specified methods associated with a class so,
+instead of requiring them to be defined for each method, the <TT>invariant</TT> 
+clause is provided. 
+The clause, which may be specified for an interface or class, must appear
+before method definitions start. 
+The basic structures of interface and class specifications, to include the
+invariant clause, appear below.</P><P><A NAME="@default1959"></A>
+<A NAME="@default1960"></A>
+
+</P><TABLE CLASS="lstframe" STYLE="padding:1ex;border-style:solid;"><TR><TD CLASS="lstlisting">  [ abstract ] class &lt;name&gt; [ extends &lt;scoped-class-name&gt; ]
+                 [ implements-all &lt;scoped-interface-name-list&gt; ] {
+                 [ invariant &lt;contract-clause-expressions&gt; ]
+    [ abstract | final | static ] &lt;method-1&gt;
+  [ [ abstract | final | static ] &lt;method-2&gt;
+                       ...
+    [ abstract | final | static ] &lt;method-n&gt; ]
+  } [;]
+
+  interface &lt;name&gt; [ extends &lt;scoped-interface-name-list&gt; ] {
+    [ invariant &lt;contract-clause-expressions&gt; ]
+    &lt;method-1&gt;
+  [ &lt;method-2&gt;
+       ...
+    &lt;method-n&gt; ]
+  } [;]</TD></TR>
+</TABLE><P><A NAME="@default1961"></A>
+<A NAME="@default1962"></A>
+SIDL contract clauses can be inherited.
+However, all assertion expressions — directly defined and inherited — 
+are aggregated on a clause basis and checks built by essentially 
+<EM>and</EM>’ing them.
+This results in effectively strengthening (i. e., applying <EM>and then</EM>) 
+to the inherited clauses; rather, than the proper notion of weakening 
+(i. e., applying <EM>or else</EM> to) inherited precondition clauses.
+No optimization is performed on the resulting checks either.
+The interested reader should consult [<A ></A>] and [<A ></A>] for 
+more information on (proper) contract inheritance behavior. </P><P>Hence, SIDL’s interface contract specifications are based on three types of 
+contract clauses: preconditions, postconditions, and class invariants.
+While all three share a common basic format — keyword followed by a
+list of assertion expressions — they appear in different locations
+within the specification. 
+Specifically, postconditions follow preconditions within the definition
+of a method; while class invariants are specified before methods in
+class and interface definitions.</P><H3 CLASS="subsection">21.2.2  Assertion Expressions</H3><P><A NAME="ss:contracts_expressions"></A>
+<A NAME="@default1963"></A>
+<A NAME="@default1964"></A></P><P><A NAME="@default1965"></A>
+<A NAME="@default1966"></A>
+</P><BLOCKQUOTE CLASS="table"><DIV CLASS="center"><HR WIDTH="80%" SIZE=2></DIV>
+<DIV CLASS="center">
+<DIV CLASS="caption"><TABLE CELLSPACING=6 CELLPADDING=0><TR><TD VALIGN=top ALIGN=left>Table 21.1: Operators available for use in SIDL assertion expressions.</TD></TR>
+</TABLE></DIV>
+<A NAME="tbl:contractOps"></A>
+<TABLE BORDER=1 CELLSPACING=0 CELLPADDING=1><TR><TD ALIGN=center NOWRAP><B>OPERATOR(S)</B></TD><TD ALIGN=center NOWRAP><B>DESCRIPTION</B></TD></TR>
+<TR><TD ALIGN=center NOWRAP><TT>&lt;</TT>, <TT>&lt;=</TT></TD><TD ALIGN=center NOWRAP>Is less than, Is less than or equal to</TD></TR>
+<TR><TD ALIGN=center NOWRAP><TT>==</TT>, <TT>!=</TT></TD><TD ALIGN=center NOWRAP>Is equal to, Is not equal to</TD></TR>
+<TR><TD ALIGN=center NOWRAP><TT>&gt;</TT>, <TT>&gt;=</TT></TD><TD ALIGN=center NOWRAP>Is greater than, Is greater than or equal to</TD></TR>
+<TR><TD ALIGN=center NOWRAP><TT>+</TT>, <TT>-</TT></TD><TD ALIGN=center NOWRAP>Addition, Subtraction</TD></TR>
+<TR><TD ALIGN=center NOWRAP><TT>*</TT>, <TT>/</TT></TD><TD ALIGN=center NOWRAP>Multiplication, Division</TD></TR>
+<TR><TD ALIGN=center NOWRAP><TT>**</TT></TD><TD ALIGN=center NOWRAP>Power</TD></TR>
+<TR><TD ALIGN=center NOWRAP><TT>and</TT></TD><TD ALIGN=center NOWRAP>Logical and</TD></TR>
+<TR><TD ALIGN=center NOWRAP><TT>iff</TT></TD><TD ALIGN=center NOWRAP>If and only if</TD></TR>
+<TR><TD ALIGN=center NOWRAP><TT>implies</TT></TD><TD ALIGN=center NOWRAP>Implies</TD></TR>
+<TR><TD ALIGN=center NOWRAP><TT>is</TT></TD><TD ALIGN=center NOWRAP>Is (paired with the <TT>pure</TT> keyword)</TD></TR>
+<TR><TD ALIGN=center NOWRAP><TT>mod</TT></TD><TD ALIGN=center NOWRAP>Modulo</TD></TR>
+<TR><TD ALIGN=center NOWRAP><TT>not</TT></TD><TD ALIGN=center NOWRAP>Is not</TD></TR>
+<TR><TD ALIGN=center NOWRAP><TT>or</TT></TD><TD ALIGN=center NOWRAP>Inclusive or</TD></TR>
+<TR><TD ALIGN=center NOWRAP><TT>rem</TT></TD><TD ALIGN=center NOWRAP>Remainder</TD></TR>
+<TR><TD ALIGN=center NOWRAP><TT>xor</TT></TD><TD ALIGN=center NOWRAP>Exclusive or</TD></TR>
+</TABLE>
+</DIV>
+<DIV CLASS="center"><HR WIDTH="80%" SIZE=2></DIV></BLOCKQUOTE><P>Assertion expressions represent properties that must be true at the 
+execution point corresponding to their containing contract clause.
+These expressions are composed of operators and operands.
+Individual operands may take the form of arguments, results, constants, 
+or function calls.
+Arguments and results make sense only for clauses associated with specific
+methods (i. e., preconditions and postconditions).
+Constant values and function calls may be specified in any contract clause.</P><P>Basic expression syntax is supported, including the use of parentheses
+to indicate precedence. Expressions may involve unary or binary
+operators. They may be as basic as a simple comparison
+(e. g. <TT>u != null</TT>) or involve multiple comparisons
+(e. g. <TT>(u != null) implies (size(u) &gt;= 0)</TT><SUP><A NAME="text32" HREF="#note32">4</A></SUP>). Regardless of the number of sub-expressions, every
+assertion expression must evaluate to a boolean result.</P><P><A NAME="@default1967"></A>
+<A NAME="@default1968"></A>
+SIDL assertion expression operators include those operators available in most 
+common programming languages, as well as some advanced operators, such as 
+<TT>iff</TT> (for <EM>if and only if</EM>) and <TT>implies</TT>.
+Table <A HREF="#tbl:contractOps">21.1</A> provides a complete list.
+Advanced operations, for universal and existential quantification, are also
+supported, though through built-in functions described later in this section.
+The associated operands may take the form of arguments, results, constant 
+values, and method calls. </P><P><A NAME="@default1969"></A>
+<A NAME="@default1970"></A>
+Precondition and postcondition clauses may include constraints on the
+arguments and results of the associated method. 
+Arguments are referenced using their names as specified in the method’s 
+parameter list.
+<A NAME="@default1971"></A>
+<A NAME="@default1972"></A>
+The method’s result, which is not named in the specification, is represented
+in the expression by the generic <TT>result</TT> keyword, which takes on the
+method’s return type.</P><P><A NAME="@default1973"></A>
+<A NAME="@default1974"></A>
+</P><BLOCKQUOTE CLASS="table"><DIV CLASS="center"><HR WIDTH="80%" SIZE=2></DIV>
+<DIV CLASS="center">
+<DIV CLASS="caption"><TABLE CELLSPACING=6 CELLPADDING=0><TR><TD VALIGN=top ALIGN=left>Table 21.2: Special keywords available for use in SIDL assertion expressions.</TD></TR>
+</TABLE></DIV>
+<A NAME="tbl:contractKeywords"></A>
+<TABLE BORDER=1 CELLSPACING=0 CELLPADDING=1><TR><TD ALIGN=center NOWRAP><B>KEYWORD</B></TD><TD ALIGN=center NOWRAP><B>MEANING</B></TD></TR>
+<TR><TD ALIGN=center NOWRAP><TT>false</TT></TD><TD ALIGN=center NOWRAP>False</TD></TR>
+<TR><TD ALIGN=center NOWRAP><TT>null</TT></TD><TD ALIGN=center NOWRAP>Null reference</TD></TR>
+<TR><TD ALIGN=center NOWRAP><TT>pure</TT></TD><TD ALIGN=center NOWRAP>Side effect-free</TD></TR>
+<TR><TD ALIGN=center NOWRAP><TT>result</TT></TD><TD ALIGN=center NOWRAP>Method result</TD></TR>
+<TR><TD ALIGN=center NOWRAP><TT>true</TT></TD><TD ALIGN=center NOWRAP>True</TD></TR>
+</TABLE>
+</DIV>
+<DIV CLASS="center"><HR WIDTH="80%" SIZE=2></DIV></BLOCKQUOTE><P><A NAME="@default1975"></A>
+<A NAME="@default1976"></A>
+Constants, such as boolean and numeric values, are also supported. 
+Table <A HREF="#tbl:contractKeywords">21.2</A>, which lists all of the keywords allowed
+in SIDL assertion expressions, includes recognized boolean and pointer value
+representations.
+The table also includes two special keywords: <TT>pure</TT> and <TT>result</TT>.
+<A NAME="@default1977"></A>
+<A NAME="@default1978"></A>
+The former, when paired with the <TT>is</TT> operator, as in <TT>is pure</TT>,
+represents a non-executable postcondition annotation used to indicate 
+implementations of the method <EM>should</EM> be side effect-free.
+This property is necessary so the method (or function) can be safely used in 
+an interface contract; however, there is no support in the toolkit for
+statically analyzing source code (in <EM>any</EM> of the supported programming 
+languages) to ensure the property is true for implementations of the interface.
+As mentioned previously, <TT>result</TT> represents the value returned by the
+associated method.</P><P><A NAME="@default1979"></A>
+<A NAME="@default1980"></A>
+Function calls are supported within contract clauses to enable the definition
+of richer constraints.
+They enable restrictions on object properties, which are not visible in SIDL, 
+and (interface- or class-specific) logic enhancing contract expressiveness.
+The functions may be built-in or in scope, user-defined methods.</P><P><A NAME="@default1981"></A>
+<A NAME="@default1982"></A>
+</P><BLOCKQUOTE CLASS="table"><DIV CLASS="center"><HR WIDTH="80%" SIZE=2></DIV>
+<DIV CLASS="center">
+<DIV CLASS="caption"><TABLE CELLSPACING=6 CELLPADDING=0><TR><TD VALIGN=top ALIGN=left>Table 21.3: Built-in SIDL interface contract functions, where <I>expr</I> can be one 
+of: <I>u</I> <I>r</I> <I>v</I>, <I>u</I> <I>r</I> <I>n</I>, and <I>n</I> <I>r</I> <I>v</I> with <I>u</I>, <I>v</I> ∈ <EM>SIDL arrays</EM>, 
+<I>n</I> ∈ <EM>Numbers</EM>, and <I>r</I> ∈ {&lt;, &gt;, &lt;=, &gt;=, ==, !=}. 
+The relation <I>u</I> <I>r</I> <I>v</I> is equivalent to
+∀ <I>i</I> ∈ 0 .. (<I>size</I>(<I>u</I>)−1), <I>u</I>[<I>i</I>] <I>r</I> <I>v</I>[<I>i</I>]; <I>u</I> <I>r</I> <I>n</I> to
+∀ <I>i</I> ∈ 0 .. (<I>size</I>(<I>u</I>)−1), <I>u</I>[<I>i</I>] <I>r</I> <I>n</I>; and <I>n</I> <I>r</I> <I>v</I> to
+∀ <I>i</I> ∈ 0 .. (<I>size</I>(<I>v</I>)−1), <I>n</I> <I>r</I> <I>u</I>[<I>i</I>].</TD></TR>
+</TABLE></DIV>
+<A NAME="tbl:builtinFuncs"></A>
+<TABLE BORDER=1 CELLSPACING=0 CELLPADDING=1><TR><TD VALIGN=top ALIGN=center NOWRAP><B>FUNCTION</B></TD><TD VALIGN=top ALIGN=left><B>RETURNS</B></TD><TD VALIGN=top ALIGN=center NOWRAP><B>COMPLEXITY</B></TD></TR>
+<TR><TD VALIGN=top ALIGN=center NOWRAP>dimen(<I>u</I>)</TD><TD VALIGN=top ALIGN=left>Dimension of array <I>u</I>.</TD><TD VALIGN=top ALIGN=center NOWRAP>O(1)</TD></TR>
+<TR><TD VALIGN=top ALIGN=center NOWRAP>irange(<I>x</I>, <I>n<SUB>low</SUB></I>, <I>n<SUB>high</SUB></I>)</TD><TD VALIGN=top ALIGN=left><I>True</I> if <I>x</I> falls within the integer range of <I>n<SUB>low</SUB></I>..<I>n<SUB>high</SUB></I>.</TD><TD VALIGN=top ALIGN=center NOWRAP>O(1)</TD></TR>
+<TR><TD VALIGN=top ALIGN=center NOWRAP>lower(<I>u</I>, <I>d</I>)</TD><TD VALIGN=top ALIGN=left>Lower index of the <I>d<SUP>th</SUP></I> dimension of array <I>u</I>.</TD><TD VALIGN=top ALIGN=center NOWRAP>O(1)</TD></TR>
+<TR><TD VALIGN=top ALIGN=center NOWRAP>nearEqual(<I>x</I>, <I>y</I>, <I>t</I>)</TD><TD VALIGN=top ALIGN=left><I>True</I> if real values <I>x</I> and <I>y</I> are within the specified tolerance, <I>t</I>,
+of being equal.</TD><TD VALIGN=top ALIGN=center NOWRAP>O(1)</TD></TR>
+<TR><TD VALIGN=top ALIGN=center NOWRAP>range(<I>x</I>, <I>r<SUB>low</SUB></I>, <I>r<SUB>high</SUB></I>, <I>t</I>)</TD><TD VALIGN=top ALIGN=left><I>True</I> if the real value <I>x</I> falls within the specified tolerance, <I>t</I>, of
+the range <I>r<SUB>low</SUB></I>..<I>r<SUB>high</SUB></I>.</TD><TD VALIGN=top ALIGN=center NOWRAP>O(1)</TD></TR>
+<TR><TD VALIGN=top ALIGN=center NOWRAP>size(<I>u</I>)</TD><TD VALIGN=top ALIGN=left>Allocated size of array <I>u</I>.</TD><TD VALIGN=top ALIGN=center NOWRAP>O(1)</TD></TR>
+<TR><TD VALIGN=top ALIGN=center NOWRAP>stride(<I>u</I>, <I>d</I>)</TD><TD VALIGN=top ALIGN=left>Stride of the <I>d<SUP>th</SUP></I> dimension of array <I>u</I>.</TD><TD VALIGN=top ALIGN=center NOWRAP>O(1)</TD></TR>
+<TR><TD VALIGN=top ALIGN=center NOWRAP>upper(<I>u</I>, <I>d</I>)</TD><TD VALIGN=top ALIGN=left>Upper index of the <I>d<SUP>th</SUP></I> dimension of array <I>u</I>.</TD><TD VALIGN=top ALIGN=center NOWRAP>O(1)</TD></TR>
+<TR><TD VALIGN=top ALIGN=center NOWRAP>all(<I>expr</I>)</TD><TD VALIGN=top ALIGN=left><I>True</I> if the expression <I>expr</I> evaluates to <I>true</I> for each 
+element in the specified array(s). For example, <TT>all(<I>u</I> &lt; <I>v</I>)</TT> 
+returns <I>true</I> if the value of each element in array <I>u</I> is less than the 
+value of the corresponding element in array <I>v</I>.</TD><TD VALIGN=top ALIGN=center NOWRAP>O(<I>n</I>)</TD></TR>
+<TR><TD VALIGN=top ALIGN=center NOWRAP>any(<I>expr</I>)</TD><TD VALIGN=top ALIGN=left><I>True</I> if at least one element in the specified array(s) satisfies the
+expression <I>expr</I>. For example, <TT>any(<I>u</I> = 0)</TT> 
+returns <I>true</I> upon encountering the first element in array <I>u</I> whose value 
+equals zero but returns <I>false</I> if none of the elements have values equal zero.</TD><TD VALIGN=top ALIGN=center NOWRAP>O(<I>n</I>)</TD></TR>
+<TR><TD VALIGN=top ALIGN=center NOWRAP>count(<I>expr</I>)</TD><TD VALIGN=top ALIGN=left>The total number of array elements satisfying the expression <I>expr</I>.</TD><TD VALIGN=top ALIGN=center NOWRAP>O(<I>n</I>)</TD></TR>
+<TR><TD VALIGN=top ALIGN=center NOWRAP>irange(<I>u</I>, <I>n<SUB>low</SUB></I>, <I>n<SUB>high</SUB></I>)</TD><TD VALIGN=top ALIGN=left><I>True</I> if all elements in the array, <I>u</I>, fall within the integer range
+<I>n<SUB>low</SUB></I>..<I>n<SUB>high</SUB></I>.</TD><TD VALIGN=top ALIGN=center NOWRAP>O(<I>n</I>)</TD></TR>
+<TR><TD VALIGN=top ALIGN=center NOWRAP>max(<I>u</I>)</TD><TD VALIGN=top ALIGN=left>The maximum of the values of the elements in array <I>u</I>.</TD><TD VALIGN=top ALIGN=center NOWRAP>O(<I>n</I>)</TD></TR>
+<TR><TD VALIGN=top ALIGN=center NOWRAP>min(<I>u</I>)</TD><TD VALIGN=top ALIGN=left>The minimum of the values of the elements in array <I>u</I>.</TD><TD VALIGN=top ALIGN=center NOWRAP>O(<I>n</I>)</TD></TR>
+<TR><TD VALIGN=top ALIGN=center NOWRAP>nearEqual(<I>u</I>, <I>v</I>, <I>t</I>)</TD><TD VALIGN=top ALIGN=left><I>True</I> if the corresponding elements in arrays <I>u</I> and <I>v</I> are within the
+specified tolerance, <I>t</I>, of being equal.</TD><TD VALIGN=top ALIGN=center NOWRAP>O(<I>n</I>)</TD></TR>
+<TR><TD VALIGN=top ALIGN=center NOWRAP>none(<I>expr</I>)</TD><TD VALIGN=top ALIGN=left><I>True</I> if none of the elements in the specified array(s) satisfies the
+expression <I>expr</I>. For example, <TT>none(<I>u</I> &gt;= 0.0)</TT> 
+returns <I>true</I> if none of the elements of array <I>u</I> have values greater 
+than or equal to 0.0.</TD><TD VALIGN=top ALIGN=center NOWRAP>O(<I>n</I>)</TD></TR>
+<TR><TD VALIGN=top ALIGN=center NOWRAP>nonDecr(<I>u</I>)</TD><TD VALIGN=top ALIGN=left><I>True</I> if the values of the elements in array <I>u</I> are in non-decreasing order.</TD><TD VALIGN=top ALIGN=center NOWRAP>O(<I>n</I>)</TD></TR>
+<TR><TD VALIGN=top ALIGN=center NOWRAP>nonIncr(<I>u</I>)</TD><TD VALIGN=top ALIGN=left><I>True</I> if the values of the elements in array <I>u</I> are in non-increasing order.</TD><TD VALIGN=top ALIGN=center NOWRAP>O(<I>n</I>)</TD></TR>
+<TR><TD VALIGN=top ALIGN=center NOWRAP>range(<I>u</I>, <I>r<SUB>low</SUB></I>, <I>r<SUB>high</SUB></I>, <I>t</I>)</TD><TD VALIGN=top ALIGN=left><I>True</I> if all elements in array <I>u</I> fall within the specified tolerance, <I>t</I>,
+of <I>r<SUB>low</SUB></I> .. <I>r<SUB>high</SUB></I>.</TD><TD VALIGN=top ALIGN=center NOWRAP>O(<I>n</I>)</TD></TR>
+<TR><TD VALIGN=top ALIGN=center NOWRAP>sum(<I>u</I>)</TD><TD VALIGN=top ALIGN=left>Returns the total of the values of all elements in array <I>u</I>.</TD><TD VALIGN=top ALIGN=center NOWRAP>O(<I>n</I>)</TD></TR>
+</TABLE>
+</DIV>
+<DIV CLASS="center"><HR WIDTH="80%" SIZE=2></DIV></BLOCKQUOTE><P><A NAME="@default1983"></A>
+<A NAME="@default1984"></A>
+Built-in functions, described in Table <A HREF="#tbl:builtinFuncs">21.3</A>, provide scalar 
+and SIDL array features, with the latter enabling universal (e. g. <TT>all</TT>)
+and existential (e. g. <TT>any</TT>) quantification.
+Array property and simple numeric value comparator functions operate in 
+constant-time. 
+Other array-based operations, such as existential and universal quantifiers, 
+are linear in the size of the arrays.
+Their complexity is mentioned here because it is relevant to some of the
+experimental enforcement policies described in 
+Section <A HREF="#s:contracts_enforcement">21.3</A>.</P><P><A NAME="@default1985"></A>
+<A NAME="@default1986"></A>
+Allowing the specification of user-defined functions within contract clauses 
+poses a risk in that implementors may erroneously come to depend on them — and
+their side effects — for proper implementation behavior. 
+This is a <EM>mistake</EM>. 
+The runtime enforcement of interface contracts is optional and, therefore,
+cannot be relied upon for correct functionality.
+<A NAME="@default1987"></A>
+<A NAME="@default1988"></A>
+This is why Babel requires the contract of user-defined functions intended 
+or able to be used in the contract of another method to include the 
+<TT>is pure</TT> postcondition annotation described previously.</P><P>In summary, SIDL contract clauses contain a list of one or more simple or 
+compound expressions, each evaluating to a boolean value.
+Expressions may contain any of twenty built-in, basic or advanced operators;
+method arguments and results (only in precondition and postcondition clauses);
+special keywords; boolean and numeric constants; twenty built-in scalar and
+SIDL array functions; and in scope, user-defined functions.
+While there is a potential danger associated with allowing user-defined 
+functions within contract clauses, the ability is supported to enable richer 
+constraints and provide a mechanism for identifying and prototyping 
+potential domain-specific contract features.</P><H3 CLASS="subsection">21.2.3  Contract Violations</H3><P><A NAME="ss:contracts_violations"></A>
+<A NAME="@default1989"></A>
+<A NAME="@default1990"></A>
+<A NAME="@default1991"></A>
+<A NAME="@default1992"></A></P><P>Enforcement is performed on a contract clause basis so, if an assertion
+does not hold, a clause-specific exception is automatically raised.
+That is, the <TT>sidl.PreViolation</TT> exception is raised when 
+preconditions are violated; <TT>sidl.PostViolation</TT> 
+raised for postcondition violations; and 
+<TT>sidl.InvViolation</TT> for invariants violations.
+The exceptions, as defined in <TT>sidl.sidl</TT>, are shown below.
+The label, if any, of the associated assertion expression is included
+in the exception message; therefore, meaningful labels can aid testing
+and debugging.</P><P><A NAME="@default1993"></A>
+<A NAME="@default1994"></A>
+<A NAME="@default1995"></A>
+<A NAME="@default1996"></A>
+<A NAME="@default1997"></A>
+<A NAME="@default1998"></A>
+</P><DIV CLASS="flushright"><SPAN CLASS="textboxed"><FONT COLOR=purple><B>SIDL</B></FONT></SPAN></DIV><TABLE CLASS="lstframe" STYLE="padding:1ex;border-style:solid;"><TR><TD CLASS="lstlisting">  <FONT COLOR=maroon><I>/**
+   * &lt;code&gt;PreViolation&lt;/code&gt; indicates an assertion within a precondition
+   * clause of the interface contract has been violated.
+   */
+  <B>class</B> PreViolation <B>extends</B> SIDLException <B>implements</B> RuntimeException {}
+
+  /**
+   * &lt;code&gt;PostViolation&lt;/code&gt; indicates an assertion within a postcondition
+   * clause of the interface contract has been violated.
+   */
+  <B>class</B> PostViolation <B>extends</B> SIDLException <B>implements</B> RuntimeException {}
+
+  /**
+   * &lt;code&gt;InvViolation&lt;/code&gt; indicates an assertion within a invariant
+   * clause of the interface contract has been violated.
+   */
+  <B>class</B> InvViolation <B>extends</B> SIDLException <B>implements</B> RuntimeException {
+  }</I></FONT></TD></TR>
+</TABLE><H2 CLASS="section"><A NAME="toc92"></A><A NAME="htoc109">21.3</A>  Enforcement</H2><P><A NAME="s:contracts_enforcement"></A>
+<A NAME="@default1999"></A>
+<A NAME="@default2000"></A></P><P>Interface contract enforcement is based on a global policy set at runtime.
+The policy establishes the contract clauses of interest and the frequency 
+at which they should be checked.
+These two options support traditional contract/assertion enforcement
+as well as experimental strategies.
+The policy also supports enforcement tracing, though a discussion of this 
+feature is provided separately in Section <A HREF="#ss:contracts_tracing">21.3.4</A>.</P><P><A NAME="@default2001"></A>
+<A NAME="@default2002"></A>
+The enforcement policy should reflect the goals of the run which, as 
+mentioned in Section <A HREF="index008.html#ss:intro_contract_enforcement">6.5</A>, are often 
+tied to the phase in the software’s life cycle.
+Available enforcement options range from traditional to experimental,
+with the former focused on aiding testing, debugging, and deployment.
+Some experimental options support a reduced level of enforcement intended
+for performance-contrained environments, while others are for gathering 
+data to facilitate gaining insights into the nature of interface contract 
+enforcement.</P><P>The SIDL specification of the enforcement policy is:</P><P><A NAME="@default2003"></A>
+<A NAME="@default2004"></A>
+</P><DIV CLASS="flushright"><SPAN CLASS="textboxed"><FONT COLOR=purple><B>SIDL</B></FONT></SPAN></DIV><TABLE CLASS="lstframe" STYLE="padding:1ex;border-style:solid;"><TR><TD CLASS="lstlisting">  <FONT COLOR=maroon><I>/**
+   * &lt;code&gt;EnfPolicy&lt;/code&gt; maintains the current interface
+   * contract enforcement policy.
+   */
+  <B>class</B> EnfPolicy {
+    /**
+     * Sets the enforcement policy to always check the specified
+     * type(s) of contracts.  This is equivalent to calling
+     * setPolicy() with ALWAYS as the enforcement frequency
+     * and the specified (or default) contract class.
+     *
+     * @param contractClass  Contract classification
+     *                         [Default = ALLCLASSES]
+     * @param clearStats      TRUE if enforcement statistics are to be
+     *                          cleared; FALSE otherwise.
+     */
+    <B>static void</B> setEnforceAll(<B>in</B> ContractClass contractClass,
+                              <B>in bool</B>          clearStats);
+
+    /**
+     * Sets the policy options to disable all contract enforcement.
+     * This is equivalent to calling setPolicy() with NEVER as the
+     * enforcement frequency.
+     *
+     * @param clearStats  TRUE if enforcement statistics are to be
+     *                      cleared; FALSE otherwise.
+     */
+    <B>static void</B> setEnforceNone(<B>in bool</B> clearStats);
+
+    /**
+     * Sets enforcement policy and options.  This method should be
+     * invoked directly to avoid the default enforcement behavior.
+     *
+     * @param contractClass  Contract classification
+     *                         [Default = ALLCLASSES]
+     * @param enforceFreq    Enforcement frequency
+     *                         [Default = ALWAYS]
+     * @param interval       Sampling interval representing the
+     *                         period (for PERIODIC) or maximum
+     *                         random number/window (for RANDOM)
+     *                         [Default = 0 if negative specified]
+     * @param overheadLimit  Limit on performance overhead [0.0 .. 1.0)
+     *                         [Default = 0.0 (or 0%) if negative]
+     * @param appAvgPerCall  Average extra, application-specific
+     *                         execution time, normalized by calls
+     *                         to annotated methods
+     *                         [Default = 0.0 if negative]
+     * @param annealLimit    Limit on simulated annealing function
+     *                         to ensure its termination
+     *                         (0.0 .. 2.72]
+     *                         [Default = 2.72 if negative specified]
+     * @param clearStats      TRUE if enforcement statistics are to be
+     *                          cleared; FALSE otherwise.
+     */
+    <B>static void</B> setPolicy(<B>in</B> ContractClass contractClass,
+                          <B>in</B> EnforceFreq   enforceFreq,
+                          <B>in int</B>           interval,
+                          <B>in double</B>        overheadLimit,
+                          <B>in double</B>        appAvgPerCall,
+                          <B>in double</B>        annealLimit,
+                          <B>in bool</B>          clearStats);
+
+    /**
+     * Returns TRUE if contract enforcement is enabled; FALSE otherwise.
+     */
+    <B>static bool</B> areEnforcing();
+
+    /**
+     * Returns the contract classification policy option.
+     */
+    <B>static</B> ContractClass getContractClass();
+
+    /**
+     * Returns the enforcement frequency policy option.
+     */
+    <B>static</B> EnforceFreq getEnforceFreq();
+
+    /**
+     * Returns the interval for PERIODIC (i.e., the interval) or
+     * RANDOM (i.e., the maximum random number).  Returns 0 by default.
+     */
+    <B>static int</B> getSamplingInterval();
+
+    /**
+     * Returns the desired enforcement overhead limit for
+     * performance-driven frequency options (i.e., ADAPTFIT,
+     * ADAPTTIMING, and SIMANNEAL).  Returns 0.0 by default.
+     */
+    <B>static double</B> getOverheadLimit();
+
+    /**
+     * Returns the average assumed execution time associated
+     * with the program or application.  Returns 0.0 by default.
+     */
+    <B>static double</B> getAppAvgPerCall();
+
+    /**
+     * Returns the annealing limit for SIMANNEAL enforcement
+     * frequency option.  Returns 0.0 by default.
+     */
+    <B>static double</B> getAnnealLimit();
+
+    /**
+     * Returns the name, or description, of the enforcement policy.
+     * The caller is responsible for calling sidl_String_free()
+     * on the name when done with it.
+     *
+     * @param useAbbrev   TRUE if the abbreviated name is to be
+     *                    returned.
+     */
+    <B>static string</B> getPolicyName(<B>in bool</B> useAbbrev);
+
+    /**
+     * Prints statistics data to the file with the specified name.
+     * The file is opened (for append) and closed on each call.
+     *
+     * @param filename   Name of the file to which the statistics
+     *                     data should be written.
+     * @param header     TRUE if the header line is to be printed
+     *                     prior to the statistics line (for compressed
+     *                     output only).
+     * @param prefix     String description for identifying information,
+     *                     if any, intended to preceed the statistics
+     *                     data.  Useful for distinguishing between
+     *                     different objects, for example.
+     * @param compressed TRUE if the enforcer state is to be dumped
+     *                     on a single line with semi-colon separators
+     *                     between fields.
+     */
+    <B>static void</B> dumpStats(<B>in string</B> filename,
+                          <B>in bool</B>   header,
+                          <B>in string</B> prefix,
+                          <B>in bool</B>   compressed);
+
+    /**
+     * Starts enforcement trace file generation.
+     *
+     * @param filename    Name of the destination trace file.
+     * @param traceLevel  Level of trace timing and reporting required.
+     *                      [Default = NONE]
+     */
+    <B>static void</B> startTrace(<B>in string</B>        filename,
+                           <B>in</B> EnfTraceLevel traceLevel);
+
+    /**
+     * Returns TRUE if contract enforcement tracing is enabled;
+     * FALSE otherwise.
+     */
+    <B>static bool</B> areTracing();
+
+    /**
+     * Returns the name of the trace file.  If one was not provided,
+     * the default name is returned.
+     */
+    <B>static string</B> getTraceFilename();
+
+    /**
+     * Returns the level of enforcement tracing.
+     */
+    <B>static</B> EnfTraceLevel getTraceLevel();
+
+    /**
+     * Terminates enforcement trace file generation.  Takes a final
+     * timestamp and logs the remaining trace information.
+     */
+    <B>static void</B> endTrace();
+  }</I></FONT></TD></TR>
+</TABLE><P>This class provides the ability to set and query enforcement 
+options and statistics, as well as enforcement tracing.
+Two options establish the enforcement policy: contract clause 
+classifications and enforcement frequency.
+Classification options identify either the clause or characteristics of 
+the assertions within clauses.
+Some classification options reflect traditional contract enforcement 
+strategies while others enable data gathering.
+Enforcement frequency options distinguish between traditional enforcement 
+— where all associated contract clauses are checked — and sampling-based
+enforcement.
+Contract enforcement data, collected at runtime, is available for analysis.
+Enforcement tracing provides a mechanism for collecting data needed
+for experimental sampling options.</P><H3 CLASS="subsection">21.3.1  Contract Classification Options</H3><P><A NAME="ss:contracts_classes"></A>
+<A NAME="@default2005"></A>
+<A NAME="@default2006"></A>
+<A NAME="@default2007"></A>
+<A NAME="@default2008"></A></P><P>Contract clause classifications distinguish between clauses based
+on their type or characteristics of the contained assertions.
+Clause types are used for more traditional enforcement strategies;
+whereas assertion characteristics are intended for gathering data on
+the nature of contract clauses actually encountered during execution. </P><P>The SIDL specification for contract clause classification options is:</P><P><A NAME="@default2009"></A>
+<A NAME="@default2010"></A>
+</P><DIV CLASS="flushright"><SPAN CLASS="textboxed"><FONT COLOR=purple><B>SIDL</B></FONT></SPAN></DIV><TABLE CLASS="lstframe" STYLE="padding:1ex;border-style:solid;"><TR><TD CLASS="lstlisting">  <FONT COLOR=maroon><I>/**
+   * Contract classification.  The classification is used to filter
+   * contract clauses by the corresponding characteristic(s).
+   */
+  <B>enum</B> ContractClass {
+    /**
+     * All classifications of interface contract clauses.
+     */
+    ALLCLASSES,
+    /**
+     * Only constant-time complexity, or O(1), clauses.
+     */
+    CONSTANT,
+    /**
+     * Only cubic-time complexity, or O(n^3), clauses.
+     */
+    CUBIC,
+    /**
+     * Only invariant clauses.
+     */
+    INVARIANTS,
+    /**
+     * Invariant plus postcondition clauses.
+     */
+    INVPOST,
+    /**
+     * Invariant plus precondition clauses.
+     */
+    INVPRE,
+    /**
+     * Only linear-time complexity, or O(n), clauses.
+     */
+    LINEAR,
+    /**
+     * Method calls.  Only clauses containing at least one method call.
+     */
+    METHODCALLS,
+    /**
+     * Only postcondition clauses.
+     */
+    POSTCONDS,
+    /**
+     * Only precondition clauses.
+     */
+    PRECONDS,
+    /**
+     * Precondition plus postcondition clauses.
+     */
+    PREPOST,
+    /**
+     * Only quadratic-time complexity, or O(n^2), clauses.
+     */
+    QUADRATIC,
+    /**
+     * Only quartic-time complexity, or O(n^4), clauses.
+     */
+    QUARTIC,
+    /**
+     * Only quintic-time complexity, or O(n^5), clauses.
+     */
+    QUINTIC,
+    /**
+     * Results.  Only clauses containing at least one assertion on an
+     * out, inout, or result argument.
+     */
+    RESULTS,
+    /**
+     * Only septic-time complexity, or O(n^7), clauses.
+     */
+    SEPTIC,
+    /**
+     * Only sextic-time complexity, or O(n^6), clauses.
+     */
+    SEXTIC,
+    /**
+     * Simple expressions.  Only clauses consisting solely of
+     * simple expressions (i.e., no method calls).
+     */
+    SIMPLEEXPRS,
+  };</I></FONT></TD></TR>
+</TABLE><P><A NAME="@default2011"></A>
+<A NAME="@default2012"></A>
+Traditional “unit” testing with contracts at least conceptually 
+starts with determining whether implementations comply with their 
+specifications — assuming they are given inputs that always satisfy 
+the stated preconditions.
+In this case, the <TT>POSTCONDS</TT> or <TT>INVPOST</TT> option will 
+enable enforcement of postcondition clauses and, in the latter case, 
+invariant clauses.</P><P>This level of testing will include determining how robust the
+implementations are when they are given invalid inputs.
+The <TT>PRECONDS</TT> or <TT>INVPRE</TT> option could be used <EM>if</EM> 
+it is determined the implementations function properly using valid 
+inputs.
+Both options enable precondition clause enforcement.
+The latter includes invariant clauses.</P><P>The <TT>PREPOST</TT> or <TT>ALLCLASSES</TT> option can be used if the 
+two aforementioned phases are combined.
+These options will enable checking precondition and postcondition clauses.
+If invariants are present, the latter option, which is the default,
+additionally enables their enforcement.</P><P><A NAME="@default2013"></A>
+<A NAME="@default2014"></A>
+Once implementations pass compliance testing, an integration testing
+phase is entered where an assessment is made of how they function in
+the context of the callers. 
+At this point, if unit testing is sufficiently rigorous, the 
+<TT>PRECONDS</TT> or <TT>INVPRE</TT> option could be used in execution 
+time-constrained environments.</P><P>The thoroughness of the test suite is an important factor affecting
+the quality of the software.
+If the test suite is not sufficiently thorough, there is a risk of 
+not exposing non-compliance of contract clauses in downstream methods.
+This situation can be of particular concern if there are dependencies 
+involving valid sequences of method calls not exercised by the test suite.</P><P>The remaining classification options are intended for gathering data
+on the nature of the assertions within the contract clauses actually 
+encountered during execution of a given program.
+Some options are based on the complexity of the associated assertions,
+inferred from the dimensions of SIDL arrays, such as <TT>CONSTANT</TT>,
+and <TT>LINEAR</TT>.
+Clearly, contract clauses involving checks of multi-dimensional arrays
+can be time consuming if they involve accessing many or all elements of 
+large arrays.
+Another pair of options are based on the presence or absence of method
+calls (i. e., <TT>METHODCALLS</TT> and <TT>SIMPLEEXPRS</TT>, respectively).
+These options are provided since contract clauses including method calls 
+may, depending on the work performed in the methods, be very time consuming 
+to check.
+The final option is <TT>RESULTS</TT>, which is used to enable checking
+of clauses containing out, inout, or result arguments.
+It is reasoned that the data from using these options could be used for
+determining sources of and alternative enforcement options for high contract 
+enforcement overhead.
+<A NAME="@default2015"></A>
+<A NAME="@default2016"></A>
+Such an investigation could be important in an environment where nightly 
+regression tests cannot finish in a timely manner when checking all contract
+clauses encountered, for example.</P><P>Hence, contract clause classifications support traditional clause
+enforcement options — for checking preconditions, postconditions,
+and (class) invariants — as well as experimental options. 
+The experimental options focus on the nature of assertions within contract 
+clauses, in terms of their complexity or the presence of method calls, for 
+example.
+These atypical options are intended for gathering data on the nature of
+contract clauses actually enforced by applications. </P><H3 CLASS="subsection">21.3.2  Enforcement Frequency Options</H3><P><A NAME="ss:contracts_frequency"></A>
+<A NAME="@default2017"></A>
+<A NAME="@default2018"></A>
+<A NAME="@default2019"></A>
+<A NAME="@default2020"></A></P><P>Enforcement frequency options range from fully and partially enabling to
+disabling contract enforcement. 
+Historically, contract/assertion enforcement is fully enabled during testing 
+and debugging but disabled during deployment.
+One of the reasons for disabling enforcement during deployment is that 
+its retention has historically been considered to be too time consuming.
+However, there are alternatives.
+Some, as described in Section <A HREF="#ss:contracts_classes">21.3.1</A>, take the form of
+enforcing select contract clauses. 
+However, partial enforcement strategies based on sampling techniques can be 
+combined with contract clause classifications to further limit enforcement.</P><P>The SIDL specification for enforcement frequency options is:</P><P><A NAME="@default2021"></A>
+<A NAME="@default2022"></A>
+</P><DIV CLASS="flushright"><SPAN CLASS="textboxed"><FONT COLOR=purple><B>SIDL</B></FONT></SPAN></DIV><TABLE CLASS="lstframe" STYLE="padding:1ex;border-style:solid;"><TR><TD CLASS="lstlisting">  <FONT COLOR=maroon><I>/**
+   * Contract clause enforcement frequency.
+   */
+  <B>enum</B> EnforceFreq {
+    /**
+     * Never.  Disable enforcement by completely by-passing checks
+     * regardless of the selected contract classification.
+     */
+    NEVER,
+    /**
+     * Always.  Every clause of the selected contract classification
+     * is enforced.
+     */
+    ALWAYS,
+    /**
+     * Adaptive fit.  Check clauses of the selected contract classification
+     * only if they will not result in exceeding the overhead limit based
+     * on accumulations of estimated execution times.
+     */
+    ADAPTFIT,
+    /**
+     * Adaptive timing.  Check clauses of the selected contract classification
+     * only if their estimated execution time is within the overhead limit
+     * applied to the estimated time of the corresponding method.
+     */
+    ADAPTTIMING,
+    /**
+     * Periodic.  Check clauses of the selected contract classification
+     * at the specified interval.
+     */
+    PERIODIC,
+    /**
+     * Random.  Check clauses of the selected contract classifcation on a
+     * random basis using the specified maximum.
+     */
+    RANDOM,
+    /**
+     * Simulated Annealing.  Essentially Adaptive fit but checks are
+     * allowed to randomly exceed the overhead limit with decreasing
+     * probability over time.
+     */
+    SIMANNEAL,
+  };</I></FONT></TD></TR>
+</TABLE><P>Basic enforcement frequency options are: <TT>ALWAYS</TT>, <TT>NEVER</TT>,
+<TT>PERIODIC</TT>, and <TT>RANDOM</TT>.
+Enabling checking all contract clauses (of the desired classification)
+involves using the <TT>ALWAYS</TT> option while disabling checking 
+any contract clauses (regardless of classification) occurs when the 
+<TT>NEVER</TT> option is used.
+The remaining two options represent very basic sampling strategies.
+<TT>PERIODIC</TT> checks clauses encountered at a specified interval
+while <TT>RANDOM</TT> checks a random clause (within an interval).
+<A NAME="@default2023"></A>
+<A NAME="@default2024"></A>
+While these two options can potentially reduce enforcement overhead,
+that is the extra time it takes to check the contracts, the reduction
+cannot be guaranteed in general, since these options do not consider
+the nature or (execution time) cost of the associated assertions.</P><HR SIZE=2><BLOCKQUOTE CLASS="quotation"><DIV CLASS="marginpar marginparright">WARNING:</DIV>
+The current implementation of the experimental, performance-constrained
+enforcement policies has not been rigorously tested since its integration 
+into the Babel/SIDL source code repository. Examples shown here reflect
+results for basic enforcement during regression testing.
+</BLOCKQUOTE><HR SIZE=2><P><BR>
+
+The remaining options, which are experimental, are intended for use
+in performance-constrained environments (e. g. nightly regression 
+testing of very large applications and deployment).
+The options — adaptive timing (<TT>ADAPTTIMING</TT>), adaptive fit 
+(<TT>ADAPTFIT</TT>), and simulated annealing (<TT>SIMANNEAL</TT>) —
+rely on <EM>a priori</EM> execution time estimates to conduct 
+performance-driven filtering of contract clauses.
+<EM>Adaptive timing</EM> checks whether the execution time estimate of the 
+contract clause is within the user-specified overhead limit relative to the 
+estimate for the time required to execute the method.
+<EM>Adaptive fit</EM> checks whether the execution time estimate of a clause,
+added to the accumulated time of all previously checked clauses, remains
+within the overhead limit of the accumulated execution time of invoked methods.
+Finally, <EM>simulated annealing</EM> is essentially <TT>AdaptiveFit</TT> with 
+an allowance for exceeding the overhead limit, but with decreasing 
+probability over time.</P><P>The SIDL specification snippet for setting options associated with
+enforcement sampling is shown below.</P><P><A NAME="@default2025"></A>
+<A NAME="@default2026"></A>
+</P><DIV CLASS="flushright"><SPAN CLASS="textboxed"><FONT COLOR=purple><B>SIDL</B></FONT></SPAN></DIV><TABLE CLASS="lstframe" STYLE="padding:1ex;border-style:solid;"><TR><TD CLASS="lstlisting">  <FONT COLOR=maroon><I>/**
+   * &lt;code&gt;EnfPolicy&lt;/code&gt; maintains the current interface
+   * contract enforcement policy.
+   */
+  <B>class</B> EnfPolicy {
+    ...
+
+    /**
+     * Sets enforcement policy and options.  This method should be
+     * invoked directly to avoid the default enforcement behavior.
+     *
+     * @param contractClass  Contract classification
+     *                         [Default = ALLCLASSES]
+     * @param enforceFreq    Enforcement frequency
+     *                         [Default = ALWAYS]
+     * @param interval       Sampling interval representing the
+     *                         period (for PERIODIC) or maximum
+     *                         random number/window (for RANDOM)
+     *                         [Default = 0 if negative specified]
+     * @param overheadLimit  Limit on performance overhead [0.0 .. 1.0)
+     *                         [Default = 0.0 (or 0%) if negative]
+     * @param appAvgPerCall  Average extra, application-specific
+     *                         execution time, normalized by calls
+     *                         to annotated methods
+     *                         [Default = 0.0 if negative]
+     * @param annealLimit    Limit on simulated annealing function
+     *                         to ensure its termination
+     *                         (0.0 .. 2.72]
+     *                         [Default = 2.72 if negative specified]
+     * @param clearStats      TRUE if enforcement statistics are to be
+     *                          cleared; FALSE otherwise.
+     */
+    <B>static void</B> setPolicy(<B>in</B> ContractClass contractClass,
+                          <B>in</B> EnforceFreq   enforceFreq,
+                          <B>in int</B>           interval,
+                          <B>in double</B>        overheadLimit,
+                          <B>in double</B>        appAvgPerCall,
+                          <B>in double</B>        annealLimit,
+                          <B>in bool</B>          clearStats);
+    ...
+  }</I></FONT></TD></TR>
+</TABLE><P>Although the method’s documentation describes each parameter,
+it is worth noting that the interval is only relevant for the basic sampling 
+techniques and the three following parameters for one or more experimental 
+enforcement frequency option.</P><P><A NAME="@default2027"></A>
+<A NAME="@default2028"></A>
+Execution time estimates, which are expected to be provided on a per-class
+basis, are assumed to be in a file conforming to the following naming
+convention: <B><EM>package-name</EM>_<EM>class-name</EM>.dat</B>. 
+For example, the SIDL specification below defines a package called 
+<EM>vect</EM> with a <EM>Utils</EM> class.</P><P><A NAME="@default2029"></A>
+<A NAME="@default2030"></A>
+</P><DIV CLASS="flushright"><SPAN CLASS="textboxed"><FONT COLOR=purple><B>SIDL</B></FONT></SPAN></DIV><TABLE CLASS="lstframe" STYLE="padding:1ex;border-style:solid;"><TR><TD CLASS="lstlisting"><FONT COLOR=maroon><I><B>package</B> vect
+{
+  ...
+  <B>class</B> Utils {
+    /* Method signatures */
+  }
+}</I></FONT></TD></TR>
+</TABLE><P>The corresponding file containing execution time estimates 
+needs to be called <B>vect_Utils.dat</B>. 
+The first line of the file is expected to contain two space-separated 
+numbers: invariant complexity, <EM>n</EM>, and estimated average time 
+to execute the invariants. 
+If the are no invariants, then the first line should contain two zeros.
+Subsequent lines are expected to provide similar information for each 
+method in the class, with zeros used when the clause does not apply.
+Specifically, lines for method estimates are expected to start with 
+the method’s index, taken from the class’ IOR header file, followed 
+by its precondition clause complexity, postcondition clause complexity, 
+average execution time (<EM>without contract enforcement</EM>), average 
+execution time of the preconditions clause, and average execution time 
+of the postconditions clause. 
+Supporting complexity information in the data file allows you to override
+the default complexity inferred from the the presence of SIDL arrays.</P><P>The file below illustrates an example estimates data file for a class that
+does not have an invariant clause.</P><P><A NAME="@default2031"></A>
+<A NAME="@default2032"></A>
+</P><DIV CLASS="flushright"><SPAN CLASS="textboxed"><FONT COLOR=purple><B>Data</B></FONT></SPAN></DIV><TABLE CLASS="lstframe" STYLE="padding:1ex;border-style:solid;"><TR><TD CLASS="lstlisting">0 0.0
+12 0 1 62.34285714285714 2.7 45.857142857142854
+13 0 1 44.13 3.54 166.76
+6 0 0 65.04 22.8 0.0
+11 0 0 301.64285714285717 4.6571428571428575 0.0
+10 0 0 184.71428571428572 4.328571428571428 0.0
+9 0 0 97.86666666666666 4.1 0.0
+7 0 0 173.82 3.24 0.0
+16 0 0 301.77777777777777 3.2666666666666666 2.566666666666667
+15 0 0 214.4142857142857 2.6714285714285713 3.0714285714285716
+17 0 0 174.41 3.43 2.55
+18 0 0 231.01818181818183 3.2 2.481818181818182
+14 0 0 177.31428571428572 2.5 4.014285714285714
+8 0 0 204.10526315789474 2.4263157894736844 0.0</TD></TR>
+</TABLE><P>The units for the execution time estimates must be consistent
+across all of the estimate files association with your application program.</P><P>In summary, the enforcement frequency option is used to determine how often
+contract clauses are checked.
+Traditional enforcement is supported through <TT>ALWAYS</TT> and <TT>NEVER</TT>
+frequencies.
+Basic sampling is provided by the <TT>PERIODIC</TT> and <TT>RANDOM</TT>
+frequencies.
+Finally, three experimental sampling options — <TT>ADAPTFIT</TT>, 
+<TT>ADAPTTIMING</TT>, and <TT>SIMANNEAL</TT> — intended for 
+performance-constrained environments adapt enforcement based on the
+enforcement context, using execution time estimates.</P><H3 CLASS="subsection">21.3.3  Enforcement Statistics</H3><P><A NAME="ss:enforcement_stats"></A>
+<A NAME="@default2033"></A>
+<A NAME="@default2034"></A></P><HR SIZE=2><BLOCKQUOTE CLASS="quotation"><DIV CLASS="marginpar marginparright">WARNING:</DIV>
+The current implementation of enforcement statistics gathering and
+reporting has not been rigorously tested since its integration 
+into the Babel/SIDL source code repository. Examples shown here reflect
+results for basic enforcement during regression testing.
+</BLOCKQUOTE><HR SIZE=2><P><BR>
+
+Data on contract enforcement is collected at runtime for 
+subsequent analysis.
+This feature is especially important for determining relevant alternative
+enforcement options for long-running regression tests and deployment.</P><P>The SIDL specification snippet for reporting enforcement statistics
+is given below.</P><P><A NAME="@default2035"></A>
+<A NAME="@default2036"></A>
+</P><DIV CLASS="flushright"><SPAN CLASS="textboxed"><FONT COLOR=purple><B>SIDL</B></FONT></SPAN></DIV><TABLE CLASS="lstframe" STYLE="padding:1ex;border-style:solid;"><TR><TD CLASS="lstlisting">  <FONT COLOR=maroon><I>/**
+   * &lt;code&gt;EnfPolicy&lt;/code&gt; maintains the current interface
+   * contract enforcement policy.
+   */
+  <B>class</B> EnfPolicy {
+    ...
+    /**
+     * Prints statistics data to the file with the specified name.
+     * The file is opened (for append) and closed on each call.
+     *
+     * @param filename   Name of the file to which the statistics
+     *                     data should be written.
+     * @param header     TRUE if the header line is to be printed
+     *                     prior to the statistics line (for compressed
+     *                     output only).
+     * @param prefix     String description for identifying information,
+     *                     if any, intended to preceed the statistics
+     *                     data.  Useful for distinguishing between
+     *                     different objects, for example.
+     * @param compressed TRUE if the enforcer state is to be dumped
+     *                     on a single line with semi-colon separators
+     *                     between fields.
+     */
+    <B>static void</B> dumpStats(<B>in string</B> filename,
+                          <B>in bool</B>   header,
+                          <B>in string</B> prefix,
+                          <B>in bool</B>   compressed);
+    ...
+  }</I></FONT></TD></TR>
+</TABLE><P>The file below illustrates snippets from the results of running the vector 
+utilities contracts regression test available in the Babel source code 
+distribution.
+The lines from the file have been reformatted to fit the width of the page.</P><P><A NAME="@default2037"></A>
+<A NAME="@default2038"></A>
+
+</P><TABLE CLASS="lstframe" STYLE="padding:1ex;border-style:solid;"><TR><TD CLASS="lstlisting">Prefix; Timestamp; Policy; Interval; AnnealLimit; OHLimit;
+  procPerCall; RandSkip; CD; methTime; clauseTime;
+  TotalRequested; TotalAllowed; Method; Checked; Okay; Violated; MethExcepts
+
+After full checking; Fri Oct 15 16:33:49 2010; Always; 0; 2.72; 0.00;
+  0.000; 0; 0; 20371; 524;
+  146; 146; vuIsZero; 5; 2; 3; 0
+After full checking; Fri Oct 15 16:33:49 2010; Always; 0; 2.72; 0.00;
+  0.000; 0; 0; 20371; 524;
+  146; 146; vuIsUnit; 5; 2; 3; 0
+  ...
+
+After precondition checking; Fri Oct 15 16:33:49 2010; Pre; 0; 2.72; 0.00;
+  0.000; 0; 0; 64; 8;
+  5; 3; vuIsZero; 5; 2; 3; 0
+After precondition checking; Fri Oct 15 16:33:49 2010; Pre; 0; 2.72; 0.00;
+  0.000; 0; 0; 64; 8;
+  5; 3; vuIsUnit; 5; 2; 3; 0
+  ...
+
+After Postcondition checking; Fri Oct 15 16:33:49 2010; Post; 0; 2.72; 0.00;
+  0.000; 0; 0; 96; 95;
+  6; 3; vuIsZero; 5; 2; 3; 0
+After Postcondition checking; Fri Oct 15 16:33:49 2010; Post; 0; 2.72; 0.00;
+  0.000; 0; 0; 96; 95;
+  6; 3; vuIsUnit; 5; 2; 3; 0
+  ...
+
+After no checking; Fri Oct 15 16:33:49 2010; Never; 0; 2.72; 0.00;
+  0.000; 0; 0; 255; 0;
+  34; 0; vuIsZero; 5; 2; 3; 0
+After no checking; Fri Oct 15 16:33:49 2010; Never; 0; 2.72; 0.00;
+  0.000; 0; 0; 255; 0;
+  34; 0; vuIsUnit; 5; 2; 3; 0
+  ...</TD></TR>
+</TABLE><H3 CLASS="subsection">21.3.4  Enforcement Tracing</H3><P><A NAME="ss:contracts_tracing"></A>
+<A NAME="@default2039"></A>
+<A NAME="@default2040"></A></P><HR SIZE=2><BLOCKQUOTE CLASS="quotation"><DIV CLASS="marginpar marginparright">WARNING:</DIV>
+The current implementation of enforcement tracing has not been rigorously 
+tested since its integration into the Babel/SIDL source code repository. 
+</BLOCKQUOTE><HR SIZE=2><P><BR>
+
+Enforcement tracing is an advanced, experimental feature used to instrument 
+contract enforcement with execution timing calls.
+This feature aids the collection of data for two purposes.
+The primary goal is to obtain data for establishing execution time estimates
+for contract clause, method, and program execution time estimates.
+An alternative, which has not yet received the attention it deserves,
+is to provide input for simulating the execution time overhead of
+interface contract enforcement.</P><P>The SIDL specification snippet for enforcement tracing controls within
+the enforcement policy class is given below.</P><P><A NAME="@default2041"></A>
+<A NAME="@default2042"></A>
+</P><DIV CLASS="flushright"><SPAN CLASS="textboxed"><FONT COLOR=purple><B>SIDL</B></FONT></SPAN></DIV><TABLE CLASS="lstframe" STYLE="padding:1ex;border-style:solid;"><TR><TD CLASS="lstlisting">  <FONT COLOR=maroon><I>/**
+   * &lt;code&gt;EnfPolicy&lt;/code&gt; maintains the current interface
+   * contract enforcement policy.
+   */
+  <B>class</B> EnfPolicy {
+    ...
+
+    /**
+     * Starts enforcement trace file generation.
+     *
+     * @param filename    Name of the destination trace file.
+     * @param traceLevel  Level of trace timing and reporting required.
+     *                      [Default = NONE]
+     */
+    <B>static void</B> startTrace(<B>in string</B>        filename,
+                           <B>in</B> EnfTraceLevel traceLevel);
+
+    /**
+     * Returns TRUE if contract enforcement tracing is enabled;
+     * FALSE otherwise.
+     */
+    <B>static bool</B> areTracing();
+
+    /**
+     * Returns the name of the trace file.  If one was not provided,
+     * the default name is returned.
+     */
+    <B>static string</B> getTraceFilename();
+
+    /**
+     * Returns the level of enforcement tracing.
+     */
+    <B>static</B> EnfTraceLevel getTraceLevel();
+
+    /**
+     * Terminates enforcement trace file generation.  Takes a final
+     * timestamp and logs the remaining trace information.
+     */
+    <B>static void</B> endTrace();
+  }</I></FONT></TD></TR>
+</TABLE><P>Enforcement tracing is initiated with the <TT>startTrace</TT> call
+and terminated with <TT>endTrace</TT>.
+Accessor methods — <TT>areTracing</TT>, <TT>getTraceFilename</TT>,
+and <TT>getTraceLevel</TT> — are provided for convenience but
+are not expected to be used by in general.
+Timing data is output to the file specified in the startTrace call
+as it is collected, so the traces can be very large if there are 
+numerous calls to instrumented methods.</P><P>The SIDL specification for enforcement tracing options is:</P><P><A NAME="@default2043"></A>
+<A NAME="@default2044"></A>
+</P><DIV CLASS="flushright"><SPAN CLASS="textboxed"><FONT COLOR=purple><B>SIDL</B></FONT></SPAN></DIV><TABLE CLASS="lstframe" STYLE="padding:1ex;border-style:solid;"><TR><TD CLASS="lstlisting">  <FONT COLOR=maroon><I>/**
+   * Contract enforcement tracing levels.  Enforcement traces rely on
+   * runtime timing automatically inserted within the middleware.
+   */
+  <B>enum</B> EnfTraceLevel {
+    /**
+     * None.  No tracing is to be performed.
+     */
+    NONE,
+    /**
+     * Core.  Time trace start and end only.  This can be useful for
+     * simple program timing.
+     */
+    CORE,
+    /**
+     * Basic enforcement tracing.  CORE plus interface contract clause timing.
+     */
+    BASIC,
+    /**
+     * Overhead of enforcement decisions.  BASIC plus timing of
+     * enforcement decisions.  (Experimental feature.)
+     */
+    OVERHEAD,
+  };</I></FONT></TD></TR>
+</TABLE><P>So, tracing is disabled with the <TT>NONE</TT> option.
+The time between <TT>startTrace</TT> and <TT>endTrace</TT> calls is
+measured using the <TT>CORE</TT> option.
+Additionally, the time for checking contract clauses is obtained
+using the <TT>BASIC</TT> option while the enforcement decisions 
+themselves are also timed with the <TT>OVERHEAD</TT> option.</P><P><A NAME="@default2045"></A>
+<A NAME="@default2046"></A>
+Hence, SIDL’s experimental enforcement tracing feature facilitates 
+gathering data for establishing the execution time estimates needed 
+for performance-driven enforcement.
+The calling program is responsible for starting and stopping tracing
+through the methods provided in SIDL’s enforcement policy class.
+Tracing data is currently output as it is collected, resulting in
+additional file I/O overhead during execution.</P><H2 CLASS="section"><A NAME="toc93"></A><A NAME="htoc110">21.4</A>  Summary</H2><P><A NAME="s:contracts_summary"></A>
+This chapter describes extensions to the Babel toolkit for the specification
+and enforcement of interface contracts. 
+SIDL allows the specification of executable, Eiffel-inspired precondition, 
+postcondition, and class invariant clauses. 
+Each clause may contain one or more assertion expressions using traditional
+and advanced operators as well as built-in and user-defined functions.
+The SIDL Runtime currently supports global interface contract enforcement,
+on a clause basis, through a range of enforcement options combining
+contract clause classification and enforcement frequency options.
+Optional enforcement tracing, which can be used to collect relevant execution 
+time data, is also supported.
+Detected violations result in clause-specific exceptions identifying the 
+violated assertion.</P><HR SIZE=2><BLOCKQUOTE CLASS="quotation"><DIV CLASS="marginpar marginparright">WARNING:</DIV>
+Not all capabilities described in this chapter have been tested.
+In particular, regression tests exercising class invariants and a
+number of the built-in functions available for use in contract clauses
+are still pending. In addition, built-in functions are currently 
+limited to one- and two-dimensional arrays.
+Furthermore, the experimental enforcement policies and enforcement
+tracing need to be re-tested after their integration into the Babel/SIDL
+repository.
+</BLOCKQUOTE><HR SIZE=2><P><BR>
+</P><HR CLASS="footnoterule"><DL CLASS="thefootnotes"><DT CLASS="dt-thefootnotes">
+<A NAME="note29" HREF="#text29">1</A></DT><DD CLASS="dd-thefootnotes">The vector sum
+example is derived from Babel regression tests.
+</DD><DT CLASS="dt-thefootnotes"><A NAME="note30" HREF="#text30">2</A></DT><DD CLASS="dd-thefootnotes">Interface contract clauses should <EM>never</EM> replace 
+defensive programming data checks since clause enforcement may be disabled 
+during deployment. 
+The data checks of defensive programming, on the other hand, should be 
+executed on <EM>every</EM> run since they are needed to protect against 
+serious, undesirable side-effects that include abrupt, unexplained 
+termination.
+</DD><DT CLASS="dt-thefootnotes"><A NAME="note31" HREF="#text31">3</A></DT><DD CLASS="dd-thefootnotes">The explicit inclusion of
+contract clause exceptions in a method’s <TT>throws</TT> clause is currently
+necessary for proper exception handling in the generated C/C++ bindings.
+</DD><DT CLASS="dt-thefootnotes"><A NAME="note32" HREF="#text32">4</A></DT><DD CLASS="dd-thefootnotes">The
+null check is actually needed here because the built-in
+<TT>size()</TT> function does not gracefully handle a null array
+argument.
+</DD></DL>
+<HR>
+<A HREF="index022.html"><IMG SRC="previous_motif.gif" ALT="Previous"></A>
+<A HREF="index-multipage.html"><IMG SRC="contents_motif.gif" ALT="Up"></A>
+<A HREF="index024.html"><IMG SRC="next_motif.gif" ALT="Next"></A>
+</BODY>
+</HTML>

@@ -1,0 +1,5 @@
+HOW TO RUN A BABEL NIGHTLY BUILD
+$Id: NIGHTLY_BUILD_HOWTO 6843 2010-03-23 22:20:39Z epperly $
+
+1. Get a copy of the Babel svn main trunk
+	svn co svn+ssh://www.cca-forum.org/svn/babel/trunk babel

@@ -1,0 +1,25 @@
+This is a basic Hello World example demonstating RMI.  It contains 2
+tests and a sample Babel Object Server driver program.  Both tests are
+a basic Hello World test utilizing a hello.World class.  test1 does 
+not use RMI, it is a normal Babel in-process program, using dynamic 
+linking.  test2 uses RMI.  
+
+test2 is so simple that it searches for the BOS at a hardcoded
+location: simhandle://localhost:9999, so make sure you run the BOS on
+the same machine as the test, and that it's on port 9999.
+
+
+Building this test is simple, the steps are:
+
+0. from the contrib/babel-rmi directory:
+1. ./mini-configure [full path to your babel-config]  (something like:./mini-configure /home/username/babel/bin/babel-config)
+2. cd hello
+3. make
+4. cd ../bos
+5. make
+6. set the SIDL_DLL_PATH environment variable to: "<babelinstall>/lib/libsidl.scl;<babelinstall>/lib/libsidlx.scl;../hello/hello.scl"
+(Note that the SIDL_DLL_PATH is a SEMI-COLON seperated list.  Also, obviously anything in <> is a guess)
+
+Now, run "bos_server 9999" and "test2" in two different
+terminals. This should work.  (run the bos_server first or you'll get
+a connect error!)

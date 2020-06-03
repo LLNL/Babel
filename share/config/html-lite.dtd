@@ -1,0 +1,312 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+   File:        html-lite.dtd
+   Package:     configuration database
+   Copyright:   (c) 2000 Lawrence Livermore National Security, LLC
+   Revision:    @(#) $Id: html-lite.dtd 7188 2011-09-27 18:38:42Z adrian $
+   Description: DTD that describes a simplified HTML for user comments
+
+   Copyright (c) 2000-2002, The Regents of the University of Calfornia.
+   Produced at the Lawrence Livermore National Laboratory.
+   Written by the Components Team <components@llnl.gov>
+   UCRL-CODE-2002-054
+   All rights reserved.
+   
+   This file is part of Babel. For more information, see
+   http://www.llnl.gov/CASC/components/. Please read the COPYRIGHT file
+   for Our Notice and the LICENSE file for the GNU Lesser General Public
+   License.
+   
+   This program is free software; you can redistribute it and/or modify it
+   under the terms of the GNU Lesser General Public License (as published by
+   the Free Software Foundation) version 2.1 dated February 1999.
+   
+   This program is distributed in the hope that it will be useful, but
+   WITHOUT ANY WARRANTY; without even the IMPLIED WARRANTY OF
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the terms and
+   conditions of the GNU Lesser General Public License for more details.
+   
+   You should have received a copy of the GNU Lesser General Public License
+   along with this program; if not, write to the Free Software Foundation,
+   Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+
+DESCRIPTION
+
+   This file defines a DTD that supports a simplified HTML description.
+   It is roughly based on the W3C XHTML 1.0 recommendation available at
+   "http://www.w3c.org/TR/xhtml1".  This DTD supports HTML elements that
+   are common within normal text (e.g., without forms, scripts, etc.).
+
+   To use this DTD to define a new element called Comment that will
+   contain HTML comments, include the following in the DTD description:
+
+      <!ENTITY % html-lite SYSTEM "html-lite.dtd">
+      %html-lite;
+      <!ELEMENT Comment %html-block;>
+
+   The following table lists the supported HTML tabs.  Note that all tags
+   must have a matching end tag, unlike standard HTML.  Supported tags are:
+
+   Document
+      HtmlLite       an element containing a block of HTML Lite
+
+   Font Style:
+      b              bold font
+      i              italic font
+      big            bigger font
+      small          smaller font
+      tt             fixed pitch font
+
+   Phrase:
+      abbr           an abbreviation
+      acronym        an acronym
+      cite           citation or reference to other sources
+      code           designates a fragment of computer code
+      dfn            defining instance of the enclosed text
+      em             emphasis
+      kbd            text to be entered by the user
+      q              inlined quote
+      samp           sample output from programs or scripts
+      strong         strong emphasis
+      sub            subscript
+      sup            superscript
+      var            instance of a variable or program argument
+
+   Links:
+      a              hyperlink tag; supports href attribute
+      img            image entity with src, alt, height, and width attributes
+
+   Lists:
+      dl             a definition list of dt and dd tags
+      dt             the definition term in a definition list
+      dd             the definition description in a definition list
+      li             a list item in an li or ul list; must have </li> tag
+      ol             an ordered list of li tags
+      ul             an unordered list of li tags
+
+   Block Text:
+      blockquote     a block quotation
+      p              a paragraph; requires the </p> tag
+      pre            preformatted text
+
+   Tables:
+      caption        a table caption
+      table          a table with optional caption and table rows
+      td             table data entry
+      th             table header entry
+      tr             a table row of th or td tags
+
+   Only a few simple attributes are supported for a, img, and the set of
+   tags related to tables.
+
+   All the standard ISO-8859-1 character entities (e.g. "&amp;", "&gt;",
+   "&lt;", "&nbsp;", "&quot;", "&copy;", "&ccedil;", ...) are supported.
+   None of the entities for characters outside the ISO-8859-1 character
+   set are defined.
+-->
+
+<!ENTITY AElig   "&#198;">
+<!ENTITY Aacute  "&#193;">
+<!ENTITY Acirc   "&#194;">
+<!ENTITY Agrave  "&#192;">
+<!ENTITY Aring   "&#197;">
+<!ENTITY Atilde  "&#195;">
+<!ENTITY Auml    "&#196;">
+<!ENTITY Ccedil  "&#199;">
+<!ENTITY ETH     "&#208;">
+<!ENTITY Eacute  "&#201;">
+<!ENTITY Ecirc   "&#202;">
+<!ENTITY Egrave  "&#200;">
+<!ENTITY Euml    "&#203;">
+<!ENTITY Iacute  "&#205;">
+<!ENTITY Icirc   "&#206;">
+<!ENTITY Igrave  "&#204;">
+<!ENTITY Iuml    "&#207;">
+<!ENTITY Ntilde  "&#209;">
+<!ENTITY Oacute  "&#211;">
+<!ENTITY Ocirc   "&#212;">
+<!ENTITY Ograve  "&#210;">
+<!ENTITY Oslash  "&#216;">
+<!ENTITY Otilde  "&#213;">
+<!ENTITY Ouml    "&#214;">
+<!ENTITY THORN   "&#222;">
+<!ENTITY Uacute  "&#218;">
+<!ENTITY Ucirc   "&#219;">
+<!ENTITY Ugrave  "&#217;">
+<!ENTITY Uuml    "&#220;">
+<!ENTITY Yacute  "&#221;">
+<!ENTITY aacute  "&#225;">
+<!ENTITY acirc   "&#226;">
+<!ENTITY acute   "&#180;">
+<!ENTITY aelig   "&#230;">
+<!ENTITY agrave  "&#224;">
+<!ENTITY amp     "&#38;">
+<!ENTITY aring   "&#229;">
+<!ENTITY atilde  "&#227;">
+<!ENTITY auml    "&#228;">
+<!ENTITY brvbar  "&#166;">
+<!ENTITY ccedil  "&#231;">
+<!ENTITY cedil   "&#184;">
+<!ENTITY cent    "&#162;">
+<!ENTITY copy    "&#169;">
+<!ENTITY curren  "&#164;">
+<!ENTITY deg     "&#176;">
+<!ENTITY divide  "&#247;">
+<!ENTITY eacute  "&#233;">
+<!ENTITY ecirc   "&#234;">
+<!ENTITY egrave  "&#232;">
+<!ENTITY eth     "&#240;">
+<!ENTITY euml    "&#235;">
+<!ENTITY frac12  "&#189;">
+<!ENTITY frac14  "&#188;">
+<!ENTITY frac34  "&#190;">
+<!ENTITY gt      "&#62;">
+<!ENTITY iacute  "&#237;">
+<!ENTITY icirc   "&#238;">
+<!ENTITY iexcl   "&#161;">
+<!ENTITY igrave  "&#236;">
+<!ENTITY iquest  "&#191;">
+<!ENTITY iuml    "&#239;">
+<!ENTITY laquo   "&#171;">
+<!ENTITY lt      "&#60;">
+<!ENTITY macr    "&#175;">
+<!ENTITY micro   "&#181;">
+<!ENTITY middot  "&#183;">
+<!ENTITY nbsp    "&#160;">
+<!ENTITY not     "&#172;">
+<!ENTITY ntilde  "&#241;">
+<!ENTITY oacute  "&#243;">
+<!ENTITY ocirc   "&#244;">
+<!ENTITY ograve  "&#242;">
+<!ENTITY ordf    "&#170;">
+<!ENTITY ordm    "&#186;">
+<!ENTITY oslash  "&#248;">
+<!ENTITY otilde  "&#245;">
+<!ENTITY ouml    "&#246;">
+<!ENTITY para    "&#182;">
+<!ENTITY plusmn  "&#177;">
+<!ENTITY pound   "&#163;">
+<!ENTITY quot    "&#34;">
+<!ENTITY raquo   "&#187;">
+<!ENTITY reg     "&#174;">
+<!ENTITY sect    "&#167;">
+<!ENTITY shy     "&#173;">
+<!ENTITY sup1    "&#185;">
+<!ENTITY sup2    "&#178;">
+<!ENTITY sup3    "&#179;">
+<!ENTITY szlig   "&#223;">
+<!ENTITY thorn   "&#254;">
+<!ENTITY times   "&#215;">
+<!ENTITY uacute  "&#250;">
+<!ENTITY ucirc   "&#251;">
+<!ENTITY ugrave  "&#249;">
+<!ENTITY uml     "&#168;">
+<!ENTITY uuml    "&#252;">
+<!ENTITY yacute  "&#253;">
+<!ENTITY yen     "&#165;">
+<!ENTITY yuml    "&#255;">
+
+<!-- Text Entities -->
+
+<!ENTITY % fontstyle   "tt | i | b | big | small">
+<!ENTITY % phrase      "em | strong | dfn | code | q | sub | sup |
+                        samp | kbd | var | cite | abbr | acronym">
+
+<!ENTITY % inline      "a | img | %fontstyle; | %phrase;">
+<!ENTITY % text-inline "(#PCDATA | %inline;)*">
+
+<!-- Block Entities -->
+
+<!ENTITY % lists       "ul | ol | dl">
+<!ENTITY % blocktext   "pre | blockquote">
+<!ENTITY % block       "p | %lists; | %blocktext; | table">
+
+<!-- Special Entities for <a> and <pre> -->
+
+<!ENTITY % a.content   "(#PCDATA | img | %fontstyle; | %phrase;)*">
+<!ENTITY % pre.content "(#PCDATA | a | tt | i | b | %phrase;)*">
+
+<!-- Main entry point for HTML descriptions -->
+
+<!ENTITY % html-block  "(#PCDATA | %block; | %inline;)*">
+<!ENTITY % pure-html-lite  "(%block; | %inline;)*">
+
+<!-- Document types -->
+<!ELEMENT HtmlLite %html-block; >
+<!ELEMENT PureHtmlLite %pure-html-lite; >
+
+<!-- Font Styles -->
+
+<!ELEMENT b     %text-inline;>
+<!ELEMENT big   %text-inline;>
+<!ELEMENT i     %text-inline;>
+<!ELEMENT small %text-inline;>
+<!ELEMENT tt    %text-inline;>
+
+<!-- Text Phrases -->
+
+<!ELEMENT abbr    %text-inline;>
+<!ELEMENT acronym %text-inline;>
+<!ELEMENT cite    %text-inline;>
+<!ELEMENT code    %text-inline;>
+<!ELEMENT dfn     %text-inline;>
+<!ELEMENT em      %text-inline;>
+<!ELEMENT kbd     %text-inline;>
+<!ELEMENT q       %text-inline;>
+<!ELEMENT samp    %text-inline;>
+<!ELEMENT strong  %text-inline;>
+<!ELEMENT sub     %text-inline;>
+<!ELEMENT sup     %text-inline;>
+<!ELEMENT var     %text-inline;>
+
+<!-- Links -->
+
+<!ELEMENT a %a.content;>
+<!ATTLIST a href CDATA #IMPLIED>
+
+<!ELEMENT img EMPTY>
+<!ATTLIST img src    CDATA #REQUIRED
+              alt    CDATA #REQUIRED
+              height CDATA #IMPLIED
+              width  CDATA #IMPLIED>
+
+<!-- List Elements -->
+
+<!ELEMENT dd %html-block;>
+<!ELEMENT dl (dt | dd)+>
+<!ELEMENT dt %text-inline;>
+
+<!ELEMENT li %html-block;>
+
+<!ELEMENT ol (li)+>
+<!ELEMENT ul (li)+>
+
+<!-- Block Text -->
+
+<!ELEMENT blockquote (%block;)*>
+<!ELEMENT p          %text-inline;>
+
+<!ELEMENT pre %pre.content;>
+<!ATTLIST pre xml:space (default|preserve) #FIXED 'preserve'>
+
+<!-- Tables -->
+
+<!ENTITY % cellhalign "align  (left|center|right|justify|char) #IMPLIED">
+<!ENTITY % cellvalign "valign (top|middle|bottom|baseline) #IMPLIED">
+
+<!ELEMENT table (caption?, tr+)>
+<!ATTLIST table width       CDATA #IMPLIED
+                border      CDATA #IMPLIED
+                cellspacing CDATA #IMPLIED
+                cellpadding CDATA #IMPLIED>
+
+<!ELEMENT caption  %text-inline;>
+
+<!ELEMENT tr (th | td)+>
+<!ATTLIST tr %cellhalign; %cellvalign;>
+
+<!ELEMENT th %html-block;>
+<!ATTLIST th rowspan CDATA "1" colspan CDATA "1" %cellhalign; %cellvalign;>
+
+<!ELEMENT td %html-block;>
+<!ATTLIST td rowspan CDATA "1" colspan CDATA "1" %cellhalign; %cellvalign;>

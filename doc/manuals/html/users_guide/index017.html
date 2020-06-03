@@ -1,0 +1,159 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN"
+            "http://www.w3.org/TR/REC-html40/loose.dtd">
+<HTML>
+<HEAD>
+
+<META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<META name="GENERATOR" content="hevea 1.10">
+<LINK rel="stylesheet" type="text/css" href="index.css">
+<TITLE>SIDL Backend</TITLE>
+</HEAD>
+<BODY >
+<A HREF="index016.html"><IMG SRC="previous_motif.gif" ALT="Previous"></A>
+<A HREF="index-multipage.html"><IMG SRC="contents_motif.gif" ALT="Up"></A>
+<A HREF="index018.html"><IMG SRC="next_motif.gif" ALT="Next"></A>
+<HR>
+<H1 CLASS="chapter"><A NAME="htoc68">Chapter 15</A>  SIDL Backend</H1><UL>
+<LI><A HREF="index017.html#toc59">Introduction</A>
+</LI><LI><A HREF="index017.html#toc60">Purpose</A>
+</LI><LI><A HREF="index017.html#toc61">Generated versus Original SIDL files</A>
+</LI><LI><A HREF="index017.html#toc62">XML File Comparison</A>
+</LI><LI><A HREF="index017.html#toc63">Babel Command Line Options</A>
+</LI></UL>
+<P><A NAME="c:sidl_backend"></A></P><P><BR>
+</P><H2 CLASS="section"><A NAME="toc59"></A><A NAME="htoc69">15.1</A>  Introduction</H2><P>
+This chapter introduces the SIDL backend associated with symbols that may 
+originate from a SIDL file or the corresponding Extensible Markup Language 
+(XML) representation. Unlike most of the other supported language bindings,
+the output from this backend is textual in nature. That is, it is the textual, 
+human-readable form of the interfaces description. An alternative text form,
+XML that is, which is also supported is described in Chapter
+ <A HREF="index018.html#c:xml_backend">16</A>.</P><H2 CLASS="section"><A NAME="toc60"></A><A NAME="htoc70">15.2</A>  Purpose</H2><P>
+The primary reason for having a SIDL backend is to provide a mechanism for 
+generating human-readable text for interfaces that are written in conformant 
+XML. It is important to emphasize that Babel requires the XML to conform to 
+the SIDL DTD in order to benefit from this feature. </P><P>Generating SIDL provides a feature to collaborators who are interested in 
+experimenting with the XML form of the interfaces. Such groups should find 
+the more human-readable descriptions of the interfaces to be helpful for 
+distribution and discussion.</P><H2 CLASS="section"><A NAME="toc61"></A><A NAME="htoc71">15.3</A>  Generated versus Original SIDL files</H2><P>
+<A NAME="@default1828"></A>
+Generated SIDL files may differ from their original SIDL files in several 
+respects in terms of content as well as layout. These differences are 
+summarized below.</P><DL CLASS="description"><DT CLASS="dt-description">
+<B>Packages.</B></DT><DD CLASS="dd-description"> The code generation is limited to one high-level package
+per generated file. In fact, the name of the generated file is currently 
+defined to be the concatenation of the name of the highest-level package and 
+<TT>.sidl</TT>. </DD><DT CLASS="dt-description"><B>Versioning.</B></DT><DD CLASS="dd-description"> The generation of requires statements is inferred from the 
+symbols that actually appear in the associated interface descriptions. The 
+intent is to provide a requires statement for only the highest level package 
+needed of a given version. Consequently, requires and imports statements that 
+were not necessary for resolving symbols will not appear. Also, fully 
+qualified names will be shortened in the generated files due to the automatic 
+generation of the associated requires statement(s). Finally, since an import 
+and require statement can be used in a SIDL file and no distinction is made in 
+the XML, only a require statement will appear in the generated file.</DD><DT CLASS="dt-description"><B>Implements.</B></DT><DD CLASS="dd-description"> Since there is no distinction between <FONT COLOR=maroon><I><TT>implements-all</TT></I></FONT>
+and <FONT COLOR=maroon><I><TT>implements</TT></I></FONT> in the XML version of the interfaces, the generated code 
+outputs <FONT COLOR=maroon><I><TT>implements</TT></I></FONT> along with the inherited methods.</DD><DT CLASS="dt-description"><B>Comments.</B></DT><DD CLASS="dd-description"> Babel preserves only document, or doc, comments so any 
+comments that do not conform will not appear in the generated file
+<SUP><A NAME="text23" HREF="#note23">1</A></SUP>.</DD><DT CLASS="dt-description"><B>Whitespace.</B></DT><DD CLASS="dd-description"> Obviously there may be whitespace differences in the 
+generated file. These include indentation, blank spaces and lines, and brace 
+placement.</DD></DL><P>As an example, suppose we have a package in the file <TT>foo.sidl</TT>. The 
+original file’s contents are:</P><DIV CLASS="flushright"><SPAN CLASS="textboxed"><FONT COLOR=purple><B>SIDL</B></FONT></SPAN></DIV><TABLE CLASS="lstframe" STYLE="padding:1ex;border-style:solid;"><TR><TD CLASS="lstlisting"><FONT COLOR=maroon><I><B>package</B> foo <B>version</B> 1.0 {
+
+  <B>class</B> A {}
+
+  <B>package</B> bar <B>version</B> 2.0 {
+    <B>class</B> B {}
+  }
+
+}</I></FONT></TD></TR>
+</TABLE><P>The resulting contents of the generated SIDL file are:</P><DIV CLASS="flushright"><SPAN CLASS="textboxed"><FONT COLOR=purple><B>SIDL</B></FONT></SPAN></DIV><TABLE CLASS="lstframe" STYLE="padding:1ex;border-style:solid;"><TR><TD CLASS="lstlisting"><FONT COLOR=maroon><I><B>package</B> foo <B>version</B> 1.0 {
+
+  <B>class</B> A {
+  }
+
+  <B>package</B> bar <B>version</B> 2.0 {
+
+    <B>class</B> B {
+    }
+
+  }
+
+
+}</I></FONT></TD></TR>
+</TABLE><P>Notice the differences in white space. To illustrate more features, further 
+suppose we have a package in the file <TT>fooTest.sidl</TT>. The original file’s 
+contents are:</P><DIV CLASS="flushright"><SPAN CLASS="textboxed"><FONT COLOR=purple><B>SIDL</B></FONT></SPAN></DIV><TABLE CLASS="lstframe" STYLE="padding:1ex;border-style:solid;"><TR><TD CLASS="lstlisting"><FONT COLOR=maroon><I>// An ignored comment
+<B>require</B> foo <B>version</B> 1.0;
+<B>require</B> foo.bar <B>version</B> 2.0;
+
+/**
+ * Test of doc comment with XML special characters &lt; &amp; &gt;.
+ */
+<B>package</B> fooTest <B>version</B> 0.1 {
+
+  /**
+   * Another doc comment for an empty class.
+   */
+  <B>class</B> A <B>extends</B> foo.bar.B {}
+
+  <B>class</B> B <B>extends</B> foo.A {}
+}</I></FONT></TD></TR>
+</TABLE><P>The resulting contents of the generated SIDL file are:</P><DIV CLASS="flushright"><SPAN CLASS="textboxed"><FONT COLOR=purple><B>SIDL</B></FONT></SPAN></DIV><TABLE CLASS="lstframe" STYLE="padding:1ex;border-style:solid;"><TR><TD CLASS="lstlisting"><FONT COLOR=maroon><I><B>require</B> foo <B>version</B> 1.0;
+<B>require</B> foo.bar <B>version</B> 2.0;
+
+/**
+ * Test of doc comment with XML special characters &lt; &amp; &gt;.
+ */
+<B>package</B> fooTest <B>version</B> 0.1 {
+
+  /**
+   * Another doc comment for an empty class.
+   */
+  <B>class</B> A <B>extends</B> foo.bar.B {
+  }
+
+  <B>class</B> B <B>extends</B> foo.A {
+  }
+
+}</I></FONT></TD></TR>
+</TABLE><P>Here we see the exclusion of non-document comments and the retention of 
+document comments. Refer to Section <A HREF="index008.html#s:basics_sidl">6.2</A> and 
+Appendix <A HREF="index028.html#c:xml">C</A> for more information about document comments.</P><H2 CLASS="section"><A NAME="toc62"></A><A NAME="htoc72">15.4</A>  XML File Comparison</H2><P>
+Testing has revealed that XML generated from the original SIDL file compared 
+to XML generated from generated SIDL files have only minor differences. In 
+fact, the differences are limited to specific metadata fields. Specifically, 
+the date, source-url, and source-line entries can differ. The dates, however, 
+will be the same if the “<TT>--suppress-timestamp</TT>” option was used when 
+both XML files were generated. Similarly, the source-line entries will be the 
+same if the package started on the same line in both the original and generated 
+SIDL files. The latter can happen if, for instance, there are no non-doc 
+comments in the original file.</P><H2 CLASS="section"><A NAME="toc63"></A><A NAME="htoc73">15.5</A>  Babel Command Line Options</H2><P>
+<A NAME="@default1829"></A>
+To generate SIDL from a file using the default repository to resolve symbols, 
+you should invoke Babel as follows <SUP><A NAME="text24" HREF="#note24">2</A></SUP>:</P><BLOCKQUOTE CLASS="quotation"><TT>
+% <B>babel --exclude-external --text=SIDL file.sidl</B><BR>
+</TT></BLOCKQUOTE><P>
+or use the short form
+</P><BLOCKQUOTE CLASS="quotation"><TT>
+% <B>babel -E -tSIDL file.sidl</B><BR>
+</TT></BLOCKQUOTE><P>Alternatively, you can generate SIDL from XML symbols, again assuming the 
+default repository is used to resolve symbols, by typing the following at the 
+command line:</P><BLOCKQUOTE CLASS="quotation"><TT>
+% <B>babel --exclude-external --text=SIDL packagename</B><BR>
+</TT></BLOCKQUOTE><P>
+or use the short form
+</P><BLOCKQUOTE CLASS="quotation"><TT>
+% <B>babel -E -tSIDL packagename</B><BR>
+</TT></BLOCKQUOTE><HR CLASS="footnoterule"><DL CLASS="thefootnotes"><DT CLASS="dt-thefootnotes">
+<A NAME="note23" HREF="#text23">1</A></DT><DD CLASS="dd-thefootnotes">For more information on comments and doc-comments, refer to 
+<B>Comments and Doc-Comments</B> in Section <A HREF="index008.html#s:basics_sidl">6.2</A>.
+</DD><DT CLASS="dt-thefootnotes"><A NAME="note24" HREF="#text24">2</A></DT><DD CLASS="dd-thefootnotes">For information on additional 
+command line options, refer to Section <A HREF="index006.html#s:basics_commandline">4.2</A>.
+</DD></DL>
+<HR>
+<A HREF="index016.html"><IMG SRC="previous_motif.gif" ALT="Previous"></A>
+<A HREF="index-multipage.html"><IMG SRC="contents_motif.gif" ALT="Up"></A>
+<A HREF="index018.html"><IMG SRC="next_motif.gif" ALT="Next"></A>
+</BODY>
+</HTML>

@@ -1,0 +1,455 @@
+											TESTS					PARTS
+Date    	time    	platform        	host    	user	testste	tot	pass	xfail	fail	broken	tot	pass	xfail	fail
+2000-1-4	04:17:00 	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	4	2	2	0	0	42	28	14	0
+2000-1-5	04:17:00	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	
+2000-1-6	04:17:00	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	
+2000-1-7	04:17:00	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	4	2	2	0	0	42	28	14	0
+2000-1-8	04:17:00	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	4	2	2	0	0	42	28	14	0
+2000-1-9	04:17:00	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	4	2	2	0	0	42	28	14	0
+2000-1-10	04:17:00	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	4	1	2	1	0	42	27	14	1
+2000-1-11	04:17:00	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	4	1	2	1	0	42	27	14	1
+2000-1-12	04:17:00	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	5	2	2	1	0	56	35	15	6
+2000-1-13	04:17:00	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	
+2000-1-14	04:17:00	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	
+2000-1-17	04:17:00	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	5	3	2	0	0	56	42	14	0
+2000-1-18	04:17:00	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	5	3	2	0	0	56	42	14	0
+2000-1-19	04:17:00	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	4	2	1	1	0	44	39	3	2
+2000-1-20	04:17:00	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	4	3	1	0	0	44	41	3	0
+2000-1-21	04:17:00	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	4	3	1	0	0	44	41	3	0
+2000-1-24	04:17:00	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	
+2000-1-25	04:17:00	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	4	3	1	0	0	44	41	3	0
+2000-1-26	04:17:00	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	4	3	1	0	0	44	41	3	0
+2000-1-27	04:17:00	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	
+2000-1-28	04:17:00	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	4	3	1	0	0	44	41	3	0
+2000-1-31	04:17:00	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	4	3	1	0	0	44	41	3	0
+2000-2-1	04:17:00	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	4	3	1	0	0	44	41	3	0
+2000-2-2	04:17:00	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	4	3	1	0	0	44	41	3	0
+2000-2-3	04:17:00	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	4	3	1	0	0	44	41	3	0
+2000-2-4	04:17:00	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	4	3	1	0	0	44	41	3	0
+2000-2-7	04:17:00	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	
+2000-2-8	04:17:00	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	
+2000-2-9	04:17:00	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	
+2000-2-10	04:17:00	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	
+2000-2-11	04:17:00	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	
+2000-2-14	04:17:00	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	
+2000-2-15	04:17:00	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	
+2000-2-16	04:17:00	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	
+2000-2-17	04:17:00	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	
+2000-2-18	04:17:00	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	
+2000-2-21	04:17:00	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	
+2000-2-22	04:17:00	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	
+2000-2-23	04:17:00	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	
+2000-2-24	04:17:00	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	
+2000-2-25	04:17:00	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	
+2000-2-28	04:17:00	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	
+2000-2-29	04:17:00	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	
+2000-3-1	04:17:00	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	
+2000-3-2	04:17:00	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	4	2	2	0	0	44	40	4	0
+2000-3-3	04:17:00	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	4	2	2	0	0	44	40	4	0
+2000-3-6	04:17:00	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	4	2	2	0	0	44	40	4	0
+2000-3-7	04:17:00	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	4	2	2	0	0	44	40	4	0
+2000-3-8	04:17:00	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	4	2	2	0	0	44	40	4	0
+2000-3-9	04:17:00	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	4	2	2	0	0	44	40	4	0
+2000-3-10	04:17:00	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	4	22	1	1	0	44	40	3	1
+2000-3-13	04:17:00	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	4	3	1	0	0	44	41	3	0
+2000-3-14	04:17:00	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	4	3	1	0	0	44	41	3	0
+2000-3-15	04:17:00	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	
+2000-3-16	04:17:00	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	
+2000-3-17	04:17:00	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	5	4	1	0	0	57	54	3	0
+2000-3-20	04:17:00	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	5	4	1	0	0	57	54	3	0
+2000-3-21	04:17:00	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	5	4	1	0	0	57	54	3	0
+2000-3-22	04:17:00	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	5	4	1	0	0	57	54	3	0
+2000-3-23	04:17:00	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	5	4	1	0	0	57	54	3	0
+2000-3-24	04:17:00	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	5	4	1	0	0	57	54	3	0
+2000-3-27	04:17:00	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	5	4	1	0	0	57	54	3	0
+2000-3-28	04:17:00	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	5	4	1	0	0	57	54	3	0
+2000-3-29	04:17:00	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	5	4	1	0	0	57	54	3	0
+2000-3-30	04:17:00	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	5	4	1	0	0	57	54	3	0
+2000-3-31	04:17:00	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	5	4	1	0	0	57	54	3	0
+2000-4-3	04:17:00	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	5	4	1	0	0	57	54	3	0
+2000-4-4	04:17:00	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	5	4	1	0	0	57	54	3	0
+2000-4-5	04:17:00	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	7	6	1	0	0	83	80	3	0
+2000-4-6	04:17:00	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	7	6	1	0	0	83	80	3	0
+2000-4-7	04:17:00	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	7	6	1	0	0	83	80	3	0
+2000-4-10	04:17:00	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	9	8	1	0	0	109	106	3	0
+2000-4-11	04:17:00	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	
+2000-4-12	04:17:00	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	9	8	1	0	0	109	106	3	0
+2000-4-13	04:17:00	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	9	8	1	0	0	109	106	3	0
+2000-4-14	04:17:00	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	9	6	1	2	0	109	90	3	16
+2000-4-17	04:17:00	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	9	6	1	2	0	109	90	3	16
+2000-4-18	04:17:00	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	9	8	1	0	0	109	106	3	0
+2000-4-19	04:17:00	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	9	8	1	0	0	109	106	3	0
+2000-4-20	04:17:00	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	9	8	1	0	0	109	106	3	0
+2000-4-21	04:17:00	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	9	8	1	0	0	109	106	3	0
+2000-4-24	04:17:00	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	9	8	1	0	0	109	106	3	0
+2000-4-25	04:17:00	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	
+2000-4-26	04:17:00	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	
+2000-4-27	04:17:00	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	9	8	1	0	0	109	106	3	0
+2000-4-28	04:17:00	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	9	8	1	0	0	109	106	3	0
+2000-5-1	04:17:00	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	9	8	1	0	0	109	106	3	0
+2000-5-2	04:17:00	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	9	8	1	0	0	109	106	3	0
+2000-5-3	04:17:00	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	11	10	1	0	0	179	176	3	0
+2000-5-4	04:17:00	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	11	10	1	0	0	179	176	3	0
+2000-5-5	04:17:00	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	
+2000-5-8	04:17:00	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	13	10	3	0	0	249	230	19	0
+2000-5-9	04:17:00	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	13	10	3	0	0	249	230	19	0
+2000-5-10	04:17:00	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	13	10	3	0	0	249	230	19	0
+2000-5-11	04:17:00	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	13	10	1	2	0	249	230	17	2
+2000-5-15	04:17:00	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	
+2000-5-16	04:17:00	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	13	10	3	0	0	249	232	17	0
+2000-5-17	04:17:00	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	13	10	3	0	0	249	232	17	0
+2000-5-18	04:17:00	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	13	10	3	0	0	249	232	17	0
+2000-5-19	04:17:00	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	13	10	3	0	0	249	236	13	0
+2000-5-22	04:17:00	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	13	10	3	0	0	249	236	13 	0
+2000-5-23	04:17:00	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	13	10	2	1	0	249	238	9	2
+2000-5-24	04:17:00	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	13	10	3	0	0	252	243	9	0
+2000-5-25	04:17:00	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	14	12	2	0	0	287	279	8	0
+2000-5-26	04:17:00	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	16	16	0	0	0	350	350	0	0
+2000-5-29	04:17:00	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	16	16	0	0	0	350	350	0	0
+2000-5-30	04:17:00	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	16	16	0	0	0	350	350	0	0
+2000-5-31	04:17:00	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	
+2000-6-2	04:17:00	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	16	16	0	0	0	320	320	0	0
+2000-6-5	04:17:00	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	20	17	0	0	3	241	240	0	1
+2000-6-6	04:17:00	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	20	20	0	0	0	340	340	0	0
+2000-6-7	04:17:00	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	20	20	0	0	0	340	340	0	0
+2000-6-8	04:17:00	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	20	20	0	0	0	340	340	0	0
+2000-6-9	04:17:00	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	20	20	0	0	0	340	340	0	0
+2000-6-12	04:17:00	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	20	20	0	0	0	340	340	0	0
+2000-6-13	04:17:00	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	20	20	0	0	0	340	340	0	0
+2000-6-14	04:17:00	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	20	20	0	0	0	340	340	0	0
+2000-6-15	04:17:00	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	23	23	0	0	0	445	445	0	0
+2000-6-16	04:17:00	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	
+2000-6-19	04:17:00	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	26	26	0	0	0	460	460	0	0
+2000-6-20	04:17:00	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	29	26	0	3	0	499	460	0	39
+2000-6-21	04:17:00	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	29	29	0	0	0	499	499	0	0
+2000-6-22	04:17:00	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	29	29	0	0	0	499	499	0	0
+2000-6-23	04:17:00	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	29	29	0	0	0	499	499	0	0
+2000-6-26	04:17:00	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	29	26	0	3	0	499	469	0	30
+2000-6-27	04:17:00	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	29	29	0	0	0	499	499	0	0
+2000-6-28	04:17:00	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	29	29	0	0	0	499	499	0	0
+2000-6-29	04:17:00	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	29	29	0	0	0	499	499	0	0
+2000-6-30	04:17:00	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	29	29	0	0	0	499	499	0	0
+2000-7-3	04:17:00	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	29	29	0	0	0	499	499	0	0
+2000-7-4	04:17:00	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	29	29	0	0	0	499	499	0	0
+2000-7-5	04:17:00	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	29	29	0	0	0	499	499	0	0
+2000-7-6	04:17:00	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	29	29	0	0	0	499	499	0	0
+2000-7-7	04:17:00	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	29	29	0	0	0	499	499	0	0
+2000-7-10	04:17:00	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	29	29	0	0	0	499	499	0	0
+2000-7-11	04:17:00	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	29	29	0	0	0	499	499	0	0
+2000-7-12	04:17:00	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	29	29	0	0	0	499	499	0	0
+2000-7-13	04:17:00	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	29	29	0	0	0	499	499	0	0
+2000-7-14	04:17:00	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	29	29	0	0	0	499	499	0	0
+2000-7-17	04:17:00	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	29	29	0	0	0	499	499	0	0
+2000-7-18	04:17:00	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	29	29	0	0	0	499	499	0	0
+2000-7-19	04:17:00	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	29	29	0	0	0	499	499	0	0
+2000-7-20	04:17:00	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	29	29	0	0	0	499	499	0	0
+2000-7-21	04:17:00	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	29	29	0	0	0	499	499	0	0
+2000-7-24	04:17:00	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	29	29	0	0	0	499	499	0	0
+2000-7-25	04:17:00	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	29	29	0	0	0	499	499	0	0
+2000-7-26	04:17:00	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	29	29	0	0	0	499	499	0	0
+2000-7-27	04:17:00	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	29	29	0	0	0	499	499	0	0
+2000-7-28	04:17:00	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	
+2000-7-31	04:17:00	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	
+2000-8-1	04:17:00	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	
+2000-8-2	04:17:00	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	
+2000-8-3	04:17:00	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	29	29	0	0	0	499	499	0	0
+2000-8-4	04:17:00	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	29	29	0	0	0	499	499	0	0
+2000-8-7	04:17:00	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	29	29	0	0	0	499	499	0	0
+2000-8-8	04:17:00	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	
+2000-8-9	04:17:00	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	29	29	0	0	0	499	499	0	0
+2000-8-10	04:17:00	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	29	29	0	0	0	499	499	0	0
+2000-8-11	04:17:00	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	29	29	0	0	0	499	499	0	0
+2000-8-14	04:17:00	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	29	29	0	0	0	499	499	0	0
+2000-8-15	04:17:00	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	29	29	0	0	0	499	499	0	0
+2000-8-16	04:17:00	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	29	29	0	0	0	499	499	0	0
+2000-8-17	04:17:00	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	
+2000-8-18	04:17:00	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	29	27	0	0	0	499	493	0	6
+2000-8-21	04:17:00	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	29	27	0	0	0	499	493	0	6
+2000-8-22	04:17:00	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	29	29	0	0	0	499	499	0	0
+2000-8-23	04:17:00	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	29	29	0	0	0	499	499	0	0
+2000-8-24	04:17:00	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	29	29	0	0	0	499	499	0	0
+2000-8-25	04:17:00	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	29	29	0	0	0	499	499	0	0
+2000-8-28	04:17:00	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	29	29	0	0	0	499	499	0	0
+2000-8-29	04:17:00	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	29	29	0	0	0	499	499	0	0
+2000-8-30	04:17:00	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	29	29	0	0	0	499	499	0	0
+2000-8-31	04:17:00	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	29	29	0	0	0	499	499	0	0
+2000-9-1	04:17:00	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	29	29	0	0	0	499	499	0	0
+2000-9-4	04:17:00	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	29	29	0	0	0	499	499	0	0
+2000-9-5	04:17:00	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	29	29	0	0	0	499	499	0	0
+2000-9-6	04:17:00	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	29	29	0	0	0	499	499	0	0
+2000-9-7	04:17:00	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	29	29	0	0	0	499	499	0	0
+2000-9-8	04:17:00	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	29	29	0	0	0	499	499	0	0
+2000-9-11	04:17:00	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	29	29	0	0	0	499	499	0	0
+2000-9-12	04:17:00	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	29	29	0	0	0	499	499	0	0
+2000-9-13	04:17:00	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	29	29	0	0	0	499	499	0	0
+2000-9-14	04:17:00	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	29	29	0	0	0	499	499	0	0
+2000-9-15	04:17:00	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	29	29	0	0	0	499	499	0	0
+2000-9-18	04:17:00	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	29	29	0	0	0	499	499	0	0
+2000-9-19	04:17:00	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	29	29	0	0	0	499	499	0	0
+2000-9-20	04:17:00	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	29	29	0	0	0	499	499	0	0
+2000-9-21	04:17:00	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	29	29	0	0	0	499	499	0	0
+2000-9-22	04:17:00	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	29	29	0	0	0	499	499	0	0
+2000-9-25	04:17:00	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	29	29	0	0	0	499	499	0	0
+2000-9-26	04:17:00	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	29	29	0	0	0	499	499	0	0
+2000-9-27	04:17:00	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	29	29	0	0	0	499	499	0	0
+2000-9-28	04:17:00	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	29	29	0	0	0	499	499	0	0
+2000-9-29	04:17:00	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	29	29	0	0	0	499	499	0	0
+2000-10-2	04:17:00	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	29	29	0	0	0	499	499	0	0
+2000-10-3	04:17:00	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	
+2000-10-4	04:17:00	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	
+2000-10-5	04:17:00	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	
+2000-10-6	04:17:00	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	
+2000-10-9	04:17:00	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	
+2000-10-10	04:17:00	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	
+2000-10-11	04:17:00	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	
+2000-10-12	04:17:00	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	29	29	0	0	0	499	499	0	0
+2000-10-13	04:17:00	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	29	29	0	0	0	499	499	0	0
+2000-10-16	04:17:00	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	29	29	0	0	0	499	499	0	0
+2000-10-17	04:17:00	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	29	29	0	0	0	499	499	0	0
+2000-10-18	04:17:00	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	
+2000-10-19	04:17:00	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	
+2000-10-20	04:17:00	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	
+2000-10-23	04:17:00	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	
+2000-10-24 	04:17:00	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	
+2000-10-25	04:17:00	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	29	29	0	0	0	499	499	0	0
+2000-10-26	04:17:00	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	29	29	0	0	0	499	499	0	0
+2000-10-27	04:17:00	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	29	29	0	0	0	499	499	0	0
+2000-10-30	04:17:00	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	29	29	0	0	0	499	499	0	0
+2000-10-31	04:17:00	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	29	29	0	0	0	499	499	0	0
+2000-11-1	04:17:00	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	29	29	0	0	0	499	499	0	0
+2000-11-2	04:17:00	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	29	28	0	1	0	499	498	0	1
+2000-11-3	04:17:00	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	29	29	0	0	0	499	499	0	0
+2000-11-6	04:17:00	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	29	29	0	0	0	499	499	0	0
+2000-11-7	04:17:00	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	29	29	0	0	0	499	499	0	0
+2000-11-8	04:17:00	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	29	29	0	0	0	499	499	0	0
+2000-11-9	04:17:00	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	29	29	0	0	0	499	499	0	0
+2000-11-10	04:17:00	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	29	29	0	0	0	499	499	0	0
+2000-11-13	04:17:00	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	29	28	0	1	0	499	498	0	1
+2000-11-14	04:17:00	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	29	29	0	0	0	499	499	0	0
+2000-11-15	04:17:00	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	29	29	0	0	0	499	499	0	0
+2000-11-16	04:17:00	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	29	29	0	0	0	499	499	0	0
+2000-11-17	04:17:00	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	29	29	0	0	0	499	499	0	0
+2000-11-20	04:17:00	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	29	29	0	0	0	499	499	0	0
+2000-11-21	04:17:00	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	29	28	0	1	0	499	498	0	1
+2000-11-22	04:17:00	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	29	28	0	1	0	499	498	0	1
+2000-11-23	04:17:00	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	29	29	0	0	0	499	499	0	0
+2000-11-24	04:17:00	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	29	29	0	0	0	499	499	0	0
+2000-11-27	04:17:00	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	29	29	0	0	0	499	499	0	0
+2000-11-28	04:17:00	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	29	29	0	0	0	499	499	0	0
+2000-11-29	04:17:00	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	29	29	0	0	0	499	499	0	0
+2000-11-30	04:17:00	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	29	28	0	1	0	499	498	0	1
+2000-12-1	04:17:00	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	29	28	0	1	0	499	498	0	1
+2000-12-1	04:17:00	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	29	29	0	0	0	499	499	0	0
+2000-12-4	04:17:00	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	29	29	0	0	0	499	499	0	0
+2000-12-5	04:17:00	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	29	29	0	0	0	499	499	0	0
+2000-12-6	04:17:00	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	29	29	0	0	0	499	499	0	0
+2000-12-7	04:17:00	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	29	29	0	0	0	499	499	0	0
+2000-12-8	04:17:00	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	29	29	0	0	0	499	499	0	0
+2000-12-9	04:17:00	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	29	29	0	0	0	499	499	0	0
+2000-12-11	04:17:00	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	29	28	0	1	0	499	498	0	1
+2000-12-12	04:17:00	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	29	28	0	1	0	499	498	0	1
+2000-12-13	04:17:00	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	29	28	0	1	0	499	498	0	1
+2000-12-14	04:17:00	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	29	29	0	0	0	499	499	0	0
+2000-12-15	04:17:00	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	29	29	0	0	0	499	499	0	0
+2000-12-18	04:17:00	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	29	29	0	0	0	499	499	0	0
+2000-12-19	04:17:00	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	29	28	0	1	0	499	498	0	1
+2000-12-20	04:17:00	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	29	29	0	0	0	499	499	0	0
+2000-12-21	04:17:00	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	29	29	0	0	0	499	499	0	0
+2000-12-22	04:17:00	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	29	29	0	0	0	499	499	0	0
+2000-12-22	13:07:10	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	29	29	0	0	0	499	499	0	0
+2001-03-28	14:18:12	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	29	29	0	0	0	499	499	0	0
+2001-03-28	14:25:23	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	0	0	0	0	0	0	0	0	0
+2001-03-29	04:40:56	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	0	0	0	0	0	0	0	0	0
+2001-03-30	14:28:05	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	0	0	0	0	0	0	0	0	0
+2001-04-02	13:09:03	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	0	0	0	0	0	0	0	0	0
+2001-04-03	04:41:18	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	1	1	0	0	0	40	40	0	0
+2001-04-04	04:42:19	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	2	2	0	0	0	80	80	0	0
+2001-04-05	04:42:16	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	2	2	0	0	0	80	80	0	0
+2001-04-06	04:43:06	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	2	2	0	0	0	80	80	0	0
+2001-04-09	FAIL
+2001-04-10	FAIL
+2001-04-11	13:36:01	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	8	8	0	0	0	180	180	0	0
+2001-04-12	04:44:22	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	8	8	0	0	0	180	180	0	0
+2001-04-12	13:30:36	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	12	12	0	0	0	264	264	0	0
+2001-04-13	04:46:14	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	12	12	0	0	0	264	264	0	0
+2001-04-16	04:46:22	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	12	12	0	0	0	264	264	0	0
+2001-04-17	04:46:16	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	12	12	0	0	0	264	264	0	0
+2001-04-18	04:46:16	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	12	12	0	0	0	264	264	0	0
+2001-04-19	04:47:30	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	12	12	0	0	0	264	264	0	0
+2001-04-20	04:46:45	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	14	14	0	0	0	352	352	0	0
+2001-04-23	04:47:00	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	16	16	0	0	0	376	376	0	0
+2001-04-24	04:46:48	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	16	16	0	0	0	376	376	0	0
+2001-04-25	04:47:29	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	16	16	0	0	0	376	376	0	0
+2001-04-26	04:47:39	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	16	16	0	0	0	376	376	0	0
+2001-04-27	04:55:32	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	16	16	0	0	0	376	376	0	0
+2001-04-30	14:22:13	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	23	23	0	0	0	537	537	0	0
+2001-05-01	04:58:13	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	25	25	0	0	0	579	579	0	0
+2001-05-02	15:16:59	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	31	31	0	0	0	687	687	0	0
+2001-05-03	04:59:05	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	31	31	0	0	0	687	687	0	0
+2001-05-04	04:57:09	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	31	31	0	0	0	687	687	0	0
+2001-05-07	04:58:23	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	31	31	0	0	0	687	687	0	0
+2001-05-08	05:05:10	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	31	31	0	0	0	687	687	0	0
+2001-05-09	05:01:31	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	32	32	0	0	0	988	988	0	0
+2001-05-10	04:58:12	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	32	32	0	0	0	988	988	0	0
+2001-05-11	04:58:43	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	32	32	0	0	0	988	988	0	0
+2001-05-14	FAIL
+2001-05-15	FAIL
+2001-05-16	04:58:13	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	32	32	0	0	0	988	988	0	0
+2001-05-17	04:59:05	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	32	32	0	0	0	988	988	0	0
+2001-05-18	04:55:22	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	32	32	0	0	0	988	988	0	0
+2001-05-21	FAIL
+2001-05-22	04:50:21	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	32	32	0	0	0	988	988	0	0
+2001-05-22	17:56:18	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	32	32	0	0	0	988	988	0	0
+2001-05-23	04:49:44	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	32	32	0	0	0	988	988	0	0
+2001-05-24	04:49:54	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	32	32	0	0	0	988	988	0	0	
+2001-05-25	04:50:32	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	32	32	0	0	0	988	988	0	0	
+2001-05-28	04:50:47	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	32	32	0	0	0	988	988	0	0	
+2001-05-29	04:50:45	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	32	32	0	0	0	988	988	0	0	
+2001-05-30	FAIL
+2001-05-31	FAIL
+2001-06-01	FAIL
+2001-06-04	FAIL
+2001-06-05	FAIL
+2001-06-06	05:01:19	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	34	34	0	0	0	1018	1018	0	0
+2001-06-07	05:03:44	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	34	34	0	0	0	1018	1018	0	0
+2001-06-08	05:03:45	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	34	34	0	0	0	1018	1018	0	0
+2001-06-11	FAIL
+2001-06-12	05:06:54	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	34	34	0	0	0	1018	1018	0	0
+2001-06-13	05:05:53	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	34	34	0	0	0	1018	1018	0	0
+2001-06-14	FAIL
+2001-06-15	FAIL
+2001-06-18	FAIL
+2001-06-19	FAIL
+2001-06-20	05:38:11	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	37	37	0	0	0	1174	1174	0	0
+2001-06-21	05:37:33	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	37	37	0	0	0	1174	1174	0	0
+2001-06-22	FAIL
+2001-06-25	FAIL
+2001-06-26	05:51:19	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	41	39	2	0	0	1356	1354	2	0
+2001-06-27	05:52:51	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	41	39	2	0	0	1356	1354	2	0
+2001-06-28	08:01:25	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	41	39	2	0	0	1356	1354	2	0
+2001-06-29	07:56:15	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	41	39	2	0	0	1356	1354	2	0
+2001-07-02	07:56:49	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	41	39	2	0	0	1356	1354	2	0
+2001-07-03	FAIL
+2001-07-04	FAIL
+2001-07-05	FAIL
+2001-07-06	FAIL
+2001-07-06	10:42:42	sun-sparc-solaris2.7	esaki.llnl.gov	kumfert	check	0	0	0	0	0	0	0	0	0
+2001-07-06	14:29:51	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	40	37	2	0	1	1282	1280	2	0
+2001-07-09	06:39:38	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	46	41	3	0	2	1403	1400	3	0
+2001-07-10	06:33:06	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	46	41	3	0	2	1403	1400	3	0
+2001-07-11	06:29:51	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	46	41	3	0	2	1403	1400	3	0
+2001-07-13	05:59:14	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	46	43	0	3	0	1411	1399	3	9
+2001-07-18	06:52:29	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	51	48	3	0	0	1431	1419	12	0
+2001-07-18	07:28:28	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	51	48	3	0	0	1431	1420	11	0
+2001-07-23	06:45:17	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	51	48	3	0	0	1431	1419	12	0
+2001-07-23	07:21:18	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	51	48	3	0	0	1431	1420	11	0
+2001-07-24	06:44:38	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	51	48	3	0	0	1431	1419	12	0
+2001-07-24	07:20:33	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	51	48	3	0	0	1431	1420	11	0
+2001-07-25	06:47:53	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	51	48	3	0	0	1431	1419	12	0
+2001-07-25	07:24:47	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	51	48	3	0	0	1431	1420	11	0
+2001-07-26	06:47:35	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	51	48	3	0	0	1431	1419	12	0
+2001-07-26	07:24:16	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	51	48	3	0	0	1431	1420	11	0
+2001-07-27	06:43:57	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	51	48	3	0	0	1431	1419	12	0
+2001-07-27	07:19:42	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	51	48	3	0	0	1431	1420	11	0
+2001-07-30	06:46:28	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	51	48	3	0	0	1431	1419	12	0
+2001-07-30	07:22:47	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	51	48	3	0	0	1431	1420	11	0
+2001-07-31	06:45:12	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	51	48	3	0	0	1431	1419	12	0
+2001-07-31	07:20:58	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	51	48	3	0	0	1431	1420	11	0
+2001-08-01	06:46:54	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	51	48	3	0	0	1431	1419	12	0
+2001-08-01	07:23:12	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	51	48	3	0	0	1431	1420	11	0
+2001-08-02	06:50:57	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	51	48	3	0	0	1431	1419	12	0
+2001-08-02	07:28:48	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	51	48	3	0	0	1431	1420	11	0
+2001-08-03	06:55:03	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	51	48	3	0	0	1431	1419	12	0
+2001-08-03	07:33:41	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	51	48	3	0	0	1431	1420	11	0
+2001-08-06	06:47:17	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	51	48	3	0	0	1431	1419	12	0
+2001-08-06	07:23:49	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	51	48	3	0	0	1431	1420	11	0
+2001-08-07	06:44:43	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	51	48	3	0	0	1431	1419	12	0
+2001-08-07	07:20:17	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	51	48	3	0	0	1431	1420	11	0
+2001-08-08	06:46:07	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	51	48	3	0	0	1431	1419	12	0
+2001-08-08	07:22:09	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	51	48	3	0	0	1431	1420	11	0
+2001-08-10	06:42:56	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	51	48	3	0	0	1431	1416	15	0
+2001-08-10	07:18:35	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	51	48	3	0	0	1431	1416	15	0
+2001-08-13	06:43:51	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	51	48	3	0	0	1431	1416	15	0
+2001-08-13	07:19:30	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	51	48	3	0	0	1431	1416	15	0
+2001-08-14	06:46:34	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	51	48	3	0	0	1431	1416	15	0
+2001-08-14	07:23:00	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	51	48	3	0	0	1431	1416	15	0
+2001-08-15	06:55:15	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	51	48	3	0	0	1431	1416	15	0
+2001-08-15	07:34:31	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	51	48	3	0	0	1431	1416	15	0
+2001-08-16	06:46:38	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	51	48	3	0	0	1431	1416	15	0
+2001-08-16	07:23:11	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	51	48	3	0	0	1431	1416	15	0
+2001-08-17	06:48:20	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	51	48	3	0	0	1431	1416	15	0
+2001-08-17	07:25:22	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	51	48	3	0	0	1431	1416	15	0
+2001-08-28	07:36:24	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	67	48	3	0	16	1431	1416	15	0
+2001-08-29	12:41:23	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	99	96	3	0	0	2745	2730	15	0
+2001-08-30	12:30:10	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	99	96	3	0	0	2745	2730	15	0
+2001-08-30	14:39:22	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	99	96	3	0	0	2745	2730	15	0
+2001-09-03	07:39:54	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	102	99	3	0	0	2865	2850	15	0
+2001-09-03	08:33:05	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	102	99	3	0	0	2865	2850	15	0
+2001-09-04	07:39:26	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	102	99	3	0	0	2865	2850	15	0
+2001-09-04	08:32:05	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	102	99	3	0	0	2865	2850	15	0
+2001-09-05	05:46:25		esaki.llnl.gov	kumfert	check	102	99	3	0	0	2865	2850	15	0
+2001-09-07	06:16:06	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	114	108	6	0	0	3201	3180	21	0
+2001-09-10	07:09:59	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	114	108	6	0	0	3201	3180	21	0
+2001-09-10	08:04:47	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	114	108	6	0	0	3201	3180	21	0
+2001-09-11	07:09:44	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	114	108	6	0	0	3201	3180	21	0
+2001-09-11	08:04:53	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	114	108	6	0	0	3201	3180	21	0
+2001-09-17	07:32:46	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	114	108	6	0	0	3201	3180	21	0
+2001-09-17	08:37:28	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	114	108	6	0	0	3201	3180	21	0
+2001-09-18	07:37:26	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	114	108	6	0	0	3201	3180	21	0
+2001-09-18	08:44:11	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	114	108	6	0	0	3201	3180	21	0
+2001-09-21	07:42:04	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	114	108	6	0	0	3201	3180	21	0
+2001-09-21	08:48:23	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	114	108	6	0	0	3201	3180	21	0
+2001-09-25	04:56:56	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	118	108	9	0	1	3213	3186	27	0
+2001-09-27	04:07:44	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	117	108	9	0	0	3213	3186	27	0
+2001-09-27	05:15:33	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	117	108	9	0	0	3213	3186	27	0
+2001-09-28	04:05:58	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	117	108	9	0	0	3213	3186	27	0
+2001-09-28	05:13:10	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	117	108	9	0	0	3213	3186	27	0
+2001-10-01	04:25:59	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	117	108	9	0	0	3213	3186	27	0
+2001-10-01	05:37:51	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	117	108	9	0	0	3213	3186	27	0
+2001-10-02	04:14:26	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	117	108	9	0	0	3213	3186	27	0
+2001-10-02	05:21:59	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	117	108	9	0	0	3213	3186	27	0
+2001-10-04	04:35:37	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	117	108	9	0	0	3213	3186	27	0
+2001-10-04	05:50:46	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	117	108	9	0	0	3213	3186	27	0
+2001-10-05	04:16:30	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	117	108	9	0	0	3213	3186	27	0
+2001-10-05	05:24:10	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	117	108	9	0	0	3213	3186	27	0
+2001-10-08	04:27:40	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	117	108	9	0	0	3213	3186	27	0
+2001-10-08	05:39:41	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	117	108	9	0	0	3213	3186	27	0
+2001-10-10	04:18:12	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	117	108	9	0	0	3213	3186	27	0
+2001-10-10	05:29:45	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	117	108	9	0	0	3213	3186	27	0
+2001-10-11	10:51:32	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	117	108	9	0	0	3213	3186	27	0
+2001-10-11	11:55:27	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	117	108	9	0	0	3213	3186	27	0
+2001-10-12	03:36:28	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	117	108	9	0	0	3213	3186	27	0
+2001-10-12	04:41:03	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	117	108	9	0	0	3213	3186	27	0
+2001-10-15	04:14:10	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	117	108	9	0	0	3213	3186	27	0
+2001-10-15	05:18:23	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	117	108	9	0	0	3213	3186	27	0
+2001-10-16	05:04:01	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	109	72	9	0	28	2250	2223	27	0
+2001-10-18	04:54:51	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	117	108	9	0	0	3213	3186	27	0
+2001-10-18	06:02:07	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	117	108	9	0	0	3213	3186	27	0
+2001-10-19	05:09:42	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	117	108	9	0	0	3213	3186	27	0
+2001-10-19	06:19:45	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	117	108	9	0	0	3213	3186	27	0
+2001-10-22	04:54:53	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	117	108	9	0	0	3213	3186	27	0
+2001-10-22	06:01:54	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	117	108	9	0	0	3213	3186	27	0
+2001-10-24	04:56:01	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	117	108	9	0	0	3213	3186	27	0
+2001-10-24	06:02:46	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	117	108	9	0	0	3213	3186	27	0
+2001-10-25	04:54:53	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	117	108	9	0	0	3213	3186	27	0
+2001-10-25	06:01:21	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	117	108	9	0	0	3213	3186	27	0
+2001-10-26	04:55:03	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	117	108	9	0	0	3213	3186	27	0
+2001-10-26	06:02:03	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	117	108	9	0	0	3213	3186	27	0
+2001-10-29	04:53:03	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	117	108	9	0	0	3213	3186	27	0
+2001-10-29	05:59:38	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	117	108	9	0	0	3213	3186	27	0
+2001-10-30	04:59:07	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	117	108	9	0	0	3213	3186	27	0
+2001-10-30	06:07:26	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	117	108	9	0	0	3213	3186	27	0
+2001-10-31	04:29:03	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	117	108	9	0	0	3213	3186	27	0
+2001-10-31	05:37:54	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	117	108	9	0	0	3213	3186	27	0
+2001-11-01	05:02:51	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	117	108	9	0	0	3213	3186	27	0
+2001-11-01	06:11:23	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	117	108	9	0	0	3213	3186	27	0
+2001-11-02	05:19:14	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	117	108	9	0	0	3213	3186	27	0
+2001-11-02	06:31:41	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	117	108	9	0	0	3213	3186	27	0
+2001-11-05	04:57:33	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	117	108	9	0	0	3213	3186	27	0
+2001-11-05	06:04:33	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	117	108	9	0	0	3213	3186	27	0
+2001-11-06	05:01:48	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	117	108	9	0	0	3213	3186	27	0
+2001-11-06	06:09:29	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	117	108	9	0	0	3213	3186	27	0
+2001-11-09	05:00:13	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	125	114	9	0	2	3639	3612	27	0
+2001-11-12	04:57:40	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	125	114	9	0	2	3639	3612	27	0
+2001-11-13	05:08:55	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	125	116	9	0	0	3801	3774	27	0
+2001-11-13	06:18:18	sparc-sun-solaris2.7	esaki.llnl.gov	kumfert	check	125	116	9	0	0	3801	3774	27	0

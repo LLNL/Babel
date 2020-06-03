@@ -1,0 +1,104 @@
+# synch_IORHDRS dependencies.
+synch_IOR.h:                                                                  \
+  /home/leek2/babel/btest/test/regression/hooks/runF90/../../../../babel/regression/hooks/runF90/../../output/output.sidl
+synch_IOR.h: synch_RegOut_IOR.h
+synch_IOR.h: synch_ResultType_IOR.h
+
+synch_RegOut_IOR.h:                                                           \
+  /home/leek2/babel/btest/test/regression/hooks/runF90/../../../../babel/regression/hooks/runF90/../../output/output.sidl
+synch_RegOut_IOR.h: sidl_header.h
+synch_RegOut_IOR.h: sidl_BaseClass_IOR.h
+synch_RegOut_IOR.h: synch_ResultType_IOR.h
+
+synch_ResultType_IOR.h: sidlType.h
+
+
+# synch_STUBHDRS dependencies.
+synch_RegOut_fAbbrev.h:                                                       \
+  /home/leek2/babel/btest/test/regression/hooks/runF90/../../../../babel/regression/hooks/runF90/../../output/output.sidl
+
+synch_RegOut_fStub.h:                                                         \
+  /home/leek2/babel/btest/test/regression/hooks/runF90/../../../../babel/regression/hooks/runF90/../../output/output.sidl
+synch_RegOut_fStub.h: synch_RegOut_IOR.h
+
+
+# synch_STUBMODULESRCS dependencies.
+synch_RegOut.F90:                                                             \
+  /home/leek2/babel/btest/test/regression/hooks/runF90/../../../../babel/regression/hooks/runF90/../../output/output.sidl
+synch_RegOut.F90: synch_RegOut_fAbbrev.h
+synch_RegOut.F90: sidl_ClassInfo_fAbbrev.h
+synch_RegOut.F90: synch_ResultType_fAbbrev.h
+synch_RegOut.F90: sidl_BaseInterface_fAbbrev.h
+synch_RegOut.F90: sidl_RuntimeException_fAbbrev.h
+synch_RegOut.F90: sidl_BaseException_fAbbrev.h
+synch_RegOut.F90: sidl_BaseClass_fAbbrev.h
+synch_RegOut.F90: sidl
+synch_RegOut.F90: synch_RegOut_type
+synch_RegOut.F90: sidl_ClassInfo_type
+synch_RegOut.F90: sidl_BaseInterface_type
+synch_RegOut.F90: sidl_RuntimeException_type
+synch_RegOut.F90: sidl_BaseException_type
+synch_RegOut.F90: sidl_BaseClass_type
+synch_RegOut.F90: sidl_rmi_Call_type
+synch_RegOut.F90: sidl_rmi_Return_type
+synch_RegOut.F90: sidl_rmi_Ticket_type
+synch_RegOut.F90: sidl
+synch_RegOut.F90: synch_RegOut_type
+synch_RegOut.F90: sidl_array_type
+
+synch_ResultType.F90: sidl
+synch_ResultType.F90: sidl
+synch_ResultType.F90: synch_ResultType_type
+synch_ResultType.F90: sidl_array_type
+
+
+# synch_STUBSRCS dependencies.
+synch_RegOut_fStub.c:                                                         \
+  /home/leek2/babel/btest/test/regression/hooks/runF90/../../../../babel/regression/hooks/runF90/../../output/output.sidl
+synch_RegOut_fStub.c: synch_RegOut_fStub.h
+synch_RegOut_fStub.c: sidlfortran.h
+synch_RegOut_fStub.c: sidlf90array.h
+synch_RegOut_fStub.c: sidl_header.h
+synch_RegOut_fStub.c: sidl_interface_IOR.h
+synch_RegOut_fStub.c: sidl_Exception.h
+synch_RegOut_fStub.c: babel_config.h
+synch_RegOut_fStub.c: sidl_Loader.h
+synch_RegOut_fStub.c: synch_RegOut_IOR.h
+synch_RegOut_fStub.c: synch_RegOut_fAbbrev.h
+synch_RegOut_fStub.c: sidl_BaseException_IOR.h
+synch_RegOut_fStub.c: sidl_BaseInterface_IOR.h
+synch_RegOut_fStub.c: sidl_ClassInfo_IOR.h
+synch_RegOut_fStub.c: sidl_RuntimeException_IOR.h
+synch_RegOut_fStub.c: synch_ResultType_IOR.h
+synch_RegOut_fStub.c: sidl_rmi_ConnectRegistry.h
+synch_RegOut_fStub.c: sidl_BaseClass_fStub.h
+synch_RegOut_fStub.c: sidl_BaseInterface_fStub.h
+synch_RegOut_fStub.c: sidl_ClassInfo_fStub.h
+synch_RegOut_fStub.c: sidl_RuntimeException_fStub.h
+synch_RegOut_fStub.c: synch_RegOut_fStub.h
+synch_RegOut_fStub.c: sidl_BaseClass.h
+synch_RegOut_fStub.c: sidl_ClassInfo.h
+synch_RegOut_fStub.c: sidl_rmi_ProtocolFactory.h
+synch_RegOut_fStub.c: sidl_rmi_InstanceRegistry.h
+synch_RegOut_fStub.c: sidl_rmi_InstanceHandle.h
+synch_RegOut_fStub.c: sidl_rmi_Invocation.h
+synch_RegOut_fStub.c: sidl_rmi_Response.h
+synch_RegOut_fStub.c: sidl_rmi_ServerRegistry.h
+synch_RegOut_fStub.c: sidl_rmi_ConnectRegistry.h
+synch_RegOut_fStub.c: sidl_io_Serializable.h
+
+synch_ResultType_fStub.c: sidl_int_IOR.h
+synch_ResultType_fStub.c: sidlfortran.h
+synch_ResultType_fStub.c: synch_ResultType_fAbbrev.h
+
+
+# synch_TYPEMODULESRCS dependencies.
+synch_RegOut_type.F90:                                                        \
+  /home/leek2/babel/btest/test/regression/hooks/runF90/../../../../babel/regression/hooks/runF90/../../output/output.sidl
+synch_RegOut_type.F90: synch_RegOut_fAbbrev.h
+synch_RegOut_type.F90: sidl
+
+synch_ResultType_type.F90: synch_ResultType_fAbbrev.h
+synch_ResultType_type.F90: sidl
+
+

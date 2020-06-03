@@ -1,0 +1,26 @@
+IORHDRS = Inherit_A2_IOR.h Inherit_A_IOR.h Inherit_B_IOR.h Inherit_C_IOR.h    \
+  Inherit_D_IOR.h Inherit_E2_IOR.h Inherit_E_IOR.h Inherit_F2_IOR.h           \
+  Inherit_F_IOR.h Inherit_G2_IOR.h Inherit_G_IOR.h Inherit_H_IOR.h            \
+  Inherit_IOR.h Inherit_I_IOR.h Inherit_J_IOR.h Inherit_K_IOR.h               \
+  Inherit_L_IOR.h
+IORSRCS = Inherit_C_IOR.c Inherit_D_IOR.c Inherit_E2_IOR.c Inherit_E_IOR.c    \
+  Inherit_F2_IOR.c Inherit_F_IOR.c Inherit_G2_IOR.c Inherit_G_IOR.c           \
+  Inherit_H_IOR.c Inherit_I_IOR.c Inherit_J_IOR.c Inherit_K_IOR.c             \
+  Inherit_L_IOR.c
+SKELSRCS = Inherit_C_jniSkel.c Inherit_D_jniSkel.c Inherit_E2_jniSkel.c       \
+  Inherit_E_jniSkel.c Inherit_F2_jniSkel.c Inherit_F_jniSkel.c                \
+  Inherit_G2_jniSkel.c Inherit_G_jniSkel.c Inherit_H_jniSkel.c                \
+  Inherit_I_jniSkel.c Inherit_J_jniSkel.c Inherit_K_jniSkel.c                 \
+  Inherit_L_jniSkel.c
+STUBHDRS = Inherit_A2_jniStub.h Inherit_A_jniStub.h Inherit_B_jniStub.h       \
+  Inherit_C_jniStub.h Inherit_D_jniStub.h Inherit_E2_jniStub.h                \
+  Inherit_E_jniStub.h Inherit_F2_jniStub.h Inherit_F_jniStub.h                \
+  Inherit_G2_jniStub.h Inherit_G_jniStub.h Inherit_H_jniStub.h                \
+  Inherit_I_jniStub.h Inherit_J_jniStub.h Inherit_K_jniStub.h                 \
+  Inherit_L_jniStub.h
+STUBSRCS = Inherit_A2_jniStub.c Inherit_A_jniStub.c Inherit_B_jniStub.c       \
+  Inherit_C_jniStub.c Inherit_D_jniStub.c Inherit_E2_jniStub.c                \
+  Inherit_E_jniStub.c Inherit_F2_jniStub.c Inherit_F_jniStub.c                \
+  Inherit_G2_jniStub.c Inherit_G_jniStub.c Inherit_H_jniStub.c                \
+  Inherit_I_jniStub.c Inherit_J_jniStub.c Inherit_K_jniStub.c                 \
+  Inherit_L_jniStub.c

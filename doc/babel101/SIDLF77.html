@@ -1,0 +1,400 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html>
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="GENERATOR" content="Mozilla/4.78 [en] (X11; U; Linux 2.4.18-c0smp i686) [Netscape]">
+   <title>SIDL F77 Crash Course</title>
+<!-- 
+  File: SIDLF77.html
+  Copyright: (c) 2001 Lawrence Livermore National Security, LLC
+  Revision: $Revision: 6171 $
+  Modified: $Date: 2007-10-08 16:39:28 -0700 (Mon, 08 Oct 2007) $
+  Description: Basic documentation for SIDL FORTRAN 77
+-->
+</head>
+<body>
+
+<h1>
+Crash Course in SIDL FORTRAN 77 Bindings</h1>
+
+<h2>
+Tom Epperly &lt;tepperly@llnl.gov><br>
+BABEL Version 0.8.x<br>
+17 July 2001, updated 21 January 2003</h2>
+
+<h3>
+<a NAME="Introduction"></a>Introduction</h3>
+The intent of this file is to provide the minimum information necessary
+for people who are familiar with object-oriented/component oriented software
+development and the SIDL (Scientific Interface Definition Language) to
+implement classes in FORTRAN 77 or use classes implemented by someone else
+from a FORTRAN 77 driver. If you are unfamiliar with SIDL, I suggest seeking
+additional material from <a href="http://www.llnl.gov/CASC/components/">http://www.llnl.gov/CASC/components/</a>
+.
+<p>The assumption for this document is that you already have a SIDL file
+for a software library, and you need to call it from FORTRAN 77 or implement
+it in FORTRAN 77.
+<h3>
+<a NAME="Installation"></a>Installation</h3>
+During the installation of BABEL, it makes a runtime library for a particular
+FORTRAN 77 compiler. You must use the same FORTRAN 77 compiler that was
+used for the BABEL installation. If you're forced to work with a number
+of FORTRAN 77 compilers, you will need a separate installation of BABEL
+for each FORTRAN 77 compiler.
+<br>&nbsp;
+<h3>
+<a NAME="Types"></a>Basic Information about types</h3>
+The basic types in SIDL are mapped into FORTRAN 77 according to the following
+table:
+<table BORDER CELLSPACING=2 CELLPADDING=2 WIDTH="90%" >
+<caption><tbody>
+<br></tbody></caption>
+
+<tr>
+<th VALIGN=TOP>SIDL TYPE</th>
+
+<th VALIGN=TOP>FORTRAN 77 TYPE</th>
+</tr>
+
+<tr>
+<td VALIGN=TOP>int</td>
+
+<td VALIGN=TOP>INTEGER*4</td>
+</tr>
+
+<tr>
+<td VALIGN=TOP>long</td>
+
+<td VALIGN=TOP>INTEGER*8</td>
+</tr>
+
+<tr>
+<td VALIGN=TOP>float</td>
+
+<td VALIGN=TOP>REAL</td>
+</tr>
+
+<tr>
+<td VALIGN=TOP>double</td>
+
+<td VALIGN=TOP>DOUBLE PRECISION</td>
+</tr>
+
+<tr>
+<td VALIGN=TOP>bool</td>
+
+<td VALIGN=TOP>LOGICAL</td>
+</tr>
+
+<tr>
+<td VALIGN=TOP>char</td>
+
+<td VALIGN=TOP>CHARACTER*1</td>
+</tr>
+
+<tr>
+<td VALIGN=TOP>string</td>
+
+<td VALIGN=TOP>CHARACTER*(*)</td>
+</tr>
+
+<tr>
+<td VALIGN=TOP>fcomplex</td>
+
+<td VALIGN=TOP>COMPLEX</td>
+</tr>
+
+<tr>
+<td VALIGN=TOP>dcomplex</td>
+
+<td VALIGN=TOP>DOUBLE COMPLEX</td>
+</tr>
+
+<tr>
+<td VALIGN=TOP>enum</td>
+
+<td VALIGN=TOP>INTEGER</td>
+</tr>
+
+<tr>
+<td VALIGN=TOP>opaque</td>
+
+<td VALIGN=TOP>INTEGER*8</td>
+</tr>
+
+<tr>
+<td VALIGN=TOP>interface</td>
+
+<td VALIGN=TOP>INTEGER*8</td>
+</tr>
+
+<tr>
+<td VALIGN=TOP>class</td>
+
+<td VALIGN=TOP>INTEGER*8</td>
+</tr>
+
+<tr>
+<td VALIGN=TOP>array</td>
+
+<td VALIGN=TOP>INTEGER*8</td>
+</tr>
+</table>
+
+<p>For pointer types, such as opaque, interface, class, and array, a 64-bit
+integer is used, so FORTRAN 77 code will be portable between systems with
+a 32 bit address space and systems with a 64 bit address space. On a 32
+bit system, the upper 32 bits of these quantities are ignored. Systems
+with more than 64-bit pointers aren't currently supported.
+<p>Generally, clients should treat opaque, interface, class and array values
+as black boxes. However, there is one value that is special. A value of
+zero for any of these quantities indicates that the value does not refer
+to an object. Zero is the FORTRAN 77 equivalent of <tt>NULL</tt> . Any
+nonzero value is or should be a valid object reference. Developers writing
+in FORTRAN 77 should initiailize values to be passed as <tt>in</tt> or
+<tt>inout</tt> parameters to zero or a valid object reference.
+<p>When mapping the SIDL string type into FORTRAN 77, some capability was
+sacrificed to make it possible to use normal looking FORTRAN 77 string
+handling. One difference is that all FORTRAN 77 strings have a limited
+fixed size. When implementing a subroutine with an <tt>out</tt> parameter,
+the size of the string is limited to 1024 characters.
+<p>Enumerated types are just integer values. The constants are defined
+in an includable file assuming your FORTRAN 77 compiler supports some form
+of including.
+<br>&nbsp;
+<h3>
+<a NAME="Calling"></a>Calling methods from FORTRAN 77</h3>
+All SIDL methods are implemented as FORTRAN 77 subroutines regardless of
+whether they have a return value or not. For object methods, the object
+or interface pointer is passed as the first argument to the subroutine
+before all the formally declared arguments. For static methods, the formally
+declared arguments appear first.
+<p>When a method has a return value, a variable to hold the return value
+should be passed as an argument following the formally declared arguments.
+When a method can throw an exception (i.e., its SIDL definition has a throws
+clause), a variable of type <tt>INTEGER*8</tt> should be passed to hold
+a SIDL.BaseException pointer if an exception is thrown. After the call,
+the client should test this argument. If it's non-zero, an exception was
+thrown by the method, and the method should respond appropriately. When
+an exception is thrown, the value of all other arguments should be ignored.
+<p>The name of the subroutine that FORTRAN 77 clients should call is derived
+from the fully qualified name of the class and the name of the method.
+To determine the name, take the fully qualified name, replace all the periods
+with underscores, append an underscore, append the method name and then
+append "<tt>_f</tt>".
+<p>For example, to call the <tt>deleteRef</tt> method on a
+<tt>SIDL.BaseInterface</tt>
+interface, you would write:
+<pre>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; integer*8 interface1, interface2
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; logical areSame
+C&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; code to initialize interface1 &amp; interface 2 here
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; call SIDL_BaseInterface_deleteRef_f(interface1)</pre>
+To call the <tt>isSame</tt> method on a <tt>SIDL.BaseInterface</tt> , you
+would write:
+<pre>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; call SIDL_BaseInterface_isSame_f(interface1, interface2, areSame)</pre>
+To call the queryInt method on a SIDL.BaseInterface, you would write:
+<pre>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; call SIDL_BaseInterface_queryInt_f(interface1, 'My.Interface.Name', interface2)</pre>
+For interfaces and classes, there is an implicit method called
+<tt>_cast</tt>
+. Its return type is <tt>opaque</tt>, and it has one formal argument, a
+string in addition to the implicit object/interface reference. The <tt>_cast</tt>
+method attempts to cast the object/interface to the named type. It is similar
+to the <tt>queryInt</tt> method in
+<tt>SIDL.BaseInterface</tt> except it
+does not increment the reference count of the return object or interface,
+and it may return an object or an interface pointer. The <tt>queryInt</tt>
+method always returns an interface pointer.
+<p>For non-abstract classes, there is an implicit method called
+<tt>_create</tt>
+. It creates and returns an instance of the class.
+<p>Here are examples of the use of these two methods:
+<pre>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; integer*8 object, interface
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; call SIDL_BaseClass__create_f(object)
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; call SIDL_BaseClass__cast_f(object, 'SIDL.BaseInterface', interface)</pre>
+Please note the presence of two underscores between <tt>BaseClass</tt>
+and
+<tt>create</tt> and between <tt>BaseClass</tt> and <tt>cast</tt> ;
+the extra underscore is there because the first character of the method
+name is an underscore.
+<p>Here is an example call to the addSearchPath in the SIDL.Loader class:
+<br><tt>call SIDL_Loader_addSearchPath_f('/try/looking/here')</tt>
+<p>Your FORTRAN 77 must manage any object references created by the calls
+you make.
+<p>Here is another example adapted from the BABEL regression tests. Package
+ExceptionTest has a class named Fib with a method declared in SIDL as follows:
+<pre>int getFib(in int n, in int max_depth, in int max_value, in int depth)
+&nbsp;&nbsp;&nbsp; throws NegativeValueException, FibException;</pre>
+Here is the outline of a FORTRAN 77 code fragment to use this method.
+<br>&nbsp;
+<pre>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; integer*8 fib, except, except2
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; integer*4 index, maxdepth, maxval, depth, result
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; call ExceptionTest_Fib__create_f(fib)
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; index = 4
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; maxdepth = 100
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; maxvalue = 32000
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; depth = 0
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; call ExceptionTest_getFib_f(fib, index, maxdepth,
+&nbsp;&nbsp;&nbsp;&nbsp; $&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; maxvalue, depth, result, except)
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; if (except .ne. 0) then
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; call SIDL_BaseException__cast_f(except,&nbsp;
+&nbsp;&nbsp;&nbsp;&nbsp; $&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 'ExceptionTest.FibException', except2)
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; if (except2 .ne. 0) then
+c&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; do something here with the FibException
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; else
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; call SIDL_BaseException__cast_f(exception,
+&nbsp;&nbsp;&nbsp;&nbsp; $&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 'ExceptionTest.NegativeValueException',
+&nbsp;&nbsp;&nbsp;&nbsp; $&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; except2)
+c&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; do something here with the NegativeValueException
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; endif
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; call SIDL_BaseException_deleteRef_f(except)
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; else
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; write (*,*) 'getFib for ', index, ' returned ', result
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; endif
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; call ExceptionTest_Fib_deleteRef_f(fib)</pre>
+Here is how you should invoke BABEL to create the FORTRAN 77 stubs for
+an IDL file.
+<pre>babel --server=f77 file.sidl</pre>
+This will create a <tt>babel.make</tt> file, numerous C headers, numerous
+C source files, and some FORTRAN 77 files. The files ending in
+<tt>_fStub.c</tt>
+are the FORTRAN 77 stubs that allow FORTRAN 77 to call a SIDL method. As
+a client, you should ignore and/or delete files ending in
+<tt>_Impl.f</tt>
+and <tt>_fSkel.c</tt>. These files are used if you're implementing an object
+in FORTRAN 77.
+<p>You will need to compile and link the files ending in <tt>_fStub.c</tt>
+into your application (i.e. STUBSRCS in babel.make). Normally, the IOR
+files (<tt>_IOR.c</tt>) are linked together with the implementation file,
+so you probably don't need to compile them.
+<p>If you have some <tt>enum</tt>'s defined in your SIDL file, BABEL will
+generate FORTRAN 77 include files in the style of DEC FORTRAN (Compaq FORTRAN?)
+%INCLUDE. These files are named by taking the fully qualified name of the
+enum, changing the periods to underscores, and appending
+<tt>.inc</tt>
+. Here is an example of a generated include file.
+<br>&nbsp;
+<pre>C&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; File:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; enums_car.inc
+C&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Symbol:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; enums.car-v1.0
+C&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Symbol Type:&nbsp;&nbsp; enumeration
+C&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Babel Version: 0.8.2
+C&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Description:&nbsp;&nbsp; Automatically generated; changes will be lost
+C&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+C&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; babel-version = 0.8.2
+C&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; source-line&nbsp;&nbsp; = 25
+C&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; integer porsche
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; parameter (porsche = 911)
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; integer ford
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; parameter (ford = 150)
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; integer mercedes
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; parameter (mercedes = 550)</pre>
+
+<h3>
+<a NAME="Implementing"></a>Implementing Classes in FORTRAN 77</h3>
+Much of the information from the previous section is pertinent to implementing
+a SIDL class in FORTRAN 77. The types of the arguments are as indicated
+in the
+<a href="#Types">type table</a>. Your implementation can call other
+SIDL methods in which case follow the rules for client calls.
+<p>You should invoke BABEL:
+<pre>babel --server=f77 file.sidl</pre>
+This will create a <tt>babel.make</tt>, numerous C headers, numerous C
+source files and some FORTRAN 77 source files. Your job, should you choose
+to accept it, is to fill in the FORTRAN 77 source files with the implementation
+of the methods. The files you need to edit all end with <tt>_Impl.f</tt>
+. All your changes to the file should be made between code splicer pairs.
+Code between splicer pairs will be retained by subsequent invocations of
+BABEL; code outside splicer pairs is not. Here is an example of a code
+splicer pair. In this example, you would replace the line "<tt>C Insert
+extra code here...</tt> " with your lines of code.
+<br>&nbsp;
+<pre>C&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; DO-NOT-DELETE splicer.begin(_miscellaneous_code_start)
+C&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Insert extra code here...
+C&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; DO-NOT-DELETE splicer.end(_miscellaneous_code_start)</pre>
+Each <tt>_Impl.f</tt> file contains numerous empty subroutines. Each subroutine
+that you must implement is partially implemented. The SUBROUTINE statement
+is written, and the types of the arguments have been declared. You must
+provide the body of each subroutine that implements the expected behavior
+of the method.
+<p>There are two implicit methods (i.e. methods that did not appear in
+the SIDL file) that must also be implemented. The <tt>_ctor</tt> method
+is a constructor function that is run whenever an object is created. The
+<tt>_dtor</tt>
+method is a destructor function that is run whenever an object is destroyed.
+If the object has no state, these functions are typically empty.
+<p>The SIDL IOR keeps a pointer (i.e. C void *) for each object that is
+intended to hold a pointer to the object's internal data. The FORTRAN 77
+skeleton provides two functions that the FORTRAN 77 developer will need
+to use to access the private pointer. The name of the function is derived
+from the fully qualified type name as follows. Replace periods with underscores
+and append <tt>__get_data_f</tt> or <tt>__set_data_f</tt>. The first argument
+is the object pointer (i.e. <tt>self</tt>), and the second argument is
+an <tt>opaque</tt> . These arguments are 64 bit integers in FORTRAN 77,
+but the number of bits stored by the IOR is determined by the
+<tt>sizeof(void
+*)</tt>.
+<p>BABEL/SIDL does not provide a mechanism for FORTRAN 77 to allocate memory
+to use for the private data pointer.
+<h3>
+<a NAME="Arrays"></a>Accessing SIDL Arrays from FORTRAN 77</h3>
+The normal SIDL C function API is available from FORTRAN 77 to create,
+destroy and access array elements and meta-data. The function name from
+FORTRAN has
+<tt>_f</tt> appended.
+<p>For SIDL types <tt>dcomplex</tt>, <tt>double</tt>,
+<tt>fcomplex</tt>
+, <tt>float</tt>, <tt>int</tt> and
+<tt>long</tt>, SIDL provides a method
+to get direct access to the array elements. For the other types, you must
+use the functional API to access array elements.
+<p>For type X, there is a FORTRAN 77 function called
+<tt>SIDL_X__array_access_f</tt>
+to provide a method to get direct access. An example is given below. Of
+course, this will not work if your FORTRAN 77 compiler does array bounds
+checking.
+<br>&nbsp;
+<pre>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; integer*4 lower(1), upper(1), stride(1), i, index(1)
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; integer*4 value, refarray(1), modval
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; integer*8 nextprime, tmp, refindex
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; lower(1) = 0
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; value = 0
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; upper(1) = len - 1
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; call SIDL_int__array_create_f(1, lower, upper, retval)
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; call SIDL_int__array_access_f(retval, refarray, lower,
+&nbsp;&nbsp;&nbsp;&nbsp; $&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; upper, stride, refindex)
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; do i = 0, len - 1
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; tmp = value
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; value = nextprime(tmp)
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; modval = mod(i, 3)
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; if (modval .eq. 0) then
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; call SIDL_int__array_set1_f(retval, i, value)
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; else
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; if (modval .eq. 1) then
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; index(1) = i
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; call SIDL_int__array_set_f(retval, index, value)
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; else
+C this is equivalent to the SIDL_int__array_set_f(retval, index, value)
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; refarray(refindex + stride(1)*(i - lower(1))) =
+&nbsp;&nbsp;&nbsp;&nbsp; $&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; value
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; endif
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; endif
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; enddo</pre>
+To access a two dimensional array, the expression referring to element
+i, j is
+<pre>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; refarray(refindex + stride(1) * (i - lower(1)) + stride(2) * (j - lower(2))</pre>
+To access a three dimensional array, the expression referring to element
+i, j k is
+<pre>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; refarray(refindex + stride(1) * (i - lower(1)) + stride(2) * (j - lower(2)) + stride(3) * (k - lower(3))</pre>
+You can call things like LINPACK or BLAS if you want, but you should check
+the stride to make sure the array is packed as you need it to be.&nbsp;
+<tt>stride(i)</tt> indicates the distance between elements in dimension
+<tt>i</tt>.
+A value of 1 means elements are packed densely in dimension<tt> i</tt>.
+Negative stride values are possible, and when an array is a slice of another
+array, there may be no dimension with a stride of 1.
+<p>For a dcomplex array, the reference array should a FORTRAN array of
+REAL*8 instead of a FORTRAN array of double complex to avoid potential
+alignment problems. For a fcomplex array, the reference array is a complex*8
+because we don't anticipate an alignment problem.
+</body>
+</html>

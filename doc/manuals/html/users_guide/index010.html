@@ -1,0 +1,841 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN"
+            "http://www.w3.org/TR/REC-html40/loose.dtd">
+<HTML>
+<HEAD>
+
+<META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<META name="GENERATOR" content="hevea 1.10">
+<LINK rel="stylesheet" type="text/css" href="index.css">
+<TITLE>C Bindings</TITLE>
+</HEAD>
+<BODY >
+<A HREF="index009.html"><IMG SRC="previous_motif.gif" ALT="Previous"></A>
+<A HREF="index-multipage.html"><IMG SRC="contents_motif.gif" ALT="Up"></A>
+<A HREF="index011.html"><IMG SRC="next_motif.gif" ALT="Next"></A>
+<HR>
+<H1 CLASS="chapter"><A NAME="htoc33">Chapter 8</A>  C Bindings</H1><UL>
+<LI><A HREF="index010.html#toc31">Introduction</A>
+</LI><LI><A HREF="index010.html#toc32">Basics</A>
+</LI><LI><A HREF="index010.html#toc33">Client-side</A>
+</LI><LI><A HREF="index010.html#toc34">Implementation-side</A>
+</LI></UL>
+<P><A NAME="c:c"></A></P><P><BR>
+</P><H2 CLASS="section"><A NAME="toc31"></A><A NAME="htoc34">8.1</A>  Introduction</H2><P><A NAME="s:c:intro"></A></P><P>This chapter gives an overview of the C bindings for SIDL. Common aspects
+of the bindings, such as the mapping of SIDL data types to their C 
+representatives, are presented in Section <A HREF="#s:c:basics">8.2</A>.
+Issues of concern to callers written in C are addressed in the client-side
+bindings discussion in Section <A HREF="#s:c:client">8.3</A>, while callees written in
+C would benefit from a review of implementation-side issues in
+Section <A HREF="#s:c:implementation">8.4</A>.
+Although it would defeat the multilingual interoperability goals of Babel, 
+programs can be written solely with a C compiler since Babel’s Intermediate 
+Object Representation (IOR) and all objects in the <FONT COLOR=maroon><I><TT>sidl</TT></I></FONT> name space
+(e. g. <FONT COLOR=maroon><I><TT>sidl.BaseClass</TT></I></FONT>, etc.) are implemented in C. </P><H2 CLASS="section"><A NAME="toc32"></A><A NAME="htoc35">8.2</A>  Basics</H2><P><A NAME="s:c:basics"></A></P><P>As with any programming language-neutral technology, translations must 
+be made between abstract constructs supported by the technology and the
+corresponding concrete constructs in the native programming language. 
+Due to the need to identify types in a global context, 
+Subsection <A HREF="#ss:c:namespace">8.2.1</A> describes the convention used to establish 
+name spaces.
+Conventions for generating language-specific method signatures are given 
+in Subsection <A HREF="#ss:c:signatures">8.2.2</A>.
+The mapping of SIDL fundamental types is given in Subsection <A HREF="#ss:c:types">8.2.3</A>. 
+Finally, the process of casting between different types is described
+in Subsection <A HREF="#ss:c:casting">8.2.4</A>.</P><H3 CLASS="subsection">8.2.1  Name space</H3><P><A NAME="ss:c:namespace"></A>
+<A NAME="@default380"></A>
+<A NAME="@default381"></A></P><P>Since C does not have built-in mechanisms for protecting the global name space,
+generated bindings avoid name space collisions by using struct
+and method names that incorporate all relevant naming information.
+Without this approach, there would be
+multiple structures or routines with the same name.
+For a type <TT>Z</TT> in package <TT>X.Y</TT>, for example,
+the name of the type that C clients use for an object reference is
+<TT>X_Y_Z</TT>. The name is defined as follows in the <TT>X_Y_Z.h</TT> 
+header file:
+<A NAME="@default382"></A></P><DIV CLASS="flushright"><SPAN CLASS="textboxed"><FONT COLOR=purple><B>ANSI C</B></FONT></SPAN></DIV><TABLE CLASS="lstframe" STYLE="padding:1ex;border-style:solid;"><TR><TD CLASS="lstlisting"><B>struct</B> X_Y_Z__object;
+<B>struct</B> X_Y_Z__array;
+<B>typedef struct</B> X_Y_Z__object* X_Y_Z;</TD></TR>
+</TABLE><P>Method names, as discussed in Subsection <A HREF="#ss:c:signatures">8.2.2</A>, are 
+built in a similar manner.</P><H3 CLASS="subsection">8.2.2  Method signatures</H3><P><A NAME="ss:c:signatures"></A>
+<A NAME="@default383"></A>
+<A NAME="@default384"></A></P><P>The name of a C routine used to call a SIDL method is a
+concatenation of the package, class (or interface), and method 
+name, with period characters replaced with underscores. If the
+method is specified as overloaded (i. e., has a name extension), the
+extension is appended. 
+The object (or interface) pointer is automatically inserted as the first 
+parameter in the signature of non-static methods. This parameter
+operates like an <FONT COLOR=maroon><I><TT>in</TT></I></FONT> parameter. With the addition of remote 
+method invocation (RMI) support, all methods now implicitly throw exceptions.
+<A NAME="@default385"></A>
+Hence, an extra <FONT COLOR=maroon><I><TT>out</TT></I></FONT> parameter for the exception is added as the 
+last parameter of the signature.</P><P>The following SIDL method — taken from the Babel regression tests — is an
+example of a method that can throw multiple exception types:
+<A NAME="@default386"></A></P><DIV CLASS="flushright"><SPAN CLASS="textboxed"><FONT COLOR=purple><B>SIDL</B></FONT></SPAN></DIV><TABLE CLASS="lstframe" STYLE="padding:1ex;border-style:solid;"><TR><TD CLASS="lstlisting"><FONT COLOR=maroon><I><B>int</B> getFib(<B>in int</B> n, <B>in int</B> max_depth, <B>in int</B> max_value, <B>in int</B> depth)
+  <B>throws</B> NegativeValueException, FibException;</I></FONT></TD></TR>
+</TABLE><P>The corresponding C API is:</P><DIV CLASS="flushright"><SPAN CLASS="textboxed"><FONT COLOR=purple><B>ANSI C</B></FONT></SPAN></DIV><TABLE CLASS="lstframe" STYLE="padding:1ex;border-style:solid;"><TR><TD CLASS="lstlisting">int32_t
+ExceptionTest_Fib_getFib(
+  ExceptionTest_Fib self,
+  int32_t n,
+  int32_t max_depth,
+  int32_t max_value,
+  int32_t depth,
+  sidl_BaseInterface *_ex);</TD></TR>
+</TABLE><P>Note the addition of the object pointer (i. e., <TT>self</TT>) and
+exception (i. e., <TT>_ex</TT>) parameters.</P><H3 CLASS="subsection">8.2.3  Data types</H3><P><A NAME="ss:c:types"></A>
+<A NAME="@default387"></A>
+<A NAME="@default388"></A></P><BLOCKQUOTE CLASS="table"><DIV CLASS="center"><HR WIDTH="80%" SIZE=2></DIV>
+<DIV CLASS="caption"><TABLE CELLSPACING=6 CELLPADDING=0><TR><TD VALIGN=top ALIGN=left>Table 8.1: SIDL to C Type Mappings</TD></TR>
+</TABLE></DIV><A NAME="tbl:c:types"></A>
+<DIV CLASS="center">
+<TABLE BORDER=1 CELLSPACING=0 CELLPADDING=1><TR><TD ALIGN=left NOWRAP> <B>SIDL TYPE</B></TD><TD ALIGN=left NOWRAP><B>C TYPE</B></TD></TR>
+<TR><TD ALIGN=left NOWRAP> <FONT COLOR=maroon><I><TT>int</TT></I></FONT></TD><TD ALIGN=left NOWRAP><TT>int32_t</TT> <A NAME="@default389"></A></TD></TR>
+<TR><TD ALIGN=left NOWRAP> <FONT COLOR=maroon><I><TT>long</TT></I></FONT></TD><TD ALIGN=left NOWRAP><TT>int64_t</TT> <A NAME="@default390"></A></TD></TR>
+<TR><TD ALIGN=left NOWRAP> <FONT COLOR=maroon><I><TT>float</TT></I></FONT></TD><TD ALIGN=left NOWRAP><TT>float</TT> <A NAME="@default391"></A></TD></TR>
+<TR><TD ALIGN=left NOWRAP> <FONT COLOR=maroon><I><TT>double</TT></I></FONT></TD><TD ALIGN=left NOWRAP><TT>double</TT> <A NAME="@default392"></A></TD></TR>
+<TR><TD ALIGN=left NOWRAP> <FONT COLOR=maroon><I><TT>bool</TT></I></FONT></TD><TD ALIGN=left NOWRAP><TT>typedef sidl_bool</TT> <A NAME="@default393"></A></TD></TR>
+<TR><TD ALIGN=left NOWRAP> <FONT COLOR=maroon><I><TT>char</TT></I></FONT></TD><TD ALIGN=left NOWRAP><TT>char</TT> <A NAME="@default394"></A></TD></TR>
+<TR><TD ALIGN=left NOWRAP> <FONT COLOR=maroon><I><TT>string</TT></I></FONT></TD><TD ALIGN=left NOWRAP><TT>char *</TT> <A NAME="@default395"></A></TD></TR>
+<TR><TD ALIGN=left NOWRAP> <FONT COLOR=maroon><I><TT>fcomplex</TT></I></FONT></TD><TD ALIGN=left NOWRAP><TT>struct sidl_fcomplex</TT> <A NAME="@default396"></A></TD></TR>
+<TR><TD ALIGN=left NOWRAP> <FONT COLOR=maroon><I><TT>dcomplex</TT></I></FONT></TD><TD ALIGN=left NOWRAP><TT>struct sidl_dcomplex</TT> <A NAME="@default397"></A></TD></TR>
+<TR><TD ALIGN=left NOWRAP> <FONT COLOR=maroon><I><TT>enum</TT></I></FONT></TD><TD ALIGN=left NOWRAP><TT>enum</TT> <A NAME="@default398"></A></TD></TR>
+<TR><TD ALIGN=left NOWRAP> <FONT COLOR=maroon><I><TT>opaque</TT></I></FONT></TD><TD ALIGN=left NOWRAP><TT>void *</TT> <A NAME="@default399"></A><A NAME="@default400"></A></TD></TR>
+<TR><TD ALIGN=left NOWRAP> <FONT COLOR=maroon><I><TT>interface</TT></I></FONT></TD><TD ALIGN=left NOWRAP><TT>typedef</TT> <A NAME="@default401"></A></TD></TR>
+<TR><TD ALIGN=left NOWRAP> <FONT COLOR=maroon><I><TT>class</TT></I></FONT></TD><TD ALIGN=left NOWRAP><TT>typedef</TT> <A NAME="@default402"></A></TD></TR>
+<TR><TD ALIGN=left NOWRAP> <FONT COLOR=maroon><I><TT>array</TT></I></FONT></TD><TD ALIGN=left NOWRAP><TT>struct *</TT> <A NAME="@default403"></A></TD></TR>
+</TABLE>
+</DIV>
+<DIV CLASS="center"><HR WIDTH="80%" SIZE=2></DIV></BLOCKQUOTE><P>Basic SIDL types are mapped into C according to Table <A HREF="#tbl:c:types">8.1</A>.
+The remainder of this subsection illustrates use of enumerations and arrays.</P><H4 CLASS="subsubsection">Enumerations</H4><P><A NAME="sss:c:enum"></A>
+<A NAME="@default404"></A><A NAME="@default405"></A>
+<A NAME="@default406"></A><A NAME="@default407"></A></P><P>Since SIDL enumerations map to C enumerations, their use is fairly
+straight-forward. The appropriate header file must be included. 
+The naming convention for enumerations is <TT>enums</TT> followed by
+the specified enumeration type and enumeration value name, where an 
+underscore is used to separate each part. For example,
+a variable can be assigned the <TT>blue</TT> constant for the <TT>color</TT> 
+enumeration of the sample in Subsection <A HREF="index008.html#ssec:basics:fundamental:enums">6.3</A> 
+as follows:
+<A NAME="@default408"></A><A NAME="@default409"></A></P><DIV CLASS="flushright"><SPAN CLASS="textboxed"><FONT COLOR=purple><B>ANSI C</B></FONT></SPAN></DIV><TABLE CLASS="lstframe" STYLE="padding:1ex;border-style:solid;"><TR><TD CLASS="lstlisting"><B>#include</B> "enums_color.h"
+
+<FONT COLOR="blue"><I>/* ...deleted lines... */</I></FONT>
+<B>enum</B> enums_color__enum myColor = enums_color_blue;</TD></TR>
+</TABLE><H4 CLASS="subsubsection">Arrays</H4><P><A NAME="sss:c:arrays"></A>
+<A NAME="@default410"></A><A NAME="@default411"></A>
+<A NAME="@default412"></A><A NAME="@default413"></A></P><P>As discussed in Section <A HREF="index008.html#s:arrays">6.4</A>, SIDL supports both normal and raw
+arrays (i. e., r-arrays). Normal SIDL arrays can be used by any supported
+language; whereas, r-arrays are restricted to numeric types and use in
+languages such as C, C++, and Fortran. This subsection discusses both
+within the context of C bindings. More information on the C version of
+the SIDL array API can be found in Subsection <A HREF="index008.html#ss:basics:array:api">6.4</A>.</P><P>In addition to defining the object structure and associated type for
+user-defined interfaces and classes, Babel also defines a corresponding
+array structure for normal SIDL arrays. The C mappings for the SIDL base 
+interface and class are:</P><DIV CLASS="flushright"><SPAN CLASS="textboxed"><FONT COLOR=purple><B>ANSI C</B></FONT></SPAN></DIV><TABLE CLASS="lstframe" STYLE="padding:1ex;border-style:solid;"><TR><TD CLASS="lstlisting"><FONT COLOR="blue"><I>/**
+ * Symbol "sidl.BaseInterface" (version 0.9.12)
+ *
+ * Every interface in &lt;code&gt;SIDL&lt;/code&gt; implicitly inherits
+ * from &lt;code&gt;BaseInterface&lt;/code&gt;, which is implemented
+ * by &lt;code&gt;BaseClass&lt;/code&gt; below.
+ */</I></FONT>
+<B>struct</B> sidl_BaseInterface__object;
+<B>struct</B> sidl_BaseInterface__array;
+<B>typedef struct</B> sidl_BaseInterface__object* sidl_BaseInterface;
+
+<FONT COLOR="blue"><I>/**
+ * Symbol "sidl.BaseClass" (version 0.9.12)
+ *
+ * Every class implicitly inherits from &lt;code&gt;BaseClass&lt;/code&gt;.  This
+ * class implements the methods in &lt;code&gt;BaseInterface&lt;/code&gt;.
+ */</I></FONT>
+<B>struct</B> sidl_BaseClass__object;
+<B>struct</B> sidl_BaseClass__array;
+<B>typedef struct</B> sidl_BaseClass__object* sidl_BaseClass;</TD></TR>
+</TABLE><P>Given the package <TT>num</TT> and class <TT>Linsol</TT> with the <TT>solve</TT> 
+method specified in Subsection <A HREF="index008.html#ss:r-arrays">6.4</A>, the corresponding generated 
+C API is:
+<A NAME="@default414"></A>
+<A NAME="@default415"></A><A NAME="@default416"></A></P><DIV CLASS="flushright"><SPAN CLASS="textboxed"><FONT COLOR=purple><B>ANSI C</B></FONT></SPAN></DIV><TABLE CLASS="lstframe" STYLE="padding:1ex;border-style:solid;"><TR><TD CLASS="lstlisting"><FONT COLOR="blue"><I>/** C client-side API for solve method */</I></FONT>
+<B>void</B> num_Linsol_solve(<FONT COLOR="blue"><I>/* in */</I></FONT> num_Linsol self,
+                      <FONT COLOR="blue"><I>/* in rarray[m,n] */</I></FONT> <B>double</B>* A,
+                      <FONT COLOR="blue"><I>/* inout rarray[n] */</I></FONT> <B>double</B>* x,
+                      <FONT COLOR="blue"><I>/* in */</I></FONT> int32_t m,
+                      <FONT COLOR="blue"><I>/* in */</I></FONT> int32_t n,
+                      <FONT COLOR="blue"><I>/* out */</I></FONT> sidl_BaseInterface *_ex);</TD></TR>
+</TABLE><P>In this example, data for each array is passed as a <TT>double</TT> pointer 
+with the index parameters being normal <FONT COLOR=maroon><I><TT>in</TT></I></FONT> integers. 
+The one catch for C programmers is that
+<TT>A</TT> is in column-major order — not the typical row-major
+ordering used in C. </P><P>Access to the element in row <TT>i</TT> and column <TT>j</TT> can be facilitated 
+using <TT>RarrayElem2(A,i,j,m)</TT>. <A NAME="@default417"></A>
+<TT>RarrayElem2</TT>, defined in <TT>sidlArray.h</TT>, is a convenience macro — 
+for C and C++ programmers — supplied to facilitate accessing r-arrays in 
+column-major order. Access to memory by stride one involves making the first
+index argument to <TT>RarrayElem2</TT>, <TT>i</TT>, the inner loop.
+Since valid pointers are always required for raw arrays, passing <TT>NULL</TT> 
+for <TT>A</TT>, <TT>x</TT>, or <TT>b</TT> is not allowed. </P><H3 CLASS="subsection">8.2.4  Type casting</H3><P><A NAME="ss:c:casting"></A>
+<A NAME="@default418"></A><A NAME="@default419"></A>
+<A NAME="@default420"></A></P><P>C bindings for interfaces and classes include two implicitly defined 
+methods for performing type casts. The methods are: <TT>_cast</TT> and
+<TT>_cast2</TT>. 
+The <TT>_cast</TT> method casts a SIDL interface or object pointer to a 
+<TT>sidl.BaseClass</TT> pointer. The <TT>_cast2</TT> method casts a SIDL 
+interface or object pointer to a named <TT>type</TT> pointer.
+In the latter case, the client is responsible
+for casting the return value into the proper pointer type. 
+Using <TT>sidl.BaseClass</TT> as an example, signatures of the 
+two methods are:
+<A NAME="@default421"></A></P><DIV CLASS="flushright"><SPAN CLASS="textboxed"><FONT COLOR=purple><B>ANSI C</B></FONT></SPAN></DIV><TABLE CLASS="lstframe" STYLE="padding:1ex;border-style:solid;"><TR><TD CLASS="lstlisting">sidl_BaseClass
+sidl_BaseClass__cast(<B>void</B>* obj, <FONT COLOR="blue"><I>/* out */</I></FONT> sidl_BaseInterface *_ex);
+
+<B>void</B>*
+sidl_BaseClass__cast2(<B>void</B>* obj, <B>const char</B>* type,
+                      <FONT COLOR="blue"><I>/* out */</I></FONT> sidl_BaseInterface *_ex);</TD></TR>
+</TABLE><P>Using either method results in the reference count<A NAME="@default422"></A> 
+of the underlying object being increased if the cast succeeded. Success can
+be determined by checking the return value for a non-<TT>NULL</TT> result. That
+is, if a <TT>NULL</TT> value is returned from either method, then the cast 
+failed or <TT>obj</TT> was <TT>NULL</TT>.</P><P><EM><B>NOTE</B>:
+These methods did not increment the reference count in Babel releases prior 
+to 0.11.0.
+</EM></P><H2 CLASS="section"><A NAME="toc33"></A><A NAME="htoc36">8.3</A>  Client-side</H2><P><A NAME="s:c:client"></A>
+<A NAME="@default423"></A></P><P>This section summarizes aspects of generating and using the C bindings
+associated with software wrapped with Babel’s language interoperability 
+middleware. The bindings generation process is presented before the
+conventions used to name C header files are described. 
+Object management and invocation of static and overloaded methods are 
+also summarized. The process of catching exceptions is then discussed.
+Finally, the processes for enabling and disabling implementation-specific
+pre- and post-method instrumentation — referred to as “hooks” —
+are illustrated.</P><H3 CLASS="subsection">8.3.1  Bindings generation</H3><P>
+<A NAME="@default424"></A>
+<A NAME="@default425"></A><A NAME="@default426"></A></P><P>C stubs (i. e. code to support C clients for a set of SIDL-specified
+classes or interfaces), are created by invoking Babel as follows<SUP><A NAME="text14" HREF="#note14">1</A></SUP>:
+<A NAME="@default427"></A></P><BLOCKQUOTE CLASS="quotation"><TT>
+% <B>babel --exclude-external --client=C file.sidl</B><BR>
+</TT></BLOCKQUOTE><P>
+or more cryptically
+</P><BLOCKQUOTE CLASS="quotation"><TT>
+% <B>babel -E -cC file.sidl</B><BR>
+</TT></BLOCKQUOTE><P>Using the <B><TT><CODE>--</CODE>exclude-external</TT></B> flag avoids generation
+of files for symbols referenced (but not specified) in <TT>file.sidl</TT>; 
+thereby, 
+reducing the total number of generated files. Of the files generated, those 
+ending in <TT>_IOR.h</TT> and <TT>_IOR.c</TT> contain the Intermediate Object
+Representation (IOR). Files ending with <TT>_Stub.c</TT> are the C stubs
+— the interface between C clients and the IOR. The remaining header
+files contain the C client API.</P><P>To use the bindings, you must compile and link the stub files against the 
+SIDL runtime library and an implementation of the API.</P><H3 CLASS="subsection">8.3.2  Header files</H3><P>
+<A NAME="@default428"></A>
+<A NAME="@default429"></A></P><P>The hierarchical nature of SIDL packages lends itself to multiple
+options for including enumerations, 
+interfaces, and classes. The naming convention for associated
+header files uses underscore-separated parts corresponding to the
+package hierarchy. That is, type <TT>X.Y.Z</TT> — where X is the name
+of the package, Y the subpackage, and Z the class — is included with
+<TT>#include "X_Y_Z.h"</TT><A NAME="@default430"></A><A NAME="@default431"></A>.
+The header files for the whole subpackage, <TT>X.Y</TT>, are included with
+<TT>#include "X_Y.h"</TT>. For instance, all 
+types in the <TT>sidl</TT> name space are included in <TT>#include "sidl.h"</TT>.
+<A NAME="@default432"></A></P><P>Babel ensures each generated client-side header file automatically includes
+<TT>sidl_header.h</TT><A NAME="@default433"></A>, which defines:</P><OL CLASS="enumerate" type=1><LI CLASS="li-enumerate">
+<TT>struct sidl_dcomplex</TT> for the SIDL dcomplex type with
+parts named <TT>real</TT> and <TT>imaginary</TT>;
+</LI><LI CLASS="li-enumerate"><TT>struct sidl_fcomplex</TT> for the SIDL fcomplex type with
+parts named <TT>real</TT> and <TT>imaginary</TT>;
+</LI><LI CLASS="li-enumerate"><TT>int32_t</TT> and <TT>int64_t</TT> for the SIDL int and long
+types;
+</LI><LI CLASS="li-enumerate">a typedef for <TT>sidl_bool</TT> for the SIDL bool type;
+</LI><LI CLASS="li-enumerate">preprocessor symbols <TT>TRUE</TT> and <TT>FALSE</TT>; and 
+</LI><LI CLASS="li-enumerate">function prototypes for the multi-dimensional array APIs for
+the basic SIDL types.
+</LI></OL><H3 CLASS="subsection">8.3.3  Object management</H3><P>
+<A NAME="@default434"></A>
+<A NAME="@default435"></A></P><P>SIDL-specified objects are managed through explicit creation and 
+reference counting. An additional implicit method, called
+<TT>_create</TT>, must be invoked to create new instances of a concrete class. 
+The <TT>_create</TT> method returns a new reference
+that must be managed by the client. 
+The following is an example of its signature:
+<A NAME="@default436"></A></P><DIV CLASS="flushright"><SPAN CLASS="textboxed"><FONT COLOR=purple><B>ANSI C</B></FONT></SPAN></DIV><TABLE CLASS="lstframe" STYLE="padding:1ex;border-style:solid;"><TR><TD CLASS="lstlisting"><FONT COLOR="blue"><I>/**
+ * Constructor function for the class.
+ */</I></FONT>
+sidl_BaseClass
+sidl_BaseClass__create(<FONT COLOR="blue"><I>/* out */</I></FONT>sidl_BaseInterface *_ex);</TD></TR>
+</TABLE><P>References are then managed through methods inherited from
+<TT>sidl.BaseInterface</TT>. The methods are <TT>addRef</TT> and
+<TT>deleteRef</TT>, where <TT>addRef</TT><A NAME="@default437"></A> is used to increment the
+reference counter<A NAME="@default438"></A> while 
+<TT>deleteRef</TT><A NAME="@default439"></A> decrements it and, if 
+the count reaches zero, frees any associated memory — assuming
+the developer properly implemented the destructor.
+Their C APIs for <TT>sidl.BaseInterface</TT> are:
+<A NAME="@default440"></A></P><DIV CLASS="flushright"><SPAN CLASS="textboxed"><FONT COLOR=purple><B>ANSI C</B></FONT></SPAN></DIV><TABLE CLASS="lstframe" STYLE="padding:1ex;border-style:solid;"><TR><TD CLASS="lstlisting"><B>void</B>
+sidl_BaseInterface_addRef(<FONT COLOR="blue"><I>/* in */</I></FONT> sidl_BaseInterface self,
+                          <FONT COLOR="blue"><I>/* out */</I></FONT> sidl_BaseInterface *_ex);
+
+<B>void</B>
+sidl_BaseInterface_deleteRef(<FONT COLOR="blue"><I>/* in */</I></FONT> sidl_BaseInterface self,
+                             <FONT COLOR="blue"><I>/* out */</I></FONT> sidl_BaseInterface *_ex);</TD></TR>
+</TABLE><P>These same methods can be called from the <TT>sidl.BaseClass</TT>
+bindings. In fact, since all SIDL-specified interfaces inherit from 
+<TT>sidl.BaseInterface</TT> and all classes from <TT>sidl.BaseClass</TT>,
+every C binding for an interface or class will inherit <TT>addRef</TT> 
+and <TT>deleteRef</TT> methods. Their C APIs for <TT>sidl.BaseClass</TT>
+are:</P><DIV CLASS="flushright"><SPAN CLASS="textboxed"><FONT COLOR=purple><B>ANSI C</B></FONT></SPAN></DIV><TABLE CLASS="lstframe" STYLE="padding:1ex;border-style:solid;"><TR><TD CLASS="lstlisting"><B>void</B>
+sidl_BaseClass_addRef(<FONT COLOR="blue"><I>/* in */</I></FONT>  sidl_BaseClass self,
+                      <FONT COLOR="blue"><I>/* out */</I></FONT> sidl_BaseInterface *_ex);
+
+<B>void</B>
+sidl_BaseClass_deleteRef(<FONT COLOR="blue"><I>/* in */</I></FONT>  sidl_BaseClass self,
+                         <FONT COLOR="blue"><I>/* out */</I></FONT> sidl_BaseInterface *_ex);</TD></TR>
+</TABLE><H3 CLASS="subsection">8.3.4  Static methods</H3><P>
+<A NAME="@default441"></A>
+<A NAME="@default442"></A></P><P>Static methods are class-wide so not associated with an object. As a 
+result, <TT>self</TT> is <EM>not</EM> automatically added as the first argument 
+to the method signature in the bindings.</P><H3 CLASS="subsection">8.3.5  Overloaded methods</H3><P>
+<A NAME="@default443"></A>
+<A NAME="@default444"></A></P><P>Using the <TT>overload_sample.sidl</TT> file from Section <A HREF="index008.html#sec:overloading">6.7</A>
+as an example, recall that three versions of the <TT>getValue</TT> method are
+specified. The first signature takes no arguments, the second takes an 
+integer, and the third a boolean. The code snippet below illustrates 
+object creation, method invocation for each of the overloaded methods, 
+and exception handling.
+<A NAME="@default445"></A>
+<A NAME="@default446"></A><A NAME="@default447"></A>
+<A NAME="@default448"></A><A NAME="@default449"></A></P><DIV CLASS="flushright"><SPAN CLASS="textboxed"><FONT COLOR=purple><B>ANSI C</B></FONT></SPAN></DIV><TABLE CLASS="lstframe" STYLE="padding:1ex;border-style:solid;"><TR><TD CLASS="lstlisting">
+  int32_t b1, i1, iresult, nresult;
+  sidl_BaseInterface ex;
+
+  Overload_Sample t  = Overload_Sample__create (&amp;ex); SIDL_CHECK(ex);
+
+  nresult = Overload_Sample_getValue(t, &amp;ex); SIDL_CHECK(ex);
+  iresult = Overload_Sample_getValueInt(t, i1, &amp;ex); SIDL_CHECK(ex);
+  bresult = Overload_Sample_getValueBool(t, b1, &amp;ex); SIDL_CHECK(ex);</TD></TR>
+</TABLE><P><TT>SIDL_CHECK</TT><A NAME="@default450"></A> is used to check if an exception has 
+been thrown. If so, control jumps to the code after the <TT>EXIT</TT> label, 
+which is not illustrated here but is in the example presented in 
+Subsection <A HREF="#ss:c:exceptions">8.3.6</A>.
+<A NAME="@default451"></A><A NAME="@default452"></A></P><H3 CLASS="subsection">8.3.6  Exception catching</H3><P><A NAME="ss:c:exceptions"></A>
+<A NAME="@default453"></A><A NAME="@default454"></A>
+<A NAME="@default455"></A></P><P>Since all methods can now throw <FONT COLOR=maroon><I><TT>sidl.RuntimeException</TT></I></FONT>
+<A NAME="@default456"></A>, Babel ensures there is an 
+<FONT COLOR=maroon><I><TT>out</TT></I></FONT> argument to hold an exception. If not explicitly specified,
+Babel will automatically add the argument. For maximum
+backward compatibility and consistency, the argument is of type
+<TT>sidl.BaseInterface</TT>. When the exception parameter value is not
+<TT>NULL</TT>, an exception has been thrown. In that case, the caller should 
+ignore the value of the other <FONT COLOR=maroon><I><TT>out</TT></I></FONT> parameters as well as any 
+return value. </P><P>To facilitate exception management, <TT>sidl_Exception.h</TT> provides several
+helper utilities. Chief among them are: 
+<TT>SIDL_CHECK</TT><A NAME="@default457"></A>, 
+<TT>SIDL_CATCH</TT><A NAME="@default458"></A>, 
+and <TT>SIDL_CLEAR</TT><A NAME="@default459"></A>.
+Their use follows from their names. Their signatures are:
+<A NAME="@default460"></A></P><DIV CLASS="flushright"><SPAN CLASS="textboxed"><FONT COLOR=purple><B>ANSI C</B></FONT></SPAN></DIV><TABLE CLASS="lstframe" STYLE="padding:1ex;border-style:solid;"><TR><TD CLASS="lstlisting"><FONT COLOR="blue"><I>/* Macros to facilitate managing exceptions */</I></FONT>
+SIDL_CHECK(EX_VAR)
+SIDL_CLEAR(EX_VAR)
+
+<FONT COLOR="blue"><I>/* Helper function to facilitate catching exceptions of a specific type */</I></FONT>
+<B>int</B>
+SIDL_CATCH(<B>struct</B> sidl_BaseInterface__object *ex_var,
+           <B>const char</B> *sidl_Name);</TD></TR>
+</TABLE><P><TT>EX_VAR</TT> (or <TT>ex_var</TT>) is the exception object itself and 
+<TT>sidl_NAME</TT> is the string name of the exception type expected to 
+be caught. </P><P>The following example, based on the <TT>getFib</TT> method from 
+Subsection <A HREF="#ss:c:signatures">8.2.2</A>, illustrates not only catching an 
+exception but determining whether it is one of the types identified 
+in the specification:
+<A NAME="@default461"></A>
+<A NAME="@default462"></A><A NAME="@default463"></A>
+<A NAME="@default464"></A>
+<A NAME="@default465"></A><A NAME="@default466"></A>
+<A NAME="@default467"></A><A NAME="@default468"></A></P><DIV CLASS="flushright"><SPAN CLASS="textboxed"><FONT COLOR=purple><B>ANSI C</B></FONT></SPAN></DIV><TABLE CLASS="lstframe" STYLE="padding:1ex;border-style:solid;"><TR><TD CLASS="lstlisting"><B>#include</B> "sidl_Exception.h"
+<FONT COLOR="blue"><I>/* ...numerous lines deleted... */</I></FONT>
+  <B>int</B> x;
+  sidl_BaseInterface _ex = NULL;
+
+  x = ExceptionTest_Fib_getFib(f, 10, 1, 100, 0, &amp;_ex);
+  <B>if</B> (SIDL_CATCH(_ex, "ExceptionTest.TooDeepException")) {
+    traceback(_ex);
+    SIDL_CLEAR(_ex);
+  }
+  <B>else if</B> (SIDL_CATCH(_ex, "ExceptionTest.TooBigException")) {
+    traceback(_ex);
+    SIDL_CLEAR(_ex);
+  }
+  <B>else if</B> (_ex == NULL) {
+    <B>return</B> FALSE;
+  }
+  SIDL_CHECK(_ex);
+  <B>return</B> TRUE;
+
+  EXIT:;
+    traceback(_ex);
+    SIDL_CLEAR(_ex);
+    <B>return</B> FALSE;</TD></TR>
+</TABLE><P>As an alternative to using <TT>SIDL_CHECK</TT><A NAME="@default469"></A>,
+<TT>_ex</TT> can be compared to <TT>NULL</TT> directly. Similarly, instead of
+using <TT>SIDL_CATCH</TT><A NAME="@default470"></A>, type casting can be used to determine 
+which of the potential exception types was actually thrown.</P><H3 CLASS="subsection">8.3.7  Hooks execution</H3><P><A NAME="ss:c:sethooks"></A>
+<A NAME="@default471"></A><A NAME="@default472"></A>
+<A NAME="@default473"></A><A NAME="@default474"></A>
+<A NAME="@default475"></A><A NAME="@default476"></A></P><P>If a given component supports pre- and post-method invocation instrumentation,
+also known as “hooks”, their execution can be enabled or disabled at
+runtime through the built-in <TT>_set_hooks</TT> method. For example,
+given the following SIDL specification:</P><DIV CLASS="flushright"><SPAN CLASS="textboxed"><FONT COLOR=purple><B>SIDL</B></FONT></SPAN></DIV><TABLE CLASS="lstframe" STYLE="padding:1ex;border-style:solid;"><TR><TD CLASS="lstlisting"><FONT COLOR=maroon><I><B>package</B> hooks <B>version</B> 1.0
+{
+  <B>class</B> Basics {
+    /**
+     * Basic illustration of hooks for static methods.
+     */
+    <B>static int</B> aStaticMeth(<B>in int</B> i, <B>out int</B> o, <B>inout int</B> io);
+
+    /**
+     * Basic illustration of hooks for static methods.
+     */
+    <B>int</B> aNonStaticMeth(<B>in int</B> i, <B>out int</B> o, <B>inout int</B> io);
+  }
+}</I></FONT></TD></TR>
+</TABLE><P>which has a single static function and a member function for the
+<TT>Basics</TT> class, the processes for enabling and disabling
+execution of the implementation-specific hooks are:</P><DIV CLASS="flushright"><SPAN CLASS="textboxed"><FONT COLOR=purple><B>ANSI C</B></FONT></SPAN></DIV><TABLE CLASS="lstframe" STYLE="padding:1ex;border-style:solid;"><TR><TD CLASS="lstlisting">  hooks_Basics obj;
+  sidl_BaseInterface _ex = NULL;
+
+  obj = hooks_Basics__create(&amp;exception); SIDL_CHECK(exception);
+
+  <FONT COLOR="blue"><I>/* Enable hooks execution (enabled by default if hooks generated) */
+  /* ... for static methods */</I></FONT>
+  hooks_Basics__set_hooks_static(TRUE, &amp;_ex); SIDL_CHECK(exception);
+
+  <FONT COLOR="blue"><I>/* ... for non-static methods */</I></FONT>
+  hooks_Basics__set_hooks(obj, TRUE, &amp;_ex); SIDL_CHECK(exception);
+
+
+  <FONT COLOR="blue"><I>/* ...do something meaningful... */
+
+
+  /* Disable hooks execution */
+  /* ... for static methods */</I></FONT>
+  hooks_Basics__set_hooks_static(FALSE, &amp;_ex); SIDL_CHECK(exception);
+
+  <FONT COLOR="blue"><I>/* ... for non-static methods */</I></FONT>
+  hooks_Basics__set_hooks(obj, FALSE, &amp;_ex); SIDL_CHECK(exception);
+
+
+  <FONT COLOR="blue"><I>/* ...do something meaningful... */</I></FONT></TD></TR>
+</TABLE><P>It is important to keep in mind that the <TT>_set_hooks_static</TT>
+method must be used to enable/disable invocation of hooks for static 
+methods and the <TT>_set_hooks</TT> method must be used for those of
+non-static methods. Also, Babel does not provide client access to the
+<TT>_pre</TT> and <TT>_post</TT> methods; therefore, they cannot be invoked
+directly. More information on the instrumentation process is provided
+in Subsection <A HREF="#ss:c:hooksimpl">8.4.5</A>.</P><H3 CLASS="subsection">8.3.8  Contract enforcement</H3><P><A NAME="ss:c:contract_enforcement"></A>
+<A NAME="@default477"></A>
+<A NAME="@default478"></A>
+<A NAME="@default479"></A></P><P>Interface contracts specify the expected behaviors of callers (or clients) 
+and callees (or servers) of methods defined for interfaces and classes.
+Once specified, contracts are optionally enforced at runtime, through checks
+automatically integrated into the middleware generated by the Babel compiler.
+This section provides an example of a specification and code snippets for
+performing basic, traditional contract enforcement — introduced in
+Section <A HREF="index008.html#ss:intro_contract_enforcement">6.5</A> — in a C client.</P><P>A SIDL specification, including preconditions and postconditions, for
+calculating the sum of two vectors is given below. 
+(Refer to Section <A HREF="index008.html#s:ifc_contracts">6.5</A> for an introduction to the contract
+syntax.) 
+According to the preconditions,
+<A NAME="@default480"></A><A NAME="@default481"></A>
+<A NAME="@default482"></A>
+all callers are expected to provide two one-dimensional, SIDL arrays of the 
+same size as arguments. 
+The postconditions
+<A NAME="@default483"></A><A NAME="@default484"></A>
+<A NAME="@default485"></A>
+specify that all implementations are expected to return a non-null, 
+one-dimensional array of the same size (as the first SIDL array), 
+assuming the preconditions are satisfied.</P><P><A NAME="@default486"></A>
+<A NAME="@default487"></A>
+<A NAME="@default488"></A>
+<A NAME="@default489"></A><A NAME="@default490"></A>
+<A NAME="@default491"></A>
+<A NAME="@default492"></A>
+<A NAME="@default493"></A>
+<A NAME="@default494"></A>
+<A NAME="@default495"></A>
+<A NAME="@default496"></A>
+<A NAME="@default497"></A>
+<A NAME="@default498"></A>
+<A NAME="@default499"></A>
+</P><DIV CLASS="flushright"><SPAN CLASS="textboxed"><FONT COLOR=purple><B>SIDL</B></FONT></SPAN></DIV><TABLE CLASS="lstframe" STYLE="padding:1ex;border-style:solid;"><TR><TD CLASS="lstlisting"><FONT COLOR=maroon><I><B>package</B> vect <B>version</B> 1.0 {
+  <B>class</B> Utils {
+    /* ... */
+
+    /**
+     * Return the sum of the specified vectors.
+     */
+    <B>static array</B>&lt;<B>double</B>&gt; vuSum(<B>in array</B>&lt;<B>double</B>&gt; u, <B>in array</B>&lt;<B>double</B>&gt; v)
+      <B>throws</B>
+        sidl.PreViolation, sidl.PostViolation;
+      <B>require</B>
+        not_null_u: u != null;
+        u_is_1d : dimen(u) == 1;
+        not_null_v: v != null;
+        v_is_1d : dimen(v) == 1;
+        same_size: size(u) == size(v);
+      <B>ensure</B>
+        no_side_effects : is pure;
+        result_not_null: result != null;
+        result_is_1d : dimen(result) == 1;
+        result_correct_size: size(result) == size(u);
+  }
+
+    /* ... */
+}</I></FONT></TD></TR>
+</TABLE><P>An example of a C client using the method is given below. The code snippet 
+illustrates declaring and creating the arrays; enabling full contract 
+enforcement (i. e., checking all contract clauses); executing <TT>vuSum</TT>; 
+handling contract violation exceptions; and cleaning up references is given 
+below.</P><P><A NAME="@default500"></A>
+<A NAME="@default501"></A>
+<A NAME="@default502"></A>
+<A NAME="@default503"></A>
+<A NAME="@default504"></A>
+<A NAME="@default505"></A>
+<A NAME="@default506"></A>
+<A NAME="@default507"></A>
+<A NAME="@default508"></A>
+<A NAME="@default509"></A>
+<A NAME="@default510"></A>
+<A NAME="@default511"></A>
+<A NAME="@default512"></A>
+<A NAME="@default513"></A>
+<A NAME="@default514"></A>
+<A NAME="@default515"></A>
+<A NAME="@default516"></A>
+<A NAME="@default517"></A>
+<A NAME="@default518"></A>
+</P><DIV CLASS="flushright"><SPAN CLASS="textboxed"><FONT COLOR=purple><B>ANSI C</B></FONT></SPAN></DIV><TABLE CLASS="lstframe" STYLE="padding:1ex;border-style:solid;"><TR><TD CLASS="lstlisting"><B>#include</B> "sidl_EnfPolicy.h"
+<B>#include</B> "sidl_Exception.h"
+
+<FONT COLOR="blue"><I>/* ... */</I></FONT>
+{
+  sidl_BaseInterface         exception = NULL;
+  <B>struct</B> sidl_double__array* x         = NULL;
+  <B>struct</B> sidl_double__array *u         = NULL;
+  <B>struct</B> sidl_double__array *v         = NULL;
+  sidl_BaseInterface         _ex       = NULL;
+
+  u = sidl_double__array_create1d(max_size);
+  v = sidl_double__array_create1d(max_size);
+
+  <FONT COLOR="blue"><I>/* Initialize u and v IF they are non-NULL. */
+
+  /* Enable FULL contract enforcement. */</I></FONT>
+  sidl_EnfPolicy_setEnforceAll(sidl_ContractClass_ALLCLASSES, TRUE,
+                               &amp;exception); SIDL_CHECK(exception);
+
+  <FONT COLOR="blue"><I>/* Do something meaningful before execute method. */</I></FONT>
+
+  x = vect_Utils_vuSum(u, v, (sidl_BaseInterface*)(&amp;_ex));
+  <B>if</B> (_ex != NULL) {
+    <B>if</B> (SIDL_CATCH(_ex, "sidl.PreViolation")) {
+      <FONT COLOR="blue"><I>/* Precondition violated.  Do something meaningful. */</I></FONT>
+    } <B>else if</B> (SIDL_CATCH(_ex, "sidl.PostViolation")) {
+      <FONT COLOR="blue"><I>/* Postcondition violated.  Do something meaningful. */</I></FONT>
+    } <B>else</B> {
+      <FONT COLOR="blue"><I>/* Unrecognized or unhandled exception. Do something meaningful. */</I></FONT>
+      <B>goto</B> EXIT;
+    }
+
+  }
+
+  <FONT COLOR="blue"><I>/* Do something meaningful with the result, x. */
+  /* ... */</I></FONT>
+
+  <B>if</B> (x != NULL) sidl_double__array_deleteRef(x);
+  sidl__array_deleteRef((<B>struct</B> sidl__array*)u);
+  sidl__array_deleteRef((<B>struct</B> sidl__array*)v);
+  <B>return</B> 0;
+
+  EXIT:;
+    <B>if</B> (x != NULL) sidl_double__array_deleteRef(x);
+    <B>if</B> (_ex !=NULL) {
+      sidl_BaseInterface _tae = NULL;
+      sidl_SIDLException _cue = sidl_SIDLException__cast(_ex, &amp;_tae);
+      <B>if</B> (_cue != NULL) {
+        printExceptionNote(_cue);
+        sidl_SIDLException_deleteRef(_cue, &amp;_tae);
+      }
+      sidl_BaseInterface_deleteRef((sidl_BaseInterface)_ex, &amp;_tae);
+      _ex = NULL;
+    }
+    <B>return</B> -1;
+}</TD></TR>
+</TABLE><P>Alternative enforcement options can be set, as described in
+Section <A HREF="index008.html#ss:intro_contract_enforcement">6.5</A>, through the two
+basic helper methods: <TT>setEnforceAll</TT> and <TT>setEnforceNone</TT>.
+The code snippet below shows the C calls associated with the traditional
+options of enabling only precondition enforcement, enabling postcondition
+enforcement, or completely disabling contract enforcement.</P><P><A NAME="@default519"></A>
+<A NAME="@default520"></A>
+<A NAME="@default521"></A>
+<A NAME="@default522"></A>
+<A NAME="@default523"></A>
+<A NAME="@default524"></A>
+<A NAME="@default525"></A>
+<A NAME="@default526"></A>
+<A NAME="@default527"></A>
+<A NAME="@default528"></A>
+</P><DIV CLASS="flushright"><SPAN CLASS="textboxed"><FONT COLOR=purple><B>ANSI C</B></FONT></SPAN></DIV><TABLE CLASS="lstframe" STYLE="padding:1ex;border-style:solid;"><TR><TD CLASS="lstlisting"><B>#include</B> "sidl_EnfPolicy.h"
+<B>#include</B> "sidl_Exception.h"
+
+{
+   <FONT COLOR="blue"><I>/* ... */
+
+  /*
+   * Enable only precondition contract enforcement.
+   * (Useful when only need to ensure callers comply with contract.)
+   */</I></FONT>
+  sidl_EnfPolicy_setEnforceAll(sidl_ContractClass_PRECONDS, FALSE,
+                               &amp;exception); SIDL_CHECK(exception);
+
+  <FONT COLOR="blue"><I>/*
+   * Enable only postcondition contract enforcement.
+   * (Useful when only need to ensure implementation(s) comply with contract.)
+   */</I></FONT>
+  sidl_EnfPolicy_setEnforceAll(sidl_ContractClass_POSTCONDS, FALSE,
+                               &amp;exception); SIDL_CHECK(exception);
+
+  <FONT COLOR="blue"><I>/*
+   * Disable contract enforcement.
+   * (Should only be used when have confidence in caller AND implementation.)
+   */</I></FONT>
+  sidl_EnfPolicy_setEnforceNone(FALSE, &amp;exception); SIDL_CHECK(exception);
+
+  EXIT:
+    <FONT COLOR="blue"><I>/* Do something with exception */</I></FONT>
+}</TD></TR>
+</TABLE><P>This section illustrates the basic interfaces and processes for
+traditional interface contract enforcement for a C client. 
+Additional enforcement policy options and methods as well as more
+information regarding the specification and enforcement of contracts
+can be found in Chapter <A HREF="index023.html#c:contracts">21</A>.</P><H2 CLASS="section"><A NAME="toc34"></A><A NAME="htoc37">8.4</A>  Implementation-side</H2><P><A NAME="s:c:implementation"></A>
+<A NAME="@default529"></A></P><P>This section summarizes aspects of generating and wrapping software 
+written in C. The bindings generation and basic implementation processes 
+are presented first.
+Since access to private data requires special steps in C, the process
+for defining and managing that data is discussed. Throwing
+exceptions in the implementation is then illustrated.
+Finally, the results of generating implementations with pre- and post-method
+“hooks” are shown.</P><H3 CLASS="subsection">8.4.1  Bindings generation</H3><P><A NAME="ss:c:implgen"></A>
+<A NAME="@default530"></A>
+<A NAME="@default531"></A><A NAME="@default532"></A></P><P>To create the C implementation bindings for a set of SIDL classes,
+Babel should be invoked as follows:
+<A NAME="@default533"></A></P><BLOCKQUOTE CLASS="quotation"><TT>
+% <B>babel --exclude-external --server=C file.sidl</B><BR>
+</TT></BLOCKQUOTE><P>
+or use the short form
+</P><BLOCKQUOTE CLASS="quotation"><TT>
+% <B>babel -E -sC file.sidl</B><BR>
+</TT></BLOCKQUOTE><P>The command creates a number of files. Specifically, a Makefile fragment, 
+called <TT>babel.make</TT>, headers, and source files are generated. 
+The only files needing hand-editing are the C “Impl” files — which 
+are header and source files whose names end in <TT>_Impl.h</TT> or
+<TT>_Impl.c</TT>, respectively. More on this in Subsection <A HREF="#ss:c:implfill">8.4.2</A>.</P><H3 CLASS="subsection">8.4.2  Bindings implementation</H3><P><A NAME="ss:c:implfill"></A>
+<A NAME="@default534"></A></P><P>Implementation details must be added to the “Impl” files generated in
+Subsection <A HREF="#ss:c:implgen">8.4.1</A>. Changes to these files must be made between 
+code splicer pairs to ensure their retention in subsequent invocations of
+Babel.
+The following is an example of a code splicer pair in C:
+<A NAME="@default535"></A><A NAME="@default536"></A>
+<A NAME="@default537"></A></P><DIV CLASS="flushright"><SPAN CLASS="textboxed"><FONT COLOR=purple><B>ANSI C</B></FONT></SPAN></DIV><TABLE CLASS="lstframe" STYLE="padding:1ex;border-style:solid;"><TR><TD CLASS="lstlisting"><FONT COLOR="blue"><I>/* DO-NOT-DELETE splicer.begin(num.Linsol._includes) */
+/* Insert-Code-Here {num.Linsol._includes} (includes and arbitrary code) */
+/* DO-NOT-DELETE splicer.end(num.Linsol._includes) */</I></FONT></TD></TR>
+</TABLE><P>A snippet from the Babel-generated implementation file for the 
+<TT>solve</TT> example from Subsection <A HREF="index008.html#ss:r-arrays">6.4</A> is given below, 
+wherein r-array data are presented as <TT>double</TT> pointers, and 
+index variables are normal integers.</P><DIV CLASS="flushright"><SPAN CLASS="textboxed"><FONT COLOR=purple><B>ANSI C</B></FONT></SPAN></DIV><TABLE CLASS="lstframe" STYLE="padding:1ex;border-style:solid;"><TR><TD CLASS="lstlisting"><B>void</B>
+impl_num_Linsol_solve(<FONT COLOR="blue"><I>/* in */</I></FONT> num_Linsol self,
+                      <FONT COLOR="blue"><I>/* in rarray[m,n] */</I></FONT> <B>double</B>* A,
+                      <FONT COLOR="blue"><I>/* inout rarray[n] */</I></FONT> <B>double</B>* x,
+                      <FONT COLOR="blue"><I>/* in */</I></FONT> int32_t m,
+                      <FONT COLOR="blue"><I>/* in */</I></FONT> int32_t n,
+                      <FONT COLOR="blue"><I>/* out */</I></FONT> sidl_BaseInterface *_ex)
+{
+  *_ex = 0;
+  <FONT COLOR="blue"><I>/* DO-NOT-DELETE splicer.begin(num.Linsol.solve) */
+  /* Insert-Code-Here {num.Linsol.solve} (solve method) */
+  /* DO-NOT-DELETE splicer.end(num.Linsol.solve) */</I></FONT>
+}</TD></TR>
+</TABLE><P>Data for the 2-D array, <TT>A</TT>, is in column-major order. The
+<TT>RarrayElem2</TT><A NAME="@default538"></A> helper macro, described in 
+Subsection <A HREF="#sss:c:arrays">8.2.3</A>, can be used to access <TT>A</TT>.</P><H3 CLASS="subsection">8.4.3  Private data</H3><P>
+<A NAME="@default539"></A>
+<A NAME="@default540"></A></P><P>Any variables declared in the implementation source file will, by
+virtue of Babel’s encapsulation, be private. The data can be global
+to the class — as in static variables declared within the <TT>_includes</TT>
+splicer block at the top of the class’s <TT>_Impl.c</TT> file — or 
+local to an instance — as in variables declared through the private data 
+structure automatically generated in the class’s <TT>_Impl.h</TT> file. 
+In the former case, special initialization procedures can be added to
+the built-in <TT>_load()</TT> method that is guaranteed to be called
+exactly once per class — <EM>before</EM> any user-defined methods
+can even be invoked. The latter case relies on the class-specific
+data structure automatically generated in the implementation’s header
+file. As illustrated in the <TT>foo.bar</TT> example below, the implementer 
+is free to define suitable contents.
+<A NAME="@default541"></A></P><DIV CLASS="flushright"><SPAN CLASS="textboxed"><FONT COLOR=purple><B>ANSI C</B></FONT></SPAN></DIV><TABLE CLASS="lstframe" STYLE="padding:1ex;border-style:solid;"><TR><TD CLASS="lstlisting"><FONT COLOR="blue"><I>/*
+ * Private data for class foo.bar
+ */</I></FONT>
+
+<B>struct</B> foo_bar__data {
+<FONT COLOR="blue"><I>/* DO-NOT-DELETE splicer.begin(foo.bar._data) */</I></FONT>
+  <B>int</B>    d_my_int_array[MY_MAX_ARRAY_SIZE];
+  <B>double</B> d_my_double;
+<FONT COLOR="blue"><I>/* DO-NOT-DELETE splicer.end(foo.bar._data) */</I></FONT>
+}</TD></TR>
+</TABLE><P>Upon instantiation, the object’s data structure is automatically 
+initialized to <TT>NULL</TT> before the built-in <TT>_ctor()</TT> method
+is invoked. Initialization of private data first requires sufficient
+memory be allocated, as follows:
+<A NAME="@default542"></A>
+<A NAME="@default543"></A>
+<A NAME="@default544"></A></P><DIV CLASS="flushright"><SPAN CLASS="textboxed"><FONT COLOR=purple><B>ANSI C</B></FONT></SPAN></DIV><TABLE CLASS="lstframe" STYLE="padding:1ex;border-style:solid;"><TR><TD CLASS="lstlisting"><B>void</B>
+impl_foo_bar__ctor(
+   <FONT COLOR="blue"><I>/* in */</I></FONT> foo_bar self)
+{
+  <FONT COLOR="blue"><I>/* DO-NOT-DELETE splicer.begin(foo.bar._ctor) */</I></FONT>
+  <B>int</B> i;
+  <B>struct</B> foo_bar__data *dataPtr = malloc(<B>sizeof</B>(<B>struct</B> foo_bar__data));
+  TSTT_Triangle_Mesh__set_data(self, dataPtr);
+  <B>if</B> (dataPtr) {
+    <B>for</B> (i=0; i&lt;MY_MAX_ARRAY_SIZE; i++) {
+      dataPtr-&gt;d_my_int_array[i] = i;
+    }
+    dataPtr-&gt;d_my_double = 0.0;
+  }
+  <FONT COLOR="blue"><I>/* DO-NOT-DELETE splicer.end(foo.bar._ctor) */</I></FONT>
+}</TD></TR>
+</TABLE><P>To avoid leaking memory, allocated private data must be released during
+instance destruction. This is accomplished through the built-in
+<TT>_dtor()</TT> method. Continuing with the <TT>foo.bar</TT> example, the 
+memory is freed as follows:
+<A NAME="@default545"></A>
+<A NAME="@default546"></A>
+<A NAME="@default547"></A></P><DIV CLASS="flushright"><SPAN CLASS="textboxed"><FONT COLOR=purple><B>ANSI C</B></FONT></SPAN></DIV><TABLE CLASS="lstframe" STYLE="padding:1ex;border-style:solid;"><TR><TD CLASS="lstlisting"><B>void</B>
+impl_foo_bar__dtor(
+   <FONT COLOR="blue"><I>/* in */</I></FONT> foo_bar self)
+{
+  <FONT COLOR="blue"><I>/* DO-NOT-DELETE splicer.begin(foo.bar._dtor) */</I></FONT>
+  <B>struct</B> foo_bar__data *dataPtr = foo_bar__get_data(self);
+  <B>if</B> (dataPtr) {
+    memset(dataPtr, 0, <B>sizeof</B>(<B>struct</B> foo_bar__data));
+    free((<B>void</B>*)dataPtr);
+  }
+  foo_bar__set_data(self, NULL);
+  <FONT COLOR="blue"><I>/* DO-NOT-DELETE splicer.end(foo.bar._dtor) */</I></FONT>
+}</TD></TR>
+</TABLE><P>Notice all memory locations are initialized to zero before being
+freed and the internal data pointer set to <TT>NULL</TT>. These
+practices are recommended.</P><P>Hence, Babel supports the declaration and maintenance of private
+data on class and instance basis.</P><H3 CLASS="subsection">8.4.4  Exception throwing</H3><P>
+<A NAME="@default548"></A><A NAME="@default549"></A>
+<A NAME="@default550"></A></P><P>In addition to the helpers discussed in Subsection <A HREF="#ss:c:exceptions">8.3.6</A>,
+<TT>sidl_Exception.h</TT> provides the following 
+<TT>SIDL_THROW</TT><A NAME="@default551"></A> macro for throwing exceptions:</P><DIV CLASS="flushright"><SPAN CLASS="textboxed"><FONT COLOR=purple><B>ANSI C</B></FONT></SPAN></DIV><TABLE CLASS="lstframe" STYLE="padding:1ex;border-style:solid;"><TR><TD CLASS="lstlisting">SIDL_THROW(EX_VAR,EX_CLS,MSG)</TD></TR>
+</TABLE><P>The first argument to the macro is the exception output parameter; the
+second is the type of exception being thrown; and the third provides 
+a textual description of the exception.
+The following code snippet, which is an extension of the 
+Subsection <A HREF="#ss:c:exceptions">8.3.6</A> example, 
+illustrates the process of using the macro to throw an exception:
+<A NAME="@default552"></A>
+<A NAME="@default553"></A><A NAME="@default554"></A>
+<A NAME="@default555"></A><A NAME="@default556"></A></P><DIV CLASS="flushright"><SPAN CLASS="textboxed"><FONT COLOR=purple><B>ANSI C</B></FONT></SPAN></DIV><TABLE CLASS="lstframe" STYLE="padding:1ex;border-style:solid;"><TR><TD CLASS="lstlisting"><B>#include</B> "sidl_Exception.h"
+<FONT COLOR="blue"><I>/* ...numerous lines deleted... */</I></FONT>
+int32_t
+impl_ExceptionTest_Fib_getFib(
+  ExceptionTest_Fib self, int32_t n, int32_t max_depth, int32_t max_value,
+    int32_t depth, sidl_BaseInterface* _ex)
+{
+  <FONT COLOR="blue"><I>/* DO-NOT-DELETE splicer.begin(ExceptionTest.Fib.getFib) */</I></FONT>
+  <B>if</B> (n &lt; 0) {
+    SIDL_THROW(*_ex,
+               ExceptionTest_NegativeValueException,
+               "called with negative n");
+  }
+  <FONT COLOR="blue"><I>/* ...lines deleted... */</I></FONT>
+  EXIT:;
+    <FONT COLOR="blue"><I>/* SIDL_THROW macro will jump here. */
+    /* Clean up code should be here. */</I></FONT>
+    <B>return</B> theValue;
+  <FONT COLOR="blue"><I>/* DO-NOT-DELETE splicer.end(ExceptionTest.Fib.getFib) */</I></FONT>
+}</TD></TR>
+</TABLE><P><TT>EX_VAR</TT> is the exception object itself; <TT>EX_CLS</TT> is the 
+string containing the name of the desired SIDL exception type; and 
+<TT>MSG</TT> is the string containing the message to be included with 
+the exception. 
+As with the other helpers, the presence of the <TT>EXIT</TT> label is 
+assumed in the macro. Statements following <TT>EXIT</TT> should be used
+to conduct clean up operations, such as deleting any references that 
+were to be returned to the caller. </P><P>A good practice we recommend is
+to set all <FONT COLOR=maroon><I><TT>inout</TT></I></FONT> and <FONT COLOR=maroon><I><TT>out</TT></I></FONT> array, interface or class pointers to
+<TT>NULL</TT>. This makes things work out better for clients who forget
+to check if an exception occurred or willfully choose to ignore it.</P><H3 CLASS="subsection">8.4.5  Hooks implementation</H3><P><A NAME="ss:c:hooksimpl"></A>
+<A NAME="@default557"></A><A NAME="@default558"></A>
+<A NAME="@default559"></A>
+<A NAME="@default560"></A><A NAME="@default561"></A>
+<A NAME="@default562"></A><A NAME="@default563"></A></P><P>As discussed in Subsection <A HREF="#ss:c:sethooks">8.3.7</A>, when hooks execution
+is enabled, implementation-specific instrumentation is executed. Using 
+the <B><TT><CODE>--</CODE>generate-hooks</TT></B> option on the Babel
+command line when generating implementation-side bindings results
+in the automatic generation of a <TT>_pre</TT> and <TT>_post</TT>
+method for every static and non-static method associated with each class
+in the specification. For the <TT>aStaticMethod</TT> specified in
+Subsection <A HREF="#ss:c:sethooks">8.3.7</A>, the generated <TT>_pre</TT> method
+implementation is:</P><DIV CLASS="flushright"><SPAN CLASS="textboxed"><FONT COLOR=purple><B>ANSI C</B></FONT></SPAN></DIV><TABLE CLASS="lstframe" STYLE="padding:1ex;border-style:solid;"><TR><TD CLASS="lstlisting"><B>void</B>
+impl_hooks_Basics_aStaticMeth_pre(int32_t i, int32_t io,
+                                  sidl_BaseInterface *_ex)
+{
+  *_ex = 0;
+  {
+  <FONT COLOR="blue"><I>/* DO-NOT-DELETE splicer.begin(hooks.Basics.aStaticMeth_pre) */
+  /*
+   * Add instrumentation here to be executed immediately prior
+   * to dispatch to aStaticMeth().
+   */
+  /* DO-NOT-DELETE splicer.end(hooks.Basics.aStaticMeth_pre) */</I></FONT>
+  }
+}</TD></TR>
+</TABLE><P>while that of the <TT>_post</TT> method is:</P><DIV CLASS="flushright"><SPAN CLASS="textboxed"><FONT COLOR=purple><B>ANSI C</B></FONT></SPAN></DIV><TABLE CLASS="lstframe" STYLE="padding:1ex;border-style:solid;"><TR><TD CLASS="lstlisting"><B>void</B>
+impl_hooks_Basics_aStaticMeth_post(int32_t i, int32_t o, int32_t io,
+                                   int32_t _retval, sidl_BaseInterface *_ex)
+{
+  *_ex = 0;
+  {
+  <FONT COLOR="blue"><I>/* DO-NOT-DELETE splicer.begin(hooks.Basics.aStaticMeth_post) */
+  /*
+   * Add instrumentation here to be executed immediately after
+   * return from dispatch to aStaticMeth().
+   */
+  /* DO-NOT-DELETE splicer.end(hooks.Basics.aStaticMeth_post) */</I></FONT>
+  }
+}</TD></TR>
+</TABLE><P>Per the normal implementation process, the desired instrumentation 
+should be added within the splicer blocks of 
+<TT>aStaticMethod_pre</TT> and 
+<TT>aStaticMethod_post</TT>. As stated in the comments 
+within those blocks, <TT>aStaticMethod_pre</TT> will be 
+executed immediately prior to dispatch to <TT>aStaticMethod</TT> when the 
+latter is invoked by a client. Assuming no exceptions are encountered, 
+<TT>aStaticMethod_post</TT> is executed immediately upon 
+return from <TT>aStaticMethod</TT>.
+</P><HR CLASS="footnoterule"><DL CLASS="thefootnotes"><DT CLASS="dt-thefootnotes">
+<A NAME="note14" HREF="#text14">1</A></DT><DD CLASS="dd-thefootnotes">For 
+information on additional command line options, refer to 
+Section <A HREF="index006.html#s:basics_commandline">4.2</A>.
+</DD></DL>
+<HR>
+<A HREF="index009.html"><IMG SRC="previous_motif.gif" ALT="Previous"></A>
+<A HREF="index-multipage.html"><IMG SRC="contents_motif.gif" ALT="Up"></A>
+<A HREF="index011.html"><IMG SRC="next_motif.gif" ALT="Next"></A>
+</BODY>
+</HTML>

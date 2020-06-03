@@ -1,0 +1,3 @@
+client_BABEL_MAKEFILE_NAME = client_babel.make
+client_PYTHON_SETUP_NAME = client_setup.py
+client_PYSETUP_DIRS = ./

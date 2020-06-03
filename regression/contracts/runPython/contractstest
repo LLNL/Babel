@@ -1,0 +1,1017 @@
+#!/usr/local/bin/python
+#
+# File:        contractstest
+# Copyright:   (c) 2008-2009 Lawrence Livermore National Security, LLC
+# Revision:    @(#) $Revision: 6171 $
+# Date:        $Date: 2007-10-08 16:39:28 -0700 (Mon, 08 Oct 2007) $
+# Description: Contract Test Python client
+
+# Are the following needed:  BaseInterface? ClassInfo?
+import sidl.BaseClass
+import sidl.BaseInterface
+import sidl.ClassInfo
+import sidl.EnfPolicy
+import sidl.PostViolation
+import sidl.PreViolation
+import sidl.RuntimeException
+import vect.Utils
+#import vect.vExcept
+import vect.vDivByZeroExcept
+import vect.vNegValExcept
+
+import vect.BadLevel
+NO_VIO = vect.BadLevel.NoVio
+NEG_RES = vect.BadLevel.NegRes
+NULL_RES = vect.BadLevel.NullRes
+POS_RES = vect.BadLevel.PosRes
+TWO_D_RES = vect.BadLevel.TwoDRes
+WRONG_SIZE_RES = vect.BadLevel.WrongSizeRes
+ZERO_RES = vect.BadLevel.ZeroRes
+
+import vect.ExpectExcept
+NONE_EXP = vect.ExpectExcept.NoneExp
+DBZ_EXP = vect.ExpectExcept.DBZExp
+EXC_EXP = vect.ExpectExcept.ExcExp
+NVE_EXP = vect.ExpectExcept.NVEExp
+POST_EXP = vect.ExpectExcept.PostExp
+PRE_EXP = vect.ExpectExcept.PreExp
+
+import sidl.ContractClass
+ALL_TYPES      = sidl.ContractClass.ALLCLASSES
+PRECONDITIONS  = sidl.ContractClass.PRECONDS
+POSTCONDITIONS = sidl.ContractClass.POSTCONDS
+
+from synch.ResultType import *
+from synch import RegOut
+
+import sidlPyArrays
+if sidlPyArrays.type == "numpy":
+  from numpy import zeros, float64, ndarray
+  ArrayType = ndarray
+elif sidlPyArrays.type == "numeric":
+  import Numeric
+  zeros = Numeric.zeros
+  float64 = Numeric.Float64
+  ArrayType = Numeric.ArrayType
+
+import math
+import re
+import string
+
+
+#
+#####################################################
+# Handy utilities from the arrays regression tests
+#####################################################
+#
+def savespace(o):
+  try:
+    o.savespace(1)
+  except AttributeError:
+    pass
+ 
+def typecode(o):
+  try:
+    return o.typecode()
+  except AttributeError:
+    return o.dtype.char
+ 
+def createDouble(len):
+  result = None
+  if (len >= 0):
+    result = zeros((len, ), float64)
+    savespace(result)
+  return result
+ 
+def createDouble2d(len):
+  result = None
+  if (len >= 0):
+    result = zeros((len, len, ), float64)
+    savespace(result)
+  return result
+
+def initArray(a1, val):
+  for i in range(len(a1)):
+    a1[i] = val
+
+
+#
+#####################################################
+#                  GLOBAL CONSTANTS
+#####################################################
+#
+#
+# Disable DEBUG before committing code
+DEBUG           = 0
+
+FALSE           = 0
+TRUE            = 1
+
+STATSFILE       = "VUtils.stats"
+PRE             = "*** DEBUG: "
+
+MAX_SIZE        = 6
+SQRT_SIZE       = math.sqrt(MAX_SIZE)
+TOL             = 1.0e-9
+NTOL            = -1.0e-9
+VAL             = 1.0/SQRT_SIZE
+NVAL            = -1.0/SQRT_SIZE
+
+#
+#####################################################
+# Extra routines
+#####################################################
+#
+def dumpStats(msg):
+  try:
+    vect.Utils._dump_stats_static(STATSFILE, msg)
+  except:
+    (type, value, trace) = sys.exc_info()
+    print "Exception thrown during stats dump:", sys.exc_info()
+    counter.forceFail()
+    import traceback
+    traceback.print_exception(type, value, trace)
+
+def enforceAll(cClass, b):
+  try:
+    sidl.EnfPolicy.setEnforceAll(cClass, b)
+  except:
+    (type, value, trace) = sys.exc_info()
+    print "Exception thrown during setEnforceAll:", sys.exc_info()
+    counter.forceFail()
+    import traceback
+    traceback.print_exception(type, value, trace)
+
+
+#
+#####################################################
+#                  Test Driver
+#
+# Source:  Based on exception regression tests
+#####################################################
+#
+class TestCounter:
+ 
+  def __init__(self, numparts = -1):
+    self.partno = 0
+    self.tracker = RegOut.RegOut()
+    self.tracker.setExpectations(numparts)
+ 
+  def describeTest(self, description):
+    self.partno = self.partno + 1
+    self.tracker.startPart(self.partno)
+    self.tracker.writeComment(description)
+ 
+  def evalExcept(self, expected):
+    myPre = PRE + "evalExcept: "
+    if (DEBUG):
+      print myPre, "expected=", expected
+    (excType, excObj, ExcTb) = sys.exc_info()
+    if (excObj):
+      try:
+        if (excObj.exception.isType("sidl.PreViolation")):
+          exceptType = PRE_EXP
+        elif (excObj.exception.isType("sidl.PostViolation")):
+          exceptType = POST_EXP
+        elif (excObj.exception.isType("vect.vDivByZeroExcept")):
+          exceptType = DBZ_EXP
+        elif (excObj.exception.isType("vect.vNegValExcept")):
+          exceptType = NVE_EXP
+        elif (excObj.exception.isType("vect.vExcept")):
+          exceptType = EXC_EXP
+        else:
+          exceptType = EXC_EXP
+      except AttributeError:
+        exceptType = NONE_EXP
+      except:
+        exceptType = EXC_EXP
+    else:
+      exceptType = NONE_EXP
+    if (exceptType == expected):
+      if (DEBUG):
+#        if (expected != NONE_EXP):
+          print myPre, "Exception: ", sys.exc_info()
+      self.tracker.endPart(self.partno, PASS)
+    else:
+      if (DEBUG):
+        if ((exceptType != NONE_EXP) and (expected != NONE_EXP)):
+          print myPre, "Exception: ", exceptType, ", expected:", expected
+          print myPre, "Exception details: ", sys.exc_info()
+      self.tracker.endPart(self.partno, FAIL)
+ 
+  def evalResB(self, result, expected):
+    myPre = PRE + "evalResB: "
+    if (DEBUG):
+      print myPre, "result=", result, ", expected=", expected
+    if (result):
+      if (expected):
+        self.tracker.endPart(self.partno, PASS)
+      else:
+        self.tracker.endPart(self.partno, FAIL)
+    else:
+      if (expected):
+        self.tracker.endPart(self.partno, FAIL)
+      else:
+        self.tracker.endPart(self.partno, PASS)
+ 
+  def evalResD(self, result, expected, tol):
+    myPre = PRE + "evalResD: "
+    if (DEBUG):
+      print myPre, "result=", result, ", expected=", expected, ", tol=", tol
+    if ((math.fabs(result) - math.fabs(expected)) <= math.fabs(tol)):
+      self.tracker.endPart(self.partno, PASS)
+    else:
+      self.tracker.endPart(self.partno, FAIL)
+ 
+  def fail(self):
+    self.tracker.endPart(self.partno, FAIL)
+ 
+  def failNoExcept(self, expectedExc):
+    myPre = PRE + "failNoExcept: "
+    if (DEBUG):
+      print myPre, "expectedExc=", expectedExc
+    if (expectedExc != NONE_EXP):
+      print "Expected an exception but one was not detected"
+      self.tracker.endPart(self.partno, FAIL)
+ 
+  def finish(self):
+    self.tracker.close()
+
+  def forceFail(self):
+    self.tracker.forceFailure()
+ 
+
+#
+#####################################################
+#                  Test Routines
+#####################################################
+#
+def runIsZero(counter, v, tol, res, expectExc, desc):
+  counter.describeTest(desc)
+  try:
+    x = vect.Utils.vuIsZero(v, tol)
+  except:
+    counter.evalExcept(expectExc)
+  else:
+    if (expectExc == NONE_EXP):
+      counter.evalResB(x, res)
+    else:
+      counter.failNoExcept(expectExc)
+
+def runIsUnit(counter, v, tol, res, expectExc, desc):
+  counter.describeTest(desc)
+  try:
+    x = vect.Utils.vuIsUnit(v, tol)
+  except:
+    counter.evalExcept(expectExc)
+  else:
+    if (expectExc == NONE_EXP):
+      counter.evalResB(x, res)
+    else:
+      counter.failNoExcept(expectExc)
+
+def runAreEqual(counter, u, v, tol, res, expectExc, desc):
+  counter.describeTest(desc)
+  try:
+    x = vect.Utils.vuAreEqual(u, v, tol)
+  except:
+    counter.evalExcept(expectExc)
+  else:
+    if (expectExc == NONE_EXP):
+      counter.evalResB(x, res)
+    else:
+      counter.failNoExcept(expectExc)
+
+def runAreOrthogonal(counter, u, v, tol, res, expectExc, desc):
+  counter.describeTest(desc)
+  try:
+    x = vect.Utils.vuAreOrth(u, v, tol)
+  except:
+    counter.evalExcept(expectExc)
+  else:
+    if (expectExc == NONE_EXP):
+      counter.evalResB(x, res)
+    else:
+      counter.failNoExcept(expectExc)
+
+def runSchwarzHolds(counter, u, v, tol, res, expectExc, desc):
+  counter.describeTest(desc)
+  try:
+    x = vect.Utils.vuSchwarzHolds(u, v, tol)
+  except:
+    counter.evalExcept(expectExc)
+  else:
+    if (expectExc == NONE_EXP):
+      counter.evalResB(x, res)
+    else:
+      counter.failNoExcept(expectExc)
+
+def runTriangleInequalityHolds(counter, u, v, tol, res, expectExc, desc):
+  counter.describeTest(desc)
+  try:
+    x = vect.Utils.vuTriIneqHolds(u, v, tol)
+  except:
+    counter.evalExcept(expectExc)
+  else:
+    if (expectExc == NONE_EXP):
+      counter.evalResB(x, res)
+    else:
+      counter.failNoExcept(expectExc)
+
+def runNorm(counter, v, tol, badLvl, res, expectExc, desc):
+  counter.describeTest(desc)
+  try:
+    x = vect.Utils.vuNorm(v, tol, badLvl)
+  except:
+    counter.evalExcept(expectExc)
+  else:
+    if (expectExc == NONE_EXP):
+      counter.evalResD(x, res, tol)
+    else:
+      counter.failNoExcept(expectExc)
+
+def runDot(counter, u, v, tol, badLvl, res, expectExc, desc):
+  counter.describeTest(desc)
+  try:
+    x = vect.Utils.vuDot(u, v, tol, badLvl)
+  except:
+    counter.evalExcept(expectExc)
+  else:
+    if (expectExc == NONE_EXP):
+      counter.evalResD(x, res, tol)
+    else:
+      counter.failNoExcept(expectExc)
+
+# NOTE: Tolerance is only needed to check the result of the call.
+def runProduct(counter, a, v, tol, badLvl, res, okay, expectExc, desc):
+  myPre = PRE + "runProduct: "
+  counter.describeTest(desc)
+  ok = FALSE
+
+  if (DEBUG):
+    print myPre, "MyArgs: a=", a, ", v=", v, ", badLvl=", badLvl
+    print myPre, "EqArgs: res=", res, ", tol=", tol
+    print myPre, "Rest  : okay=", okay, ", expectExc=", expectExc
+  try:
+    x  = vect.Utils.vuProduct(a, v, badLvl)
+    if (x != None):
+      if (res != None):
+        ok = vect.Utils.vuAreEqual(x, res, tol)
+      else:
+        ok = FALSE
+    else:
+      if (res != None):
+        ok = FALSE
+      else:
+        ok = TRUE
+  except ValueError:
+    counter.fail()
+  except:
+    counter.evalExcept(expectExc)
+  else:
+    if (expectExc == NONE_EXP):
+      counter.evalResB(ok, okay)
+    else:
+      counter.failNoExcept(expectExc)
+
+
+# NOTE: Tolerance is only needed to check the result of the call.
+def runNegate(counter, v, tol, badLvl, res, okay, expectExc, desc):
+  myPre = PRE + "runNegate: "
+  counter.describeTest(desc)
+  ok = FALSE
+
+  if (DEBUG):
+    print myPre, "MyArgs: v=", v, ", badLvl=", badLvl
+    print myPre, "EqArgs: res=", res, ", tol=", tol
+    print myPre, "Rest  : okay=", okay, ", expectExc=", expectExc
+  try:
+    x  = vect.Utils.vuNegate(v, badLvl)
+    if (x != None):
+      if (res != None):
+        ok = vect.Utils.vuAreEqual(x, res, tol)
+      else:
+        ok = FALSE
+    else:
+      if (res != None):
+        ok = FALSE
+      else:
+        ok = TRUE
+  except ValueError:
+    counter.fail()
+  except:
+    counter.evalExcept(expectExc)
+  else:
+    if (expectExc == NONE_EXP):
+      counter.evalResB(ok, okay)
+    else:
+      counter.failNoExcept(expectExc)
+
+def runNormalize(counter, v, tol, badLvl, res, okay, expectExc, desc):
+  myPre = PRE + "runNormalize: "
+  counter.describeTest(desc)
+  ok = FALSE
+
+  if (DEBUG):
+    print myPre, "MyArgs: v=", v, ", badLvl=", badLvl
+    print myPre, "EqArgs: res=", res, ", tol=", tol
+    print myPre, "Rest  : okay=", okay, ", expectExc=", expectExc
+  try:
+    x  = vect.Utils.vuNormalize(v, tol, badLvl)
+    if (x != None):
+      if (res != None):
+        ok = vect.Utils.vuAreEqual(x, res, tol)
+      else:
+        ok = FALSE
+    else:
+      if (res != None):
+        ok = FALSE
+      else:
+        ok = TRUE
+  except ValueError:
+    counter.fail()
+  except:
+    counter.evalExcept(expectExc)
+  else:
+    if (expectExc == NONE_EXP):
+      counter.evalResB(ok, okay)
+    else:
+      counter.failNoExcept(expectExc)
+
+def runSum(counter, u, v, tol, badLvl, res, okay, expectExc, desc):
+  myPre = PRE + "runSum: "
+  counter.describeTest(desc)
+  ok = FALSE
+
+  if (DEBUG):
+    print myPre, "MyArgs: u=", u, ", v=", v, ", badLvl=", badLvl
+    print myPre, "EqArgs: res=", res, ", tol=", tol
+    print myPre, "Rest  : okay=", okay, ", expectExc=", expectExc
+  try:
+    x  = vect.Utils.vuSum(u, v, badLvl)
+    if (x != None):
+      if (res != None):
+        ok = vect.Utils.vuAreEqual(x, res, tol)
+      else:
+        ok = FALSE
+    else:
+      if (res != None):
+        ok = FALSE
+      else:
+        ok = TRUE
+  except ValueError:
+    counter.fail()
+  except:
+    counter.evalExcept(expectExc)
+  else:
+    if (expectExc == NONE_EXP):
+      counter.evalResB(ok, okay)
+    else:
+      counter.failNoExcept(expectExc)
+
+def runDiff(counter, u, v, tol, badLvl, res, okay, expectExc, desc):
+  myPre = PRE + "runDiff: "
+  counter.describeTest(desc)
+  ok = FALSE
+
+  if (DEBUG):
+    print myPre, "MyArgs: u=", u, ", v=", v, ", badLvl=", badLvl
+    print myPre, "EqArgs: res=", res, ", tol=", tol
+    print myPre, "Rest  : okay=", okay, ", expectExc=", expectExc
+  try:
+    x  = vect.Utils.vuDiff(u, v, badLvl)
+    if (x != None):
+      if (res != None):
+        ok = vect.Utils.vuAreEqual(x, res, tol)
+      else:
+        ok = FALSE
+    else:
+      if (res != None):
+        ok = FALSE
+      else:
+        ok = TRUE
+  except ValueError:
+    counter.fail()
+  except:
+    counter.evalExcept(expectExc)
+  else:
+    if (expectExc == NONE_EXP):
+      counter.evalResB(ok, okay)
+    else:
+      counter.failNoExcept(expectExc)
+
+
+#
+#####################################################
+#                  Test Driver
+#
+# Source:  Based on exception regression tests
+#####################################################
+#
+#
+
+def driver(counter):
+  t  = createDouble2d(MAX_SIZE)
+  u  = createDouble(MAX_SIZE)
+  u1 = createDouble(MAX_SIZE+1)
+  nu = createDouble(MAX_SIZE)
+  z  = createDouble(MAX_SIZE)
+  n  = None
+
+  # Is it necessary to initialize the 2D array?  If so, how?
+  #init2DArray(t, VAL)  
+  initArray(u, VAL)
+  initArray(u1, VAL)
+  initArray(nu, NVAL)
+
+  print "\nCOMMENT: *** ENABLE FULL CONTRACT CHECKING ***\n\n"
+  enforceAll(ALL_TYPES, TRUE)
+
+  #
+  # vuIsZero() set
+  runIsZero(counter, z, TOL, TRUE, NONE_EXP, 
+  "ensuring the zero vector is the zero vector")
+
+  runIsZero(counter, u, TOL, FALSE, NONE_EXP, 
+  "ensuring the unit vector is not the zero vector")
+
+  runIsZero(counter, n, TOL, FALSE, PRE_EXP, 
+  "passing vuIsZero() a null array")
+
+  runIsZero(counter, t, TOL, FALSE, PRE_EXP,
+  "passing vuIsZero() a 2D array")
+
+  runIsZero(counter, z, NTOL, FALSE, PRE_EXP,
+  "passing vuIsZero() a negative Tolerance")
+
+  #
+  # vuIsUnit() set
+  runIsUnit(counter, u, TOL, TRUE, NONE_EXP, 
+  "ensuring the unit vector is the unit vector")
+
+  runIsUnit(counter, z, TOL, FALSE, NONE_EXP, 
+  "ensuring the zero vector is not the unit vector")
+
+  runIsUnit(counter, n, TOL, FALSE, PRE_EXP, 
+  "passing vuIsUnit() a null array")
+
+  runIsUnit(counter, t, TOL, FALSE, PRE_EXP,
+  "passing vuIsUnit() a 2D array")
+
+  runIsUnit(counter, u, NTOL, FALSE, PRE_EXP, 
+  "passing vuIsUnit() a negative Tolerance")
+
+  #
+  # vuAreEqual() set
+  runAreEqual(counter, u, z, TOL, FALSE, NONE_EXP, 
+  "ensuring the unit and zero vectors are not equal")
+
+  runAreEqual(counter, u, u, TOL, TRUE, NONE_EXP, 
+  "ensuring the unit vector is equal to itself")
+
+  runAreEqual(counter, n, u, TOL, FALSE, PRE_EXP, 
+  "passing vuAreEqual() a null 1st array")
+
+  runAreEqual(counter, t, u, TOL, FALSE, PRE_EXP, 
+  "passing vuAreEqual() a 2D 1st array")
+
+  runAreEqual(counter, u, n, TOL, FALSE, PRE_EXP, 
+  "passing vuAreEqual() a null 2nd array")
+
+  runAreEqual(counter, u, t, TOL, FALSE, PRE_EXP, 
+  "passing vuAreEqual() a 2D 2nd array")
+
+  runAreEqual(counter, u, u1, TOL, FALSE, PRE_EXP, 
+  "passing vuAreEqual() different sized arrays")
+
+  runAreEqual(counter, u, u, NTOL, FALSE, PRE_EXP, 
+  "passing vuAreEqual() a negative Tolerance")
+
+  #
+  # vuAreOrth() set
+  runAreOrthogonal(counter, u, z, TOL, TRUE, NONE_EXP, 
+  "ensuring the unit and zero vectors are orthogonal")
+
+  runAreOrthogonal(counter, u, nu, TOL, FALSE, NONE_EXP, 
+  "ensuring the unit and negative unit vectors are not orthogonal")
+
+  runAreOrthogonal(counter, n, u, TOL, FALSE, PRE_EXP, 
+  "passing vuAreOrth() a null 1st array")
+
+  runAreOrthogonal(counter, t, u, TOL, FALSE, PRE_EXP, 
+  "passing vuAreOrth() a 2D 1st array")
+
+  runAreOrthogonal(counter, u, n, TOL, FALSE, PRE_EXP, 
+  "passing vuAreOrth() a null 2nd array")
+
+  runAreOrthogonal(counter, u, t, TOL, FALSE, PRE_EXP, 
+  "passing vuAreOrth() a 2D 2nd array")
+
+  runAreOrthogonal(counter, u, u1, TOL, FALSE, PRE_EXP, 
+  "passing vuAreOrth() different sized unit arrays")
+
+  runAreOrthogonal(counter, u, u, NTOL, FALSE, PRE_EXP, 
+  "passing vuAreOrth() a negative Tolerance")
+
+  runAreOrthogonal(counter, t, t, TOL, FALSE, PRE_EXP, 
+  "passing vuAreOrth() 2D arrays in both arguments")
+
+
+  #
+  # vuSchwarzHolds() set
+  runSchwarzHolds(counter, u, z, TOL, TRUE, NONE_EXP, 
+  "ensuring schwarz holds for the unit and zero vectors")
+
+  runSchwarzHolds(counter, n, z, TOL, FALSE, PRE_EXP, 
+  "passing vuSchwarzHolds() a null 1st array")
+
+  runSchwarzHolds(counter, t, z, TOL, FALSE, PRE_EXP, 
+  "passing vuSchwarzHolds() a 2D 1st array")
+
+  runSchwarzHolds(counter, z, n, TOL, FALSE, PRE_EXP, 
+  "passing vuSchwarzHolds() a null 2nd array")
+
+  runSchwarzHolds(counter, u, t, TOL, FALSE, PRE_EXP, 
+  "passing vuSchwarzHolds() a 2D 2nd array")
+
+  runSchwarzHolds(counter, u, u1, TOL, FALSE, PRE_EXP, 
+  "passing vuSchwarzHolds() different sized unit arrays")
+
+  runSchwarzHolds(counter, u, z, NTOL, FALSE, PRE_EXP, 
+  "passing vuSchwarzHolds() a negative Tolerance")
+
+
+  #
+  # vuTriIneqHolds() set 
+  runTriangleInequalityHolds(counter, u, z, TOL, TRUE, NONE_EXP, 
+  "ensuring the triangle inequality holds for the unit and zero vectors")
+
+  runTriangleInequalityHolds(counter, n, u, TOL, FALSE, PRE_EXP, 
+  "passing vuTriIneqHolds() a null 1st array")
+
+  runTriangleInequalityHolds(counter, t, u, TOL, FALSE, PRE_EXP, 
+  "passing vuTriIneqHolds() a 2D 1st array")
+
+  runTriangleInequalityHolds(counter, u, n, TOL, FALSE, PRE_EXP, 
+  "passing vuTriIneqHolds() a null 2nd array")
+
+  runTriangleInequalityHolds(counter, u, t, TOL, FALSE, PRE_EXP, 
+  "passing vuTriIneqHolds() a 2D 2nd array")
+
+  runTriangleInequalityHolds(counter, u, u1, TOL, FALSE, PRE_EXP, 
+  "passing vuTriIneqHolds() different sized unit vectors")
+
+  runTriangleInequalityHolds(counter, u, u, NTOL, FALSE, PRE_EXP, 
+  "passing vuTriIneqHolds() a negative Tolerance")
+
+
+  #
+  # vuNorm() set
+  runNorm(counter, u, TOL, NO_VIO, 1.0, NONE_EXP, 
+  "ensuring the unit vector norm is 1.0")
+
+  runNorm(counter, n, TOL, NO_VIO, 0.0, PRE_EXP, 
+  "passing vuNorm() a null vector")
+
+  runNorm(counter, t, TOL, NO_VIO, 0.0, PRE_EXP, 
+  "passing vuNorm() a 2D array")
+
+  runNorm(counter, u, NTOL, NO_VIO, 0.0, PRE_EXP, 
+  "passing vuNorm() a negative Tolerance")
+
+  runNorm(counter, u, TOL, NEG_RES, -5.0, POST_EXP, 
+  "passing vuNorm() badness level for negative result")
+
+  runNorm(counter, z, TOL, POS_RES, 5.0, POST_EXP, 
+  "passing vuNorm() badness level for positive result with zero vector")
+
+  runNorm(counter, u, TOL, ZERO_RES, 0.0, POST_EXP, 
+  "passing vuNorm() badness level for zero result with non-zero vector")
+
+
+  #
+  # vuDot() set
+  runDot(counter, u, z, TOL, NO_VIO, 0.0, NONE_EXP, 
+  "ensuring the dot product of the unit and zero vectors is 0.0")
+
+  runDot(counter, n, u, TOL, NO_VIO, 0.0, PRE_EXP, 
+  "passing vuDot() a null 1st array")
+
+  runDot(counter, t, u, TOL, NO_VIO, 0.0, PRE_EXP, 
+  "passing vuDot() a 2D 1st array")
+
+  runDot(counter, u, n, TOL, NO_VIO, 0.0, PRE_EXP, 
+  "passing vuDot() a null 2nd array")
+
+  runDot(counter, u, t, TOL, NO_VIO, 0.0, PRE_EXP, 
+  "passing vuDot() a 2D 2nd array")
+
+  runDot(counter, u, u1, TOL, NO_VIO, 0.0, PRE_EXP, 
+  "passing vuDot() different sized unit vectors")
+
+  runDot(counter, u, u, NTOL, NO_VIO, 0.0, PRE_EXP, 
+  "passing vuDot() a negative Tolerance")
+
+  runDot(counter, t, t, TOL, NO_VIO, 0.0, PRE_EXP, 
+  "passing vuDot() a 2D arrays in both arguments")
+
+  runDot(counter, u, u, TOL, NEG_RES, -5.0, POST_EXP, 
+  "passing vuDot() badness level for negative result with u=v")
+
+  runDot(counter, z, z, TOL, POS_RES, 5.0, POST_EXP, 
+  "passing vuDot() badness level for positive result with u=v=0")
+
+
+  #
+  # vuProduct() set
+  runProduct(counter, 1.0, u, TOL, NO_VIO, u, TRUE, NONE_EXP,
+  "ensuring the product of 1 and the unit vector is the unit vector")
+
+  runProduct(counter, 2.0, u, TOL, NO_VIO, u, FALSE, NONE_EXP,
+  "ensuring the product of 2 and the unit vector is not the unit vector")
+
+  runProduct(counter, 0.0, n, TOL, NO_VIO, n, TRUE, PRE_EXP,
+  "passing vuProduct() a null array")
+
+  runProduct(counter, 1.0, t, TOL, NO_VIO, u, FALSE, PRE_EXP,
+  "passing vuProduct() a 2D array")
+
+  runProduct(counter, 1.0, u, TOL, NULL_RES, u, TRUE, POST_EXP, 
+  "passing vuProduct() badness level for null result")
+
+#   runProduct(counter, 1.0, u, TOL, TWO_D_RES, u, TRUE, POST_EXP, 
+#   "passing vuProduct() badness level for 2D result")
+
+  runProduct(counter, 1.0, u, TOL, WRONG_SIZE_RES, u, TRUE, POST_EXP, 
+  "passing vuProduct() badness level for wrong size result")
+
+
+  #
+  # vuNegate() set
+  runNegate(counter, u, TOL, NO_VIO, nu, TRUE, NONE_EXP, 
+  "ensuring the negation of the the unit vector is its negative")
+
+  runNegate(counter, u, TOL, NO_VIO, u, FALSE, NONE_EXP, 
+  "ensuring the negation of the unit vector is not the unit vector")
+
+  runNegate(counter, n, TOL, NO_VIO, nu, TRUE, PRE_EXP, 
+  "passing vuNegate() a null array")
+
+  runNegate(counter, t, TOL, NO_VIO, nu, FALSE, PRE_EXP, 
+  "passing vuNegate() a 2D array")
+
+  runNegate(counter, u, TOL, NULL_RES, nu, TRUE, POST_EXP, 
+  "passing vuNegate() badness level for null result")
+
+#   runNegate(counter, u, TOL, TWO_D_RES, nu, TRUE, POST_EXP, 
+#   "passing vuNegate() badness level for 2D result")
+
+  runNegate(counter, u, TOL, WRONG_SIZE_RES, nu, TRUE, POST_EXP, 
+  "passing vuNegate() badness level for wrong size result")
+
+
+  #
+  # vuNormalize() set
+  runNormalize(counter, u, TOL, NO_VIO, u, TRUE, NONE_EXP, 
+  "ensuring normalize of the unit vector is itself")
+
+  runNormalize(counter, u, TOL, NO_VIO, nu, FALSE, NONE_EXP, 
+  "ensuring normalize of the unit vector is not its negative")
+
+  runNormalize(counter, z, TOL, NO_VIO, z, TRUE, DBZ_EXP, 
+  "ensuring normalize of the zero vector raises a DBZ exception")
+
+  runNormalize(counter, n, TOL, NO_VIO, n, TRUE, PRE_EXP, 
+  "passing vuNormalize() a null array")
+
+  runNormalize(counter, t, TOL, NO_VIO, u, FALSE, PRE_EXP, 
+  "passing vuNormalize() a 2D array")
+
+  runNormalize(counter, u, NTOL, NO_VIO, u, TRUE, PRE_EXP, 
+  "passing vuNormalize() a negative Tolerance while using the unit vector")
+
+  runNormalize(counter, u, TOL, NULL_RES, u, TRUE, POST_EXP, 
+  "passing vuNormalize() badness level for null result")
+
+#   runNormalize(counter, u, TOL, TWO_D_RES, u, TRUE, POST_EXP, 
+#   "passing vuNormalize() badness level for 2D result")
+
+  runNormalize(counter, u, TOL, WRONG_SIZE_RES, u, TRUE, POST_EXP, 
+  "passing vuNormalize() badness level for wrong size result")
+
+
+  #
+  # vuSum() set (NOTE: Tolerance not relevant to vuSum() API.)
+  runSum(counter, u, z, TOL, NO_VIO, u, TRUE, NONE_EXP, 
+  "ensuring the sum of unit and zero vectors is the unit vector")
+
+  runSum(counter, u, z, TOL, NO_VIO, nu, FALSE, NONE_EXP,
+  "ensuring the sum of unit and zero vectors is not the negative of the unit")
+
+  runSum(counter, n, z, TOL, NO_VIO, n, TRUE, PRE_EXP, 
+  "passing vuSum() a null 1st array")
+
+  runSum(counter, t, n, TOL, NO_VIO, n, FALSE, PRE_EXP, 
+  "passing vuSum() a 2D 1st array")
+
+  runSum(counter, u, n, TOL, NO_VIO, n, TRUE, PRE_EXP, 
+  "passing vuSum() a null 2nd array")
+
+  runSum(counter, u, t, TOL, NO_VIO, n, TRUE, PRE_EXP, 
+  "passing vuSum() a 2D as second")
+
+  runSum(counter, u, u1, TOL, NO_VIO, z, TRUE, PRE_EXP, 
+  "passing vuSum() different sized unit vectors")
+
+  runSum(counter, u, z, TOL, NULL_RES, u, TRUE, POST_EXP, 
+  "passing vuSum() badness level for null result")
+
+#   runSum(counter, u, z, TOL, TWO_D_RES, u, TRUE, POST_EXP, 
+#   "passing vuSum() badness level for 2D result")
+
+  runSum(counter, u, z, TOL, WRONG_SIZE_RES, u, TRUE, POST_EXP, 
+  "passing vuSum() badness level for wrong size result")
+
+
+  #
+  # vuDiff() set (NOTE: Tolerance not relevant to vuDiff() API.)
+  runDiff(counter, z, u, TOL, NO_VIO, nu, TRUE, NONE_EXP,
+  "ensuring the diff of the zero and unit vectors is the negative unit vector")
+
+  runDiff(counter, u, z, TOL, NO_VIO, u, TRUE, NONE_EXP, 
+  "ensuring the diff of the unit and zero vectors is the unit vector")
+
+  runDiff(counter, u, z, TOL, NO_VIO, nu, FALSE, NONE_EXP, 
+  "ensuring the diff of the unit and zero vectors is not the neg unit vector")
+
+  runDiff(counter, n, u, TOL, NO_VIO, n, TRUE, PRE_EXP, 
+  "passing vuDiff() a null 1st array")
+
+  runDiff(counter, t, u, TOL, NO_VIO, u, FALSE, PRE_EXP, 
+  "passing vuDiff() a 2D 1st array")
+
+  runDiff(counter, u, n, TOL, NO_VIO, n, TRUE, PRE_EXP, 
+  "passing vuDiff() a null 2nd array")
+
+  runDiff(counter, u, t, TOL, NO_VIO, u, FALSE, PRE_EXP, 
+  "passing vuDiff() a 2D 2nd array")
+
+  runDiff(counter, u, u1, TOL, NO_VIO, u, FALSE, PRE_EXP, 
+  "passing vuDiff() different sized vectors")
+
+  runDiff(counter, z, u, TOL, NULL_RES, nu, TRUE, POST_EXP, 
+  "passing vuDiff() badness level for null result")
+
+#   runDiff(counter, z, u, TOL, TWO_D_RES, nu, TRUE, POST_EXP, 
+#   "passing vuDiff() badness level for 2D result")
+
+  runDiff(counter, z, u, TOL, WRONG_SIZE_RES, nu, TRUE, POST_EXP, 
+  "passing vuDiff() badness level for wrong size result")
+
+  dumpStats("After full checking")
+
+
+  #
+  # ***************************************************************
+  # Now check preconditions only.  Only need three checks:
+  #   1) successful execution;
+  #   2) precondition violation that is not caught but is
+  #      okay anyway; and
+  #   3) postcondition violation that is caught.
+  # ***************************************************************
+  #
+  print "\nCOMMENT: *** ENABLE PRECONDITION ENFORCEMENT ONLY ***\n\n"
+  enforceAll(PRECONDITIONS, TRUE)
+
+  runDot(counter, u, z, TOL, NO_VIO, 0.0, NONE_EXP,
+  "ensuring the dot product of the unit and zero vectors is 0.0")
+
+  runDot(counter, u, u, NTOL, NO_VIO, 1.0, PRE_EXP,
+  "passing vuDot() a negative Tolerance")
+
+  runDot(counter, u, u, TOL, NEG_RES, -5.0, NONE_EXP,
+   "passing vuDot() badness level for negative result with u=v")
+
+  dumpStats("After precondition checking")
+
+
+  #
+  # ***************************************************************
+  #  Now check postconditions only.  Only need three checks:
+  #    1) successful execution;
+  #    2) precondition violation that gets caught; and
+  #    3) postcondition violation that is not caught.
+  # ***************************************************************
+  #
+  print "\nCOMMENT: *** ENABLE POSTCONDITION ENFORCEMENT ONLY ***\n\n"
+  enforceAll(POSTCONDITIONS, FALSE)
+
+  runDot(counter, u, z, TOL, NO_VIO, 0.0, NONE_EXP,
+  "ensuring the dot product of the unit and zero vectors is 0.0")
+
+  runDot(counter, u, u, NTOL, NO_VIO, 1.0, NONE_EXP,
+  "passing vuDot() a negative Tolerance")
+
+  runDot(counter, u, u, TOL, NEG_RES, -5.0, POST_EXP,
+  "passing vuDot() badness level for negative result with u=v")
+
+  dumpStats("After postcondition checking")
+
+
+  #
+  # ***************************************************************
+  # Now make sure contract violations are not caught when contract
+  # enforcement turned off.  Do this for each type of violation
+  # for every method.
+  # ***************************************************************
+  #
+  print "\nCOMMENT: *** DISABLE ALL CONTRACT ENFORCEMENT ***\n\n"
+  try:
+    sidl.EnfPolicy.setEnforceNone(FALSE)
+  except:
+    (type, value, trace) = sys.exc_info()
+    print "Exception thrown during setEnforceNone:", sys.exc_info()
+    counter.forceFail()
+    import traceback
+    traceback.print_exception(type, value, trace)
+
+  runIsZero(counter, n, TOL, FALSE, NONE_EXP,
+  "passing vuIsZero() a null array - no precondition violation")
+
+  runIsUnit(counter, n, TOL, FALSE, NONE_EXP,
+  "passing vuIsUnit() a null array - no precondition violation")
+
+  runAreEqual(counter, n, u, TOL, FALSE, NONE_EXP,
+  "passing vuAreEqual() a null 1st array - no precondition violation")
+
+  runAreOrthogonal(counter, n, u, TOL, FALSE, NONE_EXP,
+  "passing vuAreOrth() a null 1st array - no precondition violation")
+
+  runSchwarzHolds(counter, n, z, TOL, FALSE, NONE_EXP,
+  "passing vuSchwarzHolds() a null 1st array - no precondition violation")
+
+  runTriangleInequalityHolds(counter, n, u, TOL, FALSE, NONE_EXP,
+  "passing vuTriIneqHolds() a null 1st array - no precondition violation")
+
+  runNorm(counter, n, TOL, NO_VIO, 0.0, NONE_EXP,
+  "passing vuNorm() a null vector - no precondition violation")
+
+  runNorm(counter, u, TOL, NEG_RES, -5.0, NONE_EXP,
+  "passing vuNorm() badness level for negative result - no post violation")
+
+  runDot(counter, n, u, TOL, NO_VIO, 0.0, NONE_EXP,
+  "passing vuDot() a null 1st array - no precondition violation")
+
+  runDot(counter, u, u, TOL, NEG_RES, -5.0, NONE_EXP,
+  "passing vuDot() badness level for negative result with u=v - no post vio.")
+
+  runProduct(counter, 0.0, n, TOL, NO_VIO, n, TRUE, NONE_EXP, 
+  "passing vuProduct() a null array - no precondition violation")
+
+  runProduct(counter, 1.0, u, TOL, NULL_RES, u, FALSE, NONE_EXP, 
+  "passing vuProduct() badness level for null result - no post violation")
+
+  runNegate(counter, n, TOL, NO_VIO, n, TRUE, NONE_EXP,
+  "passing vuNegate() a null array - no precondition violation")
+
+  runNegate(counter, u, TOL, NULL_RES, nu, FALSE, NONE_EXP,
+  "passing vuNegate() badness level for null result - no post violation")
+
+  runNormalize(counter, n, TOL, NO_VIO, n, TRUE, NONE_EXP, 
+  "passing vuNormalize() a null array - no precondition violation")
+
+  runNormalize(counter, u, TOL, NULL_RES, u, FALSE, NONE_EXP,
+  "passing vuNormalize() a badness level for null result - no post violation")
+
+  runSum(counter, n, z, TOL, NO_VIO, n, TRUE, NONE_EXP,
+  "passing vuSum() a null 1st array - no precondition violation")
+
+  runSum(counter, u, z, TOL, NULL_RES, u, FALSE, NONE_EXP,
+  "passing vuSum() a badness level for null result - no post violation")
+
+  runDiff(counter, n, u, TOL, NO_VIO, n, TRUE, NONE_EXP,
+  "passing vuDiff() a null 1st array - no precondition violation")
+
+  runDiff(counter, z, u, TOL, NULL_RES, nu, FALSE, NONE_EXP,
+  "passing vuDiff() badness level for null result - no post violation")
+
+  dumpStats("After no checking")
+
+
+#
+#####################################################
+#                     MAIN
+#####################################################
+#
+if __name__ == '__main__':
+  import sys
+  counter = TestCounter(128-5)
+  try:
+    driver(counter)
+  except:
+    (type, value, trace) = sys.exc_info()
+    counter.forceFail()
+    import traceback
+    traceback.print_exception(type, value, trace)
+  counter.finish()
+0

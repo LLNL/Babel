@@ -1,0 +1,15 @@
+This is a severely pruned version of CHASM, a Fortran language
+interoperability tool developed at Los Alamos National Laboratory.
+This version *only* has the particular features required by Babel, and
+everything else has been removed.  In particular, Babel uses CHASM to
+initialize and nullify Fortran array descriptors for a wide variety of
+compiler vendors.  The Babel team is very grateful for CHASM, and we
+want to acknowledge Los Alamos' important contribution.
+
+For the complete version of CHASM, please see
+	http://chasm-interop.sourceforge.net/
+
+The key contributors to CHASM include:
+	Craig Rasmussen
+	Matt Sottile
+	Chris Rickett

@@ -1,0 +1,180 @@
+#!/usr/local/bin/python
+#
+# File:        structtest
+# Copyright:   (c) 2010 Lawrence Livermore National Security, LLC
+# Revision:    @(#) $Revision$
+# Date:        $Date$
+# Description: Exercise every kind of argument
+#
+# Try to exercise everything possible in Python.
+
+import sidlPyArrays
+if sidlPyArrays.type == "numpy":
+  from numpy import array, object
+  PyObject = object
+elif sidlPyArrays.type == "numeric":
+  from Numeric import array, PyObject
+from synch.ResultType import *
+from synch import RegOut
+import sidl
+import enums.car
+import enums.color
+import enums.number
+import enums.cartest
+import enums.colorwheel
+import enums.numbertest
+
+
+#basic RMI support
+remoteURL = ''
+
+def withRMI():
+  return remoteURL != ''
+
+def makeCartest():
+  if withRMI():
+    return enums.cartest.cartest(url=remoteURL)
+  else:
+    return enums.cartest.cartest()
+
+def makeColorwheel():
+  if withRMI():
+    return enums.colorwheel.colorwheel(url=remoteURL)
+  else:
+    return enums.colorwheel.colorwheel()
+
+def makeNumbertest():
+  if withRMI():
+    return enums.numbertest.numbertest(url=remoteURL)
+  else:
+    return enums.numbertest.numbertest()
+
+class TestCounter:
+
+  def __init__(self, numparts = -1):
+    self.tracker = RegOut.RegOut()
+    self.partno = 0
+    self.tracker.setExpectations(numparts)
+
+  def describeTest(self, description):
+    self.partno = self.partno + 1
+    self.tracker.startPart(self.partno)
+    self.tracker.writeComment(description)
+
+  def fail(self):
+    self.tracker.forceFailure()
+
+  def evalTest(self, result, expected=1):
+    if (result):
+      if (expected):
+        self.tracker.endPart(self.partno, PASS)
+      else:
+        self.tracker.endPart(self.partno, XPASS)
+    else:
+      if (expected):
+        self.tracker.endPart(self.partno, FAIL)
+      else:
+        self.tracker.endPart(self.partno, XFAIL)
+        
+  def finish(self):
+    self.tracker.close()
+
+if __name__ == '__main__':
+  import sys
+  
+  num_tests = 16
+    
+  # Parse the command line  to see if we are running RMI tests
+  for arg in sys.argv:
+    if arg.startswith("--url="):
+      remoteURL = arg[6:]
+
+  counter = TestCounter(num_tests)
+  
+  if withRMI():
+    remoteURL = counter.tracker.replaceMagicVars(remoteURL, '')
+    print 'using remote URL ' + remoteURL
+
+  try:    
+    # Setup RMI if necessary
+    if withRMI():
+      import sidl.rmi.ProtocolFactory
+      print 'registering RMI protocol simhandle'
+      if not sidl.rmi.ProtocolFactory.addProtocol('simhandle', 'sidlx.rmi.SimHandle'):
+        print('sidl.rmi.ProtocolFactor.addProtocol() failed')
+        sys.exit(2);
+
+    # undefined integer values
+    out = -5
+    inout = enums.color.green
+    obj = makeColorwheel()
+    
+    counter.describeTest('obj.returnback() == enums.color.violet')
+    counter.evalTest(     obj.returnback() == enums.color.violet)
+    counter.describeTest('obj.passin(enums.color.blue) == True')
+    counter.evalTest(     obj.passin(enums.color.blue) == True)
+    counter.describeTest('obj.passout() == (True, enums.color.violet')
+    counter.evalTest(     obj.passout() == (True, enums.color.violet))
+
+    counter.describeTest('obj.passinout(inout) == (True, enums.color.red)')
+    (retval, inout) = obj.passinout(inout)
+    counter.evalTest((retval, inout) == (True, enums.color.red))
+
+    counter.describeTest('obj.passeverywhere(enums.color.blue, inout) == (enums.color.violet, enums.color.violet, enums.color.green)')
+    counter.evalTest(     obj.passeverywhere(enums.color.blue, inout) == (enums.color.violet, enums.color.violet, enums.color.green))
+
+    # fully defined integer values                      
+    out = -5
+    inout = enums.car.ford
+    obj = makeCartest()
+    tref = [enums.car.ford, enums.car.mercedes, enums.car.porsche]
+    tin = array(tref)
+    tinout = array(tref)
+
+    counter.describeTest('obj.returnback() == enums.car.porsche')
+    counter.evalTest(     obj.returnback() == enums.car.porsche)
+    counter.describeTest('obj.passin(enums.car.mercedes) == True')
+    counter.evalTest(     obj.passin(enums.car.mercedes) == True)
+    counter.describeTest('obj.passout() == (True, enums.car.ford)')
+    counter.evalTest(     obj.passout() == (True, enums.car.ford))
+    counter.describeTest('obj.passinout(inout) == (True, enums.car.porsche)')
+
+    (retval, inout) = obj.passinout(inout)
+    counter.evalTest((retval, inout) == (True, enums.car.porsche))
+    counter.describeTest('obj.passeverywhere(enums.car.mercedes, inout) == (enums.car.porsche, enums.car.ford, enums.car.mercedes)')
+    counter.evalTest(     obj.passeverywhere(enums.car.mercedes, inout) == (enums.car.porsche, enums.car.ford, enums.car.mercedes))
+
+    counter.describeTest('obj.passarray(tin, tinout) == (tref, tref)')
+    (a, b, c) = obj.passarray(tin, tinout)
+    counter.evalTest(a.tolist() == tref and b.tolist() == tref and c.tolist() == tref)
+
+    # partially defined integer values
+    out = -5
+    inout = enums.number.zero
+    obj = makeNumbertest()
+    counter.describeTest('obj.returnback() == enums.number.notOne')
+    counter.evalTest(     obj.returnback() == enums.number.notOne)
+    counter.describeTest('obj.passin(enums.number.notZero) == True')
+    counter.evalTest(     obj.passin(enums.number.notZero) == True)
+    counter.describeTest('obj.passout() == (True, enums.number.negOne)')
+    counter.evalTest(     obj.passout() == (True, enums.number.negOne))
+    counter.describeTest('obj.passinout(inout) == (True, enums.number.notZero)')
+
+    (retval, inout) = obj.passinout(inout)
+    counter.evalTest((retval, inout) == (True, enums.number.notZero))
+    counter.describeTest('obj.passeverywhere(enums.number.notZero, inout) == (enums.number.notOne, enums.number.negOne, enums.number.zero)')
+    counter.evalTest(     obj.passeverywhere(enums.number.notZero, inout) == (enums.number.notOne, enums.number.negOne, enums.number.zero))
+
+    # array tests
+    enumArray = array([enums.car.porsche, enums.car.ford, enums.car.mercedes, enums.car.porsche])
+    # these tests don't make much sense, since babel uses the NumPy array interface
+    
+    # skipped ...
+
+  except:
+    (type, value, trace) = sys.exc_info()
+    counter.fail()
+    import traceback
+    traceback.print_exception(type, value, trace)
+  counter.finish()
+0

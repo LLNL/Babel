@@ -1,0 +1,28 @@
+#!/bin/sh
+#
+# generate_scl scl_file library_file <multiple IOR files>
+#
+# scl_file	usually libImpl.scl (simple filename -- no path information)
+# library_file	usually the full path to the libtool .la file
+#		(e.g., `pwd`/libImpl.la )
+if test `uname` = "Darwin"; then
+  scope="global"
+else
+  scope="local"
+fi
+
+scl_file=$1
+shift
+library_file=$1
+shift
+rm -f $scl_file
+cat <<EOF >$scl_file
+<?xml version="1.0" ?>
+<scl>
+  <library uri="$library_file" scope="$scope" resolution="lazy" >
+EOF
+grep __set_epv $* /dev/null | awk 'BEGIN {FS=":"} { print $1}' | sort -u | sed -e 's/_IOR.c//g' -e 's/_/./g' | awk ' { printf "    <class name=\"%s\" desc=\"ior/impl\" />\n", $1 }' >>$scl_file
+cat <<"EOF2" >>$scl_file
+  </library>
+</scl>
+EOF2

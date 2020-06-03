@@ -1,0 +1,109 @@
+#!/usr/local/bin/python
+#
+# File:        hookstest
+# Copyright:   (c) 2001 Lawrence Livermore National Security, LLC
+# Revision:    @(#) $Revision: 4767 $
+# Date:        $Date: 2005-07-26 13:45:06 -0700 (Tue, 26 Jul 2005) $
+# Description: Exercise every kind of argument
+#
+# Try to exercise everything possible in Python.
+
+import hooks.Basics
+import sidl.RuntimeException
+import sys
+from synch.ResultType import *
+
+import synch
+from synch import RegOut
+
+#basic RMI support
+remoteURL = ''
+
+def withRMI():
+  return remoteURL != ''
+
+def makeObject():
+  if withRMI():
+    return hooks.Basics.Basics(url=remoteURL)
+  else:
+    return hooks.Basics.Basics()
+
+class TestCounter:
+
+  def __init__(self, numparts = -1):
+    self.tracker = RegOut.RegOut()
+    self.partno = 0
+    self.tracker.setExpectations(numparts)
+
+  def describeTest(self, description):
+    self.partno = self.partno + 1
+    self.tracker.startPart(self.partno)
+    self.tracker.writeComment(description)
+
+  def fail(self):
+    self.tracker.forceFailure()
+
+  def evalTest(self, result, expected=1):
+    if (result):
+      if (expected):
+        self.tracker.endPart(self.partno, PASS)
+      else:
+        self.tracker.endPart(self.partno, XPASS)
+    else:
+      if (expected):
+        self.tracker.endPart(self.partno, FAIL)
+      else:
+        self.tracker.endPart(self.partno, XFAIL)
+        
+  def finish(self):
+    self.tracker.close()
+
+
+  
+if __name__ == '__main__':
+  counter = TestCounter(4)
+
+  # Parse the command line  to see if we are running RMI tests
+  for arg in sys.argv:
+    if arg.startswith("--url="):
+      remoteURL = arg[6:]
+      remoteURL = counter.tracker.replaceMagicVars(remoteURL, '')
+
+  if withRMI():
+    print 'using remote URL ' + remoteURL
+
+  # Setup RMI if necessary
+  if withRMI():
+    import sidl.rmi.ProtocolFactory
+    print 'registering RMI protocol simhandle'
+    if not sidl.rmi.ProtocolFactory.addProtocol('simhandle', 'sidlx.rmi.SimHandle'):
+      print('sidl.rmi.ProtocolFactor.addProtocol() failed')
+      sys.exit(2);
+
+  hooks.Basics._set_hooks_static(1)
+  obj = makeObject()
+  obj._set_hooks(1)
+  
+  try:
+    b = c = -1
+    (ret,b,c) = hooks.Basics.aStaticMeth(1,0)
+    counter.describeTest('b == 1 and c == 0')
+    counter.evalTest(b == 1 and c == 0)
+
+    (ret,b,c) = hooks.Basics.aStaticMeth(2,0)
+    counter.describeTest('b == 1 and c == 0')
+    counter.evalTest(b == 2 and c == 1)
+
+    b = c = -1
+    (ret,b,c) = obj.aNonStaticMeth(3,0)
+    counter.describeTest('b == 1 and c == 0')
+    counter.evalTest(b == 1 and c == 0)
+
+    (ret,b,c) = obj.aNonStaticMeth(4,0)
+    counter.describeTest('b == 1 and c == 0')
+    counter.evalTest(b == 2 and c == 1)
+    
+  except sidl.RuntimeException._Exception:
+    (etype, eobj, etb) = sys.exc_info()
+    eobj.exception.getNote()
+0

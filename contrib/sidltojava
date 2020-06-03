@@ -1,0 +1,260 @@
+#!/usr/bin/env perl
+
+# This takes a SIDL file name as an argument or SIDL on the standard input
+# and produces a java-like file on standard output.  Comments are
+# presevered allowing the java-like file to be processed by doxygen.
+
+# Suggestion: If you set OPTIMIZE_OUTPUT_JAVA=YES in your doxygen
+# configuration file, the output will look more like SIDL than C++
+# (i.e. "." vs "::").
+
+$depth = 0;
+$lineno = 0;
+$printtokens = 0;
+
+# Emit a doxygen-style version comment for versioned packages
+#
+# Note: For this to work, the version comment has to be "part of" the
+# rest of the leading comment block.  If you use a "///"-style
+# comment, this might work.  If you use "/**"-style comments, the
+# @version would have to be inserted within that block, and we'd have
+# to be a lot more sophisticated to do that.
+#
+# Note further that doxygen takes the _last_ comment block before a
+# definition or declaration as its documentation, so a @version
+# comment that doesn't fit with the comment style could "override" the
+# real comments before.  Because of that, the default is to leave this
+# option off.
+$doxygenversion = 0; 
+
+# top level SIDL parse loop
+while (more_tokens()) {
+    parse_package();
+}
+
+# the "package" keyword must be the next token
+sub parse_package() {
+    my $tok = scan();
+    if (!more_tokens()) { return; }
+    if ($tok ne "package") { die "expected package"; }
+    parse_package_body();
+}
+
+# the package name must be the next token
+sub parse_package_body {
+    my $package_name = scan();
+    # toss version and the version number, if it exists
+    my $token;
+    if (($token = scan()) eq "version") {
+        my $version = scan();
+        if (!more_tokens()) { die "expected a version number"; }
+
+	# If requested, emit version number comment BEFORE namespace
+	# so that doxygen will match it up with the rest of the
+	# package documentation
+        if ( $doxygenversion ) {
+	    printf "%s/// \@version %s\n", indent(), $version;
+	}
+
+        # Now look for the open brace
+        $token = scan();
+    }
+    if ($token ne "{") { die "package body didn't start with bracket"; }
+    printf "%snamespace %s {\n", indent(), $package_name;
+    $depth++;
+    while (more_tokens()) {
+        $token = scan();
+        if ($token eq "class" || $token eq "interface") {
+            parse_class_or_interface($token);
+        }
+        elsif ($token eq "package") {
+            parse_package_body();
+        }
+        elsif ($token eq "enum") {
+            parse_enum_body();
+        }
+        elsif ($token eq "}") {
+            # In SIDL the semicolon after a } is optional, so when we
+            # find a } we immediately close the grouping in the output
+            # and then look for the semicolon and swallow it.  This
+            # insures that any comments scan() might simply pass along
+            # appear in the proper place # relative to the }
+            printf "%s};\n", indent();
+            $depth--;
+            my $semi = scan();
+            if ($semi ne ";") { unscan("$semi"); }
+            return;
+        }
+        else {
+            die "unexpected token parsing package body, got \"$token\"";
+        }
+    }
+    die "unexpected !more_tokens in parse_package_body";
+}
+
+# Java doesn't have enums (until 1.5), so we have to translate them into
+# some other language.  Fortunately, doxygen doesn't really care.
+sub parse_enum_body() {
+    my $type = scan();
+    if (!more_tokens()) { die "got !more_tokens looking for enum type name"; }
+    my $token = scan();
+    if ($token ne "{") { die "could not find { in enum"; }
+    printf "%senum %s {\n", indent(), $type;
+    $depth++;
+
+    # The pseudo-java produced by this doesn't look pretty -- newlines
+    # in particular come in mostly the wrong places.  But it does seem
+    # to work well enough with doxygen.
+    my $token = scan();
+    while ( $token ne "}" ) {
+	printf " %s", $token;
+	$token = scan();
+        if (!more_tokens()) { die "unexpected !more_tokens in parse_enum_body"; }
+    }
+    printf "%s};\n", indent();
+    $depth--;
+    my $semi = scan();
+    if ($semi ne ";") { unscan("$semi"); }
+}
+
+# Takes "class" or "interface" as the first argument.  The next token must be the class
+# name.
+sub parse_class_or_interface() {
+    my $type = shift;
+    if ($type ne "class" && $type ne "interface") { die "class or interface expected, got \"$type\""; }
+    parse_class_or_interface_body($type);
+}
+
+sub parse_class_or_interface_body {
+    my $type = shift;
+    my $name = scan();
+    my $token = scan();
+    printf "%s%s %s ", indent(), $type, $name;
+    while ($token ne "{" && more_tokens()) {
+        if ($token eq "implements-all") {
+            my $base = scan();
+            printf "implements %s", $base;
+            while (($token = scan()) eq ",") {
+                $base = scan();
+                printf ", %s", $base;
+            }
+        }
+        elsif ($token eq "extends") {
+            my $base = scan();
+            printf "extends %s", $base;
+            while (($token = scan()) eq ",") {
+                $base = scan();
+                printf ", %s", $base;
+            }
+        }
+        else {
+            die "use of \"$token\" is illegal or not yet implemented";
+        }
+    }
+    if (!more_tokens()) { die "unexpected !more_tokens in parse_class_or_interface_body"; }
+    # In SIDL the semicolon after a } is optional, so when we find a }
+    # we immediately close the grouping in the output and then look
+    # for the semicolon and swallow it.  This insures that any
+    # comments scan() might simply pass along appear in the proper
+    # place relative to the }
+    printf " {\n";
+    $depth++;
+    while (parse_function()) {};
+    printf "%s};\n", indent();
+    $depth--;
+    my $semi = scan();
+    if ($semi ne ";") { unscan("$semi"); }
+}
+
+sub parse_function {
+    my $token = scan();
+    if ($token eq "}") {
+        # done parsing this class or interface
+        return 0;
+    }
+    printf "%spublic", indent();
+    while ($token ne ";") {
+        printf " %s", $token;
+        $token = scan();
+        if (!more_tokens()) { die "unexpected !more_tokens in parse_function"; }
+    }
+    print ";\n";
+    return 1;
+}
+
+sub indent {
+    my $s = "";
+    for (my $i = 0; $i < $depth; $i++) {
+        $s = "  $s";
+    }
+    return "$s";
+}
+
+# push a token back onto the front of the stream
+sub unscan {
+    my $token = shift;
+    $line = "$token $line";
+}
+
+# Returns true if there are more tokens to be parsed.
+sub more_tokens {
+    return ! $got_eof;
+};
+
+# Returns the next token.  If "" is returned then there are no more tokens.
+sub scan {
+    RESTART_SCAN: advance_line_if_needed();
+    if ($got_eof) {
+        print "[]" if ($printtokens);
+        return "";
+    }
+    # Line-by-line comment with "//"
+    if ($line =~ /^\/\//) {
+        printf "%s%s\n", indent(), $line;
+        $line = "";
+        goto RESTART_SCAN;
+    }
+    # Block comment with "/*"
+    if ($line =~ /^\/\*/) {
+	# Need to add back stripped newline
+	$line .= "\n";
+        while (! ($line =~ /\*\//)) {
+            printf "%s%s", indent(), $line;
+            $line = <>;
+            $lineno++;
+            if (eof()) { die "got eof in comment"; }
+        }
+        $line =~ /^(.*\*\/)/;
+        printf "%s%s\n", indent(), $1;
+        $line =~ s/^.*\*\///;
+        goto RESTART_SCAN;
+    }
+    # Special characters that separate important things
+    if ($line =~ /^([\(\)<>,;\[\]\{\}])/) {
+        my $token = $1;
+        $line =~ s/^.//;
+        print "[$token]" if ($printtokens);
+        return $token;
+    }
+    # Everything else
+    $line =~ /([^\s\(\)<>,;\[\]\{\}]+)/;
+#    $line =~ /([^\ \t\(\)<>,;\[\]\{\}]+)/;
+    my $token = $1;
+    $line =~ s/[^\s\(\)<>,;\[\]\{\}]+//;
+#    $line =~ s/[^\ \t\(\)<>,;\[\]\{\}]+//;
+    print "[$token]" if ($printtokens);
+    return $token;
+}
+
+sub advance_line_if_needed {
+    $line =~ s/^\s+//;
+    $line =~ s/\s+$//;
+    while ($line eq "") {
+        if (eof()) { $got_eof = 1; return; }
+        $line = <>;
+        $lineno++;
+        $line =~ s/^\s+//;
+        $line =~ s/\s+$//;
+        #print "===$line===\n";
+    }
+}

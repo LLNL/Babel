@@ -1,0 +1,646 @@
+#!/usr/local/bin/python
+#
+# File:        knapsacktest
+# Copyright:   (c) 2011 Lawrence Livermore National Security, LLC
+# Revision:    @(#) $Revision: 6171 $
+# Date:        $Date: 2011-01-05 16:39:28 -0700 (Wed, 05 Jan 2011) $
+# Description: Python invariants regression tests
+
+import sidl.BaseClass
+import sidl.BaseInterface
+import sidl.ClassInfo
+import sidl.EnfPolicy
+import sidl.PostViolation
+import sidl.PreViolation
+import sidl.RuntimeException
+import knapsack.gKnapsack
+import knapsack.npKnapsack
+import knapsack.nwKnapsack
+
+import knapsack.ExpectExcept
+NONE_EXP = knapsack.ExpectExcept.NoneExp
+BW_EXP = knapsack.ExpectExcept.BWExp
+SIZE_EXP = knapsack.ExpectExcept.SizeExp
+EXC_EXP = knapsack.ExpectExcept.ExcExp
+INV_EXP = knapsack.ExpectExcept.InvExp
+POST_EXP = knapsack.ExpectExcept.PostExp
+PRE_EXP = knapsack.ExpectExcept.PreExp
+
+import sidl.ContractClass
+ALL_TYPES      = sidl.ContractClass.ALLCLASSES
+INVARIANTS  = sidl.ContractClass.INVARIANTS
+PRECONDITIONS  = sidl.ContractClass.PRECONDS
+POSTCONDITIONS = sidl.ContractClass.POSTCONDS
+INVPRE  = sidl.ContractClass.INVPRE
+INVPOST  = sidl.ContractClass.INVPOST
+PREPOST  = sidl.ContractClass.PREPOST
+
+from synch.ResultType import *
+from synch import RegOut
+
+import sidlPyArrays
+if sidlPyArrays.type == "numpy":
+  from numpy import zeros, int32, ndarray
+  zeros = numpy.zeros
+  int32 = numpy.int32
+  ArrayType = ndarray
+elif sidlPyArrays.type == "numeric":
+  from Numeric import zeros, int32, ArrayType
+  zeros = Numeric.zeros
+  int32 = Numeric.Int32
+  ArrayType = Numeric.ArrayType
+
+import math
+import string
+
+
+#
+#####################################################
+# Handy utilities from the arrays regression tests
+#####################################################
+#
+def savespace(o):
+  try:
+    o.savespace(1)
+  except AttributeError:
+    pass
+ 
+def createArray(len):
+  result = None
+  if (len >= 0):
+    result = zeros((len, ), int32)
+    savespace(result)
+  return result
+ 
+def initArray(tp, a1, pos):
+  total = 0
+  val = 0
+  if tp != None and a1 != None and (pos >= 0 and pos < len(a1)):
+    for i in range(len(a1)):
+      val = val + 2
+      a1[i] = val
+      total += val
+    if tp == NON_POS:
+      total = total - 2*a1[pos]
+      a1[pos] = -1 * a1[pos]
+    elif tp == NO_WT:
+      total = total - a1[pos]
+      a1[pos] = 0
+  return total
+
+
+#
+#####################################################
+#                  GLOBAL CONSTANTS
+#####################################################
+#
+#
+# Disable DEBUG before committing code
+DEBUG           = 0
+
+PRE             = "*** DEBUG: "
+
+GOOD            = 0
+NON_POS         = 1
+NO_WT           = 2
+
+MAX_SIZE        = 6
+
+
+#
+#####################################################
+# Extra routines
+#####################################################
+#
+def enforceAll(cClass, b):
+  try:
+    sidl.EnfPolicy.setEnforceAll(cClass, b)
+  except:
+    (type, value, trace) = sys.exc_info()
+    print "Exception thrown during setEnforceAll:", sys.exc_info()
+    counter.forceFail()
+    import traceback
+    traceback.print_exception(type, value, trace)
+
+
+#
+#####################################################
+#                  Test Driver
+#
+# Source:  Based on exception regression tests
+#####################################################
+#
+class TestCounter:
+ 
+  def __init__(self, numparts = -1):
+    self.partno = 0
+    self.tracker = RegOut.RegOut()
+    self.tracker.setExpectations(numparts)
+ 
+  def describeTest(self, description):
+    self.partno = self.partno + 1
+    self.tracker.startPart(self.partno)
+    self.tracker.writeComment(description)
+ 
+  def evalExcept(self, expected):
+    myPre = PRE + "evalExcept: "
+    if (DEBUG):
+      print myPre + "expected=", expected
+    (excType, excObj, ExcTb) = sys.exc_info()
+    if (excObj):
+      try:
+        if (excObj.exception.isType("knapsack.kBadWeightExcept")):
+          exceptType = BW_EXP
+        elif (excObj.exception.isType("knapsack.kSizeExcept")):
+          exceptType = SIZE_EXP
+        elif (excObj.exception.isType("sidl.InvViolation")):
+          exceptType = INV_EXP
+        elif (excObj.exception.isType("sidl.PreViolation")):
+          exceptType = PRE_EXP
+        elif (excObj.exception.isType("sidl.PostViolation")):
+          exceptType = POST_EXP
+        elif (excObj.exception.isType("knapsack.kExcept")):
+          exceptType = EXC_EXP
+        else:
+          exceptType = EXC_EXP
+      except AttributeError:
+        exceptType = NONE_EXP
+      except:
+        exceptType = EXC_EXP
+    else:
+      exceptType = NONE_EXP
+    if (exceptType == expected):
+      if (DEBUG):
+#        if (expected != NONE_EXP):
+          print myPre + "Exception: ", sys.exc_info()
+      self.tracker.endPart(self.partno, PASS)
+    else:
+      if (DEBUG):
+        if ((exceptType != NONE_EXP) and (expected != NONE_EXP)):
+          print myPre + "Exception: ", exceptType, ", expected:", expected
+          print myPre + "Exception details: ", sys.exc_info()
+      self.tracker.endPart(self.partno, FAIL)
+ 
+  def evalRes(self, result, expected):
+    myPre = PRE + "evalRes: "
+    if (DEBUG):
+      print myPre + "result=", result, ", expected=", expected
+    if result != None and expected != None:
+      if result == expected:
+        self.tracker.endPart(self.partno, PASS)
+      else:
+        self.tracker.endPart(self.partno, FAIL)
+    else:
+      self.tracker.endPart(self.partno, FAIL)
+ 
+  def fail(self):
+    self.tracker.endPart(self.partno, FAIL)
+ 
+  def failNoExcept(self, expectedExc):
+    myPre = PRE + "failNoExcept: "
+    if (DEBUG):
+      print myPre + "expectedExc=", expectedExc
+    if (expectedExc != NONE_EXP):
+      print "Expected an exception but one was not detected"
+      self.tracker.endPart(self.partno, FAIL)
+ 
+  def finish(self):
+    self.tracker.close()
+
+  def forceFail(self):
+    self.tracker.forceFailure()
+ 
+
+#
+#####################################################
+#                  Test Routines
+#####################################################
+#
+def getKnapsack(tp, w, t):
+  t = None
+  if tp == GOOD:
+    t = knapsack.gKnapsack()
+  elif tp == NON_POS:
+    t = knapsack.npKnapsack()
+  elif tp == NO_WT:
+    t = knapsack.nwKnapsack()
+  return t
+
+def runBaseCase(tp, w, t, res, expectExc, counter, desc):
+  counter.describeTest(desc)
+  try:
+    k = getKnapsack(tp)
+    if k != None:
+      k.initialize(w)
+      x = k.hasSolution(t)
+    else:
+      print "Unrecognized or unsupported Knapsack type encountered"
+      counter.fail()
+  except:
+    counter.evalExcept(expectExc)
+  else:
+    if (expectExc == NONE_EXP):
+      counter.evalRes(x, res)
+    else:
+      counter.failNoExcept(expectExc)
+
+
+#
+#####################################################
+#                  Test Driver
+#
+# Source:  Based on exception regression tests
+#####################################################
+#
+#
+
+def driver(counter):
+  good  = createArray(MAX_SIZE)
+  gLong  = createArray(MAX_SIZE+1)
+  nArr = None
+  negEnd = createArray(MAX_SIZE)
+  zStart  = createArray(MAX_SIZE)
+  zMid  = createArray(MAX_SIZE)
+  zEnd  = createArray(MAX_SIZE)
+
+  gTotal = initArray(GOOD, good, 0)
+  tTotal = initArray(GOOD, gLong, 0)
+  tTotal = initArray(NON_POS, negEnd, MAX_SIZE-1)
+  tTotal = initArray(NO_WT, zStart, 0)
+  tTotal = initArray(NO_WT, zMid, 0)
+  tTotal = initArray(NO_WT, zEnd, 0)
+
+
+  #
+  # ***************************************************************
+  # FULL ENFORCEMENT
+  # ***************************************************************
+  #
+  print "\nCOMMENT: *** ENABLE FULL CONTRACT CHECKING ***\n\n"
+  enforceAll(ALL_TYPES, True)
+
+  #
+  # gKnapsack.BaseCase.Full set
+  #
+  runBaseCase(GOOD, good, total, True, NONE_EXP, counter, 
+    "gKnapsack.BaseCase.Full: good: expect solution for total")
+
+  runBaseCase(GOOD, good, total-1, False, NONE_EXP, counter, 
+    "gKnapsack.BaseCase.Full: good: do not expect solution for total-1")
+
+  runBaseCase(GOOD, good, -1, False, PRE_EXP, counter, 
+    "gKnapsack.BaseCase.Full: good: precondition vio (neg. target)")
+
+  runBaseCase(GOOD, gLong, total, False, SizeExp, counter, 
+    "gKnapsack.BaseCase.Full: gLong: size exception expected")
+
+  runBaseCase(GOOD, zStart, total, False, PRE_EXP, counter, 
+    "gKnapsack.BaseCase.Full: zStart: precondition vio/no solution expected")
+
+  runBaseCase(GOOD, zMid, total, False, PRE_EXP, counter, 
+    "gKnapsack.BaseCase.Full: zMid: precondition vio/no solution expected")
+
+  runBaseCase(GOOD, zEnd, total, False, PRE_EXP, counter, 
+    "gKnapsack.BaseCase.Full: zEnd: precondition vio/no solution expected")
+
+  runBaseCase(GOOD, negEnd, total, False, PRE_EXP, counter, 
+    "gKnapsack.BaseCase.Full: negEnd: precondition vio/no solution expected")
+
+  #
+  # TODO/TBD:  This will either be an invariant or postcondition violation,
+  # depending on ordering in generated code
+  runBaseCase(GOOD, nArr, total, False, INV_EXP, counter, 
+    "gKnapsack.BaseCase.Full: nArr: invariants vio/no solution expected")
+
+
+  #
+  # npKnapsack.BaseCase.Full set
+  #
+  runBaseCase(NON_POS, good, total, True, NONE_EXP, counter, 
+    "npKnapsack.BaseCase.Full: good: expect solution for total")
+
+  runBaseCase(NON_POS, good, total-1, False, NONE_EXP, counter, 
+    "npKnapsack.BaseCase.Full: good: do not expect solution for total-1")
+
+  runBaseCase(NON_POS, good, -1, False, PRE_EXP, counter, 
+    "npKnapsack.BaseCase.Full: good: precondition vio (neg. target)")
+
+  runBaseCase(NON_POS, gLong, total, False, SizeExp, counter, 
+    "npKnapsack.BaseCase.Full: gLong: size exception expected")
+
+  runBaseCase(NON_POS, zStart, total, False, PRE_EXP, counter, 
+    "npKnapsack.BaseCase.Full: zStart: precondition vio/no solution expected")
+
+  runBaseCase(NON_POS, zMid, total, False, PRE_EXP, counter, 
+    "npKnapsack.BaseCase.Full: zMid: precondition vio/no solution expected")
+
+  runBaseCase(NON_POS, zEnd, total, False, PRE_EXP, counter, 
+    "npKnapsack.BaseCase.Full: zEnd: precondition vio/no solution expected")
+
+  runBaseCase(NON_POS, negEnd, total, False, PRE_EXP, counter, 
+    "npKnapsack.BaseCase.Full: negEnd: precondition vio/no solution expected")
+
+  #
+  # TODO/TBD:  This will either be an invariant or postcondition violation,
+  # depending on ordering in generated code
+  runBaseCase(NON_POS, nArr, total, False, INV_EXP, counter, 
+    "npKnapsack.BaseCase.Full: nArr: invariants/no solution expected")
+
+
+  #
+  # nwKnapsack.BaseCase.Full set
+  #
+  runBaseCase(NO_WT, good, total, False, NONE_EXP, counter, 
+    "nwKnapsack.BaseCase.Full: good: do not expect solution for total")
+
+  runBaseCase(NO_WT, good, total-1, False, NONE_EXP, counter, 
+    "nwKnapsack.BaseCase.Full: good: do not expect solution for total-1")
+
+  runBaseCase(NO_WT, good, -1, False, PRE_EXP, counter, 
+    "nwKnapsack.BaseCase.Full: good: precondition vio (neg. target)")
+
+  runBaseCase(NO_WT, gLong, total, False, SizeExp, counter, 
+    "nwKnapsack.BaseCase.Full: gLong: size exception expected")
+
+  runBaseCase(NO_WT, zStart, total, False, PRE_EXP, counter, 
+    "nwKnapsack.BaseCase.Full: zStart: precondition vio/no solution expected")
+
+  runBaseCase(NO_WT, zMid, total, False, PRE_EXP, counter, 
+    "nwKnapsack.BaseCase.Full: zMid: precondition vio/no solution expected")
+
+  runBaseCase(NO_WT, zEnd, total, False, PRE_EXP, counter, 
+    "nwKnapsack.BaseCase.Full: zEnd: precondition vio/no solution expected")
+
+  runBaseCase(NO_WT, negEnd, total, False, PRE_EXP, counter, 
+    "nwKnapsack.BaseCase.Full: negEnd: precondition vio/no solution expected")
+
+  #
+  # TODO/TBD:  This will either be an invariant or postcondition violation,
+  # depending on ordering in generated code
+  runBaseCase(NO_WT, nArr, total, False, INV_EXP, counter, 
+     "nwKnapsack.BaseCase.Full: nArr: invariant vio/no solution expected")
+
+
+  #
+  # ***************************************************************
+  # POSTCONDITION-ONLY ENFORCEMENT
+  # ***************************************************************
+  #
+  print "\nCOMMENT: *** POSTCONDITION-ONLY ENFORCEMENT ***\n\n"
+  setEnforceAll(POSTCONDS, False)
+
+  #
+  # gKnapsack.BaseCase.Post set 
+  #
+  runBaseCase(GOOD, good, total, True, NONE_EXP, counter, 
+     "gKnapsack.BaseCase.Post: good: expect solution for total")
+
+  runBaseCase(GOOD, good, -1, False, NONE_EXP, counter, 
+     "gKnapsack.BaseCase.Post: good: no solution expected")
+
+  runBaseCase(GOOD, gLong, total, False, SizeExp, counter, 
+     "gKnapsack.BaseCase.Post: gLong: size exception expected")
+
+  runBaseCase(GOOD, negEnd, total, False, BWExp, counter, 
+     "gKnapsack.BaseCase.Post: negEnd: bad weight exception expected")
+
+  runBaseCase(GOOD, nArr, total, False, POST_EXP, counter, 
+     "gKnapsack.BaseCase.Post: nArr: postcondition vio/no solution expected")
+
+
+  #
+  # npKnapsack.BaseCase.Post set 
+  #
+  runBaseCase(NON_POS, good, total, True, NONE_EXP, counter, 
+     "npKnapsack.BaseCase.Post: good: expect solution for total")
+
+  runBaseCase(NON_POS, good, -1, False, NONE_EXP, counter, 
+     "npKnapsack.BaseCase.Post: good: no solution expected")
+
+  runBaseCase(NON_POS, gLong, total, False, SizeExp, counter, 
+     "npKnapsack.BaseCase.Post: gLong: size exception expected")
+
+  runBaseCase(NON_POS, zStart, total, False, NONE_EXP, counter, 
+     "npKnapsack.BaseCase.Post: zStart: no solution expected")
+
+  runBaseCase(NON_POS, zMid, total, False, NONE_EXP, counter, 
+     "npKnapsack.BaseCase.Post: zMid: no solution expected")
+
+  runBaseCase(NON_POS, zEnd, total, False, NONE_EXP, counter, 
+     "npKnapsack.BaseCase.Post: zEnd: no solution expected")
+
+  runBaseCase(NON_POS, negEnd, total, False, NONE_EXP, counter, 
+     "npKnapsack.BaseCase.Post: negEnd: no solution expected")
+
+  runBaseCase(NON_POS, nArr, total, False, POST_EXP, counter, 
+     "npKnapsack.BaseCase.Post: nArr: postcondition vio/no solution expected")
+
+
+  #
+  # nwKnapsack.BaseCase.Post set 
+  #
+  runBaseCase(NO_WT, good, total, False, POST_EXP, counter, 
+     "nwKnapsack.BaseCase.Post: good: postcondition vio/no solution expected")
+
+  runBaseCase(NO_WT, good, -1, False, POST_EXP, counter, 
+     "nwKnapsack.BaseCase.Post: good: postcondition vio/no solution expected")
+
+  runBaseCase(NO_WT, gLong, total, False, SizeExp, counter, 
+     "nwKnapsack.BaseCase.Post: gLong: size exception expected")
+
+  runBaseCase(NO_WT, negEnd, total, False, POST_EXP, counter, 
+     "nwKnapsack.BaseCase.Post: negEnd: postcondition vio/no solution expected")
+
+  runBaseCase(NO_WT, nArr, total, False, POST_EXP, counter, 
+     "nwKnapsack.BaseCase.Post: nArr: postcondition vio/no solution expected")
+
+
+  #
+  # ***************************************************************
+  # INVARIANTS-ONLY ENFORCEMENT
+  # ***************************************************************
+  #
+  print "\nCOMMENT: *** INVARIANTS-ONLY ENFORCEMENT ***\n\n"
+  setEnforceAll(INVARIANTS, False)
+
+  #
+  # gKnapsack.BaseCase.Inv set
+  #
+  runBaseCase(GOOD, good, total, True, NONE_EXP, counter, 
+     "gKnapsack.BaseCase.Inv: good: expect solution for total")
+
+  runBaseCase(GOOD, good, -1, False, NONE_EXP, counter, 
+     "gKnapsack.BaseCase.Inv: good: no solution expected")
+
+  runBaseCase(GOOD, gLong, total, False, SizeExp, counter, 
+     "gKnapsack.BaseCase.Inv: gLong: size exception expected")
+
+  runBaseCase(GOOD, negEnd, total, False, BWExp, counter, 
+     "gKnapsack.BaseCase.Inv: negEnd: bad weight exception expected")
+
+  runBaseCase(GOOD, nArr, total, False, INV_EXP, counter, 
+     "gKnapsack.BaseCase.Inv: nArr: invariants vio/no solution expected")
+
+
+  #
+  # npKnapsack.BaseCase.Inv set
+  #
+  runBaseCase(NON_POS, good, total, True, NONE_EXP, counter, 
+     "npKnapsack.BaseCase.Inv: good: expect solution for total")
+
+  runBaseCase(NON_POS, good, -1, False, NONE_EXP, counter, 
+     "npKnapsack.BaseCase.Inv: good: no solution expected")
+
+  runBaseCase(NON_POS, gLong, total, False, SizeExp, counter, 
+     "npKnapsack.BaseCase.Inv: gLong: size exception expected")
+
+  runBaseCase(NON_POS, zStart, total, False, INV_EXP, counter, 
+     "npKnapsack.BaseCase.Inv: zStart: invariants vio/no solution expected")
+
+  runBaseCase(NON_POS, zMid, total, False, INV_EXP, counter, 
+     "npKnapsack.BaseCase.Inv: zMid: invariants vio/no solution expected")
+
+  runBaseCase(NON_POS, zEnd, total, False, INV_EXP, counter, 
+     "npKnapsack.BaseCase.Inv: zEnd: invariants vio/no solution expected")
+
+  runBaseCase(NON_POS, negEnd, total, False, INV_EXP, counter, 
+     "npKnapsack.BaseCase.Inv: negEnd: invariants vio/no solution expected")
+
+  runBaseCase(NON_POS, nArr, total, False, INV_EXP, counter, 
+     "npKnapsack.BaseCase.Inv: nArr: invariants vio/no solution expected")
+
+
+  #
+  # nwKnapsack.BaseCase.Inv set
+  #
+  runBaseCase(NO_WT, good, total, False, NONE_EXP, counter, 
+     "nwKnapsack.BaseCase.Inv: good: no solution expected")
+
+  runBaseCase(NO_WT, good, -1, False, NONE_EXP, counter, 
+     "nwKnapsack.BaseCase.Inv: good: no solution expected")
+
+  runBaseCase(NO_WT, gLong, total, False, SizeExp, counter, 
+     "nwKnapsack.BaseCase.Inv: gLong: size exception expected")
+
+  #
+  # WARNING:  The following assumes the non-positive weight does get added to
+  # the knapsack.
+  runBaseCase(NO_WT, negEnd, total, False, INV_EXP, counter, 
+     "nwKnapsack.BaseCase.Inv: negEnd: invariants vio/no solution expected")
+
+  runBaseCase(NO_WT, nArr, total, False, INV_EXP, counter, 
+     "nwKnapsack.BaseCase.Inv: nArr: invariants vio/no solution expected")
+
+
+  #
+  # ***************************************************************
+  # Now make sure contract violations are not caught when contract
+  # enforcement turned off.  Do this for each type of violation
+  # for every method.
+  # ***************************************************************
+  #
+  print "\nCOMMENT: *** DISABLE ALL CONTRACT ENFORCEMENT ***\n\n"
+  try:
+    sidl.EnfPolicy.setEnforceNone(False)
+  except:
+    (type, value, trace) = sys.exc_info()
+    print "Exception thrown during setEnforceNone:", sys.exc_info()
+    counter.forceFail()
+    import traceback
+    traceback.print_exception(type, value, trace)
+
+
+  #
+  # gKnapsack.BaseCase.None set 
+  #
+  runBaseCase(GOOD, good, total, True, NONE_EXP, counter, 
+     "gKnapsack.BaseCase.None: good: expect solution for total")
+
+  runBaseCase(GOOD, good, -1, False, NONE_EXP, counter, 
+     "gKnapsack.BaseCase.None: good: no solution expected")
+
+  runBaseCase(GOOD, gLong, total, False, SizeExp, counter, 
+     "gKnapsack.BaseCase.None: gLong: size exception expected")
+
+  runBaseCase(GOOD, negEnd, total, False, BWExp, counter, 
+     "gKnapsack.BaseCase.None: negEnd: bad weight exception expected")
+
+  runBaseCase(GOOD, nArr, total, False, NONE_EXP, counter, 
+     "gKnapsack.BaseCase.None: nArr: invariants vio/no solution expected")
+
+
+  #
+  # npKnapsack.BaseCase.None set
+  #
+  runBaseCase(NON_POS, good, total, True, NONE_EXP, counter, 
+     "npKnapsack.BaseCase.None: good: expect solution for total")
+
+  runBaseCase(NON_POS, good, -1, False, NONE_EXP, counter, 
+     "npKnapsack.BaseCase.None: good: no solution expected")
+
+  runBaseCase(NON_POS, gLong, total, False, SizeExp, counter, 
+     "npKnapsack.BaseCase.None: gLong: size exception expected")
+
+  runBaseCase(NON_POS, zStart, total, False, NONE_EXP, counter, 
+     "npKnapsack.BaseCase.None: zStart: no solution expected")
+
+  runBaseCase(NON_POS, zMid, total, False, NONE_EXP, counter, 
+     "npKnapsack.BaseCase.None: zMid: no solution expected")
+
+  runBaseCase(NON_POS, zEnd, total, False, NONE_EXP, counter, 
+     "npKnapsack.BaseCase.None: zEnd: no solution expected")
+
+  runBaseCase(NON_POS, negEnd, total, False, NONE_EXP, counter, 
+     "npKnapsack.BaseCase.None: negEnd: no solution expected")
+
+  runBaseCase(NON_POS, nArr, total, False, NONE_EXP, counter, 
+     "npKnapsack.BaseCase.None: nArr: no solution expected")
+
+
+  #
+  # nwKnapsack.BaseCase.None set 
+  #
+  runBaseCase(NO_WT, good, total, False, NONE_EXP, counter, 
+     "nwKnapsack.BaseCase.None: good: no solution expected")
+
+  runBaseCase(NO_WT, good, -1, False, NONE_EXP, counter, 
+     "nwKnapsack.BaseCase.None: good: no solution expected")
+
+  runBaseCase(NO_WT, gLong, total, False, SizeExp, counter, 
+     "nwKnapsack.BaseCase.None: gLong: size exception expected")
+
+  runBaseCase(NO_WT, negEnd, total, False, NONE_EXP, counter, 
+     "nwKnapsack.BaseCase.None: negEnd: no solution expected")
+
+  runBaseCase(NO_WT, nArr, total, False, NONE_EXP, counter, 
+     "nwKnapsack.BaseCase.None: nArr: no solution expected")
+
+
+  """
+  TODO/TBD:  Other possible cases:
+    1) create, initialize, and explicitly call hasWeights
+       x = knapsack.gKnapsack.hasWeights(k, w) 
+
+    2) create, initialize, and explicitly call onlyPosWeights
+       x = knapsack.gKnapsack.onlyPosWeights(k) 
+  """ 
+
+  return
+
+#
+#####################################################
+#                     MAIN
+#####################################################
+#
+if __name__ == '__main__':
+  import sys
+  counter = TestCounter(128)
+  try:
+    driver(counter)
+  except:
+    (type, value, trace) = sys.exc_info()
+    counter.forceFail()
+    import traceback
+    traceback.print_exception(type, value, trace)
+  counter.finish()
+0

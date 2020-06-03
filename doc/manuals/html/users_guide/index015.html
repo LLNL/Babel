@@ -1,0 +1,874 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN"
+            "http://www.w3.org/TR/REC-html40/loose.dtd">
+<HTML>
+<HEAD>
+
+<META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<META name="GENERATOR" content="hevea 1.10">
+<LINK rel="stylesheet" type="text/css" href="index.css">
+<TITLE>Java Bindings</TITLE>
+</HEAD>
+<BODY >
+<A HREF="index014.html"><IMG SRC="previous_motif.gif" ALT="Previous"></A>
+<A HREF="index-multipage.html"><IMG SRC="contents_motif.gif" ALT="Up"></A>
+<A HREF="index016.html"><IMG SRC="next_motif.gif" ALT="Next"></A>
+<HR>
+<H1 CLASS="chapter"><A NAME="htoc58">Chapter 13</A>  Java Bindings</H1><UL>
+<LI><A HREF="index015.html#toc51">Introduction</A>
+</LI><LI><A HREF="index015.html#toc52">Basics</A>
+</LI><LI><A HREF="index015.html#toc53">Client-side</A>
+</LI><LI><A HREF="index015.html#toc54">Implementation-side</A>
+</LI></UL>
+<P><A NAME="c:java"></A></P><P><BR>
+</P><H2 CLASS="section"><A NAME="toc51"></A><A NAME="htoc59">13.1</A>  Introduction</H2><P>This chapter provides an overview of the Java bindings for SIDL.
+Common aspects of the bindings, such as the mapping of SIDL data types to
+their Java counterparts, are presented in Section <A HREF="#s:java:basics">13.2</A>.
+Issues of concern to callers written in Java are addressed in the
+client-side discussion in Section <A HREF="#s:java:client">13.3</A>, while issues for callees
+appear in the implementation-side discussion in
+Section <A HREF="#s:java:implementation">13.4</A>.</P><H2 CLASS="section"><A NAME="toc52"></A><A NAME="htoc60">13.2</A>  Basics</H2><P><A NAME="s:java:basics"></A></P><P>This section summarizes basic features that are common to both client and
+implementation bindings.
+Subsection <A HREF="#ss:java:namespace">13.2.1</A> describes conventions used to establish
+name spaces, while those associated with the generation
+of subroutines from methods are given in Subsection <A HREF="#ss:java:signatures">13.2.2</A>.
+The mapping of fundamental and key SIDL types is given in
+Subsection <A HREF="#ss:java:types">13.2.3</A>.
+Finally, casting between different types is discussed in
+Subsection <A HREF="#ss:java:casting">13.2.4</A>.</P><H3 CLASS="subsection">13.2.1  Name space</H3><P><A NAME="ss:java:namespace"></A>
+<A NAME="@default1449"></A>
+<A NAME="@default1450"></A></P><P>SIDL’s object model is very similar to Java’s, and therefore maps
+easily into it. A SIDL object is treated almost exactly the
+same in Java as any other Java object, the only differences being that all data
+held by the object is private and all methods are public. </P><H3 CLASS="subsection">13.2.2  Method signatures</H3><P><A NAME="ss:java:signatures"></A>
+<A NAME="@default1451"></A></P><P>Since the bindings map well into Java language constructs,
+Java method signatures correspond very closely to those in the specification.
+Adapted from the Babel regression tests, the following is an example 
+specification of a package called <TT>ExceptionTest</TT> that has a class 
+named <TT>Fib</TT> with a <TT>getFib</TT> method declared as:
+<A NAME="@default1452"></A></P><DIV CLASS="flushright"><SPAN CLASS="textboxed"><FONT COLOR=purple><B>SIDL</B></FONT></SPAN></DIV><TABLE CLASS="lstframe" STYLE="padding:1ex;border-style:solid;"><TR><TD CLASS="lstlisting"><FONT COLOR=maroon><I><B>int</B> getFib(<B>in int</B> n, <B>in int</B> max_depth, <B>in int</B> max_value, <B>in int</B> depth)
+  <B>throws</B> NegativeValueException, FibException;</I></FONT></TD></TR>
+</TABLE><P>The corresponding client-side, or stub, signature is:
+<A NAME="@default1453"></A></P><DIV CLASS="flushright"><SPAN CLASS="textboxed"><FONT COLOR=purple><B>Java</B></FONT></SPAN></DIV><TABLE CLASS="lstframe" STYLE="padding:1ex;border-style:solid;"><TR><TD CLASS="lstlisting"> <B>public native int</B> getFib(
+    <B>int</B> n,
+    <B>int</B> max_depth,
+    <B>int</B> max_value,
+    <B>int</B> depth) <B>throws</B>
+    ExceptionTest.FibException,
+    ExceptionTest.NegativeValueException;</TD></TR>
+</TABLE><P>Note the one-to-one mapping in arguments and native exception types.</P><P>The corresponding implementation-side signature is:
+<A NAME="@default1454"></A></P><DIV CLASS="flushright"><SPAN CLASS="textboxed"><FONT COLOR=purple><B>Java</B></FONT></SPAN></DIV><TABLE CLASS="lstframe" STYLE="padding:1ex;border-style:solid;"><TR><TD CLASS="lstlisting">  <B>public int</B> getFib_Impl (
+    <FONT COLOR="blue"><I>/*in*/</I></FONT> <B>int</B> n,
+    <FONT COLOR="blue"><I>/*in*/</I></FONT> <B>int</B> max_depth,
+    <FONT COLOR="blue"><I>/*in*/</I></FONT> <B>int</B> max_value,
+    <FONT COLOR="blue"><I>/*in*/</I></FONT> <B>int</B> depth )
+    <B>throws</B> ExceptionTest.FibException,
+    ExceptionTest.NegativeValueException,
+    sidl.RuntimeException.Wrapper</TD></TR>
+</TABLE><P>Once again, there is a one-to-one mapping of arguments and the two
+specified exceptions. However, the implementation side includes
+the (implicit) <TT>sidl.RuntimeException</TT>’s <TT>Wrapper</TT>
+class (since <TT>RuntimeException</TT> is an interface. For more
+on the reasoning behind this, refer to Subsection <A HREF="#sss:Java:ifcs">13.2.3</A>.</P><H4 CLASS="subsubsection"><FONT COLOR=maroon><I><TT>Out</TT></I></FONT> and <FONT COLOR=maroon><I><TT>inout</TT></I></FONT> arguments</H4><P>
+<A NAME="@default1455"></A><A NAME="@default1456"></A><A NAME="@default1457"></A></P><P>Unlike languages such as C/C++, Java does not support pointers. As a 
+result, <FONT COLOR=maroon><I><TT>out</TT></I></FONT> and <FONT COLOR=maroon><I><TT>inout</TT></I></FONT> arguments are handled — for each
+SIDL type and class — through a static inner <TT>Holder</TT> class. 
+The class can hold a single variable or object of the correct type. 
+Built-in functions <TT>get()</TT> and <TT>set()</TT> are provided for accessing
+the data.</P><H3 CLASS="subsection">13.2.3  Data types</H3><P><A NAME="ss:java:types"></A>
+<A NAME="@default1458"></A><A NAME="@default1459"></A></P><BLOCKQUOTE CLASS="table"><DIV CLASS="center"><HR WIDTH="80%" SIZE=2></DIV>
+<DIV CLASS="caption"><TABLE CELLSPACING=6 CELLPADDING=0><TR><TD VALIGN=top ALIGN=left>Table 13.1: SIDL to Java Type Mappings</TD></TR>
+</TABLE></DIV><A NAME="tbl:java:types"></A>
+<DIV CLASS="center">
+<TABLE BORDER=1 CELLSPACING=0 CELLPADDING=1><TR><TD ALIGN=left NOWRAP> <B>SIDL TYPE</B></TD><TD ALIGN=left NOWRAP><B>JAVA TYPE</B></TD></TR>
+<TR><TD ALIGN=left NOWRAP> <FONT COLOR=maroon><I><TT>int</TT></I></FONT></TD><TD ALIGN=left NOWRAP><TT>int</TT> 		<A NAME="@default1460"></A></TD></TR>
+<TR><TD ALIGN=left NOWRAP> <FONT COLOR=maroon><I><TT>long</TT></I></FONT></TD><TD ALIGN=left NOWRAP><TT>long</TT>		<A NAME="@default1461"></A></TD></TR>
+<TR><TD ALIGN=left NOWRAP> <FONT COLOR=maroon><I><TT>float</TT></I></FONT></TD><TD ALIGN=left NOWRAP><TT>float</TT>	<A NAME="@default1462"></A></TD></TR>
+<TR><TD ALIGN=left NOWRAP> <FONT COLOR=maroon><I><TT>double</TT></I></FONT></TD><TD ALIGN=left NOWRAP><TT>double</TT>	<A NAME="@default1463"></A></TD></TR>
+<TR><TD ALIGN=left NOWRAP> <FONT COLOR=maroon><I><TT>bool</TT></I></FONT></TD><TD ALIGN=left NOWRAP><TT>boolean</TT>	<A NAME="@default1464"></A></TD></TR>
+<TR><TD ALIGN=left NOWRAP> <FONT COLOR=maroon><I><TT>char</TT></I></FONT></TD><TD ALIGN=left NOWRAP><TT>char</TT>		<A NAME="@default1465"></A></TD></TR>
+<TR><TD ALIGN=left NOWRAP> <FONT COLOR=maroon><I><TT>string</TT></I></FONT></TD><TD ALIGN=left NOWRAP><TT>String</TT>	<A NAME="@default1466"></A></TD></TR>
+<TR><TD ALIGN=left NOWRAP> <FONT COLOR=maroon><I><TT>fcomplex</TT></I></FONT></TD><TD ALIGN=left NOWRAP><TT>FloatComplex</TT>	<A NAME="@default1467"></A></TD></TR>
+<TR><TD ALIGN=left NOWRAP> <FONT COLOR=maroon><I><TT>dcomplex</TT></I></FONT></TD><TD ALIGN=left NOWRAP><TT>DoubleComplex</TT><A NAME="@default1468"></A></TD></TR>
+<TR><TD ALIGN=left NOWRAP> <FONT COLOR=maroon><I><TT>enum</TT></I></FONT></TD><TD ALIGN=left NOWRAP><TT>Enum</TT>		<A NAME="@default1469"></A></TD></TR>
+<TR><TD ALIGN=left NOWRAP> <FONT COLOR=maroon><I><TT>opaque</TT></I></FONT></TD><TD ALIGN=left NOWRAP><TT>long</TT>		<A NAME="@default1470"></A></TD></TR>
+<TR><TD ALIGN=left NOWRAP> <FONT COLOR=maroon><I><TT>interface</TT></I></FONT></TD><TD ALIGN=left NOWRAP><TT>interface</TT>	<A NAME="@default1471"></A></TD></TR>
+<TR><TD ALIGN=left NOWRAP> <FONT COLOR=maroon><I><TT>class</TT></I></FONT></TD><TD ALIGN=left NOWRAP><TT>class</TT>	<A NAME="@default1472"></A></TD></TR>
+<TR><TD ALIGN=left NOWRAP> <FONT COLOR=maroon><I><TT>array</TT></I></FONT></TD><TD ALIGN=left NOWRAP><TT>type.Array</TT>	<A NAME="@default1473"></A></TD></TR>
+</TABLE>
+</DIV>
+<DIV CLASS="center"><HR WIDTH="80%" SIZE=2></DIV></BLOCKQUOTE><P>Most SIDL types map directly into Java as shown in
+Table <A HREF="#tbl:java:types">13.1</A><A NAME="@default1474"></A>.
+The remainder of this subsection focuses specifically on interfaces,
+abstract classes, exceptions (in general), enumerations, and arrays.</P><H4 CLASS="subsubsection">interfaces and Abstract Classes</H4><P><A NAME="sss:Java:ifcs"></A>
+<A NAME="@default1475"></A><A NAME="@default1476"></A>
+<A NAME="@default1477"></A><A NAME="@default1478"></A>
+<A NAME="@default1479"></A><A NAME="@default1480"></A>
+<A NAME="@default1481"></A><A NAME="@default1482"></A></P><P>As a result of the fact that Java interfaces cannot hold data, 
+an additional layer was added to the Java bindings for internal 
+processing needs within the implementation of the SIDL object 
+model — such as throwing an (interface) exception.
+For this reason, wrappers were created for interfaces and 
+abstract classes. Called <TT>Wrapper</TT>, these classes hold the 
+interface IOR pointer, inherit from <TT>gov.llnl.babel.BaseClass</TT>,
+and implement the outer interface. Therefore, all interface 
+and <TT>gov.llnl.babel.BaseClass</TT> methods — such as <TT>_cast2</TT> 
+and <TT>isType</TT> — can be called on the wrapper object. In addition,
+the wrapper object is returned when an interface is retrieved from
+an array. The client is not usually affected in this case. The wrapper 
+class is also used for methods that take or return interface arguments 
+and when an exception implemented as an interface is caught. 
+In the latter case, the developer must be sure to catch the wrapper class.
+Examples appear later in this chapter.</P><H4 CLASS="subsubsection">Exceptions</H4><P><A NAME="sss:java:exceptions"></A>
+<A NAME="@default1483"></A><A NAME="@default1484"></A>
+<A NAME="@default1485"></A><A NAME="@default1486"></A></P><P>Although SIDL exceptions may be specified as interfaces while Java
+exceptions are always classes, SIDL exceptions are basically caught 
+and thrown in the native Java manner. A critical difference,
+as mentioned in the discussion on interface data types, is that 
+a SIDL exception interface’s wrapper object must be thrown.
+While similar from a developer standpoint in that SIDL exceptions 
+are mapped to Java exceptions, the converse is not true. That is, 
+there is no mapping of all Java exceptions to SIDL exceptions.</P><P>If an exception is defined in SIDL, Babel will generate
+code for it. The only difference between native Java and SIDL
+exceptions is that the SIDL exception constructor cannot take a <TT>String</TT>
+argument. Instead, the message must be set with the inherited <TT>setNote</TT> 
+method and retrieved with <TT>getNote</TT>. This
+is important because SIDL exceptions inherit from the Java <TT>Exception</TT>
+class. The Java compiler <EM>will not</EM> give an error if 
+<TT>getMessage</TT><A NAME="@default1487"></A> is called; however, the 
+message returned will not be from SIDL. </P><P><A NAME="@default1488"></A><A NAME="@default1489"></A>
+Another problem is that regular Java exceptions cannot be passed through
+the SIDL middleware. Since it is not possible to throw normal, non-SIDL
+exceptions from a SIDL function implemented in Java, the Java compiler will 
+throw an error if an attempt to do so is made. There are some exceptions.
+For example, Java runtime exceptions such as
+<TT>ArrayIndexOutOfBoundsException</TT> 
+can be thrown. In this case, an
+error message and stack trace are printed to <TT>stderr</TT>. In addition, 
+the method returns <TT>0</TT>; values of any <FONT COLOR=maroon><I><TT>out</TT></I></FONT> or <FONT COLOR=maroon><I><TT>inout</TT></I></FONT> arguments 
+are set to <TT>NULL</TT>; and the program proceeds. </P><P>For more information on catching and throwing exceptions, including 
+examples, refer to Subsections <A HREF="#ss:Java:exceptioncatching">13.3.7</A> 
+and <A HREF="#ss:Java:exceptionthrowing">13.4.4</A>.</P><H4 CLASS="subsubsection">Enumerations</H4><P><A NAME="sss:java:enums"></A>
+<A NAME="@default1490"></A><A NAME="@default1491"></A>
+<A NAME="@default1492"></A><A NAME="@default1493"></A></P><P>Enumerations are implemented as <TT>final static int</TT>s in their own
+Java class and, as such, are accessed just like variables in that
+class. Recall the specification of a <FONT COLOR=maroon><I><TT>car</TT></I></FONT> enumeration 
+type, from Section <A HREF="index008.html#ssec:basics:fundamental:enums">6.3</A> and repeated
+below, defines three constants: <TT>porsche</TT>, <TT>ford</TT>, and
+<TT>mercedes</TT>.
+<A NAME="@default1494"></A><A NAME="@default1495"></A></P><DIV CLASS="flushright"><SPAN CLASS="textboxed"><FONT COLOR=purple><B>Java</B></FONT></SPAN></DIV><TABLE CLASS="lstframe" STYLE="padding:1ex;border-style:solid;"><TR><TD CLASS="lstlisting">  enum car {
+    porsche = 911,
+    ford = 150,
+    mercedes = 550
+  };</TD></TR>
+</TABLE><P>The value of the <TT>porsche</TT> constant, for example, can be accessed through
+<TT>enums.car.porsche</TT>.</P><H4 CLASS="subsubsection">Arrays</H4><P><A NAME="sss:java:arrays"></A>
+<A NAME="@default1496"></A><A NAME="@default1497"></A>
+<A NAME="@default1498"></A><A NAME="@default1499"></A></P><P>As discussed in Section <A HREF="index008.html#s:arrays">6.4</A>, SIDL supports both normal and raw
+arrays (i. e., r-arrays). Normal SIDL arrays can be used by any supported
+language; whereas, r-arrays are restricted to numeric types. This subsection
+discusses both within the context of Java bindings.
+<A NAME="@default1500"></A><A NAME="@default1501"></A></P><P>Every object and type defined in SIDL has a corresponding array to
+hold elements of that type.
+<A NAME="@default1502"></A>
+In the case of Java bindings, this means the entire SIDL array API is available 
+with a few exceptions that have no real use in the language. More specifically,
+<TT>ensure()</TT><A NAME="@default1503"></A>, <TT>borrow()</TT><A NAME="@default1504"></A>, and 
+<TT>first()</TT><A NAME="@default1505"></A> are not supported in the bindings.
+Unlike with most of the other language bindings, explicit
+array deletion should be done using the <TT>destroy()</TT> array function.
+Refer to Subsection <A HREF="index008.html#ss:basics:array:api">6.4</A> for more information on the API.</P><P>More to the point are the specifics of the Java implementation — which
+provides a wider variety of options for constructing arrays than other 
+bindings. Each
+SIDL type and class includes a static inner class named <TT>Array</TT>.
+This is the main Array class and, in order to support up to 7
+dimensional arrays, every method takes either 7 array indices or an
+array of indices. For example, in order to get the element (2,3) from a 2
+dimensional array, <TT>arry._get(2,3,0,0,0,0,0)</TT> would be used.
+<A NAME="@default1506"></A>
+Since typing all those zeros can get a little tedious, a set of 
+array subclasses have also been implemented with one subclass per
+supported dimension. So, given an <TT>Array2</TT> instead of an <TT>Array</TT>,
+<TT>arry2._get(2,3)</TT> could be used to get the element (2,3) instead.</P><P>These numbered array subclasses improve on the array API usability
+somewhat, but they do have a side effect. In order to avoid conflicts
+between the array superclass and the numbered array subclass
+functions, all other basic array methods found in the <TT>Array</TT> superclass
+are preceded by an underscore ’_’<A NAME="@default1507"></A>. For example, 
+<TT>arry._dim()</TT> returns an array’s dimensionality. Since numbered
+arrays all inherit these methods, they can be used as well. In the 
+dimensionality example, <TT>arry2._dim()</TT> could also be used — though
+the answer should be obvious.</P><P>Furthermore, there is another underscore rule for arrays in Java. All
+numbered arrays have two <TT>get</TT> and two <TT>set</TT> functions. The
+<TT>_get</TT> and <TT>_set</TT> functions are the same in <TT>Array</TT> and all
+the <TT>Array#</TT> subclasses in that they simply pass the arguments of the
+<TT>_get</TT> call down to the underlying implementation. However, the 
+underscore-less <TT>get</TT> and <TT>set</TT> methods do bounds checking in Java
+before calling the underlying implementation. If a problem is detected, they
+throw <TT>ArrayIndexOutOfBoundsException</TT>. </P><P>Because numbered arrays are subclasses of <TT>Array</TT>, an <TT>Array#</TT> 
+can be Java cast to an <TT>Array</TT>, if necessary. However, some
+functions return an <TT>Array</TT>. <A NAME="@default1508"></A>
+In order to convert an <TT>Array</TT> to the correctly numbered array, a 
+function in <TT>Array</TT>, called <TT>_dcast()</TT>, can be used by simply
+invoking <TT>_dcast()</TT> on the object.
+For example, given a one-dimensional array of type <TT>foo.bar</TT> called 
+<TT>arry</TT> that is represented by the Java class <TT>Array</TT>, the
+correctly numbered array type can be retrieved as follows:
+<A NAME="@default1509"></A></P><DIV CLASS="flushright"><SPAN CLASS="textboxed"><FONT COLOR=purple><B>Java</B></FONT></SPAN></DIV><TABLE CLASS="lstframe" STYLE="padding:1ex;border-style:solid;"><TR><TD CLASS="lstlisting">foo.bar.Array1 arry1 = arry._dcast();</TD></TR>
+</TABLE><P>After this cast, two references are now available to the same array;
+namely, <TT>arry</TT> and <TT>arry1</TT>.</P><P>Finally, the Java array constructors are slightly different than
+in other languages. The constructor definition for <TT>Array</TT> is:
+<A NAME="@default1510"></A></P><DIV CLASS="flushright"><SPAN CLASS="textboxed"><FONT COLOR=purple><B>Java</B></FONT></SPAN></DIV><TABLE CLASS="lstframe" STYLE="padding:1ex;border-style:solid;"><TR><TD CLASS="lstlisting"><B>public</B> Array(<B>int</B> dim, <B>int</B>[] lower, <B>int</B>[] upper, <B>boolean</B> isRow)</TD></TR>
+</TABLE><P>This constructor creates an array of dimension <TT>dim</TT>. It takes
+two arrays of integers to define the lower and upper bounds of each
+dimension in the array. If lower or upper has fewer elements than
+there are dimensions in the array, or any element in lower is larger
+than the corresponding element in upper, the constructor will throw
+an exception. Finally, the constructor takes a boolean <TT>isRow</TT>.
+If <TT>isRow</TT> is true, a SIDL array will be created in
+row-major order; if false, a column-major order array will be created.</P><P>Constructors for numbered arrays are simpler. The constructor for a 
+two-dimensional array is:
+<A NAME="@default1511"></A></P><DIV CLASS="flushright"><SPAN CLASS="textboxed"><FONT COLOR=purple><B>Java</B></FONT></SPAN></DIV><TABLE CLASS="lstframe" STYLE="padding:1ex;border-style:solid;"><TR><TD CLASS="lstlisting"><B>public</B> Array2( <B>int</B> l0, <B>int</B> l1, <B>int</B> u0, <B>int</B> u1, <B>boolean</B> isRow)</TD></TR>
+</TABLE><P>Since the dimensionality is known, the dimension argument was dropped.
+In addition, it is no longer necessary to create arrays of bounds to 
+pass into the constructor; instead,
+<TT>l0</TT> and <TT>l1</TT> are the lower bounds and <TT>u0</TT> and
+<TT>u1</TT> the upper. The choice between column- and row-major orders
+is obviously still necessary.</P><P>For arrays with all lower bounds of zero, an even simpler constructor
+is available. Its signature is:
+<A NAME="@default1512"></A></P><DIV CLASS="flushright"><SPAN CLASS="textboxed"><FONT COLOR=purple><B>Java</B></FONT></SPAN></DIV><TABLE CLASS="lstframe" STYLE="padding:1ex;border-style:solid;"><TR><TD CLASS="lstlisting"><B>public</B> Array2( <B>int</B> s0, <B>int</B> s1, <B>boolean</B> isRow)</TD></TR>
+</TABLE><P>Another alternate construction method for SIDL arrays is present in numbered
+arrays. The following constructor takes a two-dimensional Java array,
+and copies it into a 2-dimensional SIDL array:
+<A NAME="@default1513"></A>
+<A NAME="@default1514"></A></P><DIV CLASS="flushright"><SPAN CLASS="textboxed"><FONT COLOR=purple><B>Java</B></FONT></SPAN></DIV><TABLE CLASS="lstframe" STYLE="padding:1ex;border-style:solid;"><TR><TD CLASS="lstlisting"><B>public</B> Array2(foo.bar[][] array, <B>boolean</B> isRow)</TD></TR>
+</TABLE><P>Alternatively, arrays can be constructed as copies of existing arrays through
+two additional built-in methods.
+An existing numbered SIDL array of the correct dimension can be set to
+the same contents of a Java array with the <TT>fromArray</TT> method.
+The same arguments as the constructor above are used but nothing is returned.
+Conversely, a SIDL array can be copied into a Java array through the
+<TT>toArray</TT> numbered array function. The function takes no arguments 
+but returns a new Java array containing copies of the SIDL array’s elements.</P><H3 CLASS="subsection">13.2.4  Type casting</H3><P><A NAME="ss:java:casting"></A>
+<A NAME="@default1515"></A><A NAME="@default1516"></A>
+<A NAME="@default1517"></A></P><P>There are two issues associated with casting of types in the Java bindings.
+The simplest is the casting of SIDL objects implemented in Java. The second
+involves the casting of SIDL interfaces which, as discussed in 
+Subsection <A HREF="#sss:Java:ifcs">13.2.3</A>, is a little more involved. This subsection 
+describes the normal, object casting process before that of the Java 
+equivalents of SIDL interfaces.</P><P>In some cases it is necessary to cast the internal representation of
+an object as well as the Java object. (For example, getting an object
+from a SIDL array of superclass objects.) In these cases a Java cast is
+insufficient. Therefore two built-in casting functions have
+been provided: <TT>_cast()</TT> and <TT>_cast2()</TT>. 
+The static <TT>_cast(object)</TT><A NAME="@default1518"></A> function returns a new 
+Java object based on the <TT>object</TT> argument. For example, 
+<TT>foo.bar newobj = (foo.bar) foo.bar._cast(oldobj)</TT> will cast 
+<TT>oldobj</TT>, an object of type <TT>sidl.BaseClass</TT>, to 
+<TT>foo.bar</TT>. If this is an invalid cast, <TT>_cast</TT> will 
+return <TT>null</TT>. 
+<A NAME="@default1519"></A>
+<A NAME="@default1520"></A></P><P>The <TT>_cast2(‘‘ClassName’’)</TT> method, on the other hand, casts an
+object to a named type (i. e., <TT>ClassName</TT>). It performs
+basically the same function as <TT>_cast</TT>, but the form is
+<TT>object._cast2(‘‘ClassName’’)</TT>, where <TT>ClassName</TT> must be a 
+fully qualified name<A NAME="@default1521"></A>. If the cast is invalid, or a class of 
+that name cannot be found, <TT>null</TT> is returned.</P><P>Both functions
+return a <TT>sidl.BaseClass</TT> which must then be Java casted to the
+correct Java class type. They both also create a new Java object that 
+owns a new reference to the IOR object. Although you never have to 
+worry about reference counting in Java<A NAME="@default1522"></A>,
+it is important to remember that casting leaves two valid objects.</P><P>As mentioned in Subsection <A HREF="#sss:Java:ifcs">13.2.3</A>, SIDL interfaces are mapped
+to wrapper classes that inherit from an interface. As a result, they
+can be Java cast to their ancestor interfaces but must be Babel cast to
+any classes. In the following example, <TT>Subclass</TT> implements 
+<TT>SuperInterface</TT>:
+<A NAME="@default1523"></A>
+<A NAME="@default1524"></A>
+<A NAME="@default1525"></A><A NAME="@default1526"></A>
+<A NAME="@default1527"></A><A NAME="@default1528"></A></P><DIV CLASS="flushright"><SPAN CLASS="textboxed"><FONT COLOR=purple><B>Java</B></FONT></SPAN></DIV><TABLE CLASS="lstframe" STYLE="padding:1ex;border-style:solid;"><TR><TD CLASS="lstlisting">SuperInterface.Array1 arry = <B>new</B> SuperInterface.Array1(5, <B>true</B>);
+SubClass obj = <B>new</B> SubClass();
+arry.set(0, (SuperInterface)obj);
+obj = <B>null</B>;
+SuperInterface temp = arry.get(0);
+obj = (SubClass) temp;   <FONT COLOR="blue"><I>//INCORRECT Will throw ClassCastException</I></FONT>
+
+obj = (SubClass) SubClass._cast((SuperInterface.Wrapper)temp); <FONT COLOR="blue"><I>//CORRECT</I></FONT></TD></TR>
+</TABLE><P>Finally, in some cases, as when the interface is retrieved from an array, Java 
+casting the interface is not necessary before Babel casting it; however, 
+that is not true in general.
+The following is an example of casting an interface in a Java implementation:
+<A NAME="@default1529"></A>
+<A NAME="@default1530"></A></P><DIV CLASS="flushright"><SPAN CLASS="textboxed"><FONT COLOR=purple><B>Java</B></FONT></SPAN></DIV><TABLE CLASS="lstframe" STYLE="padding:1ex;border-style:solid;"><TR><TD CLASS="lstlisting">
+<B>public</B> objarg.SubClass toClass_Impl (<FONT COLOR="blue"><I>/*in*/</I></FONT> objarg.Iface ifcy ) {
+  <FONT COLOR="blue"><I>// DO-NOT-DELETE splicer.begin(objarg.SubClass.toClass)</I></FONT>
+  objarg.SubClass ret =  (objarg.SubClass)
+    ((objarg.Iface.Wrapper)ifcy)._cast2("objarg.SubClass");
+  <B>return</B> ret;
+  <FONT COLOR="blue"><I>// DO-NOT-DELETE splicer.end(objarg.SubClass.toClass)</I></FONT>
+}</TD></TR>
+</TABLE><H2 CLASS="section"><A NAME="toc53"></A><A NAME="htoc61">13.3</A>  Client-side</H2><P><A NAME="s:java:client"></A>
+<A NAME="@default1531"></A></P><P>This section summarizes aspects of generating and using the Java bindings
+associated with software wrapped with Babel’s language interoperability
+middleware. The bindings generation process is presented before discussing
+required environment variables. The manner in which SIDL-specified types
+are imported into Java is then given.
+Object management and invocation of static and 
+overloaded methods are also summarized.
+The process of catching exceptions is then discussed. 
+Finally, the processes for enabling and disabling implementation-specific
+pre- and post-method instrumentation — referred to as “hooks” —
+are illustrated.</P><H3 CLASS="subsection">13.3.1  Bindings generation</H3><P><A NAME="ss:java:clientgen"></A>
+<A NAME="@default1532"></A>
+<A NAME="@default1533"></A><A NAME="@default1534"></A></P><P>Java stubs (i. e., code to support Java clients for a set of SIDL
+classes or interfaces) are created by invoking Babel as follows<SUP><A NAME="text20" HREF="#note20">1</A></SUP>:
+<A NAME="@default1535"></A></P><BLOCKQUOTE CLASS="quotation"><TT>
+% <B>babel --exclude-external --client=Java file.sidl</B><BR>
+</TT></BLOCKQUOTE><P>
+or simply
+</P><BLOCKQUOTE CLASS="quotation"><TT>
+% <B>babel -E -cJava file.sidl</B><BR>
+</TT></BLOCKQUOTE><P>This will create a plethora of files, including a directory
+named <TT>file</TT>, which contains the Java client classes. Files
+ending in <TT>_IOR.h</TT> and <TT>_IOR.c</TT> implement the Intermediate Object
+Representation (IOR). Files ending with <TT>_jniStub.c</TT> are the Java
+Native Interface (JNI) stubs. The use of “jni” in the filename reflects 
+the fact that the JNI is used to communicate between Java and the IOR.
+The remaining header files include the external Java API used by Java clients.</P><P>The stub files — whose names end with <TT>_jniStub.c</TT> — must be
+compiled and linked against the SIDL runtime library and an
+implementation. The resulting library needs to
+be referenced in a <TT>.scl</TT> file listed in the SIDL_DLL_PATH
+environment variable so the Babel runtime library loader can find it. 
+Also, the current directory needs to be in the CLASSPATH environment 
+variable so Java can find the <TT>file</TT> and <TT>sidl</TT> directories 
+containing the client-side Java components. More information on 
+environmental settings is given in Subsection <A HREF="#ss:Java:env">13.3.2</A>.</P><H3 CLASS="subsection">13.3.2  Environment variables</H3><P><A NAME="ss:Java:env"></A>
+<A NAME="@default1536"></A><A NAME="@default1537"></A>
+<A NAME="@default1538"></A><A NAME="@default1539"></A></P><P>Four environment variables are associated with running Java bindings.
+The first three, described below, identify path-related directories that
+must be set properly for various tools. It is assumed Babel was already
+installed in directories rooted at <TT>$PREFIX</TT>. The last variable is
+used to pass options to the implementation-side.</P><DL CLASS="description"><DT CLASS="dt-description">
+<B><TT>CLASSPATH</TT>.</B></DT><DD CLASS="dd-description"> 
+Java uses the <TT>CLASSPATH</TT><A NAME="@default1540"></A> environment variable to 
+find <TT>.class</TT> files. While not specific to Babel, this colon-separated 
+list of directories must include at least three directories. The first
+is the one containing the implementation-side <TT>.class</TT> files. The second
+is the directory containing <TT>sidl_$VERSION.jar</TT>, where <TT>$VERSION</TT> 
+is the version of your installed Babel, which is likely to be 
+the SIDL jar file. The latter directory should be <TT>$PREFIX/lib</TT>.
+Finally, <TT>CLASSPATH</TT> must include <TT>$PREFIX/runtime/java</TT>.</DD><DT CLASS="dt-description"><B><TT>LD_LIBRARY_PATH</TT> (or <TT>LIBPATH</TT> on AIX).</B></DT><DD CLASS="dd-description">
+Many systems require <TT>LD_LIBRARY_PATH</TT><A NAME="@default1541"></A>
+environment variable contain <TT>$PREFIX/lib</TT>. However, the
+system-specific environment variable should be used. AIX, for example,
+uses <TT>LIBPATH</TT>. The goal is to
+include <TT>$PREFIX/lib</TT> in the search path used to locate shared/dynamic
+link libraries.</DD><DT CLASS="dt-description"><B><TT>SIDL_DLL_PATH</TT>.</B></DT><DD CLASS="dd-description">
+The <TT>SIDL_DLL_PATH</TT><A NAME="@default1542"></A> environment variable
+is typically required to contain the path to the directory holding
+the shared/dynamic link library containing the implementation of SIDL
+objects. This is a semicolon-separated path variable.</DD><DT CLASS="dt-description"><B><TT>BABEL_JVM_FLAGS</TT>.</B></DT><DD CLASS="dd-description">
+Consisting of a semicolon-separated list of command line options, 
+<TT>BABEL_JVM_FLAGS</TT> passes them on to the implementation.
+For instance, <TT>-Xcheck:jni</TT> can be useful since it results in the 
+JVM validating parameters and environment data prior to JNI requests.
+The following command illustrates additional useful options:<DIV CLASS="flushright"><SPAN CLASS="textboxed"><FONT COLOR=purple><B>shell</B></FONT></SPAN></DIV><TABLE CLASS="lstframe" STYLE="padding:1ex;border-style:solid;"><TR><TD CLASS="lstlisting">BABEL_JVM_FLAGS="-verbose:gc;-Xmx500m"</TD></TR>
+</TABLE></DD></DL><P><EM><B>WARNING</B>:
+Not including all the necessary files in the <TT>SIDL_DLL_PATH</TT> and 
+<TT>LD_LIBRARY_PATH</TT></EM> can<EM> crash the JVM in unexpected ways. 
+Babel tries to generate helpful error messages, but sometimes the JVM 
+crashes due to missing files with the resulting output not being very helpful.
+If the JVM crashes, <TT>SIDL_DLL_PATH</TT> and <TT>LD_LIBRARY_PATH</TT> 
+should be checked to ensure they point to the necessary files.
+</EM></P><H3 CLASS="subsection">13.3.3  Imports</H3><P>
+<A NAME="@default1543"></A>
+<A NAME="@default1544"></A></P><P>Importing SIDL packages and classes is also similar to the native Java
+approach.
+Babel generates Java code in subdirectories to organize packages and classes
+in the same manner as done in Java. For example, assume the presence of a 
+specification of a package called <TT>test</TT> that contains two classes: 
+<TT>HelloWorld</TT> 
+and <TT>GoodbyeWorld</TT>. Running <TT>babel -cJava test.sidl</TT> in the 
+directory named <TT>babelcode</TT> will result in the generation of a new
+subdirectory called <TT>test</TT> containing the following two files: 
+<TT>HelloWorld.java</TT> and <TT>GoodbyeWorld.java</TT>. The resulting classes 
+will be accessible from any Java program that imports them when 
+<TT>babelcode</TT> is in the <TT>CLASSPATH</TT>. In this example, the 
+import statement for the first class is:
+<A NAME="@default1545"></A></P><DIV CLASS="flushright"><SPAN CLASS="textboxed"><FONT COLOR=purple><B>Java</B></FONT></SPAN></DIV><TABLE CLASS="lstframe" STYLE="padding:1ex;border-style:solid;"><TR><TD CLASS="lstlisting"><B>import</B> test.HelloWorld;</TD></TR>
+</TABLE><H3 CLASS="subsection">13.3.4  Object management</H3><P>
+<A NAME="@default1546"></A>
+<A NAME="@default1547"></A></P><P>SIDL-specified objects are managed through explicit creation but explicit
+reference counting<A NAME="@default1548"></A> is basically unnecessary.
+Thanks to the straightforward mapping between SIDL and Java types, 
+SIDL-specified concrete classes can be instantiated through Java’s
+<TT>new</TT>.
+For example, given a package <TT>test</TT> that includes
+the class <TT>HelloWorld</TT>, the following code snippet illustrates
+the creation of an object as well as its use:
+<A NAME="@default1549"></A>
+<A NAME="@default1550"></A><A NAME="@default1551"></A></P><DIV CLASS="flushright"><SPAN CLASS="textboxed"><FONT COLOR=purple><B>Java</B></FONT></SPAN></DIV><TABLE CLASS="lstframe" STYLE="padding:1ex;border-style:solid;"><TR><TD CLASS="lstlisting"><B>import</B> test.HelloWorld;
+
+<B>public static</B> main(String args[]) {
+
+  HelloWorld hi = <B>new</B> HelloWorld();
+  hi.printMsg();
+}</TD></TR>
+</TABLE><P>Writing the fully qualified class name would also have sufficed as in:
+<A NAME="@default1552"></A><A NAME="@default1553"></A></P><DIV CLASS="flushright"><SPAN CLASS="textboxed"><FONT COLOR=purple><B>Java</B></FONT></SPAN></DIV><TABLE CLASS="lstframe" STYLE="padding:1ex;border-style:solid;"><TR><TD CLASS="lstlisting"><B>public static</B> main(String args[]) {
+
+  test.HelloWorld hi = <B>new</B> test.HelloWorld();
+  hi.printMsg();
+}</TD></TR>
+</TABLE><P><EM><B>WARNING</B>:
+Although <TT>addRef</TT> and <TT>deleteRef</TT> exist in Java,
+they should <B>not</B> be used because Java decrements the reference count
+itself when it garbage collects a SIDL object.
+</EM></P><H3 CLASS="subsection">13.3.5  Static methods</H3><P>
+<A NAME="@default1554"></A>
+<A NAME="@default1555"></A></P><H3 CLASS="subsection">13.3.6  Overloaded methods</H3><P>
+<A NAME="@default1556"></A>
+<A NAME="@default1557"></A></P><P>Using the <TT>overload_sample.sidl</TT> file from Section <A HREF="index008.html#sec:overloading">6.7</A>
+as an example, recall that three versions of the <TT>getValue</TT> method are
+specified. The first signature takes no arguments, the second takes an
+integer, and the third a boolean. The code snippet below illustrates
+object creation, and method invocation for each of the overloaded methods.
+<A NAME="@default1558"></A>
+<A NAME="@default1559"></A><A NAME="@default1560"></A>
+<A NAME="@default1561"></A><A NAME="@default1562"></A></P><DIV CLASS="flushright"><SPAN CLASS="textboxed"><FONT COLOR=purple><B>Java</B></FONT></SPAN></DIV><TABLE CLASS="lstframe" STYLE="padding:1ex;border-style:solid;"><TR><TD CLASS="lstlisting"><B>boolean</B> b1, bresult;
+<B>int</B>     i1, iresult, nresult;
+
+Overload.Sample t  = <B>new</B> Overload.Sample();
+
+nresult = t.getValue();
+bresult = t.getValue(b1);
+iresult = t.getValue(i1);</TD></TR>
+</TABLE><H3 CLASS="subsection">13.3.7  Exception catching</H3><P><A NAME="ss:Java:exceptioncatching"></A>
+<A NAME="@default1563"></A>
+<A NAME="@default1564"></A></P><P>Recall Subsection <A HREF="#sss:java:exceptions">13.2.3</A> discussed issues associated
+with the fact that SIDL supports exception interfaces while Java does not.
+In the following example, derived from regression tests, a <TT>getFibi</TT> 
+method takes an integer argument and can throw one of two exceptions 
+specified as SIDL exception interfaces: <TT>NegativeValueException</TT> 
+and <TT>TooDeepException</TT>. 
+<A NAME="@default1565"></A>
+<A NAME="@default1566"></A><A NAME="@default1567"></A>
+<A NAME="@default1568"></A></P><DIV CLASS="flushright"><SPAN CLASS="textboxed"><FONT COLOR=purple><B>Java</B></FONT></SPAN></DIV><TABLE CLASS="lstframe" STYLE="padding:1ex;border-style:solid;"><TR><TD CLASS="lstlisting">
+<B>try</B> {
+  fib.getFibi(-1);
+} <B>catch</B> (NegativeValueException.Wrapper ex) {
+  System.err.println(ex.getNote());
+} <B>catch</B> (TooDeepException.Wrapper ex) {
+  System.err.println(ex.getNote());
+} <B>catch</B> (java.lang.Exception ex) {
+  <B>if</B> (((sidl.BaseInterface)ex).isType("sidl.SIDLException")) {
+    System.err.println("Unexpected SIDL Exception thrown");
+  } <B>else</B> {
+    System.err.println("Unexpected and unknown exception thrown");
+  }
+}</TD></TR>
+</TABLE><P>Since the two exception types are specified as interfaces, the code to trap
+each must reference their <TT>Wrapper</TT> classes. Hence, the use of each
+class’s fully qualified name<A NAME="@default1569"></A> in the <TT>catch</TT> clauses.</P><P>The example also illustrates another option that is generally available for
+distinguishing between exception types. That is, the body of the final 
+<TT>catch</TT> includes a call to the <TT>isType()</TT> method, which is used
+to check the exception against a named type. In this example, however,
+SIDL can cast between the two interfaces, so <TT>isType()</TT> would return 
+true regardless of the the type of the exception instance.</P><H3 CLASS="subsection">13.3.8  Hooks execution</H3><P><A NAME="ss:java:sethooks"></A>
+<A NAME="@default1570"></A><A NAME="@default1571"></A>
+<A NAME="@default1572"></A><A NAME="@default1573"></A>
+<A NAME="@default1574"></A><A NAME="@default1575"></A></P><P>If a given component supports pre- and post-method invocation instrumentation,
+also known as “hooks”, their execution can be enabled or disabled at
+runtime through the built-in <TT>_set_hooks</TT> method. For example,
+given the following SIDL specification:</P><DIV CLASS="flushright"><SPAN CLASS="textboxed"><FONT COLOR=purple><B>SIDL</B></FONT></SPAN></DIV><TABLE CLASS="lstframe" STYLE="padding:1ex;border-style:solid;"><TR><TD CLASS="lstlisting"><FONT COLOR=maroon><I><B>package</B> hooks <B>version</B> 1.0
+{
+  <B>class</B> Basics {
+    /**
+     * Basic illustration of hooks for static methods.
+     */
+    <B>static int</B> aStaticMeth(<B>in int</B> i, <B>out int</B> o, <B>inout int</B> io);
+
+    /**
+     * Basic illustration of hooks for static methods.
+     */
+    <B>int</B> aNonStaticMeth(<B>in int</B> i, <B>out int</B> o, <B>inout int</B> io);
+  }
+}</I></FONT></TD></TR>
+</TABLE><P>which has a single static function and a member function for the
+<TT>Basics</TT> class, the processes for enabling and disabling
+execution of the implementation-specific hooks are:</P><DIV CLASS="flushright"><SPAN CLASS="textboxed"><FONT COLOR=purple><B>Java</B></FONT></SPAN></DIV><TABLE CLASS="lstframe" STYLE="padding:1ex;border-style:solid;"><TR><TD CLASS="lstlisting">  <B>try</B> {
+    hooks.Basics obj  = <B>new</B> hooks.Basics();
+
+    <FONT COLOR="blue"><I>/*
+     * Enable hooks execution (enabled by default)
+     * ...for static methods
+     */</I></FONT>
+    hooks.Basics._set_hooks_static(<B>true</B>);
+    <FONT COLOR="blue"><I>/*
+     * ...for non-static methods
+     */</I></FONT>
+    obj._set_hooks(<B>true</B>);
+
+    <FONT COLOR="blue"><I>/*
+     * ...do something important...
+     */
+
+    /*
+     * Disable hooks execution
+     * ...for static methods
+     */</I></FONT>
+    hooks.Basics._set_hooks_static(<B>false</B>);
+    <FONT COLOR="blue"><I>/*
+     * ...for non-static methods
+     */</I></FONT>
+    obj._set_hooks(<B>false</B>);
+
+    <FONT COLOR="blue"><I>/*
+     * ...do something important...
+     */</I></FONT>
+    } <B>catch</B> (Throwable ex) {
+      ex.printStackTrace();
+    }</TD></TR>
+</TABLE><P>It is important to keep in mind that the <TT>_set_hooks_static</TT>
+method must be used to enable/disable invocation of hooks for static 
+methods and the <TT>_set_hooks</TT> method must be used for those of
+non-static methods. Also, Babel does not provide client access to the
+<TT>_pre</TT> and <TT>_post</TT> methods; therefore, they cannot be invoked
+directly. More information on the instrumentation process is provided
+in Subsection <A HREF="#ss:java:hooksimpl">13.4.5</A>.</P><H3 CLASS="subsection">13.3.9  Contract enforcement</H3><P><A NAME="ss:java:contract_enforcement"></A>
+<A NAME="@default1576"></A>
+<A NAME="@default1577"></A>
+<A NAME="@default1578"></A></P><P>Interface contracts specify the expected behaviors of callers (or clients)
+and callees (or servers) of methods defined for interfaces and classes.
+Once specified, contracts are optionally enforced at runtime, through checks
+automatically integrated into the middleware generated by the Babel compiler.
+This section provides an example of a specification and code snippets for
+performing basic, traditional contract enforcement — introduced in
+Section <A HREF="index008.html#ss:intro_contract_enforcement">6.5</A> — in a Java client.</P><P>A SIDL specification, including preconditions and postconditions, for
+calculating the sum of two vectors is given below.
+(Refer to Section <A HREF="index008.html#s:ifc_contracts">6.5</A> for an introduction to the contract
+syntax.)
+According to the preconditions,
+<A NAME="@default1579"></A><A NAME="@default1580"></A>
+<A NAME="@default1581"></A>
+all callers are expected to provide two one-dimensional, SIDL arrays of the
+same size as arguments.
+The postconditions
+<A NAME="@default1582"></A><A NAME="@default1583"></A>
+<A NAME="@default1584"></A>
+specify that all implementations are expected to return a non-null,
+one-dimensional array of the same size (as the first SIDL array),
+assuming the preconditions are satisfied.</P><P><A NAME="@default1585"></A>
+<A NAME="@default1586"></A>
+<A NAME="@default1587"></A>
+<A NAME="@default1588"></A><A NAME="@default1589"></A>
+<A NAME="@default1590"></A>
+<A NAME="@default1591"></A>
+<A NAME="@default1592"></A>
+<A NAME="@default1593"></A>
+<A NAME="@default1594"></A>
+<A NAME="@default1595"></A>
+<A NAME="@default1596"></A>
+<A NAME="@default1597"></A>
+<A NAME="@default1598"></A>
+</P><DIV CLASS="flushright"><SPAN CLASS="textboxed"><FONT COLOR=purple><B>SIDL</B></FONT></SPAN></DIV><TABLE CLASS="lstframe" STYLE="padding:1ex;border-style:solid;"><TR><TD CLASS="lstlisting"><FONT COLOR=maroon><I><B>package</B> vect <B>version</B> 1.0 {
+  <B>class</B> Utils {
+    /* ... */
+
+    /**
+     * Return the sum of the specified vectors.
+     */
+    <B>static array</B>&lt;<B>double</B>&gt; vuSum(<B>in array</B>&lt;<B>double</B>&gt; u, <B>in array</B>&lt;<B>double</B>&gt; v)
+      <B>throws</B>
+        sidl.PreViolation, sidl.PostViolation;
+      <B>require</B>
+        not_null_u: u != null;
+        u_is_1d : dimen(u) == 1;
+        not_null_v: v != null;
+        v_is_1d : dimen(v) == 1;
+        same_size: size(u) == size(v);
+      <B>ensure</B>
+        no_side_effects : is pure;
+        result_not_null: result != null;
+        result_is_1d : dimen(result) == 1;
+        result_correct_size: size(result) == size(u);
+  }
+
+    /* ... */
+}</I></FONT></TD></TR>
+</TABLE><P>An example of a Java client invoking the method is given below. 
+The code snippet illustrates declaring and creating the arrays; 
+enabling full contract enforcement (i. e., checking all contract 
+clauses); executing <TT>vuSum</TT>; and handling contract 
+violation exceptions is given below.</P><P><A NAME="@default1599"></A>
+<A NAME="@default1600"></A>
+<A NAME="@default1601"></A>
+<A NAME="@default1602"></A>
+<A NAME="@default1603"></A>
+<A NAME="@default1604"></A>
+<A NAME="@default1605"></A>
+<A NAME="@default1606"></A>
+<A NAME="@default1607"></A>
+<A NAME="@default1608"></A>
+<A NAME="@default1609"></A>
+<A NAME="@default1610"></A>
+<A NAME="@default1611"></A>
+<A NAME="@default1612"></A>
+<A NAME="@default1613"></A>
+<A NAME="@default1614"></A>
+<A NAME="@default1615"></A>
+<A NAME="@default1616"></A>
+<A NAME="@default1617"></A>
+</P><DIV CLASS="flushright"><SPAN CLASS="textboxed"><FONT COLOR=purple><B>Java</B></FONT></SPAN></DIV><TABLE CLASS="lstframe" STYLE="padding:1ex;border-style:solid;"><TR><TD CLASS="lstlisting"><B>import</B> sidl.ContractClass;
+<B>import</B> sidl.Double.Array1;
+<B>import</B> sidl.EnfPolicy;
+<B>import</B> sidl.PostViolation;
+<B>import</B> sidl.PreViolation;
+<B>import</B> sidl.SIDLException;
+<B>import</B> vect.Utils;
+
+  <FONT COLOR="blue"><I>/* ... */</I></FONT>
+
+  Array1 u  = <B>new</B> Array1(0, S_MAX_SIZE-1, <B>false</B>);
+  Array1 v  = <B>new</B> Array1(0, S_MAX_SIZE-1, <B>false</B>);
+
+  <FONT COLOR="blue"><I>/* Initialize u and v. */
+
+  /* Enable FULL contract enforcement. */</I></FONT>
+  <B>try</B> {
+    d_policy.setEnforceAll(sidl.ContractClass.ALLCLASSES, <B>true</B>);
+  } <B>catch</B> (SIDLException exc) {
+    <FONT COLOR="blue"><I>/* Handle the exception */</I></FONT>
+  }
+
+  <FONT COLOR="blue"><I>/* Do something meaningful before execute method. */</I></FONT>
+
+  <B>try</B> {
+    Array1 x = vect.Utils.vuSum(u, v);
+    <B>if</B> (x != <B>null</B>) {
+      <FONT COLOR="blue"><I>/* Do something meaningful with the result, x. */</I></FONT>
+    }
+  } <B>catch</B> (PreViolation preExc) {
+    <FONT COLOR="blue"><I>/* Handle the precondition violation, preExc. */</I></FONT>
+  } <B>catch</B> (PostViolation postExc) {
+    <FONT COLOR="blue"><I>/* Handle the postcondition violation, postExc. */</I></FONT>
+  } <B>catch</B> (Exception exc) {
+    <FONT COLOR="blue"><I>/* Handle the undifferentiated exception, exc. */</I></FONT>
+  }</TD></TR>
+</TABLE><P>Alternative enforcement options can be set, as described in
+Section <A HREF="index008.html#ss:intro_contract_enforcement">6.5</A>, through the two
+basic helper methods: <TT>setEnforceAll</TT> and <TT>setEnforceNone</TT>.
+The code snippet below shows the Java calls associated with the traditional
+options of enabling only precondition enforcement, enabling postcondition
+enforcement, or completely disabling contract enforcement.</P><P><A NAME="@default1618"></A>
+<A NAME="@default1619"></A>
+<A NAME="@default1620"></A>
+<A NAME="@default1621"></A>
+<A NAME="@default1622"></A>
+<A NAME="@default1623"></A>
+<A NAME="@default1624"></A>
+<A NAME="@default1625"></A>
+<A NAME="@default1626"></A>
+<A NAME="@default1627"></A>
+</P><DIV CLASS="flushright"><SPAN CLASS="textboxed"><FONT COLOR=purple><B>Java</B></FONT></SPAN></DIV><TABLE CLASS="lstframe" STYLE="padding:1ex;border-style:solid;"><TR><TD CLASS="lstlisting"><B>import</B> sidl.ContractClass;
+<B>import</B> sidl.EnfPolicy;
+
+  <FONT COLOR="blue"><I>/* ... */</I></FONT>
+
+  policy = <B>new</B> sidl.EnfPolicy();
+
+  <FONT COLOR="blue"><I>/*
+   * Enable only precondition contract enforcement.
+   * (Useful when only need to ensure callers comply with contract.)
+   */</I></FONT>
+  <B>try</B> {
+    policy.setEnforceAll(sidl.ContractClass.PRECONDS, <B>false</B>);
+  } <B>catch</B> (SIDLException exc) {
+    <FONT COLOR="blue"><I>/* Handle the exception */</I></FONT>
+  }
+
+  <FONT COLOR="blue"><I>/*
+   * Enable only postcondition contract enforcement.
+   * (Useful when only need to ensure implementation(s) comply with contract.)
+   */</I></FONT>
+  <B>try</B> {
+    policy.setEnforceAll(sidl.ContractClass.POSTCONDS, <B>false</B>);
+  } <B>catch</B> (SIDLException exc) {
+    <FONT COLOR="blue"><I>/* Handle the exception */</I></FONT>
+  }
+
+  <FONT COLOR="blue"><I>/*
+   * Disable contract enforcement.
+   * (Should only be used when have confidence in caller AND implementation.)
+   */</I></FONT>
+  <B>try</B> {
+    policy.setEnforceNone(<B>false</B>);
+  } <B>catch</B> (SIDLException exc) {
+    <FONT COLOR="blue"><I>/* Handle the exception */</I></FONT>
+  }</TD></TR>
+</TABLE><P>This section illustrates the basic interfaces and processes for
+traditional interface contract enforcement for a Java client.
+Additional enforcement policy options and methods as well as more
+information regarding the specification and enforcement of contracts
+can be found in Chapter <A HREF="index023.html#c:contracts">21</A>.</P><H2 CLASS="section"><A NAME="toc54"></A><A NAME="htoc62">13.4</A>  Implementation-side</H2><P><A NAME="s:java:implementation"></A>
+<A NAME="@default1628"></A></P><P>This section summarizes aspects of generating and wrapping software written
+in Java. The bindings generation and basic implementation processes are
+presented first. Accessing private data is then discussed before illustrating 
+the process of throwing exceptions.
+Finally, the results of generating implementations with pre- and post-method
+“hooks” are shown.</P><H3 CLASS="subsection">13.4.1  Bindings generation</H3><P><A NAME="ss:java:implgen"></A>
+<A NAME="@default1629"></A>
+<A NAME="@default1630"></A><A NAME="@default1631"></A></P><P>Babel supports calls to SIDL classes implemented in Java. These
+classes obey the same rules described in Subsection <A HREF="#ss:java:clientgen">13.3.1</A> 
+for client-side Java classes, except
+that in this case the file, class, and method names all end in <TT>_Impl</TT>.
+Implementation of a set of SIDL classes in Java first requires the 
+generation of the necessary bindings. This is accomplished by invoking
+Babel as follows:
+<A NAME="@default1632"></A></P><BLOCKQUOTE CLASS="quotation"><TT>
+% <B>babel --exclude-external --server=Java file.sidl</B><BR>
+</TT></BLOCKQUOTE><P>
+or simply
+</P><BLOCKQUOTE CLASS="quotation"><TT>
+% <B>babel -E -sJava file.sidl</B><BR>
+</TT></BLOCKQUOTE><P>The directory structure that results from this command is the same as
+that produced on the client-side except there are many more files. Given 
+the SIDL file is named “file.sidl”, as above, a <TT>file</TT> subdirectory is 
+created and “Impl” files (i. e., those ending in <TT>_Impl.java</TT>) are 
+automatically generated in that subdirectory.
+These Java “Impl” files are supposed to contain implementation 
+details. Refer to Subsection <A HREF="#ss:java:implfill">13.4.2</A> for details.</P><P>In the current directory there are also new files that end in
+<TT>_jniSkel.c</TT>. These files are equivalent to the client-side 
+<TT>_jniStub.c</TT>. In fact, all client-side files are generated 
+from this call as well to allow for calling methods 
+on the current object in the Java “Impl” file. Consequently, they 
+can safely be ignored.</P><H3 CLASS="subsection">13.4.2  Bindings implementation</H3><P><A NAME="ss:java:implfill"></A>
+<A NAME="@default1633"></A></P><P>Implementation details must be added to the “Impl” files generated in
+Subsection <A HREF="#ss:java:implgen">13.4.1</A>. Changes to these files must be made between
+code splicer pairs to ensure their retention in subsequent invocations of
+Babel. Code splicing is a technique for preserving hand-edited 
+code between multiple invocations of Babel. This allows a developer to refine 
+the implementation without losing previous implementation details. Hence,
+code between splicer pairs will be retained by subsequent invocations of Babel;
+whereas, code outside splicer pairs will not.</P><P><A NAME="@default1634"></A>
+Another interesting fact of the implementation-side is that it inherits from
+the client-side Java class. This allows calls to local methods
+directly. Take this recursive Fibonacci function implementation, for example:
+<A NAME="@default1635"></A>
+<A NAME="@default1636"></A><A NAME="@default1637"></A></P><DIV CLASS="flushright"><SPAN CLASS="textboxed"><FONT COLOR=purple><B>Java</B></FONT></SPAN></DIV><TABLE CLASS="lstframe" STYLE="padding:1ex;border-style:solid;"><TR><TD CLASS="lstlisting"><B>class</B> Fib_Impl <B>extends</B> Fib {
+  <B>public int</B> getFib_Impl(<B>int</B> x) {
+    <FONT COLOR="blue"><I>// DO-NOT-DELETE splicer.begin(ExceptionTest.Fib.getFib) </I></FONT>
+    <B>if</B>(x &gt;= 2) {
+      <B>return</B> getFib(x-1) + getFib(x-2);
+    } <B>else</B> {
+      <B>return</B> 1;
+    }
+    <FONT COLOR="blue"><I>// DO-NOT-DELETE splicer.end(ExceptionTest.Fib.getFib)</I></FONT>
+  }
+}</TD></TR>
+</TABLE><P>The client-side class name is <TT>Fib</TT> and, therefore, the
+implementation-side class is <TT>Fib_Impl</TT>. The same relation holds for
+the <TT>getFib</TT> method. Note that <TT>getFib</TT>, the client-side method, 
+can be called directly. A call like this
+goes through Babel glue code, as it should. That is, calls 
+directly to <TT>_Impl</TT> methods should <EM>never</EM> be made since they
+break the object model for the current class and will not work on different 
+objects. The reason for this situation is that, by making local calls, within 
+<TT>fib_Impl</TT> for example, any inheritance information stored in the
+middleware is lost. It also means implementation-side object inheritance
+from non-SIDL Java classes is impossible. In fact, since no splicer blocks are
+available for inheritance, implementing interfaces on the 
+implementation-side is also not supported since having the
+implementation-side inherit from non-SIDL classes is probably not a good idea.</P><H3 CLASS="subsection">13.4.3  Private data</H3><P>
+<A NAME="@default1638"></A>
+<A NAME="@default1639"></A></P><P>Any variables declared in the implementation source file will, by virtue
+of Babel’s encapsulation, be private. The data can be global to the class —
+as in static variables declared within the <TT>_includes</TT> splicer block
+at the top of the class’s <TT>_Impl.java</TT> file — or “local” to an
+instance.
+In the former case, special initialization procedures can be added to
+the built-in <TT>_load()</TT> method, which is guaranteed to be called
+exactly once per class — <EM>before</EM> any user-defined methods
+can even be invoked. The latter case relies on the class-specific
+name space automatically generated in the implementation’s header
+file.</P><H3 CLASS="subsection">13.4.4  Exception throwing</H3><P><A NAME="ss:Java:exceptionthrowing"></A>
+<A NAME="@default1640"></A><A NAME="@default1641"></A></P><P>Recall Subsection <A HREF="#sss:java:exceptions">13.2.3</A> discussed issues associated
+with SIDL support for exception interfaces versus Java’s requirement
+that all exceptions be classes. Below is an extension of the example
+in Subsection <A HREF="#ss:Java:exceptioncatching">13.3.7</A> 
+involving <TT>getFibi</TT>, which could throw one of the following two
+interface exceptions: <TT>NegativeValueException</TT> and 
+<TT>TooDeepException</TT>.
+<A NAME="@default1642"></A>
+<A NAME="@default1643"></A><A NAME="@default1644"></A>
+<A NAME="@default1645"></A><A NAME="@default1646"></A></P><DIV CLASS="flushright"><SPAN CLASS="textboxed"><FONT COLOR=purple><B>Java</B></FONT></SPAN></DIV><TABLE CLASS="lstframe" STYLE="padding:1ex;border-style:solid;"><TR><TD CLASS="lstlisting"><B>public int</B> getFibi_Impl ( <FONT COLOR="blue"><I>/*in*/</I></FONT> <B>int</B> n)
+<B>throws</B> NegativeValueException.Wrapper, TooDeepException.Wrapper {
+  <FONT COLOR="blue"><I>// DO-NOT-DELETE splicer.begin(ExceptionTest.Fib.getFibi)</I></FONT>
+  <B>if</B> (n &lt; 0) {
+    FibException fex = <B>new</B> FibException();
+    NegativeValueException.Wrapper neg = (NegativeValueException.Wrapper)
+      NegativeValueException.Wrapper._cast(fex);
+    neg.setNote("n negative");
+    <B>throw</B> neg;
+  }
+
+  <FONT COLOR="blue"><I>//  .... Do Fibonacci stuff ....
+  // DO-NOT-DELETE splicer.end(ExceptionTest.Fib.getFibi)</I></FONT>
+}</TD></TR>
+</TABLE><P>Notice that the interface exceptions and their <TT>Wrapper</TT>s cannot
+be instantiated directly. Instead, a <TT>FibException</TT> object is 
+created then cast to the appropriate exception interface type. As
+in Subsection <A HREF="#ss:Java:exceptioncatching">13.3.7</A>, the wrapper class’s
+full name<A NAME="@default1647"></A> is required during the cast operation.
+Finally, the example illustrates the use of <TT>setNote</TT> to add
+the message to the exception being thrown — which is necessary
+since the note cannot be passed to the exception’s constructor.</P><H3 CLASS="subsection">13.4.5  Hooks implementation</H3><P><A NAME="ss:java:hooksimpl"></A>
+<A NAME="@default1648"></A><A NAME="@default1649"></A>
+<A NAME="@default1650"></A>
+<A NAME="@default1651"></A><A NAME="@default1652"></A>
+<A NAME="@default1653"></A><A NAME="@default1654"></A></P><P>As discussed in Subsection <A HREF="#ss:java:sethooks">13.3.8</A>, when hooks execution
+is enabled, implementation-specific instrumentation is executed. Using
+the <B><TT><CODE>--</CODE>generate-hooks</TT></B> option on the Babel
+command line when generating implementation-side bindings results
+in the automatic generation of a <TT>_pre</TT> and <TT>_post</TT>
+method for every static and non-static method associated with each class
+in the specification. For the <TT>aStaticMethod</TT> specified in
+Subsection <A HREF="#ss:java:sethooks">13.3.8</A>, the generated <TT>_pre</TT> method
+implementation is:</P><DIV CLASS="flushright"><SPAN CLASS="textboxed"><FONT COLOR=purple><B>Java</B></FONT></SPAN></DIV><TABLE CLASS="lstframe" STYLE="padding:1ex;border-style:solid;"><TR><TD CLASS="lstlisting">  <B>public static void</B> aStaticMeth_pre_Impl ( <B>int</B> i, <B>int</B> io )
+    <B>throws</B> sidl.RuntimeException.Wrapper
+  {
+    <FONT COLOR="blue"><I>// DO-NOT-DELETE splicer.begin(hooks.Basics.aStaticMeth_pre)
+    /*
+     * Add instrumentation here to be executed immediately prior
+     * to dispatch to aStaticMeth().
+     */
+    // DO-NOT-DELETE splicer.end(hooks.Basics.aStaticMeth_pre)</I></FONT>
+  }</TD></TR>
+</TABLE><P>while that of the <TT>_post</TT> method is:</P><DIV CLASS="flushright"><SPAN CLASS="textboxed"><FONT COLOR=purple><B>Java</B></FONT></SPAN></DIV><TABLE CLASS="lstframe" STYLE="padding:1ex;border-style:solid;"><TR><TD CLASS="lstlisting">  <B>public static void</B> aStaticMeth_post_Impl ( <B>int</B> i, <B>int</B> o, <B>int</B> io, <B>int</B> _retval )
+    <B>throws</B> sidl.RuntimeException.Wrapper
+  {
+    <FONT COLOR="blue"><I>// DO-NOT-DELETE splicer.begin(hooks.Basics.aStaticMeth_post)
+    /*
+     * Add instrumentation here to be executed immediately after
+     * return from dispatch to aStaticMeth().
+     */
+    // DO-NOT-DELETE splicer.end(hooks.Basics.aStaticMeth_post)</I></FONT>
+  }</TD></TR>
+</TABLE><P>Per the normal implementation process, the desired instrumentation
+should be added within the splicer blocks of
+<TT>aStaticMethod_pre</TT> and
+<TT>aStaticMethod_post</TT>. As stated in the comments
+within those blocks, <TT>aStaticMethod_pre</TT> will be
+executed immediately prior to dispatch to <TT>aStaticMethod</TT> when the
+latter is invoked by a client. Assuming no exceptions are encountered,
+<TT>aStaticMethod_post</TT> is executed immediately upon
+return from <TT>aStaticMethod</TT>.
+</P><HR CLASS="footnoterule"><DL CLASS="thefootnotes"><DT CLASS="dt-thefootnotes">
+<A NAME="note20" HREF="#text20">1</A></DT><DD CLASS="dd-thefootnotes">For 
+information on additional command line options, refer to 
+Section <A HREF="index006.html#s:basics_commandline">4.2</A>.
+</DD></DL>
+<HR>
+<A HREF="index014.html"><IMG SRC="previous_motif.gif" ALT="Previous"></A>
+<A HREF="index-multipage.html"><IMG SRC="contents_motif.gif" ALT="Up"></A>
+<A HREF="index016.html"><IMG SRC="next_motif.gif" ALT="Next"></A>
+</BODY>
+</HTML>

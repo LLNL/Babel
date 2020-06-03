@@ -1,0 +1,57 @@
+#!/usr/local/bin/python
+#
+# File:        sortingtest
+# Copyright:   (c) 2002 Lawrence Livermore National Security, LLC
+# Revision:    $Revision$
+# Date:        $Date$
+# Description: Excercise interfaces and abstract classes
+#
+
+import sorting.Mergesort
+import sorting.Quicksort
+import sorting.Heapsort
+import sorting.SortTest
+from synch import RegOut
+from synch.ResultType import *
+
+class TestCounter:
+
+  def __init__(self, numparts = -1):
+    self.tracker = RegOut.getInstance()
+    self.partno = 0
+    self.tracker.setExpectations(numparts)
+
+  def describeTest(self, description):
+    self.partno = self.partno + 1
+    self.tracker.startPart(self.partno)
+    self.tracker.writeComment(description)
+
+  def evalTest(self, result, expected):
+    if (result):
+      if (expected):
+        self.tracker.endPart(self.partno, PASS)
+      else:
+        self.tracker.endPart(self.partno, XPASS)
+    else:
+      if (expected):
+        self.tracker.endPart(self.partno, FAIL)
+      else:
+        self.tracker.endPart(self.partno, XFAIL)
+        
+  def finish(self):
+    self.tracker.close()
+
+if __name__ == '__main__':
+    test = TestCounter(4)
+    merge = sorting.Mergesort.Mergesort()
+    quick = sorting.Quicksort.Quicksort()
+    heap = sorting.Heapsort.Heapsort()
+    test.describeTest("merge != None")
+    test.evalTest(merge, 1)
+    test.describeTest("quick != None")
+    test.evalTest(quick, 1)
+    test.describeTest("heap != None")
+    test.evalTest(heap, 1)
+    test.describeTest("sorting.SortTest.stressTest([merge, quick, heap])")
+    test.evalTest(sorting.SortTest.stressTest([merge, quick, heap]), 1)
+    test.finish()

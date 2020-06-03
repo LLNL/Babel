@@ -1,0 +1,147 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html>
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="GENERATOR" content="Mozilla/4.78 [en] (X11; U; Linux 2.4.18-c0smp i686) [Netscape]">
+   <title>SIDL's Python Mapping</title>
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!-- 
+  File: SIDLPython.html
+  Copyright: (c) 2001 Lawrence Livermore National Security, LLC
+  Revision: $Revision: 6171 $
+  Modified: $Date: 2007-10-08 16:39:28 -0700 (Mon, 08 Oct 2007) $
+  Description: Basic documentation for Python.
+-->
+</head>
+<body>
+
+<h1>
+Crash Course in SIDL's Python Mapping</h1>
+
+<h2>
+Tom Epperly &lt;tepperly@llnl.gov><br />
+Babel 0.8.x<br />
+2 August 2001, updated 21 January 2003</h2>
+
+<h3>
+How to create a SIDL object in Python (once you've built the Python extension
+module)</h3>
+You need to import the extension module and then calling a method to create
+an instance. If you have a class whose fully qualified name is
+<tt>x.y.z</tt>,
+you would say:
+<pre>import x.y.z
+obj = x.y.z.z()</pre>
+The last part of the class name is repeated. The static methods of a class
+are available in the Python <tt>x.y.z</tt> name space.
+<p>In some cases, the Python extension module may be name
+<tt>zmodule.so</tt>
+instead of simply <tt>z.so</tt>. This might tempt you to say <tt>import
+x.y.zmodule</tt> instead of just <tt>import x.y.z</tt>; resist this temptation!
+<h3>
+How to cast SIDL objects in Python</h3>
+Let's say you have an object <tt>obj</tt>, and you would like to see if
+it is an instance of a SIDL class or interface whose fully qualified name
+is
+<tt>x.y.z</tt>. This is how you do it.
+<pre># assume obj already has its value
+import x.y.z
+zobj = x.y.z.z(obj)
+if (zobj):
+&nbsp; # now you've got a handle to a x.y.z object/interface
+else:
+&nbsp; # obj was not a handle to a x.y.z object/interface</pre>
+Of course, you don't need the import if you know that <tt>x.y.z</tt> has
+already been imported.
+<h3>
+Building Python Extension Modules</h3>
+SIDL creates a <tt>Setup.in</tt> file that can be used to build the Python
+extension modules that you create. Copy <tt>Makefile.pre.in</tt> from your
+Python distribution into the directory containing
+<tt>Setup.in</tt>. There
+are three <tt>make</tt> variables you need to set when your building your
+Python extension module.
+<dl>
+<dt>
+SIDLLIBDIR</dt>
+
+<dd>
+This should be a path (absolute or relative) to the directory where the
+SIDL runtime library file (i.e. the shared library/dynamic link library)
+resides.</dd>
+
+<dt>
+SIDLPYHDRS</dt>
+
+<dd>
+This should be a path (absolute or relative) to the top directory in which
+the basic SIDL Python extensions are installed.</dd>
+
+<dt>
+SIDLHDRS</dt>
+
+<dd>
+This should be a path (absolute or relative) to the directory where the
+SIDL C header files are installed.</dd>
+</dl>
+Here is a hypothetical example:
+<pre>make -f Makefile.pre.in SIDLLIBDIR=/usr/local/lib \
+&nbsp;&nbsp; SIDLPYHDRS=/usr/local/include SIDLHDRS=/usr/local/include/SIDL
+make SIDLLIBDIR=/usr/local/lib/libsidl.so \
+&nbsp; SIDLPYHDR=/usr/local/include SIDLHDRS=/usr/local/include/SIDL</pre>
+It is unlikely that any installation actually uses those settings.
+<h3>
+Setting up to run Python</h3>
+Here I assume that you've installed BABEL in directories rooted at
+<tt>${PREFIX}</tt>.
+You need to have <tt>${PREFIX}/python</tt> in your
+<tt>PYTHONPATH</tt>
+environment variable in addition to the directory where you are doing your
+work.
+<p>On many systems, you will need <tt>${PREFIX}/lib</tt> in your
+<tt>LD_LIBRARY_PATH</tt>
+(or whatever system setting controls which directories are searched for
+shared libraries/dynmic link libraries).
+<p>You will likely need to use <tt>SIDL_DLL_PATH</tt> (a semicolon separated
+path) to provide the path to the directory that holds the shared library/dynamic
+link library containing the implementation of the SIDL objects.
+<h3>
+Notes</h3>
+The Python binding for SIDL long is 32 bits instead of 64 bits at present.
+<h3>
+What does this error message mean?</h3>
+
+<pre>>>> import x.y.Zmodule
+Traceback (innermost last):
+&nbsp; File "&lt;stdin>", line 1, in ?
+ImportError: dynamic module does not define init function (initZmodule)</pre>
+Is the name of your SIDL interface/class <tt>x.y.Z</tt> or
+<tt>x.y.Zmodule</tt>,
+if it's the former, you should say <tt>import x.y.Z</tt>. If this isn't
+the problem, submit a bug report for BABEL. It might be informative to
+look at the symbol of the shared library/dynamic link library using a tool
+like <tt>nm</tt>. I suppose it's also worth checking the <tt>PYTHONPATH</tt>
+environment variable to make sure it's pointing to the right place.
+<pre>>>> import x.y.Z
+Fatal Python error: Cannot load implementation for SIDL class x.y.Z
+Abort (core dumped)</pre>
+This means that the Python stub code (the code that links Python to SIDL's
+independent object representation (IOR)) failed in its attempt to load
+the shared library or dynamic link library containing the implementation
+of SIDL class <tt>x.y.Z</tt>. Make sure the environment variable
+<tt>SIDL_DLL_PATH</tt>
+lists all the directories where the shared libraries/dynamic link libraries
+for your SIDL objects/interfaces are stored.
+<tt>SIDL_DLL_PATH</tt> is
+a <b>semicolon</b> separated list of directories where SIDL client stubs
+will search for shared libraries required for SIDL classes and interfaces.
+Make sure the directory in which the SIDL runtime resides is in the <tt>LD_LIBRARY_PATH</tt>
+(or whatever your machine's mechanism for locating shared library files
+is).
+<pre>>>> import x.y.Z
+Fatal Python error: Cannot load implementation for SIDL interface x.y.Z
+Abort (core dumped)</pre>
+This is the same problem for an interface as described immediately above
+for a class.
+</body>
+</html>

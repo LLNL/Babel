@@ -1,0 +1,52 @@
+# IORHDRS dependencies.
+hooks_Basics_IOR.h:                                                           \
+  /home/epperly/current/babel_fix_hooks/regression/hooks/libPython/../hooks.sidl
+hooks_Basics_IOR.h: sidl_header.h
+hooks_Basics_IOR.h: sidl_BaseClass_IOR.h
+
+hooks_IOR.h:                                                                  \
+  /home/epperly/current/babel_fix_hooks/regression/hooks/libPython/../hooks.sidl
+hooks_IOR.h: hooks_Basics_IOR.h
+
+
+# IORSRCS dependencies.
+hooks_Basics_IOR.c:                                                           \
+  /home/epperly/current/babel_fix_hooks/regression/hooks/libPython/../hooks.sidl
+hooks_Basics_IOR.c: hooks_Basics_IOR.h
+hooks_Basics_IOR.c: sidl_BaseClass_Impl.h
+hooks_Basics_IOR.c: sidl_BaseClass.h
+hooks_Basics_IOR.c: sidl_ClassInfo.h
+hooks_Basics_IOR.c: sidl_ClassInfoI.h
+
+
+# LAUNCHSRCS dependencies.
+hooks_Basics_pLaunch.c:                                                       \
+  /home/epperly/current/babel_fix_hooks/regression/hooks/libPython/../hooks.sidl
+hooks_Basics_pLaunch.c: sidl_Python.h
+hooks_Basics_pLaunch.c: sidl_Loader.h
+
+
+# PYMOD_HDRS dependencies.
+hooks_Basics_Module.h:                                                        \
+  /home/epperly/current/babel_fix_hooks/regression/hooks/libPython/../hooks.sidl
+
+
+# SKELSRCS dependencies.
+hooks_Basics_pSkel.c:                                                         \
+  /home/epperly/current/babel_fix_hooks/regression/hooks/libPython/../hooks.sidl
+hooks_Basics_pSkel.c: hooks_Basics_IOR.h
+hooks_Basics_pSkel.c: sidlObjA.h
+hooks_Basics_pSkel.c: sidlPyArrays.h
+hooks_Basics_pSkel.c: oldnumeric.h
+hooks_Basics_pSkel.c: Numeric/arrayobject.h
+hooks_Basics_pSkel.c: sidl_header.h
+hooks_Basics_pSkel.c: sidl_Python.h
+hooks_Basics_pSkel.c: sidl_BaseInterface_Module.h
+hooks_Basics_pSkel.c: sidl_rmi_NetworkException_Module.h
+hooks_Basics_pSkel.c: sidl_LangSpecificException_Module.h
+hooks_Basics_pSkel.c: hooks_Basics_Module.h
+hooks_Basics_pSkel.c: sidl_ClassInfo_Module.h
+hooks_Basics_pSkel.c: sidl_RuntimeException_Module.h
+hooks_Basics_pSkel.c: sidl_BaseClass_Module.h
+
+

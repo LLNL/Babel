@@ -1,0 +1,111 @@
+# client_IORHDRS dependencies.
+synch_IOR.h:                                                                  \
+  /home/epperly/current/babel_fix_wrap/regression/wrapper/runCxx/../../output/output.sidl
+synch_IOR.h: synch_RegOut_IOR.h
+synch_IOR.h: synch_ResultType_IOR.h
+
+synch_RegOut_IOR.h:                                                           \
+  /home/epperly/current/babel_fix_wrap/regression/wrapper/runCxx/../../output/output.sidl
+synch_RegOut_IOR.h: sidl_header.h
+synch_RegOut_IOR.h: sidl_BaseClass_IOR.h
+synch_RegOut_IOR.h: synch_ResultType_IOR.h
+
+synch_ResultType_IOR.h: sidlType.h
+
+wrapper_User_IOR.h:                                                           \
+  /home/epperly/current/babel_fix_wrap/regression/wrapper/runSIDL/../wrapper.sidl
+wrapper_User_IOR.h: sidl_header.h
+wrapper_User_IOR.h: sidl_BaseClass_IOR.h
+
+
+# client_STUBHDRS dependencies.
+synch.hxx:                                                                    \
+  /home/epperly/current/babel_fix_wrap/regression/wrapper/runCxx/../../output/output.sidl
+synch.hxx: synch_RegOut.hxx
+synch.hxx: synch_ResultType.hxx
+
+synch_RegOut.hxx:                                                             \
+  /home/epperly/current/babel_fix_wrap/regression/wrapper/runCxx/../../output/output.sidl
+synch_RegOut.hxx: sidl_cxx.hxx
+synch_RegOut.hxx: sidl_cxx.hxx
+synch_RegOut.hxx: synch_RegOut_IOR.h
+synch_RegOut.hxx: sidl_BaseClass.hxx
+synch_RegOut.hxx: synch_ResultType.hxx
+
+synch_ResultType.hxx: sidl_cxx.hxx
+synch_ResultType.hxx: synch_ResultType_IOR.h
+
+wrapper_User.hxx:                                                             \
+  /home/epperly/current/babel_fix_wrap/regression/wrapper/runSIDL/../wrapper.sidl
+wrapper_User.hxx: sidl_cxx.hxx
+wrapper_User.hxx: sidl_cxx.hxx
+wrapper_User.hxx: wrapper_User_IOR.h
+wrapper_User.hxx: sidl_BaseClass.hxx
+wrapper_User.hxx: wrapper_Data.hxx
+
+
+# client_STUBSRCS dependencies.
+synch_RegOut.cxx:                                                             \
+  /home/epperly/current/babel_fix_wrap/regression/wrapper/runCxx/../../output/output.sidl
+synch_RegOut.cxx: synch_RegOut.hxx
+synch_RegOut.cxx: sidl_BaseInterface.hxx
+synch_RegOut.cxx: sidl_BaseClass.hxx
+synch_RegOut.cxx: sidl_BaseException.hxx
+synch_RegOut.cxx: sidl_LangSpecificException.hxx
+synch_RegOut.cxx: sidl_RuntimeException.hxx
+synch_RegOut.cxx: sidl_rmi_Call.hxx
+synch_RegOut.cxx: sidl_rmi_Return.hxx
+synch_RegOut.cxx: sidl_rmi_Ticket.hxx
+synch_RegOut.cxx: sidl_rmi_InstanceHandle.hxx
+synch_RegOut.cxx: sidl_String.h
+synch_RegOut.cxx: sidl_rmi_ConnectRegistry.h
+synch_RegOut.cxx: babel_config.h
+synch_RegOut.cxx: sidl_Loader.hxx
+synch_RegOut.cxx: sidl_DLL.hxx
+synch_RegOut.cxx: sidl_BaseInterface.hxx
+synch_RegOut.cxx: sidl_ClassInfo.hxx
+synch_RegOut.cxx: synch_RegOut.hxx
+synch_RegOut.cxx: synch_ResultType.hxx
+synch_RegOut.cxx: sidl_BaseClass.h
+synch_RegOut.cxx: sidl_ClassInfo.h
+synch_RegOut.cxx: sidl_rmi_ProtocolFactory.h
+synch_RegOut.cxx: sidl_rmi_InstanceRegistry.h
+synch_RegOut.cxx: sidl_rmi_InstanceHandle.h
+synch_RegOut.cxx: sidl_rmi_Invocation.h
+synch_RegOut.cxx: sidl_rmi_Response.h
+synch_RegOut.cxx: sidl_rmi_ServerRegistry.h
+synch_RegOut.cxx: sidl_rmi_ConnectRegistry.h
+synch_RegOut.cxx: sidl_io_Serializable.h
+
+wrapper_User.cxx:                                                             \
+  /home/epperly/current/babel_fix_wrap/regression/wrapper/runSIDL/../wrapper.sidl
+wrapper_User.cxx: wrapper_User.hxx
+wrapper_User.cxx: sidl_BaseInterface.hxx
+wrapper_User.cxx: sidl_BaseClass.hxx
+wrapper_User.cxx: sidl_BaseException.hxx
+wrapper_User.cxx: sidl_LangSpecificException.hxx
+wrapper_User.cxx: sidl_RuntimeException.hxx
+wrapper_User.cxx: sidl_rmi_Call.hxx
+wrapper_User.cxx: sidl_rmi_Return.hxx
+wrapper_User.cxx: sidl_rmi_Ticket.hxx
+wrapper_User.cxx: sidl_rmi_InstanceHandle.hxx
+wrapper_User.cxx: sidl_String.h
+wrapper_User.cxx: sidl_rmi_ConnectRegistry.h
+wrapper_User.cxx: babel_config.h
+wrapper_User.cxx: sidl_Loader.hxx
+wrapper_User.cxx: sidl_DLL.hxx
+wrapper_User.cxx: sidl_BaseInterface.hxx
+wrapper_User.cxx: sidl_ClassInfo.hxx
+wrapper_User.cxx: wrapper_Data.hxx
+wrapper_User.cxx: sidl_BaseClass.h
+wrapper_User.cxx: sidl_ClassInfo.h
+wrapper_User.cxx: sidl_rmi_ProtocolFactory.h
+wrapper_User.cxx: sidl_rmi_InstanceRegistry.h
+wrapper_User.cxx: sidl_rmi_InstanceHandle.h
+wrapper_User.cxx: sidl_rmi_Invocation.h
+wrapper_User.cxx: sidl_rmi_Response.h
+wrapper_User.cxx: sidl_rmi_ServerRegistry.h
+wrapper_User.cxx: sidl_rmi_ConnectRegistry.h
+wrapper_User.cxx: sidl_io_Serializable.h
+
+

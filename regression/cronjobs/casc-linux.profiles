@@ -1,0 +1,15 @@
+casc-linux-icc-g77-ifc-dbg
+casc-linux-gcc2.96-g77-absoft-dbg
+casc-linux-gccdefault-g77-lahey-opt
+casc-linux-gccnew-g77-absoft-dbg
+casc-linux-icc-g77-ifc-opt
+casc-linux-gccdefault-g77-lahey-dbg
+casc-linux-icc-g77-ifc-dbg
+casc-linux-gccnew-g77-absoft-opt
+casc-linux-gcc2.96-g77-lahey-dbg
+casc-linux-gccdefault-g77-absoft-dbg
+casc-linux-gcc2.96-g77-absoft-opt
+casc-linux-gcc2.96-g77-lahey-opt
+casc-linux-gccdefault-g77-absoft-opt
+casc-linux-icc-g77-ifc-dbg
+casc-linux-gccnew-g77-lahey-opt

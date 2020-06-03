@@ -1,0 +1,507 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN"
+            "http://www.w3.org/TR/REC-html40/loose.dtd">
+<HTML>
+<HEAD>
+
+<META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<META name="GENERATOR" content="hevea 1.10">
+<LINK rel="stylesheet" type="text/css" href="index.css">
+<TITLE>Remote Method Invocation</TITLE>
+</HEAD>
+<BODY >
+<A HREF="index019.html"><IMG SRC="previous_motif.gif" ALT="Previous"></A>
+<A HREF="index-multipage.html"><IMG SRC="contents_motif.gif" ALT="Up"></A>
+<A HREF="index021.html"><IMG SRC="next_motif.gif" ALT="Next"></A>
+<HR>
+<H1 CLASS="chapter"><A NAME="htoc82">Chapter 18</A>  Remote Method Invocation</H1><UL>
+<LI><A HREF="index020.html#toc69">What is RMI?</A>
+</LI><LI><A HREF="index020.html#toc70">Babel RMI Concepts</A>
+</LI><LI><A HREF="index020.html#toc71">Babel RMI Usage</A>
+</LI><LI><A HREF="index020.html#toc72">Babel Object Servers</A>
+</LI><LI><A HREF="index020.html#toc73">Non-Blocking Babel RMI</A>
+</LI></UL>
+<P><A NAME="c:build"></A></P><P><BR>
+</P><H2 CLASS="section"><A NAME="toc69"></A><A NAME="htoc83">18.1</A>  What is RMI?</H2><P><A NAME="s:RMIintro"></A>
+<A NAME="@default1836"></A></P><P>In classic Babel, all calls are in-process. That is, everything Babel
+generates is loaded into the same process. This means inter-language
+Babel calls use the same mechanisms as normal function calls. This
+makes calls between languages extremely fast. However, many systems
+also have a need for Remote Procedure Calls (RPC),<A NAME="@default1837"></A> that is, calls made
+between different processes, or even machines over a network. Remote
+Method Invocation (RMI) is Babel’s answer to this need.</P><P>RMI is Object Oriented RPC. However, unlike RPC where calls are made
+to procedures on a specified machine, in RMI calls are made on
+objects. The call is run on whichever machine the object resides on.</P><P>There are several reasons why an application may choose to use
+RMI. The main reasons are wrapping code tied to particular hardware,
+wrapping code tied to a particular operating system release,
+coarse-grained parallel<A NAME="@default1838"></A> execution, or greater encapsulation. With RMI,
+you can make code that’s tied to a particular machine available to
+programs running on other platforms. You can utilize multi-CPU<A NAME="@default1839"></A>
+systems to concurrently solve problems using RMI. RMI can solve
+problems that sometimes occur when you put two codes in the same
+address space. For example, two Fortran codes may use the same logical
+unit numbers (similar to C file numbers), or two codes may both need a
+customized form of a third party library. Bringing both codes into the
+same process may cause a symbol collision for the third party library,
+and one code gets the wrong version of the library.</P><P>Despite the radical low-level differences between RMI and classic
+Babel, the user interfaces are nearly identical. In fact, if a
+library writer does not care if an object is remote or not, they
+simply do not need to know. RMI support requires a few simple calls to 
+set up the infrastructure, but almost everything else is handled 
+automatically by the Babel runtime library. Babel also has a few RMI
+support functions and a special remote constructor. </P><H2 CLASS="section"><A NAME="toc70"></A><A NAME="htoc84">18.2</A>  Babel RMI Concepts</H2><P><A NAME="s:RMIconcepts"></A></P><P>For normal function calls, arguments are passed by initializing
+registers and pushing things onto the system stack. In RMI, function
+arguments and return values are passed by a network protocol. From a
+programmers point of view, the only difference between normal and
+network function calls is that network function calls have more
+failure modes. Anything that can disturb a network connection, such as
+a router going offline, can cause a RMI call to fail.</P><P>Conceptually, the RMI view of the world can be thought of as 1 or more
+Babel Object Servers (BOSs) <A NAME="@default1840"></A><A NAME="@default1841"></A>
+that a client can connect to in order to create
+or use objects on those servers. Of course, any server can also
+connect as a client to any other server, and any client can become a
+server simply by starting up a BOS of it’s own.</P><P>This makes Babel RMI very flexible, and accepting of whatever
+client-server relationships the application writers choose to use.
+Web Services <A NAME="@default1842"></A> users of Babel tend to use traditional client-server
+models, while scientific distributed systems<A NAME="@default1843"></A> 
+users tend toward
+peer-to-peer usage.</P><H3 CLASS="subsection">18.2.1  RMI Protocols</H3><P><A NAME="ss:RMIprotocols"></A>
+<A NAME="@default1844"></A></P><P>The first thing any user of Babel RMI has to do is choose a Babel RMI
+protocol. Babel RMI can use any protocol that implements the Babel
+RMI API, but a client and a server using different protocols probably
+cannot communicate. </P><P>A Babel RMI protocol may be built on any low level protocol (such as
+TCP/IP) that the protocol implementer wishes to use. This should not
+affect the user at all. The protocol controls the details of how
+arguments and return values are converted to a stream of bytes that
+can be shipped across the network and read by the other process.</P><P>Currently there is only one protocol that fully implements the Babel
+RMI API, and it is included with Babel in the runtime/sidlx <A NAME="@default1845"></A>
+directory. It is called “Simple Protocol.”<A NAME="@default1846"></A> 
+<A NAME="@default1847"></A> However, there are many
+other protocols currently under development (at least four.) Soon
+there will be a number of choices, including protocols specifically
+tuned for high-performance scientific computing, web services, and
+CORBA[<A ></A>]<A NAME="@default1848"></A> compatibility.</P><H3 CLASS="subsection">18.2.2  Babel Object Server</H3><P><A NAME="ss:RMIservers"></A></P><P>The next thing that a user needs is a BOS to connect to. The BOS is
+implemented by the protocol writers as a library. As mentioned
+before, the BOS may be run by itself, by a small driver program, or run
+as part of a program that also acts as a client. 
+There is an example of a small driver program in contrib/babel-rmi/orb.</P><P>The BOS is accessed by a protocol specific URL. A URL<A NAME="@default1849"></A>
+is a string the uniquely identifies a network resource. Most people are aware of
+Internet URLs like: <TT>http://www.llnl.gov/CASC/components/babel.html</TT>
+(which is the URL for the Babel web page). Babel RMI also uses URLs, but
+they are mostly protocol specific. Babel RMI only uses the portion of
+the URL up to the first non-alphanumeric character to identify the
+protocol that is being used. The rest of the URL is passed on to the protocol.
+This means that while “Simple Protocol” URLs look like this:</P><P><TT>simhandle://pc3.nowhere.com:9999/</TT></P><P>one can also imagine URLs of the form:</P><P><TT>weird://05:16:5B:BD:E1:73/</TT></P><P>for the weird protocol, or:</P><P><TT>weird+SSL://05:16:5B:BD:E1:73/</TT></P><P>for running the weird protocol over SSL. Babel RMI itself does not attempt
+to parse anything past the first non-alphanumeric character, so most
+of the URL is entirely protocol dependent.</P><H3 CLASS="subsection">18.2.3  Object Creation and Connection</H3><P><A NAME="ss:RMIcreateconnect"></A>
+<A NAME="@default1850"></A> <A NAME="@default1851"></A> <A NAME="@default1852"></A> <A NAME="@default1853"></A></P><P>There are two main ways of accessing objects on a remote server,
+creation and connection. </P><P>A client may create a remote object with the Babel built-in
+<FONT COLOR=maroon><I><TT>static _createRemote(in string URL)</TT></I></FONT> method. This asks the remote
+server given in the URL to create an object. For example, the C function</P><P><TT>foo_Bar b = foo_Bar__createRemote(‘‘simhandle://pc3:9999/’’);</TT></P><P>will create an object of type foo.Bar on the server running on pc3
+port<A NAME="@default1854"></A><A NAME="@default1855"></A> 9999 using the “Simple Protocol.”</P><P><TT>foo_Bar b</TT> may now be passed around exactly like a normal Babel object,
+except that all calls on b will actually run on pc3.</P><P>However, in some cases, an object already exists on a remote server
+that the user just wants to access. In this case, the object can be
+connected to via the built-in <FONT COLOR=maroon><I><TT>static _connect(in string URL)</TT></I></FONT> method. The only
+difference is, in this case the URL must include an object ID to
+uniquely identify the object desired on the BOS. For example:</P><P><TT>foo_Bar b = foo_Bar__connect(‘‘simhandle://pc3:9999/Bar1025’’);</TT></P><P>here again, <TT>foo_Bar b</TT> may now be used exactly like any other Babel
+object. To relate back to normal Babel, connection is kind of like an
+active addRef. The user actively goes and gets his own reference to a
+given object.</P><P><TT>_connect</TT> is actually used by Babel internally whenever objects
+are passed remotely as arguments. In fact, users will probably rarely
+use connect directly, most often it will be done automatically by
+Babel when objects are passed remotely. <TT>_connect</TT> is exposed to the
+user mostly for Web Services, where the objectID may always be the
+same, and for special boot strapping uses.</P><H3 CLASS="subsection">18.2.4  RMI Arguments</H3><P><A NAME="ss:RMIobjargs"></A></P><P>All basic types are passed by value in Babel RMI. They are
+actually copied across the network. This is reasonable since they are
+small. Arrays are also copy-only, so anytime an array is passed
+remotely through Babel RMI, it is actually copied to the remote
+machine.</P><P>Because arrays are copy-only for RMI, there is a noticeable difference
+in the behavior of an <TT>in array</TT><A NAME="@default1856"></A> argument between a non-RMI call
+and an RMI call. For the non-RMI call, the code implementing the
+method can change elements of the incoming array. Because the caller
+and callee share the same array, the caller’s copy of the array will
+also be changed. For an RMI call, even if the code implementing the
+method changes elements of the incoming array, the caller’s copy can
+never be modified because the client and server each have a distinct
+copy of the array data.</P><P>There are two ways one can pass objects <A NAME="@default1857"></A>
+<A NAME="@default1858"></A> <A NAME="@default1859"></A> in Babel RMI, by
+reference, and by copy. The default method is pass-by-reference.
+For example, server A calls a function foo on server B,
+and passes a local object Bar as an argument. In this case A will actually
+pass the URL of Bar to B, B will then call <TT>_connect</TT> on the URL, which
+connects back to the object Bar on A.</P><P>Pass-by-copy (also called serialization) <A NAME="@default1860"></A>
+<A NAME="@default1861"></A> is different. Pass-by-copy
+means that a new object is actually created locally on B, and
+filled in with the values from the object Bar on A. The result is two
+distinct local objects, one on A and one on B. In order to pass
+by copy, copy must be used as an argument modifier in the SIDL file.
+For example:</P><P><FONT COLOR=maroon><I><TT>copy Bar retBar(copy in Foo f)</TT></I></FONT></P><P>This sidl function takes a copy of a Foo and returns a copy of a Bar. </P><P>Passing by copy also requires the object being passed implements
+<FONT COLOR=maroon><I><TT>sidl.io.Serializable</TT></I></FONT>:</P><DIV CLASS="flushright"><SPAN CLASS="textboxed"><FONT COLOR=purple><B>SIDL</B></FONT></SPAN></DIV><TABLE CLASS="lstframe" STYLE="padding:1ex;border-style:solid;"><TR><TD CLASS="lstlisting"> <FONT COLOR=maroon><I>   1 <B>package</B> sidl.io <B>version</B> 9.15 {
+    2   <B>interface</B> Serializable {
+    3     <B>void</B> packObj( <B>in</B> Serializer ser );
+    4     <B>void</B> unpackObj( <B>in</B> Deserializer des );
+    5   }
+    6 }</I></FONT></TD></TR>
+</TABLE><P>Serializable declares two methods, packObj and <A NAME="@default1862"></A> <A NAME="@default1863"></A>
+unPackObj. packObj serializes the internal object data to a string.
+unPackObj reinstates the data into the new object by unserializing it
+from a string. The library developer must implement these functions
+because Babel does not know what data is in the object, or how it
+should be serialized. Examples of packObj and unpackObj
+implementations can be found
+in <FONT COLOR=maroon><I><TT>sidl.rmi.SIDLException</TT></I></FONT> and <FONT COLOR=maroon><I><TT>sidl.rmi.NetworkException</TT></I></FONT>.</P><H3 CLASS="subsection">18.2.5  Casting Remote Objects</H3><P><A NAME="ss:RMIobjargs"></A>
+<A NAME="@default1864"></A></P><P>Babel RMI casting works the same as normal Babel casting, the user
+calls casts an object to a new type, and gets a new reference back of
+the object of the new type. In normal Babel, the new reference
+points to the same IOR object as the old reference. This is because
+all Babel objects are internally represented as the type they were
+created as, so
+casting is simply a matter of checking if the internal Babel type
+extends the target type or not.</P><P>Babel RMI objects are more complex, a cast may result in a new stub.
+If <TT>_connect()</TT> is called on a remote object, the object can be
+connected as a super type of its actual type, such as an interface.
+If this object is later cast to a more derived type, a new local
+object stub must be created. These two stubs must be
+deleteRef’d individually.</P><P>Here is an example where foo_Quux extends foo_Bar. The first is what the user
+should do, the second is an error. </P><DIV CLASS="flushright"><SPAN CLASS="textboxed"><FONT COLOR=purple><B>ANSI C</B></FONT></SPAN></DIV><TABLE CLASS="lstframe" STYLE="padding:1ex;border-style:solid;"><TR><TD CLASS="lstlisting">foo_Bar fb = foo_Bar__connect("simhandle://pc1:9999/quux1234", &amp;_ex);
+foo_Quux fz = foo_Quux__cast(fb);
+foo_Bar_deleteRef(fb);
+foo_Quux_deleteRef(fz); //object is destroyed</TD></TR>
+</TABLE><P>Do not do this:</P><DIV CLASS="flushright"><SPAN CLASS="textboxed"><FONT COLOR=purple><B>ANSI C</B></FONT></SPAN></DIV><TABLE CLASS="lstframe" STYLE="padding:1ex;border-style:solid;"><TR><TD CLASS="lstlisting">foo_Bar fb = foo_Bar__connect("simhandle://pc1:9999/quux1234", &amp;_ex);
+foo_Quux fz = foo_Quux__cast(fb);
+foo_Bar_deleteRef(fb);
+foo_Quux_deleteRef(fb); //ERROR!!!</TD></TR>
+</TABLE><H2 CLASS="section"><A NAME="toc71"></A><A NAME="htoc85">18.3</A>  Babel RMI Usage</H2><P><A NAME="s:RMIusage"></A></P><P>The previous section generally covered the capabilities of RMI. This
+section covers the actual usage of those features. </P><H3 CLASS="subsection">18.3.1  Adding Protocols</H3><P><A NAME="ss:RMIaddprotocols"></A>
+<A NAME="@default1865"></A> <A NAME="@default1866"></A></P><P>In a normal Babel RMI client program, the first thing that needs to be
+done is adding any protocols that the user plans to use to the
+ProtocolFactory. The ProtocolFactory is a mapping from protocol
+prefix that normally proceeds a URL, and the protocol’s actual
+implementation. The only method the user ever needs to access is <TT>addProtocol</TT>. </P><P><FONT COLOR=maroon><I><TT>static bool addProtocol( in string prefix, in string typeName );</TT></I></FONT></P><P><TT>addProtocol</TT> takes the protocol prefix and the fully qualified SIDL
+protocol typename. It returns <TT>TRUE</TT> on success. For example, normally the
+shortname for the “Simple Protocol” protocol is “simhandle.” So
+we would call the ProtocolFactory like this:</P><P><TT>sidl_rmi__addProtocol(‘‘simhandle’’,’’sidl.rmi.SimHandle’’);</TT></P><P>Now Babel RMI knows what to call when it encounters a URL prefixed by “simhandle://”.</P><H3 CLASS="subsection">18.3.2  Built-in Functions</H3><P><A NAME="ss:RMIbuiltins"></A></P><P>We already covered two important built-in Babel RMI functions in
+Section <A HREF="#ss:RMIcreateconnect">18.2.3</A>. They were the
+<TT>_create[Remote]</TT> and <TT>_connect</TT> static built-in functions,
+which remotely create an object or connect to an already existing
+remote object respectively.</P><P>There are three other important RMI related built-in functions that a
+user may find useful. The first two are related:</P><P><FONT COLOR=maroon><I><TT>bool _isRemote();</TT></I></FONT><A NAME="@default1867"></A><A NAME="@default1868"></A></P><P><FONT COLOR=maroon><I><TT>bool _isLocal();</TT></I></FONT><A NAME="@default1869"></A><A NAME="@default1870"></A></P><P><TT>_isLocal()</TT> and <TT>_isRemote()</TT> are
+opposites. <TT>_isRemote()</TT> returns <TT>TRUE</TT> if the object it is called
+on is a remote object. <TT>_isLocal()</TT>, on the other hand, returns
+<TT>TRUE</TT> if the object is implemented locally. </P><P>Many Babel RMI users will never need these functions. If you don’t
+care where an object exists, or you already know statically, these
+methods are totally superfluous. However, since calls on remote
+objects have serious performance implications, we included these functions
+for convenience.</P><P>There is one other important RMI related built-in:</P><P><FONT COLOR=maroon><I><TT>string _getURL();</TT></I></FONT><A NAME="@default1871"></A><A NAME="@default1872"></A></P><P>This function returns the URL of the object it is called on. This is
+straight forward for Remote objects, but for local objects it may have
+some interesting side effects. First, if there is no BOS running
+locally, no local objects can be exported remotely. Therefore no local
+object will have a URL. In this case <TT>_getURL()</TT> returns
+<TT>NULL</TT>. However, if there is a BOS running, then local object
+may have a URL. In this case, if the object has already been
+exported, <TT>_getURL()</TT> will return the URL in the
+<FONT COLOR=maroon><I><TT>sidl.rmi.InstanceRegistry</TT></I></FONT>, if the object is not in the
+<FONT COLOR=maroon><I><TT>InstanceRegistry</TT></I></FONT>, Babel will add it, thereby automatically
+generating a URL for the object. To reiterate, a possible side-effect
+of calling <TT>_getURL()</TT> is that the object it is called on my be
+added to the <FONT COLOR=maroon><I><TT>InstanceRegistry</TT></I></FONT>.</P><H3 CLASS="subsection">18.3.3  Passing Objects from a client</H3><P><A NAME="ss:RMIclientexport"></A></P><P>If there is no BOS running locally, (that is, your process is strictly
+a client) you cannot expose your local objects to remote machines by reference.
+However, that doesn’t mean you can’t pass objects around. The client
+can still pass references to remote objects on other remote servers,
+and can still pass both local and remote objects by copy. For this
+section, we will take our examples from this SIDL:</P><DIV CLASS="flushright"><SPAN CLASS="textboxed"><FONT COLOR=purple><B>SIDL</B></FONT></SPAN></DIV><TABLE CLASS="lstframe" STYLE="padding:1ex;border-style:solid;"><TR><TD CLASS="lstlisting"><FONT COLOR=maroon><I><B>package</B> foo <B>version</B> 0.1 {
+
+  <B>class</B> Bar {
+    <B>void</B> setBaz(<B>in</B> foo.Baz bz);
+    <B>void</B> setBazCopy(<B>in</B> copy foo.Baz bz);
+    //returns the registered Baz, or a new one if none exists
+    foo.Baz returnBaz();
+  }
+
+  <B>class</B> Baz {}
+}</I></FONT></TD></TR>
+</TABLE><P>From the above SIDL, you can see that the following C code is perfectly legal for a client:</P><DIV CLASS="flushright"><SPAN CLASS="textboxed"><FONT COLOR=purple><B>ANSI C</B></FONT></SPAN></DIV><TABLE CLASS="lstframe" STYLE="padding:1ex;border-style:solid;"><TR><TD CLASS="lstlisting">foo_Bar fb = foo_Bar__createRemote("simhandle://pc1:9999", &amp;_ex);
+foo_Baz fz = foo_Bar_returnBaz(fb, &amp;_ex);
+foo_Baz_runSimulation(fz, &amp;_ex);</TD></TR>
+</TABLE><P>It’s legal because the remote call returns a reference to another
+remote object, the client never actually exports any of it’s local objects.</P><P>The following chunk is also legal, because it passes a remote object
+to a different remote server. (Passing it to the same remote server
+would be OK too.)</P><DIV CLASS="flushright"><SPAN CLASS="textboxed"><FONT COLOR=purple><B>ANSI C</B></FONT></SPAN></DIV><TABLE CLASS="lstframe" STYLE="padding:1ex;border-style:solid;"><TR><TD CLASS="lstlisting">foo_Bar fb = foo_Bar__createRemote("simhandle://pc1:9999", &amp;_ex);
+foo_Baz fz = foo_Baz__createRemote("simhandle://pc2:9999", &amp;_ex);
+foo_Bar_setBaz(fb, fz, &amp;_ex);</TD></TR>
+</TABLE><P>And the following is ALSO legal, because clients can pass local
+objects remotely by copy, they just can’t pass local objects by
+reference. (This allows users to drive a remote simulation on a
+cluster from a regular workstation with nothing but a simple client.)</P><DIV CLASS="flushright"><SPAN CLASS="textboxed"><FONT COLOR=purple><B>ANSI C</B></FONT></SPAN></DIV><TABLE CLASS="lstframe" STYLE="padding:1ex;border-style:solid;"><TR><TD CLASS="lstlisting">foo_Bar fb = foo_Bar__createRemote("simhandle://pc1:9999", &amp;_ex);
+foo_Baz fz = foo_Baz__create(&amp;_ex);  //Local object
+foo_Bar_setBazCopy(fb, fz, &amp;_ex);    //Pass by copy</TD></TR>
+</TABLE><P>However this final bit of code will throw an exception if run by a
+client that has no BOS:</P><DIV CLASS="flushright"><SPAN CLASS="textboxed"><FONT COLOR=purple><B>ANSI C</B></FONT></SPAN></DIV><TABLE CLASS="lstframe" STYLE="padding:1ex;border-style:solid;"><TR><TD CLASS="lstlisting"><FONT COLOR="blue"><I>/* X ILLEGAL X WILL THROW EXCEPTION X     */</I></FONT>
+
+foo_Bar fb = foo_Bar__createRemote("simhandle://pc1:9999", &amp;_ex);
+foo_Baz fz = foo_Baz__create(&amp;_ex); //Local object
+foo_Bar_setBaz(fb, fz, &amp;_ex);       //Pass by reference X BAD! X
+
+<FONT COLOR="blue"><I>/* X ILLEGAL X WILL THROW EXCEPTION X     */</I></FONT></TD></TR>
+</TABLE><H2 CLASS="section"><A NAME="toc72"></A><A NAME="htoc86">18.4</A>  Babel Object Servers</H2><P><A NAME="s:RMIBOS"></A>
+<A NAME="@default1873"></A></P><P>Now that we’ve seen how to use a client, we will take a look at
+running a Babel Object Server.</P><H3 CLASS="subsection">18.4.1  Starting up a Babel Object Server</H3><P><A NAME="ss:RMIstartBOS"></A></P><P>Babel Object Servers are generally easy to start up, although each BOS
+may have a different construction interface. Here is an example of
+starting up the “Simple Protocol” </P><DIV CLASS="flushright"><SPAN CLASS="textboxed"><FONT COLOR=purple><B>ANSI C</B></FONT></SPAN></DIV><TABLE CLASS="lstframe" STYLE="padding:1ex;border-style:solid;"><TR><TD CLASS="lstlisting">sidlx_rmi_SimpleOrb echo = NULL;
+<B>int</B> tid;
+sidl_rmi_ServerInfo si = NULL;
+<B>int</B> port_number = 9999;
+
+echo = sidlx_rmi_SimpleOrb__create(&amp;ex);SIDL_CHECK(ex);
+sidlx_rmi_SimpleOrb_requestPort( echo, port_number, &amp;ex);SIDL_CHECK(ex);
+tid = sidlx_rmi_SimpleOrb_run( echo, &amp;ex );SIDL_CHECK(ex);
+si = sidl_rmi_ServerInfo__cast(echo,&amp;ex);SIDL_CHECK(ex);
+sidl_rmi_ServerRegistry_registerServer(si, &amp;ex);SIDL_CHECK(ex);
+sidl_rmi_ServerInfo_deleteRef(si,&amp;ex);SIDL_CHECK(ex);
+
+pthread_join(tid, NULL); //Optional PTHREAD join</TD></TR>
+</TABLE><P>Notice that before the server is run, <TT>requestPort</TT> must be
+called. There are actually two versions of <TT>requestPort</TT>:
+<TT>requestPort</TT>, and <TT>requestPort[InRange]</TT>.
+<TT>requestPort</TT> takes one argument, a TCP port number (integer). The
+port number is the TCP port that the BOS should
+listen to for connections. <TT>requestPort[InRange]</TT> takes two
+integers, which denote a range of ports the BOS may try. Because only
+one server can listen on any TCP port, if the port is already in use
+by another program, <TT>requestPort</TT> may fail.
+<TT>requestPort[InRange]</TT> gets around this by giving the BOS a
+range of ports to try. The BOS will try ports in this range until
+the whole range is exhausted or it could successfully bind to a port.</P><P><TT>run</TT> returns a long. This return argument is meant to hold the
+thread id of the thread waiting for connections. The user may wish to join on the
+thread in order to keep the “Simple Protocol” server from exiting
+prematurely. (We are now past the “Simple Protocol” specific portion
+of this section)</P><P>After calling <TT>run</TT> the server is running, but you won’t be able to export any local
+objects until you register the server with the
+<FONT COLOR=maroon><I><TT>sidl.rmi.ServerRegistry</TT></I></FONT><A NAME="@default1874"></A>. Every BOS must be registered with the
+<FONT COLOR=maroon><I><TT>ServerRegistry</TT></I></FONT>, and therefore every BOS must implement the
+<FONT COLOR=maroon><I><TT>sidl.rmi.ServerInfo</TT></I></FONT> <A NAME="@default1875"></A> interface. This interface is what allows
+the server to interact with the <FONT COLOR=maroon><I><TT>ServerRegistry</TT></I></FONT>. </P><DIV CLASS="flushright"><SPAN CLASS="textboxed"><FONT COLOR=purple><B>SIDL</B></FONT></SPAN></DIV><TABLE CLASS="lstframe" STYLE="padding:1ex;border-style:solid;"><TR><TD CLASS="lstlisting"><FONT COLOR=maroon><I><B>class</B> ServerRegistry {
+  <B>static void</B> registerServer(<B>in</B> sidl.rmi.ServerInfo si);
+  <B>static string</B> getServerURL(<B>in string</B> objID);
+  <B>static string</B> isLocalObject(<B>in string</B> url);
+  <B>static array</B>&lt;sidl.io.Serializable,1&gt; getExceptions();
+}</I></FONT></TD></TR>
+</TABLE><P>The <FONT COLOR=maroon><I><TT>ServerRegistry</TT></I></FONT> is a singleton class that Babel RMI uses
+internally to interface with the BOS. It interfaces through the
+<FONT COLOR=maroon><I><TT>sidl.rmi.ServerInfo</TT></I></FONT> interface:</P><DIV CLASS="flushright"><SPAN CLASS="textboxed"><FONT COLOR=purple><B>SIDL</B></FONT></SPAN></DIV><TABLE CLASS="lstframe" STYLE="padding:1ex;border-style:solid;"><TR><TD CLASS="lstlisting"><FONT COLOR=maroon><I><B>interface</B> ServerInfo {
+  <B>string</B> getServerURL(<B>in string</B> objID);
+  <B>string</B> isLocalObject(<B>in string</B> url);
+  <B>array</B>&lt;sidl.io.Serializable,1&gt; getExceptions();
+}</I></FONT></TD></TR>
+</TABLE><P>Simply cast the BOS to a <FONT COLOR=maroon><I><TT>ServerInfo</TT></I></FONT> and register it with the <FONT COLOR=maroon><I><TT>ServerRegistry</TT></I></FONT>.</P><P>The user is never really meant to use the <FONT COLOR=maroon><I><TT>ServerInfo</TT></I></FONT>
+interface. In some cases a user may wish to call
+<TT>getExceptions()</TT> through the <FONT COLOR=maroon><I><TT>ServerRegistry</TT></I></FONT>.
+<TT>getExceptions()</TT> is an advanced function. Usually,
+if an exception is raised in the BOS by a remote
+call, the exception is returned back to the caller. However, in some
+cases this is not possible. In those cases the BOS logs the
+exceptions. Later, a user may use getExceptions to get the logged
+exceptions. </P><P>NOTE: Currently the <FONT COLOR=maroon><I><TT>ServerRegistry</TT></I></FONT> can only handle one
+<FONT COLOR=maroon><I><TT>ServerInfo</TT></I></FONT>. This means that Babel can effectively only support
+one BOS at a time for exporting local objects. (There are hairy ways
+around this) This is because there are a lot of issues that appear
+when a user can export objects with a number of different protocols
+that we have not dealt with. This may be researched further in the future.</P><H3 CLASS="subsection">18.4.2  Publishing Babel Objects</H3><P><A NAME="ss:RMIpublishobj"></A></P><P>Once you have a BOS up and running, you are free to export your local
+object to remote servers. (And, depending on your BOS, remote clients
+may be able to create and access objects on your BOS.) Exporting an
+object basically means that remote Babel processes can access the
+object. In implementation, this means that the object is accessible
+through the <FONT COLOR=maroon><I><TT>sidl.rmi.InstanceRegistry</TT></I></FONT><A NAME="@default1876"></A>. The
+<FONT COLOR=maroon><I><TT>InstanceRegistry</TT></I></FONT> maps objectIDs to objects, and vice-versa.
+This is what allows a remote client to get a handle to your object
+with nothing more than a URL.</P><P>There are 3 ways for an object to end up in the
+<FONT COLOR=maroon><I><TT>InstanceRegistry</TT></I></FONT>. The first, and easiest, is simply to pass a
+local object by-reference as an argument in a remote call. The
+last example in <A HREF="#ss:RMIclientexport">18.3.3</A> works if a BOS is running.</P><DIV CLASS="flushright"><SPAN CLASS="textboxed"><FONT COLOR=purple><B>ANSI C</B></FONT></SPAN></DIV><TABLE CLASS="lstframe" STYLE="padding:1ex;border-style:solid;"><TR><TD CLASS="lstlisting"><FONT COLOR="blue"><I>/* THIS WORKS IF A BOS IS RUNNING   */</I></FONT>
+foo_Bar fb = foo_Bar__createRemote("simhandle://pc1:9999", &amp;_ex);
+foo_Baz fz = foo_Baz__create(&amp;_ex); //Local object
+foo_Bar_setBaz(fb, fz, &amp;_ex);       //BOS is running, OK!</TD></TR>
+</TABLE><P>Another possibility is simply to call <TT>_getURL()</TT><A NAME="@default1877"></A> on the local
+object when a BOS is running. This will add the object to the
+<FONT COLOR=maroon><I><TT>InstanceRegistry</TT></I></FONT>, so theoretically a remote client could access
+it. Although realistically the remote client would have to get the
+URL somehow.</P><P>The third possibility is to add it to the <FONT COLOR=maroon><I><TT>InstanceRegistry</TT></I></FONT> 
+yourself. The <FONT COLOR=maroon><I><TT>InstanceRegistry</TT></I></FONT> class:</P><DIV CLASS="flushright"><SPAN CLASS="textboxed"><FONT COLOR=purple><B>SIDL</B></FONT></SPAN></DIV><TABLE CLASS="lstframe" STYLE="padding:1ex;border-style:solid;"><TR><TD CLASS="lstlisting"><FONT COLOR=maroon><I><B>class</B> InstanceRegistry {
+  <B>static string</B> registerInstance( <B>in</B> sidl.BaseClass instance );
+  <B>static string</B> registerInstance[ByString]( <B>in</B> sidl.BaseClass instance,
+                                            <B>in string</B> instanceID);
+  <B>static</B> sidl.BaseClass getInstance[ByString]( <B>in string</B> instanceID );
+  <B>static string</B> getInstance[ByClass]( <B>in</B> sidl.BaseClass instance );
+  <B>static</B> sidl.BaseClass removeInstance[ByString]( <B>in string</B> instanceID );
+  <B>static string</B> removeInstance[ByClass]( <B>in</B> sidl.BaseClass instance );
+}</I></FONT></TD></TR>
+</TABLE><P>calling <FONT COLOR=maroon><I><TT>registerInstance</TT></I></FONT> by itself results in the same thing as
+calling <TT>_getURL</TT> on the object, it puts the object in the
+registry, and returns a unique objectID. However, by calling
+<FONT COLOR=maroon><I><TT>registerInstance[ByString]</TT></I></FONT>, the user can supply their own
+objectID. This is useful for WebServices and bootstrapping. It is
+possible to explicitly publish an object with a special name. In
+fact, the InstanceRegistry allows aliasing, the same object can be in
+the registry multiple times with different names.</P><P>However, there is one issue with using
+<FONT COLOR=maroon><I><TT>registerInstance[ByString]</TT></I></FONT>.<A NAME="@default1878"></A>
+What if there is already an object
+in the registry with that name? There are two possible cases, if the
+object under that name is the same object you are trying to register,
+the call is idempotent, it does nothing. However, if a different object in the
+registry already has that name, the <FONT COLOR=maroon><I><TT>InstanceRegistry</TT></I></FONT> registers
+the new object under a similar, but unique name. Usually a
+combination of the instanceID passed in by the user and a unique
+integer. This is usually the correct thing to do, but if the user
+really wants the object under the original name, they must call
+<TT>removeInstance[ByString]</TT> on the object that currently has that
+name, and re-register the new object.</P><P>NOTE: The <FONT COLOR=maroon><I><TT>InstanceRegistry</TT></I></FONT> does not
+addRef<A NAME="@default1879"></A> 
+objects when they are inserted into it. You must not destroy an object you wish to be
+accessible remotely. This means that if you create an object, insert
+it into the instanceRegistry, and then deleteRef it, it will be
+destroyed. You must keep a reference to it until you wish to remove
+it from the InstanceRegistry. (The InstanceRegistry does, however,
+addRef an objects that are gotten from it. If you call
+<FONT COLOR=maroon><I><TT>getInstance[ByString]</TT></I></FONT>, you will get a reference to that object
+and are free to deleteRef it.)</P><H3 CLASS="subsection">18.4.3  De-publishing Babel Objects</H3><P><A NAME="ss:RMIdepublishobj"></A>
+<A NAME="@default1880"></A><A NAME="@default1881"></A></P><P>There are two ways to remove an object from the
+<FONT COLOR=maroon><I><TT>InstanceRegistry</TT></I></FONT>. The first, and most automatic, is for it’s
+reference count to reach 0. When an object is destroyed it is
+automatically removed from the <FONT COLOR=maroon><I><TT>InstanceRegistry</TT></I></FONT>.</P><P>The other way to remove an object is to call
+<FONT COLOR=maroon><I><TT>removeInstance[ByString]</TT></I></FONT> or <FONT COLOR=maroon><I><TT>removeInstance[ByClass]</TT></I></FONT>.
+These will remove the objects from the registry without destroying
+them. They do not addRef however. So, if you create an object, insert
+it into the <FONT COLOR=maroon><I><TT>InstanceRegistry</TT></I></FONT>, remove it from the
+<FONT COLOR=maroon><I><TT>InstanceRegistry</TT></I></FONT> and then deleteRef it, it will be destroyed.
+(Assuming no one else has addRef’d it in the meantime.)</P><H2 CLASS="section"><A NAME="toc73"></A><A NAME="htoc87">18.5</A>  Non-Blocking Babel RMI</H2><P><A NAME="s:RMInonblock"></A>
+<A NAME="@default1882"></A></P><P>Non-Blocking RMI is an even more advanced topic, but it is essential to
+high-speed distributed computing<A NAME="@default1883"></A>. Non-Blocking RMI allows the user to
+mix work and communication. Many scientific computing related methods
+may take a very long time to complete, and the client might like to do
+some work while waiting. Non-blocking calls return immediately after
+sending the information to the server. When the response comes back,
+the user can make a special call to access the data. During the time
+between the send and the receive, the client is free to do other work.</P><P>There are two types of Non-blocking RMI in Babel, Nonblocking and
+oneway<A NAME="@default1884"></A><A NAME="@default1885"></A>. Both are declared as attributes on the method in SIDL. The
+difference is that with oneway communication, the client does not
+expect any return values. A oneway method will not even return an
+exception, unless it occurs during communication with the server. On
+the other hand, a non-blocking call can have return arguments. The
+user will send a request, and get a <FONT COLOR=maroon><I><TT>sidl.rmi.Ticket</TT></I></FONT>. Later, the
+user may use the <FONT COLOR=maroon><I><TT>Ticket</TT></I></FONT><A NAME="@default1886"></A><A NAME="@default1887"></A> to receive the out arguments. </P><H3 CLASS="subsection">18.5.1  Protocols</H3><P><A NAME="ss:RMInonblockprotocols"></A></P><H3 CLASS="subsection">18.5.2  Nonblocking SIDL</H3><P><A NAME="ss:RMInonblockSIDL"></A></P><P>The SIDL declaring calls to be nonblocking and/or oneway:</P><DIV CLASS="flushright"><SPAN CLASS="textboxed"><FONT COLOR=purple><B>SIDL</B></FONT></SPAN></DIV><TABLE CLASS="lstframe" STYLE="padding:1ex;border-style:solid;"><TR><TD CLASS="lstlisting"><FONT COLOR=maroon><I><B>package</B> foo <B>version</B> 0.2 {
+  <B>class</B> Bar {
+    <B>nonblocking double</B> runSimulation(<B>in double</B> x, <B>inout</B> y, <B>out</B> z);
+    <B>oneway void</B> initSimulation(<B>in string</B> name, <B>in int</B> flags);
+  }
+}</I></FONT></TD></TR>
+</TABLE><P>Notice that the nonblocking call may take any arguments, but only in
+arguments are allowed for the oneway call.</P><P><A NAME="@default1888"></A></P><H3 CLASS="subsection">18.5.3  Tickets</H3><P><A NAME="ss:RMInonblockTickets"></A></P><P>As mentioned previously, non-blocking RMI uses the class
+<FONT COLOR=maroon><I><TT>sidl.rmi.Ticket</TT></I></FONT> to handle the return values of non-blocking
+methods. There are actually two interfaces implemented
+by the Protocol that are used. <FONT COLOR=maroon><I><TT>sidl.rmi.Ticket</TT></I></FONT> and
+<FONT COLOR=maroon><I><TT>sidl.rmi.TicketBook</TT></I></FONT><A NAME="@default1889"></A><A NAME="@default1890"></A></P><DIV CLASS="flushright"><SPAN CLASS="textboxed"><FONT COLOR=purple><B>SIDL</B></FONT></SPAN></DIV><TABLE CLASS="lstframe" STYLE="padding:1ex;border-style:solid;"><TR><TD CLASS="lstlisting"><FONT COLOR=maroon><I><B>interface</B> Ticket {
+  <B>void</B> block();
+  <B>bool</B> test();
+  TicketBook createEmptyTicketBook();
+  Response getResponse();  //For internal Babel use
+}
+
+<B>interface</B> TicketBook <B>extends</B> Ticket {
+  <B>void</B> insertWithID( <B>in</B> Ticket t, <B>in int</B> id );
+  <B>int</B> insert( <B>in</B> Ticket t );
+  <B>int</B> removeReady( <B>out</B> Ticket t );
+  <B>bool</B> isEmpty();
+}</I></FONT></TD></TR>
+</TABLE><P><FONT COLOR=maroon><I><TT>sidl.rmi.TicketBook</TT></I></FONT> is, obviously, a collection of
+<FONT COLOR=maroon><I><TT>Tickets.</TT></I></FONT> A Ticket represents the out arguments of a single
+non-blocking call. The user may <TT>test()</TT> if the call has
+returned yet, or <TT>block()</TT> until it does. The user can also get
+an empty <FONT COLOR=maroon><I><TT>TicketBook.</TT></I></FONT> </P><P>The <FONT COLOR=maroon><I><TT>TicketBook</TT></I></FONT> is a little more complex. It extends
+<FONT COLOR=maroon><I><TT>Ticket</TT></I></FONT> as well as creating some of it’s own functions. It is
+mostly just to allow a user to make a large amount of nonblocking
+calls and work while they return. This is a common design paradigm
+in highly parallel scientific computing. In the case of
+<FONT COLOR=maroon><I><TT>TicketBook</TT></I></FONT>, it is assumed the user will input a bunch of
+Tickets with IDs. Then he can either <TT>block()</TT> on all of them
+(waitall), <TT>test()</TT> to see if any have returned, or block on
+<TT>removeReady</TT> (waitany). <TT>removeReady</TT> will return the id
+that the <FONT COLOR=maroon><I><TT>Ticket</TT></I></FONT> was inserted with so that the user may identify
+it. Perhaps with a case statement.</P><P>One odd thing about <FONT COLOR=maroon><I><TT>TicketBook</TT></I></FONT> is that you can insert multiple
+tickets with the same name. <FONT COLOR=maroon><I><TT>TicketBook</TT></I></FONT> will not warn you or
+throw an exception if you double up on the same name. If two
+different Tickets are put in the TicketBook with the same name, there
+is guarantee about what order they will come out in, even if you remove
+by name.</P><H3 CLASS="subsection">18.5.4  Non-blocking Usage</H3><P><A NAME="ss:RMInonblockUsage"></A></P><P>The examples in this section will be written in C using the SIDL file
+given in Section <A HREF="#ss:RMInonblockSIDL">18.5.2</A>.</P><P>Calling a oneway Babel RMI function is syntactically exactly like calling a normal
+Babel function. The difference is just the danger of not being able
+to receive any exceptions beyond the initial communication. Example:</P><DIV CLASS="flushright"><SPAN CLASS="textboxed"><FONT COLOR=purple><B>ANSI C</B></FONT></SPAN></DIV><TABLE CLASS="lstframe" STYLE="padding:1ex;border-style:solid;"><TR><TD CLASS="lstlisting">foo_Bar b1 = foo_Bar__createRemote("simhandle://pc1:9999", &amp;_ex);SIDL_CHECK(_ex);
+
+foo_Bar_initSimulation(b1, "Test Simulation 1", 0, &amp;_ex); SIDL_CHECK(_ex);</TD></TR>
+</TABLE><P>Non-blocking calls are a bit more complex, requiring <FONT COLOR=maroon><I><TT>Tickets</TT></I></FONT>
+in order to get the return values. Here’s an example program, now
+using a non-blocking call. Notice that the inout argument y is passed
+as an in argument in the send (as a value), and an out argument in the
+recv (as a pointer).</P><DIV CLASS="flushright"><SPAN CLASS="textboxed"><FONT COLOR=purple><B>ANSI C</B></FONT></SPAN></DIV><TABLE CLASS="lstframe" STYLE="padding:1ex;border-style:solid;"><TR><TD CLASS="lstlisting">foo_Bar b1 = foo_Bar__createRemote("simhandle://pc1:9999", &amp;_ex);SIDL_CHECK(_ex);
+sidl_rmi_Ticket t = NULL;
+<B>double</B> x, y, z;
+
+foo_Bar_initSimulation(b1, "Test Simulation 1", 0, &amp;_ex); SIDL_CHECK(_ex);
+t = foo_Bar_runSimulation_send(b1, x, y, &amp;_ex); SIDL_CHECK(_ex);
+<FONT COLOR="blue"><I>/* ... Work ... */</I></FONT>
+foo_Bar_runSimulation_recv(b, t, &amp;y, &amp;z, &amp;_ex); SIDL_CHECK(_ex); //blocks on <B>return</B>
+sidl_rmi_Ticket_deleteRef(t , &amp;_ex); SIDL_CHECK(_ex);</TD></TR>
+</TABLE><P>Now, next is an example of a more complex program, that utilizes the
+power of <FONT COLOR=maroon><I><TT>TicketBooks</TT></I></FONT> to make multiple remote calls, work, and
+deal with the responses when they return.</P><DIV CLASS="flushright"><SPAN CLASS="textboxed"><FONT COLOR=purple><B>ANSI C</B></FONT></SPAN></DIV><TABLE CLASS="lstframe" STYLE="padding:1ex;border-style:solid;"><TR><TD CLASS="lstlisting">foo_Bar b1 = foo_Bar__createRemote("simhandle://pc1:9999", &amp;_ex);SIDL_CHECK(_ex);
+foo_Bar b2 = foo_Bar__createRemote("simhandle://pc2:9999", &amp;_ex);SIDL_CHECK(_ex);
+foo_Bar b3 = foo_Bar__createRemote("simhandle://pc3:9999", &amp;_ex);SIDL_CHECK(_ex);
+
+sidl_rmi_Ticket t = NULL;
+sidl_rmi_TicketBook tb = NULL;
+<B>double</B> x, y, z;
+<B>int</B> id1, id2, id3, tmpid;
+
+foo_Bar_initSimulation(b1, "Test Simulation 1", 0, &amp;_ex); SIDL_CHECK(_ex);
+foo_Bar_initSimulation(b2, "Test Simulation 2", 0, &amp;_ex); SIDL_CHECK(_ex);
+foo_Bar_initSimulation(b3, "Test Simulation 3", 0, &amp;_ex); SIDL_CHECK(_ex);
+
+t = foo_Bar_runSimulation_send(b1, x, y, &amp;_ex); SIDL_CHECK(_ex);
+tb = sidl_rmi_Ticket_createEmptyTicketBook(t, &amp;_ex); SIDL_CHECK(_ex);
+id1 = sidl_rmi_TicketBook_insert(tb, t, &amp;_ex); SIDL_CHECK(_ex);
+sidl_rmi_Ticket_deleteRef(t , &amp;_ex); SIDL_CHECK(_ex);
+
+t = foo_Bar_runSimulation_send(b2, x, y, &amp;_ex); SIDL_CHECK(_ex);
+id2 = sidl_rmi_TicketBook_insert(tb, t, &amp;_ex); SIDL_CHECK(_ex);
+sidl_rmi_Ticket_deleteRef(t , &amp;_ex); SIDL_CHECK(_ex);
+
+t = foo_Bar_runSimulation_send(b3, x, y, &amp;_ex); SIDL_CHECK(_ex);
+id3 = sidl_rmi_TicketBook_insert(tb, t, &amp;_ex); SIDL_CHECK(_ex);
+sidl_rmi_Ticket_deleteRef(t , &amp;_ex); SIDL_CHECK(_ex);
+
+<FONT COLOR="blue"><I>/* ... Work ... */</I></FONT>
+
+<B>while</B>(!sidl_tmi_TicketBook_isEmpty(tb, &amp;_ex)) {
+  SIDL_CHECK(_ex);
+  tmpid = sidl_tmi_TicketBook_removeReady(&amp;t,&amp;_ex); SIDL_CHECK(_ex);
+  <B>switch</B>(tmpid) {
+  <B>case</B> id1:
+    foo_Bar_runSimulation_recv(b, t, &amp;y, &amp;z, &amp;_ex); SIDL_CHECK(_ex);
+    <FONT COLOR="blue"><I>/* Do something with data from Simulation 1 */</I></FONT>
+    <B>break</B>;
+  <B>case</B> id2:
+    foo_Bar_runSimulation_recv(b, t, &amp;y, &amp;z, &amp;_ex); SIDL_CHECK(_ex);
+    <FONT COLOR="blue"><I>/* Do something with data from Simulation 2 */</I></FONT>
+    <B>break</B>;
+  <B>case</B> id3:
+    foo_Bar_runSimulation_recv(b, t, &amp;y, &amp;z, &amp;_ex); SIDL_CHECK(_ex);
+    <FONT COLOR="blue"><I>/* Do something with data from Simulation 3 */</I></FONT>
+    <B>break</B>;
+
+  }
+  sidl_rmi_Ticket_deleteRef(t , &amp;_ex); SIDL_CHECK(_ex);
+}</TD></TR>
+</TABLE><HR>
+<A HREF="index019.html"><IMG SRC="previous_motif.gif" ALT="Previous"></A>
+<A HREF="index-multipage.html"><IMG SRC="contents_motif.gif" ALT="Up"></A>
+<A HREF="index021.html"><IMG SRC="next_motif.gif" ALT="Next"></A>
+</BODY>
+</HTML>

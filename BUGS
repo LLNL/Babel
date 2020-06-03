@@ -1,0 +1,314 @@
+BUGS:                                            -*- org -*-
+
+This file lists known bugs and non-bugs that
+often trip people up.  Most of these bugs are
+the result of incompatibilities among compilers
+and various Unix systems.
+
+------------------------------------------------------------
+
+CONTENTS:
+
+0. configure --disable-shared causes CCA example not to compile
+1. Mixing KAI C/C++ with non-KAI Fortran:
+2. Creating C++ Archives
+3. Catching Exceptions in Shared Libraries (g++)
+4. Catching Exceptions in C++ bindings
+5. Mixing GNU and Non-GNU Compilers
+6. Configuration Exits with a Cross-Compilation Warning or Compiler Error
+7. MacOSX file corruption after downloads
+8. Archiver dumps core on Solaris in the libdecaf directory
+9. JVM quits on libzip.so (1.1.3) incompatibility with libz.so
+   from zlib used by libxml2.so.
+10. Compiler versions known to be broken
+
+------------------------------------------------------------
+
+* 0. configure --disable-shared causes the CCA example not to compile.
+
+The Makefiles for the CCA example aren't smart enough to build the CCA
+example when shared libraries are disabled.
+
+------------------------------------------------------------
+
+* 1. Mixing KAI C/C++ with non-KAI Fortran:
+
+Symptom:
+KCC complains that fortran libraries are not found at link time.
+
+Diagnosis:
+Configure generates an '$(FLIBS)' Makefile macro that contains
+the correct "-lf2c" and "-L/path/where/f2c/is" arguments.  However,
+the "-l*" argument may appear _before_ the "-L*" argument, which
+seems to be a problem for KCC.  If the ordering of these two are
+reversed, the problem is fixed.
+
+Solution:
+Not our bug. Either autoconf should build a better macro,
+or KCC should load all the "-L*" arguments before giving up.
+
+Workaround:
+We have created an autoconf macro called LLNL_SORT_FLIBS that re-sorts
+the FLIBS library list such that all of the "-L*" arguments preceed all
+of the "-l*" arguments.
+
+------------------------------------------------------------
+
+* 2. Creating C++ Archives
+
+Problem:
+For most---if not all---C++ compilers, shared libraries may only be
+created using the C++ compiler itself, not the standard archiver or
+linker.  If the C++ compiler is not used as the archiver, templates
+are not instantiated and exceptions may not work properly.  Unfortunately,
+GNU libtool does not currently support the creation of C++ shared
+libraries in a portable manner.
+
+Solution:
+Not our bug.  Fix Unix.  Fix compilers.
+
+Workaround:
+We have hand-edited our version of libtool to build shared libraries
+correctly for g++ (which should be portable across platforms), CC on
+Solaris, and KCC (which should also be portable across platforms).
+Archiving C++ with libtool is known to be broken on SGI and Cygwin.
+
+------------------------------------------------------------
+
+* 3. Catching Exceptions in Shared Libraries (g++)
+
+Problem:
+Exception handling works in static linked libraries,
+but switching to shared libraries may cause the exceptions
+to go directly to abort() without any chance of being
+caught.
+
+Diagnosis:
+You must use the C++ compiler to create the shared library.
+Earlier versions of g++ did not support exceptions in shared
+libraries.
+
+Solution:
+Not our bug.
+
+Workaround:
+See bug #2 above; hand-edit libtool to create the shared library correctly.
+
+------------------------------------------------------------
+
+* 4. Catching Exceptions in C++ bindings
+
+Problem:
+Foo_bar() declares (in SIDL) that it throws ParentException.
+The implementation actually throws a ChildException which inherits
+from ParentException.  In C++ the client cannot catch ChildException,
+only ParentException.
+
+Diagnosis:
+In C++ you are catching the smart-pointer classes to the
+exceptions.  These smart pointers do not mirror the inheritance
+heirarchy, so you must catch _exactly_ the types that are
+declared as thrown from the method.  Once caught, you
+can always try downcasting to more refined types and
+act accordingly.
+
+Example:
+See regression/exceptions/runCxx/excepttest.cc
+Note that TooDeepException and TooBigException
+both inherit from FibException, but that we cannot
+catch these two types directly.  Instead we catch
+the base class and downcast as needed.
+
+------------------------------------------------------------
+
+* 5. Mixing GNU and Non-GNU Compilers
+
+Problem:
+Incorrect flags are passed to the linker, C and C++ compilers, or to libtool.
+
+Diagnosis:
+The configuration script and libtool can get confused if you mix GNU
+and non-GNU tools.  Specifically:
+
+	- mixing the GNU linker ld with non-GNU compilers (either C or C++)
+
+	- mixing GNU and non-GNU C and C++ compilers
+
+There does not seem to be a problem mixing g77 and f77 with other GNU and
+non-GNU compilers.
+
+Solution:
+Not our bug.  Don't mix different linkers, C compilers, and C++ compilers.
+
+Workaround:
+We have edited our configuration utility to ensure that GNU and non-GNU
+tools are not mixed.  If they are mixed, the configuration aborts with an
+error.  Make sure your PATH contains the appropriate tools or explicitly
+specify the desired compilers and linkers using environment variables before
+you run configure.
+
+------------------------------------------------------------
+
+* 6. Configuration Exits with a Cross-Compilation Warning or Compiler Error
+
+Problem:
+The Babel configuration script terminates, complaining that you are
+running as a cross-compiler or that the compilers are not installed
+properly.
+
+Diagnosis:
+The configuration script cannot run the g++ compiler because it cannot
+dynamically load the standard g++ shared libraries.
+
+Solution:
+Add the g++ standard libraries to your LD_LIBRARY_PATH.
+
+------------------------------------------------------------
+
+* 7. MacOSX file corruption after downloads
+
+Problem:
+Some files with long paths may be corrupted after download on a Mac running
+OSX.  In particular, we have received reports that the name of file:
+
+	compiler/gov/llnl/babel/symbols/SymbolRedefinitionException.java
+
+is truncated.
+
+Diagnosis:
+This is a bug in the StuffIt Expander tool.
+
+Solution:
+Do not let the download manager unpack the distribution.  Instead, use the
+MacOSX comand-line tool tar to expand the filename.
+
+------------------------------------------------------------
+
+* 8. Archiver dumps core on Solaris in the libdecaf directory
+
+Problem:
+The ar archiver dumps core on Solaris when archiving the libdecaf files in
+the example directory.
+
+Diagnosis:
+The archiver /usr/ccs/bin/ar does not understand long symbol names that are
+often generated by C++ compilers on codes with templaes.  These long symbol
+names cause the archiver to dump core.
+
+Solution:
+We suggest you try a different archiver.  Our GNU archiver in /usr/local/bin/ar
+does the trick for us.
+
+------------------------------------------------------------
+
+* 9. JVM quits on libzip.so (1.1.3) incompatibility with libz.so
+from zlib used by libxml2.so.
+
+Problem:
+Most if not all java runtimes load an old libzip.so which defines
+the same functions as libz.so 1.2.3 used by libxml2 in some
+Linux distributions.  Java crashes as a result.
+Libxml2 supports babel dynamic class loading, and this bug does
+not affect static-linked babel applications (which cannot include
+java anyway).
+
+Solution:
+Packaging error on the part of Sun. A future version of babel
+will make it possible to use dynamic loading without using libxml2.
+Support for this feature in the 1.0 series of releases is not expected.
+
+Workaround:
+User's who must have use java with Babel on affected Linux
+distributions will need to build their own libxml2 with
+configure option --without-zlib.
+
+------------------------------------------------------------
+
+* 10. Compiler versions known to be broken/unsupported
+
+** Fortran 2003/2008 support: 
+   As of January 2012, the only compilers that are confirmed to work
+   with the Fortran 2003/2008 binding is GNU GCC (= 4.6.2) and
+   Intel's ifort (>= 12.1.023), as well as IBM XL Fortran for Blue
+   Gene (>= 11.1).
+
+** GCC
+*** gfortran < 4.6
+    A bug causes it to refuse certain Fortran 2003 files:
+    http://gcc.gnu.org/bugzilla/show_bug.cgi?id=45674
+*** gfortran = 4.6
+    Several Fortran 2003 regression tests will fail to compile because
+    of the following bug
+    http://gcc.gnu.org/bugzilla/show_bug.cgi?id=48291
+    Babel < r7091 fails to build because of
+    http://gcc.gnu.org/bugzilla/show_bug.cgi?id=48279    
+
+*** gfortran = 4.6.3
+    Several Fortran 2003 regression tests may fail to compile because of
+    http://gcc.gnu.org/bugzilla/show_bug.cgi?id=52679
+    and
+    http://gcc.gnu.org/bugzilla/show_bug.cgi?id=52622
+*** g++ = 4.7.0
+    Several C++ regression tests may fail to compile because of
+    http://gcc.gnu.org/bugzilla/show_bug.cgi?id=52759
+** Intel Compiler
+*** Certain versions < 11.1.073
+    A bug pollutes the symbol table with DYNTYPE_PACK_XXX symbols,
+    causing the linker to fail:
+    http://software.intel.com/en-us/forums/showthread.php?t=68250&o=d&s=lr
+
+*** Certain versions < 12.1.015
+    Known to miscompile complex(float) F2003 interoperability due to
+    different calling conventions between ifort and icc.
+    http://software.intel.com/en-us/forums/showthread.php?t=78482
+    http://software.intel.com/en-us/forums/showthread.php?t=78591
+    Update (March 2011): Intel now has acknowledged the issue and
+    promised a fix in an upcoming version of ifort (DPD200198349).
+
+    Seems to be fixed in ifort 12.1.015.
+
+*** Versions up to at least 11.1.073 and up to 12.0.190 on 64-bit Linux
+    Known to miscompile integer value parameter passing in function pointers
+    http://software.intel.com/en-us/forums/showthread.php?t=78968
+    This affects Fortran 2003.
+
+*** Version 11.1.059
+    Known to get stuck in an infinite loop when compiling
+    regression/arrays/libF03.
+
+** PGI
+   Apparently pgf95 =< 10.9 does not support Fortran 2003 type
+   extensions at all.
+
+   Version 10.2:
+   There is a known issue with the RMI version of the
+   exceptions/*->Cxx test cases. It is unclear whether the error is on
+   Babel's side or on PGI's implementation of C++ exception handling.
+
+   See also the INSTALL file for tips on compiling with PGI.
+
+** PathScale
+   Apparently pathf90 =< 3.2.99 does not support Fortran 2003 type
+   extensions at all.
+
+Solution:
+   Upgrade to the newest versions and/or see above links for workarounds.
+
+   ------------------------------------------------------------
+
+* 11. Problematic Java implementations
+** The version of the cacao JIT (0.99.4) shipped with Ubuntu 10.04
+   and packaged as icedtea-6-jre-cacao has a known bug that causes the
+   boehm gc to segfault upon startup.
+   http://server.complang.tuwien.ac.at/cgi-bin/bugzilla/show_bug.cgi?id=128
+
+** The zero VM/shark JIT combination shipped with Ubuntu 10.04    
+   and packaged as icedtea-6-jre-zero consistently segfaults upon
+   destroying the Java VM.
+
+** List of Java implementations known to work:
+*** Sun JDK 1.6.x recevied the most testing.
+*** OpenJDK 1.6.x is also confirmed to work.
+*** IBM JDK: We also sucessfully tested with IBM's Java runtime.
+*** GNU gcj: We also sucessfully tested gcj-4.4 (using ecj).
+

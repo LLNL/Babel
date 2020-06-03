@@ -1,0 +1,48 @@
+# client_IORHDRS dependencies.
+wrapper_Data_IOR.h:                                                           \
+  /home/epperly/current/babel_fix_wrap/regression/wrapper/runSIDL/../wrapper.sidl
+wrapper_Data_IOR.h: sidl_header.h
+wrapper_Data_IOR.h: sidl_BaseClass_IOR.h
+
+
+# client_STUBHDRS dependencies.
+wrapper_Data.hxx:                                                             \
+  /home/epperly/current/babel_fix_wrap/regression/wrapper/runSIDL/../wrapper.sidl
+wrapper_Data.hxx: sidl_cxx.hxx
+wrapper_Data.hxx: sidl_cxx.hxx
+wrapper_Data.hxx: wrapper_Data_IOR.h
+wrapper_Data.hxx: sidl_BaseClass.hxx
+
+
+# client_STUBSRCS dependencies.
+wrapper_Data.cxx:                                                             \
+  /home/epperly/current/babel_fix_wrap/regression/wrapper/runSIDL/../wrapper.sidl
+wrapper_Data.cxx: wrapper_Data.hxx
+wrapper_Data.cxx: sidl_BaseInterface.hxx
+wrapper_Data.cxx: sidl_BaseClass.hxx
+wrapper_Data.cxx: sidl_BaseException.hxx
+wrapper_Data.cxx: sidl_LangSpecificException.hxx
+wrapper_Data.cxx: sidl_RuntimeException.hxx
+wrapper_Data.cxx: sidl_rmi_Call.hxx
+wrapper_Data.cxx: sidl_rmi_Return.hxx
+wrapper_Data.cxx: sidl_rmi_Ticket.hxx
+wrapper_Data.cxx: sidl_rmi_InstanceHandle.hxx
+wrapper_Data.cxx: sidl_String.h
+wrapper_Data.cxx: sidl_rmi_ConnectRegistry.h
+wrapper_Data.cxx: babel_config.h
+wrapper_Data.cxx: sidl_Loader.hxx
+wrapper_Data.cxx: sidl_DLL.hxx
+wrapper_Data.cxx: sidl_BaseInterface.hxx
+wrapper_Data.cxx: sidl_ClassInfo.hxx
+wrapper_Data.cxx: sidl_BaseClass.h
+wrapper_Data.cxx: sidl_ClassInfo.h
+wrapper_Data.cxx: sidl_rmi_ProtocolFactory.h
+wrapper_Data.cxx: sidl_rmi_InstanceRegistry.h
+wrapper_Data.cxx: sidl_rmi_InstanceHandle.h
+wrapper_Data.cxx: sidl_rmi_Invocation.h
+wrapper_Data.cxx: sidl_rmi_Response.h
+wrapper_Data.cxx: sidl_rmi_ServerRegistry.h
+wrapper_Data.cxx: sidl_rmi_ConnectRegistry.h
+wrapper_Data.cxx: sidl_io_Serializable.h
+
+

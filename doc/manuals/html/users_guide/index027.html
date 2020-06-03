@@ -1,0 +1,382 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN"
+            "http://www.w3.org/TR/REC-html40/loose.dtd">
+<HTML>
+<HEAD>
+
+<META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<META name="GENERATOR" content="hevea 1.10">
+<LINK rel="stylesheet" type="text/css" href="index.css">
+<TITLE>SIDL Grammar</TITLE>
+</HEAD>
+<BODY >
+<A HREF="index026.html"><IMG SRC="previous_motif.gif" ALT="Previous"></A>
+<A HREF="index-multipage.html"><IMG SRC="contents_motif.gif" ALT="Up"></A>
+<A HREF="index028.html"><IMG SRC="next_motif.gif" ALT="Next"></A>
+<HR>
+<H1 CLASS="chapter"><A NAME="htoc123">Appendix B</A>  SIDL Grammar</H1><UL>
+<LI><A HREF="index027.html#toc102">Introduction</A>
+</LI><LI><A HREF="index027.html#toc103">Backus-Naur Form</A>
+</LI></UL>
+<P><A NAME="c:grammar"></A></P><P><BR>
+</P><H2 CLASS="section"><A NAME="toc102"></A><A NAME="htoc124">B.1</A>  Introduction</H2><P><A NAME="s:intro_grammar"></A>
+This appendix provides an overview of the Scientific Interface Definition 
+Language (SIDL) grammar. For simplicity, the grammar is described in 
+extended BNF.</P><H2 CLASS="section"><A NAME="toc103"></A><A NAME="htoc125">B.2</A>  Backus-Naur Form</H2><P><A NAME="s:sidl_bnf"></A>
+<A NAME="@default2049"></A></P><HR SIZE=2><BLOCKQUOTE CLASS="quotation"><DIV CLASS="marginpar marginparright">FIX ME!</DIV>
+This section is dated. It needs to be brought up-to-date to reflect
+changes associated with the introduction of the new parser.
+</BLOCKQUOTE><HR SIZE=2><P><BR>
+
+The grammar described here was extracted from the JavaCC productions defined 
+in the Babel source code. Since the comments associated with the productions 
+appeared to be sufficiently descriptive, they have been retained to serve as 
+the explanation of the key productions.</P><TABLE CLASS="lstframe" STYLE="padding:1ex;border-style:solid;"><TR><TD CLASS="lstlisting">/*
+ * The following lexical tokens are ignored.
+ */
+SKIP : {
+   &lt; " " &gt;
+ | &lt; "\n" &gt;
+ | &lt; "\r" &gt;
+ | &lt; "\t" &gt;
+ | &lt; "//" (~["\n","\r"])* ("\n" | "\r" | "\r\n") &gt;
+ | &lt; "/**/" &gt;
+ | &lt; "/*" (~["*"])+ "*" ("*" | ~["*","/"] (~["*"])* "*")* "/" &gt;
+   { checkComment(image, input_stream.getBeginLine(),
+                  input_stream.getEndLine()); }
+ | &lt; "[" &gt;
+ | &lt; "]" &gt;
+}
+
+/*
+ * The following lexical states define the transitions necessary to
+ * parse documentation comments.  Documentation comments may appear
+ * anywhere in the file, although they are only saved if they preceed
+ * definition or method productions.  Documentation comments are
+ * represented by "special tokens" in the token list.
+ */
+SPECIAL_TOKEN : {
+   &lt; T_COMMENT : "/**" &gt; : BEGIN_DOC_COMMENT
+}
+
+&lt;BEGIN_DOC_COMMENT&gt; SKIP : {
+   &lt; " " &gt;
+ | &lt; "\t" &gt;
+ | &lt; "*/" &gt;                   : DEFAULT
+ | &lt; ("\n" | "\r" | "\r\n") &gt; : LINE_DOC_COMMENT
+ | &lt; "" &gt;                     : IN_DOC_COMMENT
+}
+
+&lt;LINE_DOC_COMMENT&gt; SKIP : {
+   &lt; " " &gt;
+ | &lt; "\t" &gt;
+ | &lt; "*/" &gt;      : DEFAULT
+ | &lt; "*" (" ")?&gt; : IN_DOC_COMMENT
+ | &lt; "" &gt;        : IN_DOC_COMMENT
+}
+
+&lt;IN_DOC_COMMENT&gt; SPECIAL_TOKEN : {
+   &lt; "*/" &gt;                   { trimMatch(matchedToken); } : DEFAULT
+ | &lt; ("\n" | "\r" | "\r\n") &gt; { trimMatch(matchedToken); } : LINE_DOC_COMMENT
+}
+
+&lt;IN_DOC_COMMENT&gt; MORE : {
+   &lt; ~[] &gt;
+}
+
+/*
+ * The following keywords are the lexical tokens in the SIDL grammar.
+ */
+TOKEN : {
+   &lt; T_ABSTRACT       : "abstract" &gt;
+ | &lt; T_CLASS          : "class" &gt;
+ | &lt; T_COPY           : "copy" &gt;
+ | &lt; T_ENUM           : "enum" &gt;
+ | &lt; T_EXTENDS        : "extends" &gt;
+ | &lt; T_IMPORT        : "import" &gt;
+ | &lt; T_IN             : "in" &gt;
+ | &lt; T_INOUT          : "inout" &gt;
+ | &lt; T_FINAL          : "final" &gt;
+ | &lt; T_IMPLEMENTS     : "implements" &gt;
+ | &lt; T_IMPLEMENTS_ALL : "implements-all" &gt;
+ | &lt; T_INTERFACE      : "interface" &gt;
+ | &lt; T_LOCAL          : "local" &gt;
+ | &lt; T_ONEWAY         : "oneway" &gt;
+ | &lt; T_OUT            : "out" &gt;
+ | &lt; T_PACKAGE        : "package" &gt;
+ | &lt; T_REQUIRE        : "require" &gt;
+ | &lt; T_STATIC         : "static" &gt;
+ | &lt; T_THROWS         : "throws" &gt;
+ | &lt; T_VERSION        : "version" &gt;
+ | &lt; T_VOID           : "void" &gt;
+
+ | &lt; T_ARRAY          : "array" &gt;
+ | &lt; T_RARRAY         : "rarray" &gt;
+ | &lt; T_BOOLEAN        : "bool" &gt;
+ | &lt; T_CHAR           : "char" &gt;
+ | &lt; T_DCOMPLEX       : "dcomplex" &gt;
+ | &lt; T_DOUBLE         : "double" &gt;
+ | &lt; T_FCOMPLEX       : "fcomplex" &gt;
+ | &lt; T_FLOAT          : "float" &gt;
+ | &lt; T_INT            : "int" &gt;
+ | &lt; T_LONG           : "long" &gt;
+ | &lt; T_OPAQUE         : "opaque" &gt;
+ | &lt; T_STRING         : "string" &gt;
+
+ | &lt; T_IDENTIFIER     : &lt;T_LETTER&gt; (&lt;T_LETTER&gt; | &lt;T_DIGIT&gt; | "_")* &gt;
+ | &lt; T_VERSION_STRING : &lt;T_INTEGER&gt; ("." &lt;T_INTEGER&gt;)+ &gt;
+ | &lt; T_INTEGER        : (["-","+"])? (&lt;T_DIGIT&gt;)+ &gt;
+ | &lt; T_DIGIT          : ["0"-"9"] &gt;
+ | &lt; T_LETTER         : ["a"-"z","A"-"Z"] &gt;
+
+ | &lt; T_CLOSE_ANGLE    : "&gt;" &gt;
+ | &lt; T_CLOSE_CURLY    : "}" &gt;
+ | &lt; T_CLOSE_PAREN    : ")" &gt;
+ | &lt; T_COMMA          : "," &gt;
+ | &lt; T_EQUALS         : "=" &gt;
+ | &lt; T_OPEN_ANGLE     : "&lt;" &gt;
+ | &lt; T_OPEN_CURLY     : "{" &gt;
+ | &lt; T_OPEN_PAREN     : "(" &gt;
+ | &lt; T_SEMICOLON      : ";" &gt;
+ | &lt; T_SCOPE          : "." &gt;
+
+ | &lt; T_COLUMN_MAJOR   : "column-major" &gt;
+ | &lt; T_ROW_MAJOR      : "row-major" &gt;
+
+ | &lt; T_CATCH_ALL      : ~[] &gt;
+}
+
+/**
+ * A SIDL Specification contains zero or more version productions followed
+ * by zero or more import productions followed by zero or more package
+ * productions followed by the end-of-file.  Before leaving the specification
+ * scope, resolve all references in the symbol table.
+ */
+Specification ::= ( Require )* ( Import )* ( Package )* &lt;EOF&gt;
+
+/**
+ * A SIDL Require production begins with a "require" token and is followed
+ * by a scoped identifer, a "version" token, and a version number.  The
+ * scoped identifier must be not defined.  The version number is specified
+ * in the general form "V1.V2...Vn" where Vi is a non-negative integer.
+ */
+Require ::=
+  &lt;T_REQUIRE&gt; ScopedIdentifier
+  &lt;T_VERSION&gt; ( &lt;T_INTEGER&gt; | &lt;T_VERSION_STRING&gt; ) &lt;T_SEMICOLON&gt;
+
+/**
+ * A SIDL Import production begins with an "import" token and is followed
+ * by a scoped identifier which is optionally followed by a "version" token
+ * and a version number.  The scoped identifier must be defined and it must
+ * be a package.  The version number is specified in the general form
+ * "V1.V2...Vn" where Vi is a non-negative integer.  A particular package
+ * may only be included in one import statement.  The import package name
+ * is added to the default search path.  At the end of the parse, any import
+ * statements that were not used to resolve a symbol name are output as
+ * warnings.
+ */
+Import ::=
+  &lt;T_IMPORT&gt; ScopedIdentifier
+  [ &lt;T_VERSION&gt; ( &lt;T_INTEGER&gt; | &lt;T_VERSION_STRING&gt;) ] &lt;T_SEMICOLON&gt;
+
+/**
+ * The SIDL package specification begins with a "package" token followed by
+ * a scoped identifier.  The new package namespace begins with an open curly
+ * brace, a set of zero or more definitions, and a close curly brace.  The
+ * closing curly brace may be followed by an optional semicolon.  The package
+ * identifier must have a version defined for it, and it must not have been
+ * previously defined as a symbol or used as a forward reference.  The parent
+ * of the package must itself be a package and must have been defined.  The
+ * symbols within the curly braces will be defined within the package scope.
+ */
+Package ::=
+  [ &lt;T_FINAL&gt; ] &lt;T_PACKAGE&gt; ScopedIdentifier
+  [ &lt;T_VERSION&gt; ( &lt;T_INTEGER&gt; | &lt;T_VERSION_STRING&gt; ) ]
+  &lt;T_OPEN_CURLY&gt; ( Definition )* &lt;T_CLOSE_CURLY&gt; [ &lt;T_SEMICOLON&gt; ]
+
+/**
+ * A SIDL Definition production consists of a class, interface, enumerated
+ * type, or package.
+ */
+Definition ::= ( Class | Enum | Interface | Package )
+
+/**
+ * A SIDL class specification begins with an optional abstract keyword
+ * followed by the class token followed by an identifier.  The abstract
+ * keyword is required if and only if there are abstract methods in the
+ * class.  The class keyword is followed by an identifer.  The identifier
+ * string may not have been previously defined, although it may have been
+ * used as a forward reference.  The identifier string may be preceeded
+ * by a documentation comment.  A class may optionally extend another class;
+ * if no class is specified, then the class will automatically extend the
+ * SIDL base class (unless it is itself the SIDL base class).  Then parse
+ * the implements-all and implements clauses.  The interfaces parsed during
+ * implements-all are saved in a set and then all those methods are defined
+ * at the end of the class definition.  The methods block begins with an
+ * open curly-brace followed by zero or more methods followed by a close
+ * curly-brace and optional semicolon.
+ */
+Class ::=
+  [ &lt;T_ABSTRACT&gt; ] &lt;T_CLASS&gt; Identifier
+  [ &lt;T_EXTENDS&gt; ScopedIdentifier ]
+  [ &lt;T_IMPLEMENTS_ALL&gt; AddInterface ( &lt;T_COMMA&gt; AddInterface )* ]
+  [ &lt;T_IMPLEMENTS&gt; AddInterface ( &lt;T_COMMA&gt; AddInterface )* ]
+  &lt;T_OPEN_CURLY&gt; ( ClassMethod )* &lt;T_CLOSE_CURLY&gt; [ &lt;T_SEMICOLON&gt; ]
+
+/**
+ * The SIDL enumeration specification begins with an "enum" token followed by
+ * an identifier.  The enumerator list begins with an open curly brace, a set
+ * of one or more definitions, and a close curly brace.  The closing curly
+ * brace may be followed by an optional semicolon.  The enumeration symbol
+ * identifier must have a version defined for it, and it must not have been
+ * previously defined as a symbol.  Forward references are not allowed for
+ * enumerated types.  This routine creates the enumerated class and then
+ * grabs the list of enumeration symbols and their optional values.
+ */
+Enum ::=
+  &lt;T_ENUM&gt; Identifier &lt;T_OPEN_CURLY&gt; Enumerator ( &lt;T_COMMA&gt; Enumerator )*
+  &lt;T_CLOSE_CURLY&gt; [ &lt;T_SEMICOLON&gt; ]
+
+/**
+ * The SIDL enumerator specification consists of an identifier followed
+ * by an optional assignment statement beginning with an equals and followed
+ * by an integer value.  This routine adds the new enumeration symbol to
+ * the list and then returns.
+ */
+Enumerator ::= Identifier [ &lt;T_EQUALS&gt; &lt;T_INTEGER&gt; ]
+
+/**
+ * A SIDL interface specification begins with the interface token followed
+ * by an identifier.  An interface may have an extends block consisting of
+ * a comma-separated sequence of interfaces.  The methods block begins with
+ * an open curly-brace followed by zero or more methods followed by a close
+ * curly-brace and optional semicolon.  Interfaces may be preceeded by a
+ * documentation comment.  The identifier string may not have been previously
+ * defined, although it may have been used as a forward reference.  If the
+ * interface does not extend another interface, then it must extend the base
+ * SIDL interface (unless, of course, this is the definition for the base
+ * SIDL interface).
+ */
+Interface ::=
+  &lt;T_INTERFACE&gt; Identifier [ &lt;T_EXTENDS&gt; AddInterface
+  ( &lt;T_COMMA&gt; AddInterface )* ]
+  &lt;T_OPEN_CURLY&gt; ( InterfaceMethod )* &lt;T_CLOSE_CURLY&gt; [ &lt;T_SEMICOLON&gt; ]
+
+/**
+ * This production parses the next scoped identifier and validates that
+ * the name exists and is an interface symbol.  Then each of its methods
+ * are checked for validity with the existing methods.  If everything
+ * checks out, then the new interface is added to the existing object.
+ */
+AddInterface ::= ScopedIdentifier
+
+/**
+ * This production parses the SIDL method description for a class method.
+ * A class method may start with abstract, final, or static.  An error is
+ * thrown if the method has already been defined in the class object or if
+ * the method name is the same as the class name.  An error is also thrown
+ * if a method has been defined in a parent class and (1) the signatures
+ * do not match, (2) either of the methods is static, (3) the existing method
+ * is final, or (4) the new method is abstract but the existing method was
+ * not abstract.
+ */
+ClassMethod ::= [ ( &lt;T_ABSTRACT&gt; | &lt;T_FINAL&gt; | &lt;T_STATIC&gt; ) ] Method
+
+/**
+ * This method parses a SIDL method and then checks whether it can be
+ * added to the interface object.  An error is thrown if the method has
+ * already been added to the interface object or if the method name is
+ * the same as the interface name.  An error is also thrown if a previous
+ * method was defined with the same name but a different signature.
+ */
+InterfaceMethod ::= Method
+
+/**
+ * The SIDL method production has a return type, a method identifier,
+ * an optional argument list, an optional communication modifier, and
+ * an optional throws clause.  The return type may be void (no return
+ * type) or any valid SIDL type.  The method is built piece by piece.
+ */
+Method ::=
+  ( &lt;T_VOID&gt; | [ &lt;T_COPY&gt; ] Type() ) Identifier [ &lt;T_IDENTIFIER&gt; ]
+  &lt;T_OPEN_PAREN&gt; [ Argument ( &lt;T_COMMA&gt; Argument )* ] &lt;T_CLOSE_PAREN&gt;
+  [ &lt;T_LOCAL&gt; | &lt;T_ONEWAY&gt; ] [ &lt;T_THROWS&gt; ScopedIdentifier
+  ( &lt;T_COMMA&gt; ScopedIdentifier )* ] &lt;T_SEMICOLON&gt;
+
+/**
+ * Parse a SIDL argument.  Arguments begin with an optional copy modifier
+ * followed by in, out, or inout followed by a type and a formal argument.
+ * The argument is returned on the top of the argument stack.  This routine
+ * also checks that the copy modifier is used only for symbol objects.  For
+ * all other types, copy is redundant.
+ */
+Argument ::= [ &lt;T_COPY&gt; ] ( &lt;T_IN&gt; | &lt;T_OUT&gt; | &lt;T_INOUT&gt; )
+         (Type Identifier | Rarray)
+
+/**
+ * A SIDL type consists of one of the standard built-in types (boolean,
+ * char, dcomplex, double, fcomplex, float, int, long, opaque, and string),
+ * a user-defined type (interface, class, or enum), or an array.  This
+ * production parses the type and pushes the resulting type object on
+ * the top of the argument stack.
+ */
+Type ::=
+  ( &lt;T_BOOLEAN&gt;
+  | &lt;T_CHAR&gt;
+  | &lt;T_DCOMPLEX&gt;
+  | &lt;T_DOUBLE&gt;
+  | &lt;T_FCOMPLEX&gt;
+  | &lt;T_FLOAT&gt;
+  | &lt;T_INT&gt;
+  | &lt;T_LONG&gt;
+  | &lt;T_OPAQUE&gt;
+  | &lt;T_STRING&gt;
+  | Array
+  | SymbolType )
+
+/**
+ * Parse an array construct and push the resulting type and ordering
+ * on top of the stack.  Only dimensions one through MAX_ARRAY_DIM
+ * (inclusive) are supported.
+ */
+Array ::=
+  &lt;T_ARRAY&gt; &lt;T_OPEN_ANGLE&gt; Type [ &lt;T_COMMA&gt; ( &lt;T_INTEGER&gt;
+  [ &lt;T_COMMA&gt; ( &lt;T_COLUMN_MAJOR&gt; | &lt;T_ROW_MAJOR&gt; ) ]
+  | ( &lt;T_COLUMN_MAJOR&gt;| &lt;T_ROW_MAJOR&gt; ) ) ] &lt;T_CLOSE_ANGLE&gt;
+
+/**
+ * Parse an rarray construct and push the resulting type and ordering
+ * on top of the stack.  Only dimensions one through MAX_ARRAY_DIM
+ * (inclusive) are supported.  And don't forget the indicies!
+ */
+Rarray ::= &lt;T_RARRAY&gt; &lt;T_OPEN_ANGLE&gt; Type [ &lt;T_COMMA&gt; &lt;T_INTEGER&gt; ]
+       &lt;T_CLOSE_ANGLE&gt; Identifier
+       &lt;T_OPEN_PAREN&gt; Identifier ( &lt;T_COMMA Identifier )*
+       &lt;T_CLOSE_PAREN&gt;
+
+/**
+ * This production parses a scoped identifier and verifies that it is
+ * either a forward reference or a symbol that may be used as a type
+ * (either an enum, an interface, or a class).
+ */
+SymbolType ::= ScopedIdentifier
+
+/**
+ * All SIDL scoped names are of the general form "ID ( . ID )*".  Each
+ * identifier ID is a string of letters, numbers, and underscores that
+ * must begin with a letter.  The scope resolution operator "." separates
+ * the identifiers in a name.
+ */
+ScopedIdentifier ::= Identifier ( &lt;T_SCOPE&gt; Identifier )*
+
+/**
+ * A SIDL identifier must start with a letter and may be followed by any
+ * number of letters, numbers, or underscores.  It may not be a reserved
+ * word in any of the SIDL implementation languages (e.g., C or C++).
+ */
+Identifier ::= &lt;T_IDENTIFIER&gt;</TD></TR>
+</TABLE><HR>
+<A HREF="index026.html"><IMG SRC="previous_motif.gif" ALT="Previous"></A>
+<A HREF="index-multipage.html"><IMG SRC="contents_motif.gif" ALT="Up"></A>
+<A HREF="index028.html"><IMG SRC="next_motif.gif" ALT="Next"></A>
+</BODY>
+</HTML>

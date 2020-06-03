@@ -1,0 +1,110 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+<HEAD>
+	<META HTTP-EQUIV="CONTENT-TYPE" CONTENT="text/html; charset=iso-8859-1">
+	<TITLE>Howto Patch a Babel Release</TITLE>
+	<META NAME="GENERATOR" CONTENT="OpenOffice.org 2.0  (Linux)">
+	<META NAME="CREATED" CONTENT="20060817;11104700">
+	<META NAME="CHANGED" CONTENT="20060817;11293400">
+</HEAD>
+<BODY LANG="en-US" DIR="LTR">
+<H1>How To Release a Babel Patch</H1>
+<P>by Tom Epperly &lt;<A HREF="mailto:tepperly@llnl.gov">epperly2@llnl.gov</A>&gt;<BR>
+August 17, 2006</P>
+<HR>
+<P>Our process for committing to and issuing patches for a formal
+Babel release is more structured than a normal commit to the main
+trunk because we want to ensure that we can identify what patches
+have been applied to a deployed copy of Babel.</P>
+<OL>
+	<LI><P>Normally, every commit to a release begins with an issue
+	entry in Babel's <A HREF="https://www.cca-forum.org/bugs/babel/">Roundup
+	issue tracking database</A>. If any entry does not exist and you
+	intend to publish a patch, create a new issue on Roundup.</P>
+	<LI><P>Frequently, issues are first addressed on the Babel main
+	trunk svn+ssh://cca-forum.org/home/svn/babel/trunk and then back
+	ported to the release branch. Other times, you will fix the issue on
+	the release branch directly. Instructions for each case will be
+	provided separately.
+	<DL>
+	<dt><strong>Back porting fix from trunk</strong></dt>
+	<DD>
+	<p>In cases where you're going to back port,
+	svn commit the fix to the main trunk and note the revision number,
+	<I>n</I>, that svn reports after
+	your commit. </p>
+	<ol>
+	<li><p>Check out a working	copy of the release branch to
+	which you will apply the patch:<BR>
+	svn co
+	svn+ssh://cca-forum.org/home/svn/babel/branches/release-1-0-0-branch/
+	babel_1_0_0_branch</p></li>
+	<li><p>cd babel_1_0_0_branch</p></li>
+	<li><p>svn merge -r <I>&lt;n-1&gt;</I>:<I>&lt;n&gt;
+	</I>svn+ssh://cca-forum.org/home/svn/babel/trunk<BR>Where <I>&lt;n-1&gt;</I>
+	is replaced by the number<I>n-1</I>,
+	and <I>&lt;n&gt;</I><I>n</I> (the
+	revision number of your commit to the main trunk.</P>
+	</li>
+	</ol>
+	</DD>
+	<dt><strong>Editing the release branch</strong></dt>
+	<dd><p>
+	In this case, you're not going to make the fix on the trunk
+	first. You will edit the release branch directly.
+	<ol>
+	<li><p>Check out a working copy of the release branch:<br>
+        svn co
+	svn+ssh://cca-forum.org/home/svn/babel/branches/release-1-0-0-branch/
+	babel_1_0_0_branch</p></li>
+	<li><p>cd babel_1_0_0_branch</p></li>
+	<li><p>Use an editor to fix the issue.</p></li>
+	</ol>
+	</p>
+	</dd>
+	</DL>
+<li>
+<p>At this point you should have a working copy of the release with
+<em>uncommitted</em> changes that address the issue. Now you need to
+make a patch file in runtime/patches/.</p>
+<ol>
+<li><p>Use your favorite text editor to create a new file in
+runtime/patches/. The filename should be 14 characters or less and end
+with ".txt". Normally, it's named issue<i>x</i>.txt for something that
+resolves Roundup issue <i>x</i>. For patches that don't address a
+Roundup issue, give it a <em>brief</em> descriptive name.</p>
+<li><p>
+The first line should be a brief description of the patch (ideally
+less than 46 character).
+</p>
+<p>The second line should be the email of the issuing person or
+organization. For members of the LLNL Babel team, this should be
+components@llnl.gov.</p>
+</li>
+<li><p>svn add --auto-props issue<i>x</i>.txt your file (use whatever
+patch file name you chose).
+</ol>
+</li>
+<li><p>Perform appropriate testing for your patch.</p></li>
+<li>
+<p>Make the patch file. cd to the top of your release branch.<br>
+svn diff > /tmp/issue<i>x</i>.txt<br>
+Review this file, and then upload it into the appropriate Roundup
+issue entry.
+</p>
+</li>
+<li>
+<p>
+Add an entry about your patch on this Wiki:
+<a href="https://www.cca-forum.org/wiki/tiki-index.php?page=Babel+Patches">https://www.cca-forum.org/wiki/tiki-index.php?page=Babel+Patches</a>
+</p>
+</li>
+<li><p>
+svn commit your changes and the patch file.
+</p></li>
+<li><p>
+If the issue is very serious consider sending an email to babel-users@llnl.gov.
+</p></li>
+</OL>
+</BODY>
+</HTML>

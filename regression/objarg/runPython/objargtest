@@ -1,0 +1,246 @@
+#!/usr/local/bin/python
+#
+# File:		objargtest
+# Copyright:	(c) 2001 Lawrence Livermore National Security, LLC
+# Revision:	$Revision: 6776 $
+# Date:		$Date: 2009-11-10 17:33:00 -0800 (Tue, 10 Nov 2009) $
+# Description:	Excercise objects in hopes of finding bugs
+#
+
+import sidlPyArrays
+import objarg.Employee
+import objarg.EmployeeArray
+import objarg.Basic
+import sidl.BaseClass
+if sidlPyArrays.type == "numpy":
+  from numpy import zeros, float32
+else:
+  import Numeric
+  zeros = Numeric.zeros
+  float32 = Numeric.Float32
+from synch.ResultType import *
+from synch import RegOut
+from types import NoneType
+
+#basic RMI support
+remoteURL = ''
+
+def withRMI():
+  return remoteURL != ''
+
+def makeBaseClassObject():
+  if withRMI():
+    return sidl.BaseClass.BaseClass(url=remoteURL)
+  else:
+    return sidl.BaseClass.BaseClass()
+
+def makeEmployeeObject():
+  if withRMI():
+    return objarg.Employee.Employee(url=remoteURL)
+  else:
+    return objarg.Employee.Employee()
+
+def makeEmployeeArrayObject():
+  if withRMI():
+    return objarg.EmployeeArray.EmployeeArray(url=remoteURL)
+  else:
+    return objarg.EmployeeArray.EmployeeArray()
+
+def makeBasicObject():
+  if withRMI():
+    return objarg.Basic.Basic(url=remoteURL)
+  else:
+    return objarg.Basic.Basic()
+
+def toFloat(d):
+  tmp = zeros((1,), float32)
+  try:
+    tmp.savespace(1)
+    tmp[0] = d
+  except AttributeError:
+    # don't die!
+    tmp[0] = d
+  return float(tmp[0])
+
+class TestCounter:
+
+  def __init__(self, numparts = -1):
+    self.partno = 0
+    self.tracker = RegOut.RegOut()
+    self.tracker.setExpectations(numparts)
+
+  def describeTest(self, description):
+    self.partno = self.partno + 1
+    self.tracker.startPart(self.partno)
+    self.tracker.writeComment(description)
+
+  def evalTest(self, result, expected):
+    if (result):
+      if (expected):
+        self.tracker.endPart(self.partno, PASS)
+      else:
+        self.tracker.endPart(self.partno, XPASS)
+    else:
+      if (expected):
+        self.tracker.endPart(self.partno, FAIL)
+      else:
+        self.tracker.endPart(self.partno, XFAIL)
+        
+  def finish(self):
+    self.tracker.close()
+      
+
+class Entry:
+  def __init__(self, name, age, salary, status):
+    self.name = name
+    self.age = age
+    self.salary = salary
+    self.status = status
+
+TestData = [
+  Entry( "John Smith", 35, 75.7e3, "c"),
+  Entry( "Jane Doe", 40, 85.5e3, "m"),
+  Entry( "Ella Vader", 64, 144.2e3, "r" ),
+  Entry( "Marge Inovera", 32, 483.2e3, "s" ),
+  Entry( "Hughy Louis Dewey", 45, 182.9e3, "m" ),
+  Entry( "Heywood Yubuzof", 12, 20.8e3, "x" ),
+  Entry( "Picov Andropov", 90, 120.6e3, "r" )
+]
+
+if __name__ == '__main__':
+  import sys
+  counter = TestCounter(94)
+  
+  # Parse the command line  to see if we are running RMI tests
+  for arg in sys.argv:
+    if arg.startswith("--url="):
+      remoteURL = arg[6:]
+      remoteURL = counter.tracker.replaceMagicVars(remoteURL, '')
+      
+  if withRMI():
+    print 'using remote URL ' + remoteURL
+
+  # Setup RMI if necessary
+  if withRMI():
+    import sidl.rmi.ProtocolFactory
+    print 'registering RMI protocol simhandle'
+    if not sidl.rmi.ProtocolFactory.addProtocol('simhandle', 'sidlx.rmi.SimHandle'):
+      print('sidl.rmi.ProtocolFactor.addProtocol() failed')
+      sys.exit(2);
+  
+  testlen = len(TestData)
+  employeeArray = makeEmployeeArrayObject()
+  index = 0
+  for i in TestData:
+    counter.describeTest("objarg.Employee.Employee() != None")
+    e = makeEmployeeObject()
+    counter.evalTest(e != None, 1)
+    
+    counter.describeTest("e.init(i.name, i.age, i.salary, i.status)")
+    counter.evalTest(e.init(i.name, i.age, i.salary, i.status), 1)
+
+    counter.describeTest("employeeArray.appendEmployee(e)")
+    counter.evalTest(employeeArray.appendEmployee(e), 1)
+    index = index + 1
+
+    counter.describeTest("i.salary == e.getSalary()")
+    counter.evalTest(i.salary == e.getSalary(), 1)
+
+    counter.describeTest("i.salary == e.getSalary()")
+    counter.evalTest(i.salary == e.getSalary(), 1)
+
+    counter.describeTest("i.age == e.getAge()")
+    counter.evalTest(i.age == e.getAge(), 1)
+
+    counter.describeTest("i.status == e.getStatus()")
+    counter.evalTest(i.status == e.getStatus(), 1)
+
+    counter.describeTest("index == employeeArray.getLength()")
+    counter.evalTest(index == employeeArray.getLength(), 1)
+
+    counter.describeTest("e.isSame(employeeArray.at(index))")
+    counter.evalTest(e.isSame(employeeArray.at(index)), 1)
+
+  index = 0
+  for i in TestData:
+    index = index + 1
+    (empInd, emp) = employeeArray.findByName(i.name)
+    counter.describeTest("employeeArray.findByName(i.name)")
+    counter.evalTest(empInd == index, 1)
+    if (empInd):
+      counter.describeTest("emp.isSame(employeeArray.at(empInd))")
+      counter.evalTest(emp.isSame(employeeArray.at(empInd)), 1)
+  f = makeEmployeeObject()
+  f.init("Hire High", 21, 0, "s")
+  counter.describeTest("employeeArray.promoteToMaxSalary(f)")
+  counter.evalTest(employeeArray.promoteToMaxSalary(f), 1)
+
+  counter.describeTest("f.getSalary == 483.2e3")
+  counter.evalTest(f.getSalary() == toFloat(483.2e3), 1)
+
+  counter.describeTest("employeeArray.appendEmployee(f)")
+  counter.evalTest(employeeArray.appendEmployee(f), 1)
+
+  f = makeEmployeeObject()
+  f.init("Amadeo Avogadro, conte di Quaregna", 225, 6.022045e23, "d")
+
+  counter.describeTest("not employeeArray.promoteToMaxSalary(f)")
+  (ret, f) = employeeArray.promoteToMaxSalary(f)
+  counter.evalTest(not ret, 1)
+
+  counter.describeTest("not employeeArray.appendEmployee(None)");
+  counter.evalTest(not employeeArray.appendEmployee(None), 1)
+
+  counter.describeTest('not employeeArray.findByName("New Riders")')
+  (ret, f) = employeeArray.findByName("New Riders")
+  counter.evalTest(not (ret or f), 1)
+
+  counter.describeTest('not employeeArray.promoteToMaxSalary(None)')
+  (ret, f) = employeeArray.promoteToMaxSalary(None)
+  counter.evalTest(not (ret or f), 1)
+
+  b = makeBasicObject()
+  counter.describeTest('b.passIn(None, 0)')
+  ret = b.passIn(None, 0)
+  counter.evalTest(ret, 1)
+
+  counter.describeTest('b.passIn(makeBaseClassObject(), 1)')
+  ret = b.passIn(makeBaseClassObject(), 1)
+  counter.evalTest(ret, 1)
+
+  counter.describeTest('b.passInOut(None, 0, 0, 1)')
+  (ret, o) = b.passInOut(None, 0, 0, 1)
+  counter.evalTest(ret and isinstance(o, NoneType), 1)
+
+  counter.describeTest('b.passInOut(makeBaseClassObject(), 1, 0, 0)')
+  (ret, o) = b.passInOut(makeBaseClassObject(), 1, 0, 0)
+  counter.evalTest(ret and isinstance(o, NoneType), 1)
+
+  inValue = makeBaseClassObject()
+  counter.describeTest('b.passInOut(inValue, 1, 1, 1)')
+  (ret, o) = b.passInOut(inValue, 1, 1, 1)
+  counter.evalTest(ret and inValue.isSame(o) , 1)
+
+  inValue = makeBaseClassObject()
+  counter.describeTest('b.passInOut(inValue, 1, 1, 0)')
+  (ret, o) = b.passInOut(inValue, 1, 1, 0)
+  counter.evalTest(ret and (o != inValue) , 1)
+
+  counter.describeTest('b.passOut(1)')
+  o = b.passOut(1)
+  counter.evalTest(isinstance(o, NoneType), 1)
+
+  counter.describeTest('b.passOut(0)')
+  o = b.passOut(0)
+  counter.evalTest(not isinstance(0, NoneType), 1)
+
+  counter.describeTest('b.retObject(1)')
+  o = b.retObject(1)
+  counter.evalTest(isinstance(o, NoneType), 1)
+
+  counter.describeTest('b.retObject(0)')
+  o = b.retObject(0)
+  counter.evalTest(not isinstance(0, NoneType), 1)
+
+  counter.finish()
+0

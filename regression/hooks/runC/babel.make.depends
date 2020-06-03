@@ -1,0 +1,52 @@
+# IORHDRS dependencies.
+hooks_Basics_IOR.h:                                                           \
+  /home/epperly/current/babel_fix_hooks/regression/hooks/runC/../hooks.sidl
+hooks_Basics_IOR.h: sidl_header.h
+hooks_Basics_IOR.h: sidl_BaseClass_IOR.h
+
+hooks_IOR.h:                                                                  \
+  /home/epperly/current/babel_fix_hooks/regression/hooks/runC/../hooks.sidl
+hooks_IOR.h: hooks_Basics_IOR.h
+
+
+# STUBHDRS dependencies.
+hooks.h:                                                                      \
+  /home/epperly/current/babel_fix_hooks/regression/hooks/runC/../hooks.sidl
+hooks.h: hooks_Basics.h
+
+hooks_Basics.h:                                                               \
+  /home/epperly/current/babel_fix_hooks/regression/hooks/runC/../hooks.sidl
+hooks_Basics.h: sidl_header.h
+hooks_Basics.h: sidl_BaseException.h
+hooks_Basics.h: sidl_BaseInterface.h
+hooks_Basics.h: sidl_ClassInfo.h
+hooks_Basics.h: sidl_RuntimeException.h
+hooks_Basics.h: sidl_SIDLException.h
+hooks_Basics.h: sidl_rmi_Call.h
+hooks_Basics.h: sidl_rmi_Return.h
+hooks_Basics.h: hooks_Basics_IOR.h
+
+
+# STUBSRCS dependencies.
+hooks_Basics_Stub.c:                                                          \
+  /home/epperly/current/babel_fix_hooks/regression/hooks/runC/../hooks.sidl
+hooks_Basics_Stub.c: hooks_Basics.h
+hooks_Basics_Stub.c: hooks_Basics_IOR.h
+hooks_Basics_Stub.c: sidl_interface_IOR.h
+hooks_Basics_Stub.c: sidl_rmi_InstanceHandle.h
+hooks_Basics_Stub.c: sidl_rmi_ConnectRegistry.h
+hooks_Basics_Stub.c: sidl_Exception.h
+hooks_Basics_Stub.c: sidl_interface_IOR.h
+hooks_Basics_Stub.c: sidl_BaseInterface_IOR.h
+hooks_Basics_Stub.c: sidl_BaseClass.h
+hooks_Basics_Stub.c: sidl_ClassInfo.h
+hooks_Basics_Stub.c: sidl_rmi_ProtocolFactory.h
+hooks_Basics_Stub.c: sidl_rmi_InstanceRegistry.h
+hooks_Basics_Stub.c: sidl_rmi_InstanceHandle.h
+hooks_Basics_Stub.c: sidl_rmi_Invocation.h
+hooks_Basics_Stub.c: sidl_rmi_Response.h
+hooks_Basics_Stub.c: sidl_rmi_ServerRegistry.h
+hooks_Basics_Stub.c: sidl_rmi_ConnectRegistry.h
+hooks_Basics_Stub.c: sidl_io_Serializable.h
+
+

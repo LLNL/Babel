@@ -1,0 +1,69 @@
+#!/bin/bash
+# File:        runPy2Java
+# Description: Set environment variables and run python
+# Revision:    $Revision$
+# Date:        $Date$
+#
+
+## Copyright (c) 2000-2006, Lawrence Livermore National Security, LLC
+## Produced at the Lawrence Livermore National Laboratory.
+## Written by the Components Team <components@llnl.gov>
+## UCRL-CODE-2002-054
+## All rights reserved.
+##
+## This file is part of Babel. For more information, see
+## http://www.llnl.gov/CASC/components/. Please read the COPYRIGHT file
+## for Our Notice and the LICENSE file for the GNU Lesser General Public
+## License.
+##
+## This program is free software; you can redistribute it and/or modify it
+## under the terms of the GNU Lesser General Public License (as published by
+## the Free Software Foundation) version 2.1 dated February 1999.
+##
+## This program is distributed in the hope that it will be useful, but
+## WITHOUT ANY WARRANTY; without even the IMPLIED WARRANTY OF
+## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the terms and
+## conditions of the GNU Lesser General Public License for more details.
+##
+## You should have received a copy of the GNU Lesser General Public License
+## along with this program; if not, write to the Free Software Foundation,
+## Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+
+
+# limit CPU time to 5 minutes
+ulimit -t 300
+PYTHON=PYTHONEXEC
+if test "X$PYTHONPATH" = "X"; then
+  PYTHONPATH=PYTHONDIR
+else
+  PYTHONPATH=PYTHONDIR:${PYTHONPATH}
+fi
+case "`uname`" in
+  CYGWIN*) cygwin=true;;
+  *) cygwin=false;;
+esac
+
+libjvm_dir=LIBJVM_DIR
+libjava_dir=LIBJAVA_DIR
+version=VERSION
+exec_prefix=EXEC_PREFIX
+
+if test -f stamp-installcheck; then
+  CLASSPATH="../libJava:${exec_prefix}/lib/sidl-${version}.jar:${exec_prefix}/lib/sidlstub_${version}.jar:."
+  SIDL_DLL_PATH="../libJava/libImpl.scl;../../output/libC/libOutput.scl;../../../runtime/sidl/libsidl.scl;../../../runtime/sidlx/libsidlx.scl;${exec_prefix}/lib/libsidlstub_java.scl"
+  SHARED_LIB_VAR="${libjvm_dir}:${libjava_dir}:${exec_prefix}/lib:PYTHONLIB:${SHARED_LIB_VAR}"
+else
+  CLASSPATH="../libJava:../../../lib/sidl-${version}.jar:../../../lib/sidlstubs/Java/sidlstub_${version}.jar:." 
+  SIDL_DLL_PATH="../libJava/libImpl.scl;../../output/libC/libOutput.scl;../../../runtime/sidl/libsidl.scl;../../../runtime/sidlx/libsidlx.scl;../../../lib/sidlstubs/Java/libsidlstub_java.scl"
+  SHARED_LIB_VAR="${libjvm_dir}:${libjava_dir}:../../../lib/sidlstubs/Java/.libs:PYTHONLIB:${SHARED_LIB_VAR}"
+fi
+export PYTHONPATH SIDL_DLL_PATH SHARED_LIB_VAR CLASSPATH
+
+if $cygwin; then
+  PATH=$PATH:PYTHONLIB:PYTHONLIB/../bin
+  export PATH
+fi
+
+$PYTHON structtest
+exit $?
+

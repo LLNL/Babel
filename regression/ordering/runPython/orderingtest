@@ -1,0 +1,96 @@
+#!/usr/local/bin/python
+#
+# File:        orderingtest
+# Copyright:   (c) 2002 Lawrence Livermore National Security, LLC
+# Revision:    @(#) $Revision: 6171 $
+# Date:        $Date: 2007-10-08 16:39:28 -0700 (Mon, 08 Oct 2007) $
+# Description: Exercise array ordering code
+#
+# Try to exercise everything possible in Python.
+
+from Ordering.IntOrderTest import *
+from synch.ResultType import *
+from synch import RegOut
+from types import NoneType
+
+class TestCounter:
+  def __init__(self, numparts = -1):
+    self.partno = 0
+    self.tracker = RegOut.RegOut()
+    self.tracker.setExpectations(numparts)
+
+  def describeTest(self, description):
+    self.partno = self.partno + 1
+    self.tracker.startPart(self.partno)
+    self.tracker.writeComment(description)
+
+  def evalTest(self, res, expected):
+    if (res):
+      if (expected):
+        self.tracker.endPart(self.partno, PASS)
+      else:
+        self.tracker.endPart(self.partno, XPASS)
+    else:
+      if (expected):
+        self.tracker.endPart(self.partno, FAIL)
+      else:
+        self.tracker.endPart(part.partno, XFAIL)
+        
+  def finish(self):
+    self.tracker.close()
+    
+if __name__ == '__main__':
+    counter = TestCounter()
+    A = makeColumnIMatrix(10, 1)
+    counter.describeTest("makeColumnIMatrix(10,1) != None")
+    counter.evalTest(not isinstance(A,NoneType), 1)
+
+    counter.describeTest("isIMatrixTwo(A)")
+    counter.evalTest(isIMatrixTwo(A), 1)
+
+    counter.describeTest("isColumnIMatrixTwo(A)")
+    counter.evalTest(isColumnIMatrixTwo(A), 1)
+
+    counter.describeTest("isRowIMatrixTwo(A)")
+    counter.evalTest(isRowIMatrixTwo(A), 1)
+
+    counter.describeTest("A = ensureRow(A) then isIMatrixTwo(A)")
+    A = ensureRow(A)
+    counter.evalTest(isIMatrixTwo(A), 1)
+
+    counter.describeTest("A = ensureColumn(A) then isIMatrixTwo(A)")
+    A = ensureColumn(A)
+    counter.evalTest(isIMatrixTwo(A), 1)
+
+    A = None
+
+    A = makeRowIMatrix(10, 0)
+    counter.describeTest("A != None and isIMatrixTwo(A)")
+    counter.evalTest((not isinstance(A,NoneType)) and isIMatrixTwo(A), 1)
+    counter.describeTest("A != None and isColumnIMatrixTwo(A)")
+    counter.evalTest((not isinstance(A,NoneType)) and isColumnIMatrixTwo(A), 1)
+    A = None
+
+    A = makeRowIMatrix(10, 1)
+    counter.describeTest("A != None and isIMatrixTwo(A)")
+    counter.evalTest((not isinstance(A,NoneType)) and isIMatrixTwo(A), 1)
+    A = None
+
+    A = createColumnIMatrix(10, 1)
+    counter.describeTest("A = createColumnIMatrix -> A != None")
+    counter.evalTest((not isinstance(A,NoneType)) and isIMatrixTwo(A), 1)
+    A = None
+
+    A = makeIMatrix(4, 1)
+    counter.describeTest("A != None and isIMatrixFour(A)")
+    counter.evalTest((not isinstance(A,NoneType)) and isIMatrixFour(A), 1)
+    A = None
+
+    counter.describeTest("isSliceWorking(1)")
+    counter.evalTest(isSliceWorking(1), 1)
+    
+    counter.describeTest("isSliceWorking(0)")
+    counter.evalTest(isSliceWorking(0), 1)
+
+    counter.finish()
+0

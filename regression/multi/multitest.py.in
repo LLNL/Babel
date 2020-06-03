@@ -1,0 +1,87 @@
+#! @WHICH_PYTHON@
+# File:		multitest.py.in
+# Revision:	$Revision: 7188 $
+# Modified:	$Date: 2011-09-27 11:38:42 -0700 (Tue, 27 Sep 2011) $
+# Description:	test to see if Babel's output changes using --multi
+#
+# Copyright (c) 2005, The Regents of the University of Calfornia.
+# Produced at the Lawrence Livermore National Laboratory.
+# Written by the Components Team <components@llnl.gov>
+# UCRL-CODE-2002-054
+# All rights reserved.
+# 
+# This file is part of Babel. For more information, see
+# http://www.llnl.gov/CASC/components/. Please read the COPYRIGHT file
+# for Our Notice and the LICENSE file for the GNU Lesser General Public
+# License.
+# 
+# This program is free software; you can redistribute it and/or modify it
+# under the terms of the GNU Lesser General Public License (as published by
+# the Free Software Foundation) version 2.1 dated February 1999.
+# 
+# This program is distributed in the hope that it will be useful, but
+# WITHOUT ANY WARRANTY; without even the IMPLIED WARRANTY OF
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the terms and
+# conditions of the GNU Lesser General Public License for more details.
+# 
+# You should have received a copy of the GNU Lesser General Public License
+# along with this program; if not, write to the Free Software Foundation,
+# Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+
+import commands
+import string
+import os
+import os.path
+import sys
+from random import shuffle
+
+os.environ['PATH'] = "@prefix@/bin:@top_builddir@bin:" + os.environ['PATH']
+
+bindings = string.split(commands.getoutput("babel-config --with-bindings"))
+shared_flags = "--suppress-timestamp"
+sidl_files = sys.argv[1:]
+
+def rmtree(path):
+    if (os.path.isdir(path)):
+        for i in os.listdir(path):
+            rmtree(os.path.join(path,i))
+        os.rmdir(path)
+    else:
+        os.remove(path)
+
+for sidlFile in sidl_files:
+    failures = 0
+    successes = 0
+    print "SIDL file: " + sidlFile
+    if (os.path.isdir("reference")):
+        rmtree("reference")
+    if (os.path.isdir("multirun")):
+        rmtree("multirun")
+    os.mkdir("reference")
+    os.mkdir("multirun")
+
+
+    for i in bindings:
+        commands.getoutput("babel " + shared_flags +
+                           " --output-directory reference/lib" + i +
+                           " --server=" + i + " " + sidlFile)
+
+    for i in range(50):
+        rmtree("multirun")
+        os.mkdir("multirun")
+        shuffle(bindings)
+        commandstr = "babel " + shared_flags + " --multi "
+        for j in bindings:
+            commandstr = (commandstr + " --output-directory=multirun/lib" + j +
+                          " --server=" + j + " ")
+        commandstr = commandstr +  " " + sidlFile
+        commands.getoutput(commandstr)
+        (status, output) = commands.getstatusoutput("diff -x babel.make.package -r reference multirun")
+        if (status <> 0):
+            print commandstr
+            print output
+            failures = failures + 1
+        else:
+            successes = successes + 1
+    print `successes` + " successes"
+    print `failures` + " failures"

@@ -1,0 +1,708 @@
+#! @SHELL@
+# -*- sh -*-
+################################################################################
+# 
+# variables set by configure
+#
+
+PACKAGE="@PACKAGE@"
+VERSION="@VERSION@"
+CONFIGPATH="@PATH@"
+
+builddir="@builddir@"
+top_builddir="@top_builddir@"
+abs_builddir="@abs_builddir@"
+abs_top_builddir="@abs_top_builddir@"
+
+srcdir="@srcdir@"
+top_srcdir="@top_srcdir@"
+abs_srcdir="@abs_srcdir@"
+abs_top_srcdir="@abs_top_srcdir@"
+
+prefix="@prefix@"
+exec_prefix="@exec_prefix@"
+bindir="@bindir@"
+libdir="@libdir@"
+sbindir="@sbindir@"
+libexecdir="@libexecdir@"
+datarootdir="@datarootdir@"
+datadir="@datadir@"
+sysconfdir="@sysconfdir@"
+sharedstatedir="@sharedstatedir@"
+localstatedir="@localstatedir@"
+includedir="@includedir@"
+jardir="${prefix}/lib"
+repodir="${datadir}/${PACKAGE}-${VERSION}/repository"
+patchdir="${datadir}/${PACKAGE}-${VERSION}/patches"
+revisionfile="${datadir}/${PACKAGE}-${VERSION}/revision.txt"
+
+build="@build@"
+build_cpu="@build_cpu@"
+build_vendor="@build_vendor@"
+build_os="@build_os@"
+host="@host@"
+host_cpu="@host_cpu@"
+host_vendor="@host_vendor@"
+host_os="@host_os@"
+target="@target@"
+target_cpu="@target_cpu@"
+target_vendor="@target_vendor@"
+target_os="@target_os@"
+
+BABEL_SUPPORTED_LANGUAGES="c cxx f77 f90 f03 java python"
+
+INSTALL="@INSTALL@"
+INSTALL_PROGRAM="@INSTALL_PROGRAM@"
+INSTALL_SCRIPT="@INSTALL_SCRIPT@"
+INSTALL_DATA="@INSTALL_DATA@"
+
+EXEEXT="@EXEEXT@"
+OBJEXT="@OBJEXT@"
+LIBS="@LIBS@"
+
+CPP="@CPP@"
+CPPFLAGS="@CPPFLAGS@"
+
+CC="@CC@"
+WHICH_CC="@WHICH_CC@"
+CFLAGS="@CFLAGS@"
+LDFLAGS="@LDFLAGS@"
+SHARED_LIB_VAR="@SHARED_LIB_VAR@"
+
+PTHREAD_CC="@PTHREAD_CC@"
+PTHREAD_CFLAGS="@PTHREAD_CFLAGS@"
+PTHREAD_LIBS="@PTHREAD_LIBS@"
+
+@SUPPORT_FORTRAN77_TRUE@  SUPPORT_FORTRAN77="true"
+@SUPPORT_FORTRAN77_FALSE@ SUPPORT_FORTRAN77="false"
+F77="@F77@"
+WHICH_F77="@WHICH_F77@"
+FFLAGS="@FFLAGS@"
+FLIBS="@FLIBS@"
+FMAIN="@FMAIN@"
+
+@SUPPORT_CXX_TRUE@  SUPPORT_CXX="true"
+@SUPPORT_CXX_FALSE@ SUPPORT_CXX="false"
+CXX="@CXX@"
+WHICH_CXX="@WHICH_CXX@"
+CXXFLAGS="@CXXFLAGS@"
+CXXLIBS="@CXXLIBS@"
+
+@SUPPORT_JAVA_TRUE@  SUPPORT_JAVA="true"
+@SUPPORT_JAVA_FALSE@ SUPPORT_JAVA="false"
+JAVA="@JAVA@"
+JAVAC="@JAVAC@"
+JAR="@JAR@"
+JAVAH="@JAVAH@"
+JAVAPREFIX="@JAVAPREFIX@"
+JAVAFLAGS="@JAVAFLAGS@"
+JAVACFLAGS="@JAVACFLAGS@"
+JNI_INCLUDES="@JNI_INCLUDES@"
+JNI_LDFLAGS="@JNI_LDFLAGS@"
+JVM_SHARED_LIBRARY="@JVM_SHARED_LIBRARY@"
+JVM_LIBDIR="@LIBJVM_DIR@"
+JAVA_LIBDIR="@LIBJAVA_DIR@"
+JAVA_ADDCLASSPATH_FLAG="@JAVA_ADDCLASSPATH_FLAG@"
+
+@SUPPORT_PYTHON_TRUE@  SUPPORT_PYTHON="true"
+@SUPPORT_PYTHON_FALSE@ SUPPORT_PYTHON="false"
+@SERVER_PYTHON_TRUE@  SERVER_PYTHON="true"
+@SERVER_PYTHON_FALSE@ SERVER_PYTHON="false"
+PYTHON="@PYTHON@"
+WHICH_PYTHON="@WHICH_PYTHON@"
+PYTHON_VERSION="@PYTHON_VERSION@"
+PYTHON_ABIFLAGS="@PYTHON_ABIFLAGS@"
+PYTHONINC="@PYTHONINC@"
+PYTHONLIB="@PYTHONLIB@"
+PYTHON_SHARED_LIBRARY="@PYTHON_SHARED_LIBRARY@"
+PYTHON_SHARED_LIBRARY_DIR="@PYTHON_SHARED_LIBRARY_DIR@"
+
+@SUPPORT_FORTRAN90_TRUE@  SUPPORT_FORTRAN90="true"
+@SUPPORT_FORTRAN90_FALSE@ SUPPORT_FORTRAN90="false"
+@SUPPORT_FORTRAN03_TRUE@  SUPPORT_FORTRAN03="true"
+@SUPPORT_FORTRAN03_FALSE@ SUPPORT_FORTRAN03="false"
+FC="@FC@"
+WHICH_FC="@WHICH_FC@"
+FCFLAGS="@FCFLAGS@"
+FCLIBS="@FCLIBS@"
+FCMAIN="@FCMAIN@"
+F90CPPSUFFIX="@F90CPPSUFFIX@"
+F03CPPSUFFIX="@F90CPPSUFFIX@"
+
+CHASM_FORTRAN_VENDOR="@CHASM_FORTRAN_VENDOR@"
+CHASM_FORTRAN_MFLAG="@CHASM_FORTRAN_MFLAG@"
+CHASM_CFLAGS="@CHASM_CFLAGS@"
+CHASM_LIBS="@CHASM_LIBS@"
+CHASM_PYSETUP="@CHASM_PYSETUP@"
+
+@SUPPORT_STATIC_TRUE@  SUPPORT_STATIC="true"
+@SUPPORT_STATIC_FALSE@ SUPPORT_STATIC="false"
+@SUPPORT_SHARED_TRUE@  SUPPORT_SHARED="true"
+@SUPPORT_SHARED_FALSE@ SUPPORT_SHARED="false"
+
+XML2_CONFIG="@XML2_CONFIG@"
+LIBXML_REQUIRED_VERSION="@LIBXML_REQUIRED_VERSION@"
+LIBXML2_LIB="@LIBXML2_LIB@"
+LIBXML2_CFLAGS="@LIBXML2_CFLAGS@"
+LIBPARSIFAL_LIB="@LIBPARSIFAL_LIB@"
+LIBPARSIFAL_CFLAGS="@LIBPARSIFAL_CFLAGS@"
+LIBPARSIFAL_MODE="@LIBPARSIFAL_MODE@"
+LIBPARSIFAL_PYSETUP="@LIBPARSIFAL_PYSETUP@"
+CCA_BUNDLE_VERSION="@CCA_BUNDLE_VERSION@"
+
+MPI_VENDOR=@MPI_VENDOR@
+MPI_VERSION=@MPI_VERSION@
+MPI_SUBVERSION=@MPI_SUBVERSION@
+
+MPI_CC="@MPI_CC@"
+MPI_CC_CFLAGS="@MPI_CC_CFLAGS@"
+MPI_CC_LDFLAGS="@MPI_CC_LDFLAGS@"
+
+MPI_CXX="@MPI_CXX@"
+MPI_CXX_CFLAGS="@MPI_CXX_CFLAGS@"
+MPI_CXX_LDFLAGS="@MPI_CXX_LDFLAGS@"
+
+MPI_F77="@MPI_F77@"
+MPI_F77_CFLAGS="@MPI_F77_CFLAGS@"
+MPI_F77_LDFLAGS="@MPI_F77_LDFLAGS@"
+
+MPI_FC="@MPI_FC@"
+MPI_FC_CFLAGS="@MPI_FC_CFLAGS@"
+MPI_FC_LDFLAGS="@MPI_FC_LDFLAGS@"
+
+ALL_VARS="PACKAGE VERSION CONFIGPATH builddir top_builddir abs_builddir abs_top_builddir srcdir top_srcdir abs_srcdir abs_top_srcdir prefix exec_prefix bindir libdir sbindir libexecdir datadir sysconfdir sharedstatedir localstatedir includedir jardir repodir build build_cpu build_vendor build_os host host_cpu host_vendor host_os target target_cpu target_vendor target_os INSTALL INSTALL_PROGRAM INSTALL_SCRIPT INSTALL_DATA EXEEXT OBJEXT LIBS CPP CPPFLAGS CC WHICH_CC CFLAGS LDFLAGS SHARED_LIB_VAR PTHREAD_CC PTHREAD_CFLAGS PTHREAD_LIBS SUPPORT_FORTRAN77 F77 WHICH_F77 FFLAGS FLIBS FMAIN SUPPORT_CXX CXX WHICH_CXX CXXFLAGS CXXLIBS SUPPORT_JAVA JAVA JAVAC JAR JAVAH JAVAPREFIX JAVAFLAGS JAVACFLAGS JNI_INCLUDES JNI_LDFLAGS JAVA_LIBDIR JAVA_ADDCLASSPATH_FLAG JVM_LIBDIR JVM_SHARED_LIBRARY SUPPORT_PYTHON SERVER_PYTHON PYTHON WHICH_PYTHON PYTHON_VERSION PYTHONINC PYTHONLIB PYTHON_SHARED_LIBRARY PYTHON_SHARED_LIBRARY_DIR SUPPORT_FORTRAN90 SUPPORT_FORTRAN03 FC WHICH_FC FCFLAGS FCLIBS FCMAIN F90CPPSUFFIX F03CPPSUFFIX SUPPORT_STATIC SUPPORT_SHARED CHASM_FORTRAN_VENDOR CHASM_FORTRAN_MFLAG CHASM_CFLAGS CHASM_LIBS CHASM_PYSETUP XML2_CONFIG LIBXML_REQUIRED_VERSION LIBXML2_LIB LIBXML2_CFLAGS BABEL_SUPPORTED_LANGUAGES CCA_BUNDLE_VERSION MPI_VENDOR MPI_VERSION MPI_SUBVERSION MPI_CC MPI_CC_CFLAGS MPI_CC_LDFLAGS MPI_CXX MPI_CXX_CFLAGS MPI_CXX_LDFLAGS MPI_F77 MPI_F77_CFLAGS MPI_F77_LDFLAGS MPI_FC MPI_FC_CFLAGS MPI_FC_LDFLAGS LIBPARSIFAL_MODE LIBPARSIFAL_LIB LIBPARSIFAL_CFLAGS LIBPARSIFAL_PYSETUP"
+
+################################################################################
+
+
+usage()
+{
+
+    exit_code=$1
+    cat <<EOF
+Usage: babel-config [OPTION]
+
+    This tool is provided to query information about how Babel 
+    was configured and installed.
+
+Generic options:
+    --version       show Babel version
+    --help          display this help and exit.
+
+Installation directories Babel was configured to:
+    --prefix        root for all platform independent files
+    --exec-prefix   root for all platform specific files
+    --bindir        platform specific executables
+    --libdir        platform specific libraries
+    --includedir    platform independent C (and C++) header files
+    --datadir       platform independent data
+    --jardir        where jar files are installed
+    --repodir       where XML repository for SIDL types are installed
+
+Language support enabled/disabled at configuration time:
+    --with-bindings lists all supported language bindings
+    --with-<LANG>   exits 0 if language support was enabled, 1 otherwise
+    --with-server-python 
+		    same as above if server-side python is enabled
+
+* <LANG> is any one of {c, c++, f77, f90, f03, java, python}
+
+Help building things to work with Babel
+    --xml2-config   Fully qualified path to xml2-config script
+    --includes      -I prepended directories for Babel
+    --includes-f77  -I prepended directories for the F77 binding
+    --includes-f90  -I prepended directories for the F90 binding
+    --includes-f90-mod  F90 compiler flags to find precompiled F90 module files
+    --includes-f03  -I prepended directories for the F03 binding
+    --includes-f03-mod  F03 compiler flags to find precompiled F03 module files
+    --includes-c++ -I prepended directories for the C++ binding 
+    --includes-jni  -I prepended directories for JNI, if enabled in Babel
+    --includes-py   -I prepended directories for Python, if enabled in Babel
+    --includes-xml2 -I prepended directories for XML2 
+    --flags-libparsifal  -I prepended directories for libparsifal, if enabled
+    --flags-<LANG>  all flags for <LANG>, if enabled *
+    --flags-cpp     same as CPPFLAGS
+    --flags-javac
+    --libs-<LANG>-client  link libraries for <LANG> including sidl stubs
+    --libs-<LANG>   all link library directives for <LANG>, if enabled 
+    --libs-<LANG>-L -L prepended directories for <LANG>, if enabled
+    --libs-<LANG>-l -l prepended libraries for <LANG>, if enabled
+    --libs-libparsifal    linker flags for libparsifal, if enabled
+    --libtool-libparsifal libtool flags for libparsifal, if enabled
+    --libs-libchasmlite   linker flags for libchasmlite, if enabled
+    --libtool-libchasmlite libtool flags for libchasmlite, if enabled
+    --libtool-xml2   XML2 libtool library .la
+
+Low-level query: 
+    --query-var=<variable-name>      literal query of what was recorded/used at 
+				     configure time.  Nonzero exit if variable 
+				     not explicitly set.
+
+    --which-var=<variable-name>      absolute path expansion using configure 
+				     time PATH variable, nonzero exit if cannot 
+				     find.  No protection against nonsensical
+				     combinations, such as --which-var=LDFLAGS
+
+    --configpath-var=<variable-name> absolute path as recorded at configure 
+				     time, nonzero exit if absolute path was 
+				     not recorded.
+
+Low-level dump:  writes VARNAME=value pairs, one per line.
+    --dump | --dump-vars
+    --dump-vars=PREFIX  (prefixes PREFIX to all variables)
+
+*NOTE:  Babel uses libtool to compile and link libraries, examples, and tests.
+	babel-config presents information passed into libtool.  But, libtool 
+	may add/change compiler or linker flags as code is being built. 
+	(e.g. may add -fPIC -DPIC)
+EOF
+    exit $exit_code
+}
+
+dump_vars() 
+{
+ varname_prefix=${1:-""}
+ for i in $ALL_VARS; do
+    j=`eval echo \\$$i`;
+    echo $varname_prefix$i=\"$j\";
+ done
+}
+
+echo_libs()
+{
+    constraint=`echo "$1" | sed -e 's/--[_a-zA-Z0-9\+]*-[_a-zA-Z0-9\+]*//'`
+    shift
+    Lcommands=
+    lcommands=
+    ocommands=
+    while test $# -gt 0; do
+	case "$1" in 
+	-L*)
+	    Lcommands="$Lcommands $1"
+	    ;;
+	-l*)
+	    lcommands="$lcommands $1"
+	    ;;
+	*)
+	    ocommands="$ocommands $1"
+	    ;;
+	esac
+	shift
+    done
+    if test -z "$constraint"; then
+	echo $Lcommands $lcommands $ocommands
+    elif test "$constraint" = "-L"; then
+	echo $Lcommands
+    elif test "$constraint" = "-l"; then
+	echo $lcommands
+    else
+	exit 1
+    fi
+    exit 0
+}
+
+
+
+if test $# -eq 0; then
+    usage 1
+fi
+
+case "$build_os" in
+  darwin*)
+    rpath_str=""
+    ;;
+  *)
+    rpath_str="-Wl,-rpath,$libdir"
+    ;;
+esac
+
+if test "X$LIBPARSIFAL_MODE" = Xlocal -o "X$LIBPARSIFAL_MODE" = Xlocal_babel ; then
+  libparsifal_libs="-L$libdir $rpath_str -lparsifal"
+else
+  libparsifal_libs="$LIBPARSIFAL_LIB"
+fi
+
+if test "$SUPPORT_FORTRAN90" = "true" ; then
+  libchasmlite_libs="-L$libdir $rpath_str -lchasmlite"
+else
+  libchasmlite_libs=""
+fi
+
+# flags needed for both client and server implementations
+BABEL_LDFLAGS="-L$libdir $rpath_str -lsidl $libparsifal_libs $libchasmlite_libs"
+
+while test $# -gt 0; do
+    case "$1" in 
+    -*=*) optarg=`echo "$1" | sed -e 's/[-_a-zA-Z0-9]*=//'`;;
+    *) optarg= ;;
+    esac
+
+    case $1 in
+    --version-full)
+	if test \! -f "$revisionfile"; then
+	   revisionfile="$abs_top_builddir/bin/revision.txt"
+	   if test \! -f "$revisionfile"; then
+	     revisionfile="$abs_top_srcdir/bin/revision.txt"
+	   fi
+	fi
+	if test -f "$revisionfile"; then
+	  svnrev=`head -n 1 $revisionfile`
+	  svnbranch=`tail -n 1 $revisionfile`
+        else
+	  svnrev="Unknown"
+	  svnbranch="Unknown"
+        fi
+	echo "$VERSION (Revision: $svnrev $svnbranch)"
+	if test \! -d "$patchdir"; then
+	   patchdir="$abs_top_srcdir/runtime/patches"
+	fi
+	echo "PATCH NAME  DESCRIPTION                                    EMAIL"
+	if test "`echo "$patchdir"/*.txt`" != "$patchdir/*.txt"; then
+	   for f in $patchdir/*.txt ; do
+	       awk 'BEGIN { filename=ARGV[1]; sub(".*/","",filename); sub("\\.txt$","",filename); } NR==1 { desc=$0; } NR==2 { printf("%-11s %-46s %s\n", filename, desc, $0); } NR>2 { }' $f
+	   done
+	fi
+	uname -a
+	exit 0
+	;;
+    --version)
+	echo $VERSION
+	exit 0
+	;;
+    --exec-prefix)
+	echo $exec_prefix
+	exit 0
+	;;
+    --prefix)
+	echo $prefix
+	exit 0
+	;;
+    --help)
+	usage 0
+	;;
+    --dump | --dump-vars) 
+	dump_vars ""
+	;;
+    --dump=* | --dump-vars=* ) 
+	dump_vars $optarg
+	;;
+    --with-bindings)
+	bindings="c"
+	if test "$SUPPORT_CXX" = "true"; then
+	  bindings="$bindings c++"
+	fi
+	if test "$SUPPORT_FORTRAN77" = "true"; then
+	  bindings="$bindings f77"
+	fi
+	if test "$SUPPORT_FORTRAN90" = "true"; then
+	  bindings="$bindings f90"
+	fi
+	if test "$SUPPORT_FORTRAN03" = "true"; then
+	  bindings="$bindings f03"
+	fi
+	if test "$SUPPORT_JAVA" = "true"; then
+	  bindings="$bindings java"
+	fi
+	if test "$SUPPORT_PYTHON" = "true"; then
+	  bindings="$bindings python"
+	fi
+	echo $bindings
+	exit 0
+	;;
+    --with-c)
+	exit 0 #Babel cannot work without C
+	;;
+    --with-dc++)
+	exit 1
+	;;
+    --with-c++ | --with-cxx)
+	test "$SUPPORT_CXX" = "true" && exit 0
+	exit 1
+	;;
+    --with-f77)
+	test "$SUPPORT_FORTRAN77" = "true" && exit 0
+	exit 1
+        ;;
+    --with-f90)
+        test "$SUPPORT_FORTRAN90" = "true" && exit 0
+	exit 1
+	;;
+    --with-f03)
+        test "$SUPPORT_FORTRAN03" = "true" && exit 0
+	exit 1
+	;;
+    --with-java)
+	test "$SUPPORT_JAVA" = "true" && exit 0
+	exit 1
+        ;;
+    --with-python)
+	test "$SUPPORT_PYTHON" = "true" && exit 0
+	exit 1
+	;;
+    --with-server-python)
+	test "$SERVER_PYTHON" = "true" && exit 0
+	exit 1
+	;;
+    --query-var=*)
+	for i in $ALL_VARS; do
+	  if test "X$i" = "X$optarg"; then
+	    value=`eval echo \\$$optarg`
+ 	    test -z "value" && exit 1
+	    echo $value
+	    exit 0
+          fi
+	done
+	exit 1
+	;;
+    --which-var=*)
+	for i in $ALL_VARS; do
+	  if test "X$i" = "X$optarg"; then
+ 	    value=`eval echo \\$$optarg`
+	    test -z "value" && exit 1
+	    value=`echo "$value" | awk -F" " '{print $1}'`
+            case $value in 
+              /*) # already an absolute path... just verify it exists.
+		if test -e "$value"; then
+		  echo $value
+		  exit 0
+		fi
+		;;
+	      *)
+	   	cpath=`echo "$CONFIGPATH" | sed -e 's/:/ /g'`
+	        for j in $cpath; do 
+	          if test -e "$j/$value"; then
+	 	    echo "$j/$value";
+		    exit 0
+	          fi
+                done
+                ;;
+            esac
+	    exit 1
+	  fi
+        done
+	exit 1
+	;;
+    --configpath-var=*)
+	for i in $ALL_VARS; do
+	  if test "X$i" = "XWHICH_$optarg"; then
+	    varname=`eval echo \\$WHICH_$optarg`
+	    test -z "varname" && exit 1
+	    echo $varname
+	    exit 0;
+          fi; 
+        done
+        exit 1
+	;;
+    --xml2-config)
+	echo $XML2_CONFIG
+	exit 0
+	;;
+    --includes)
+	if test "$includedir" = "${exec_prefix}/include" ; then
+	    echo "-I$includedir"
+	else
+	    echo "-I$includedir -I${exec_prefix}/include"
+	fi
+	exit 0
+	;;
+    --includes-f77)
+	if test "$includedir" = "${exec_prefix}/include" ; then
+	    echo "-I$includedir/f77"
+	else
+	    echo "-I$includedir/f77 -I${exec_prefix}/include/f77"
+	fi
+	exit 0
+	;;
+    --includes-f90)
+	if test "$includedir" = "${exec_prefix}/include" ; then
+	    echo "-I$includedir/f90"
+	else
+	    echo "-I$includedir/f90 -I${exec_prefix}/include/f90"
+	fi
+	exit 0
+	;;
+    --includes-f90-mod)
+	if test "$includedir" = "${exec_prefix}/include" ; then
+	    echo "$CHASM_FORTRAN_MFLAG$includedir/f90"
+	else
+	    echo "$CHASM_FORTRAN_MFLAG$includedir/f90 $CHASM_FORTRAN_MFLAG${exec_prefix}/include/f90"
+	fi
+	exit 0
+	;;
+    --includes-f03)
+	if test "$includedir" = "${exec_prefix}/include" ; then
+	    echo "-I$includedir/f03"
+	else
+	    echo "-I$includedir/f03 -I${exec_prefix}/include/f03"
+	fi
+	exit 0
+	;;
+    --includes-f03-mod)
+	if test "$includedir" = "${exec_prefix}/include" ; then
+	    echo "$CHASM_FORTRAN_MFLAG$includedir/f03"
+	else
+	    echo "$CHASM_FORTRAN_MFLAG$includedir/f03 $CHASM_FORTRAN_MFLAG${exec_prefix}/include/f03"
+	fi
+	exit 0
+	;;
+    --includes-c++ | --includes-cxx)
+	if test "$includedir" = "${exec_prefix}/include" ; then
+	    echo "-I$includedir -I$includedir/cxx"
+	else
+	    echo "-I$includedir -I${exec_prefix}/include -I$includedir/cxx -I${exec_prefix}/include/cxx"
+	fi
+	exit 0
+	;;
+    --includes-jni)
+	test "$SUPPORT_JAVA" = "false" && exit 1
+	echo $JNI_INCLUDES "-I$includedir -I$includedir/java"
+	exit 0
+	;;
+    --includes-py)
+	test "$SUPPORT_PYTHON" = "false" && exit 1
+	echo $PYTHONINC -I$includedir/python$PYTHON_VERSION/llnl_babel -I$includedir/python$PYTHON_VERSION/llnl_babel_sidl_sidlx
+	exit 0
+	;;
+    --includes-xml2)
+	echo $LIBXML2_CFLAGS
+	exit 0
+	;;
+    --flags-libparsifal)
+	case "$LIBPARSIFAL_MODE" in
+	local)
+	  echo "-I$includedir"
+	  ;;
+	local_babel)
+	  echo "-I$includedir -D_PNS"
+	  ;;
+	*)
+	  echo $LIBPARSIFAL_CFLAGS
+	  ;;
+	esac
+	exit 0
+	;;
+    --flags-c)
+	echo $CFLAGS
+	exit 0
+	;;
+    --flags-cpp)
+	echo $CPPFLAGS
+	exit 0
+	;;
+    --flags-c++ | --flags-cxx)
+	echo $CXXFLAGS
+	exit 0
+	;;
+    --flags-f77)
+	echo $FFLAGS
+	exit 0
+	;;
+    --flags-f90 | --flags-f03)
+	echo $FCFLAGS
+	exit 0
+	;;
+    --flags-java)
+	echo $JAVAFLAGS
+	exit 0
+	;;
+    --flags-javac)
+	echo $JAVACFLAGS
+	exit 0
+	;;
+    --flags-python)
+	echo 
+	exit 0;
+	;;
+    --libs-c | --libs-c-L | --libs-c-l)
+	echo_libs $1 $LDFLAGS
+	;;
+    --libs-c++ | --libs-c++-L | --libs-c++-l | --libs-cxx | --libs-cxx-L | --libs-cxx-l)
+	test "$SUPPORT_CXX" = "false" && exit 1
+	echo_libs $1 $CXXLIBS
+	;;
+    --libs-c-client | --libs-python-client)
+	echo "$BABEL_LDFLAGS"
+	;;
+    --libs-cxx-client | --libs-c++-client)
+	echo "-L$libdir $rpath_str -lsidlstub_cxx -lsidl $libparsifal_libs $libchasmlite_libs"
+	;;
+    --libs-f90-client)
+	echo "-L$libdir $rpath_str -lsidlstub_f90 -lsidl $libparsifal_libs $libchasmlite_libs"
+	;;
+    --libs-f03-client)
+	echo "-L$libdir $rpath_str -lsidlstub_f03 -lsidl $libparsifal_libs $libchasmlite_libs"
+	;;
+    --libs-f77-client)
+	echo "-L$libdir $rpath_str -lsidlstub_f77 -lsidl $libparsifal_libs $libchasmlite_libs"
+	;;
+    --libs-java-client)
+	echo "-L$libdir $rpath_str -lsidlstub_java -lsidl $libparsifal_libs $libchasmlite_libs"
+	;;
+    --libs-f77 | --libs-f77-L | --libs-f77-l)
+	test "$SUPPORT_FORTRAN77" = "false" && exit 1
+	echo_libs $1 $FLIBS $BABEL_LDFLAGS
+	;;
+    --libs-f90 | --libs-f90-L | --libs-f90-l)
+	test "$SUPPORT_FORTRAN90" = "false" && exit 1
+	echo_libs $1 $FCLIBS $BABEL_LDFLAGS
+	;;
+    --libs-f03 | --libs-f03-L | --libs-f03-l)
+	test "$SUPPORT_FORTRAN03" = "false" && exit 1
+	echo_libs $1 $FCLIBS $BABEL_LDFLAGS
+	;;
+    --libs-java | --libs-java-L | --libs-java-l)
+	test "$SUPPORT_JAVA" = "false" && exit 1
+	echo_libs $1 $JNI_LDFLAGS $BABEL_LDFLAGS
+	;;
+    --libs-python | --libs-python-L | --libs-python-l)
+	test "$SUPPORT_PYTHON" = "false" && exit 1
+	test "$SERVER_PYTHON" = "false" && exit 1
+	echo_libs $1 "-L$PYTHON_SHARED_LIBRARY_DIR" "-lpython${PYTHON_VERSION}${PYTHON_ABIFLAGS}" $BABEL_LDFLAGS
+	;;
+    --libtool-xml2) 
+	echo $LIBXML2_LIB
+	exit 0
+	;;
+    --libs-libparsifal)
+        echo "$libparsifal_libs"
+	exit 0
+	;;
+    --libtool-libparsifal)
+	if test "X$LIBPARSIFAL_MODE" = Xlocal -o "X$LIBPARSIFAL_MODE" = Xlocal_babel ; then
+	  echo "$libdir/libparsifal.la"
+	else
+	  echo "-L$libdir $rpath_str -lparsifal"
+	fi
+	exit 0
+	;;
+    --libs-libchasmlite)
+        echo "$libchasmlite_libs"
+	exit 0
+	;;
+    --libtool-libparsifal)
+	if test "$SUPPORT_FORTRAN90" = "true" ; then
+	  echo "$libdir/libchasmlite.la"
+	else
+	  echo ""
+	fi
+	exit 0
+	;;
+    --*dir)
+	dirname=\$`echo $1 | sed -e 's,^--,,'`
+	dirname=`eval echo $dirname`
+	test -z "dirname" && exit 1
+	echo $dirname
+	exit 0
+	;;
+    --*)
+	usage 1
+	;;
+    *)
+	usage 1
+	;;
+    esac
+    shift	
+done
+
+
+

@@ -1,0 +1,35 @@
+--- SimpleNode.java.orig	2006-04-06 08:13:37.000000000 -0700
++++ SimpleNode.java	2006-04-06 08:14:47.000000000 -0700
+@@ -8,6 +8,10 @@
+   protected int id;
+   protected SIDLParser parser;
+ 
++  protected Token first, last; // gkk
++  public String name=""; // gkk
++  public String doc=""; // gkk
++
+   public SimpleNode(int i) {
+     id = i;
+   }
+@@ -18,11 +22,19 @@
+   }
+ 
+   public void jjtOpen() {
++    first = parser.getToken(1); // gkk
+   }
+-
++ 
+   public void jjtClose() {
++    last = parser.getToken(0);  // gkk
+   }
+-  
++ 
++  public Token getFirstToken() { return first; } // gkk
++  void setFirstToken(Token f) { first = f; } // tgwe
++  public Token getLastToken() { return last; }   // gkk
++  void setLastToken(Token l) { last = l; } // tgwe
++  public int getID() { return id; } // gkk
++   
+   public void jjtSetParent(Node n) { parent = n; }
+   public Node jjtGetParent() { return parent; }
+ 

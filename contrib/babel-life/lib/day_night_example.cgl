@@ -1,0 +1,22 @@
+# Day Night Example
+# An explicit example of the symmetry of the Day & Night S34678/B3678 rule.  
+# This is two copies of a period 3 oscillator in normal and inverted form.  The
+# LIVE cells in the inverted form actually extend to infinity, but it
+# turns out that a stable boundary can be constructed around a large area
+# of LIVE cells that does not change, thereby allowing a finite region of
+# the inverted object to be shown and correctly run.  (Of course, if the
+# internal object manages to reach the boundary, then this finite region no
+# longer represents the true inverted object.) -- David Ingalls Bell
+
+ ...............O..O.O..O...
+ .............OOOOOOOOOOOOO.
+ .............OOOOOOOOOOOOO.
+ ............OOOOOOOOOOOOOOO
+ .OO.OO.......OOOO..O..OOOO.
+ O.O.O.O.....OOOO.O.O.O.OOOO
+ O.O.O.O.....OOOO.O.O.O.OOOO
+ .OO.OO.......OOOO..O..OOOO.
+ ............OOOOOOOOOOOOOOO
+ .............OOOOOOOOOOOOO.
+ .............OOOOOOOOOOOOO.
+ ...............O..O.O..O...

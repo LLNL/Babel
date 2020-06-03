@@ -1,0 +1,4 @@
+synch_BABEL_MAKEFILE_NAME = synch_babel.make
+synch_STUB_SRC_DIRS = .
+synch_JAVA_SRC_DIRS = synch/
+synch_JAVA_SRC_FILES = synch/RegOut.java synch/ResultType.java

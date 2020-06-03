@@ -1,0 +1,82 @@
+# IORHDRS dependencies.
+hooks_Basics_IOR.h:                                                           \
+  /home/leek2/babel/btest/vpath/regression/hooks/runJava/../../../../babel/regression/hooks/runJava/../hooks.sidl
+hooks_Basics_IOR.h: sidl_header.h
+hooks_Basics_IOR.h: sidl_BaseClass_IOR.h
+
+hooks_IOR.h:                                                                  \
+  /home/leek2/babel/btest/vpath/regression/hooks/runJava/../../../../babel/regression/hooks/runJava/../hooks.sidl
+hooks_IOR.h: hooks_Basics_IOR.h
+
+synch_IOR.h:                                                                  \
+  /home/leek2/babel/btest/vpath/regression/hooks/runJava/../../../../babel/regression/hooks/runJava/../../output/output.sidl
+synch_IOR.h: synch_RegOut_IOR.h
+synch_IOR.h: synch_ResultType_IOR.h
+
+synch_RegOut_IOR.h:                                                           \
+  /home/leek2/babel/btest/vpath/regression/hooks/runJava/../../../../babel/regression/hooks/runJava/../../output/output.sidl
+synch_RegOut_IOR.h: sidl_header.h
+synch_RegOut_IOR.h: sidl_BaseClass_IOR.h
+synch_RegOut_IOR.h: synch_ResultType_IOR.h
+
+synch_ResultType_IOR.h: sidlType.h
+
+
+# STUBHDRS dependencies.
+hooks_Basics_jniStub.h:                                                       \
+  /home/leek2/babel/btest/vpath/regression/hooks/runJava/../../../../babel/regression/hooks/runJava/../hooks.sidl
+hooks_Basics_jniStub.h: hooks_Basics_IOR.h
+
+synch_RegOut_jniStub.h:                                                       \
+  /home/leek2/babel/btest/vpath/regression/hooks/runJava/../../../../babel/regression/hooks/runJava/../../output/output.sidl
+synch_RegOut_jniStub.h: synch_RegOut_IOR.h
+
+
+# STUBSRCS dependencies.
+hooks_Basics_jniStub.c:                                                       \
+  /home/leek2/babel/btest/vpath/regression/hooks/runJava/../../../../babel/regression/hooks/runJava/../hooks.sidl
+hooks_Basics_jniStub.c: sidl_Java.h
+hooks_Basics_jniStub.c: sidl_Loader.h
+hooks_Basics_jniStub.c: sidl_String.h
+hooks_Basics_jniStub.c: hooks_Basics_IOR.h
+hooks_Basics_jniStub.c: babel_config.h
+hooks_Basics_jniStub.c: hooks_Basics_jniStub.h
+hooks_Basics_jniStub.c: sidl_BaseClass_jniStub.h
+hooks_Basics_jniStub.c: sidl_BaseInterface_jniStub.h
+hooks_Basics_jniStub.c: sidl_ClassInfo_jniStub.h
+hooks_Basics_jniStub.c: sidl_RuntimeException_jniStub.h
+hooks_Basics_jniStub.c: sidl_BaseClass.h
+hooks_Basics_jniStub.c: sidl_ClassInfo.h
+hooks_Basics_jniStub.c: sidl_rmi_ProtocolFactory.h
+hooks_Basics_jniStub.c: sidl_rmi_InstanceRegistry.h
+hooks_Basics_jniStub.c: sidl_rmi_InstanceHandle.h
+hooks_Basics_jniStub.c: sidl_rmi_Invocation.h
+hooks_Basics_jniStub.c: sidl_rmi_Response.h
+hooks_Basics_jniStub.c: sidl_rmi_ServerRegistry.h
+hooks_Basics_jniStub.c: sidl_rmi_ConnectRegistry.h
+hooks_Basics_jniStub.c: sidl_io_Serializable.h
+
+synch_RegOut_jniStub.c:                                                       \
+  /home/leek2/babel/btest/vpath/regression/hooks/runJava/../../../../babel/regression/hooks/runJava/../../output/output.sidl
+synch_RegOut_jniStub.c: sidl_Java.h
+synch_RegOut_jniStub.c: sidl_Loader.h
+synch_RegOut_jniStub.c: sidl_String.h
+synch_RegOut_jniStub.c: synch_RegOut_IOR.h
+synch_RegOut_jniStub.c: babel_config.h
+synch_RegOut_jniStub.c: sidl_BaseClass_jniStub.h
+synch_RegOut_jniStub.c: sidl_BaseInterface_jniStub.h
+synch_RegOut_jniStub.c: sidl_ClassInfo_jniStub.h
+synch_RegOut_jniStub.c: sidl_RuntimeException_jniStub.h
+synch_RegOut_jniStub.c: synch_RegOut_jniStub.h
+synch_RegOut_jniStub.c: sidl_BaseClass.h
+synch_RegOut_jniStub.c: sidl_ClassInfo.h
+synch_RegOut_jniStub.c: sidl_rmi_ProtocolFactory.h
+synch_RegOut_jniStub.c: sidl_rmi_InstanceRegistry.h
+synch_RegOut_jniStub.c: sidl_rmi_InstanceHandle.h
+synch_RegOut_jniStub.c: sidl_rmi_Invocation.h
+synch_RegOut_jniStub.c: sidl_rmi_Response.h
+synch_RegOut_jniStub.c: sidl_rmi_ServerRegistry.h
+synch_RegOut_jniStub.c: sidl_rmi_ConnectRegistry.h
+synch_RegOut_jniStub.c: sidl_io_Serializable.h
+
+

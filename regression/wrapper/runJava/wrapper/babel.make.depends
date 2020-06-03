@@ -1,0 +1,10 @@
+# JAVAIMPL dependencies.
+Data_Impl.java:                                                               \
+  /home/epperly/current/babel_fix_wrap/regression/wrapper/runSIDL/../wrapper.sidl
+
+
+# STUBJAVA dependencies.
+Data.java:                                                                    \
+  /home/epperly/current/babel_fix_wrap/regression/wrapper/runSIDL/../wrapper.sidl
+
+

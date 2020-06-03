@@ -1,0 +1,187 @@
+#!/usr/local/bin/python
+#
+# File:        overloadtest
+# Copyright:   (c) 2001 Lawrence Livermore National Security, LLC
+# Revision:    @(#) $Revision: 6776 $
+# Date:        $Date: 2009-11-10 17:33:00 -0800 (Tue, 10 Nov 2009) $
+# Description: Exercise overloaded methods
+#
+# Try to exercise everything possible in Python.
+
+import sidlPyArrays
+import Overload.Test
+import Overload.AnException
+import Overload.AClass
+import Overload.BClass
+import sys
+if sidlPyArrays.type == "numpy":
+  from numpy import zeros, float32
+else:
+  import Numeric
+  zeros = Numeric.zeros
+  float32 = Numeric.Float32
+from synch.ResultType import *
+from synch import RegOut
+
+#basic RMI support
+remoteURL = ''
+
+def withRMI():
+  return remoteURL != ''
+
+def makeAnException():
+  if withRMI():
+    return Overload.AnException.AnException(url=remoteURL)
+  else:
+    return Overload.AnException.AnException()
+
+def makeOverloadTest():
+  if withRMI():
+    return Overload.Test.Test(url=remoteURL)
+  else:
+    return Overload.Test.Test()
+
+def makeAClass():
+  if withRMI():
+    return Overload.AClass.AClass(url=remoteURL)
+  else:
+    return Overload.AClass.AClass()
+
+def makeBClass():
+  if withRMI():
+    return Overload.BClass.BClass(url=remoteURL)
+  else:
+    return Overload.BClass.BClass()
+
+def toFloat(d):
+  tmp = zeros((1,), float32)
+  try:
+    tmp[0] = d
+  except AttributeError:
+    # don't die!
+    tmp[0] = d
+  return float(tmp[0])
+
+class TestCounter:
+  def __init__(self, numparts = -1):
+    self.partno = 0
+    self.tracker = RegOut.RegOut()
+    self.tracker.setExpectations(numparts)
+
+  def describeTest(self, description):
+    self.partno = self.partno + 1
+    self.tracker.startPart(self.partno)
+    self.tracker.writeComment(description)
+
+  def evalTest(self, result, expected):
+    if (result):
+      if (expected):
+        self.tracker.endPart(self.partno, PASS)
+      else:
+        self.tracker.endPart(self.partno, XPASS)
+    else:
+      if (expected):
+        self.tracker.endPart(self.partno, FAIL)
+      else:
+        self.tracker.endPart(self.partno, XFAIL)
+        
+  def finish(self):
+    self.tracker.close()
+
+if __name__ == '__main__':
+  import sys
+  counter = TestCounter(23)
+
+  # Parse the command line  to see if we are running RMI tests
+  for arg in sys.argv:
+    if arg.startswith("--url="):
+      remoteURL = arg[6:]
+      remoteURL = counter.tracker.replaceMagicVars(remoteURL, '')
+      
+  if withRMI():
+    print 'using remote URL ' + remoteURL
+
+  # Setup RMI if necessary
+  if withRMI():
+    import sidl.rmi.ProtocolFactory
+    print 'registering RMI protocol simhandle'
+    if not sidl.rmi.ProtocolFactory.addProtocol('simhandle', 'sidlx.rmi.SimHandle'):
+      print('sidl.rmi.ProtocolFactor.addProtocol() failed')
+      sys.exit(2);
+  
+  b1 = 1
+  d1 = 1.0
+  i1 = 1
+  f1 = toFloat(1.0)
+  did = d1 + i1
+  didf = did + f1
+  s1 = "AnException"
+  fc1 = toFloat(1.1) + toFloat(1.1) * 1.0j
+  dc1 = 2.2 + 2.2 * 1.0j
+
+  counter.describeTest("t = Overload.Test.Test()")
+  t = makeOverloadTest()
+  counter.evalTest(t != None, 1)
+  
+  # 0-argument test
+  counter.describeTest("t.getValue() -> expect a 1 returned")
+  counter.evalTest(t.getValue() == 1, 1)
+  
+  # 1-argument tests
+  counter.describeTest("t.getValueBool()")
+  counter.evalTest(t.getValueBool(b1) == b1, 1)
+  counter.describeTest("t.getValueDouble()")
+  counter.evalTest(t.getValueDouble(d1) == d1, 1)
+  counter.describeTest("t.getValueDcomplex()")
+  counter.evalTest(t.getValueDcomplex(dc1) == dc1, 1)
+  counter.describeTest("t.getValueFloat()")
+  counter.evalTest(t.getValueFloat(f1) == f1, 1)
+  counter.describeTest("t.getValueFcomplex()")
+  counter.evalTest(t.getValueFcomplex(fc1) == fc1, 1)
+  counter.describeTest("t.getValueInt()")
+  counter.evalTest(t.getValueInt(i1) == i1, 1)
+  counter.describeTest("t.getValueString()")
+  counter.evalTest(t.getValueString(s1) == s1, 1)
+
+  counter.describeTest("ae = Overload.AnException.AnException()")
+  ae = makeAnException()
+  counter.evalTest(ae != None, 1)
+  counter.describeTest("t.getValueException() -> expect success")
+  counter.evalTest(t.getValueException(ae) == s1, 1)
+
+  counter.describeTest("ac = Overload.AClass.AClass()")
+  ac = makeAClass()
+  counter.evalTest(ac != None, 1)
+  counter.describeTest("t.getValueAClass() -> expect a 2 returned")
+  counter.evalTest(t.getValueAClass(ac) == 2, 1)
+  
+  counter.describeTest("bc = Overload.BClass.BClass()")
+  bc = makeBClass()
+  counter.evalTest(bc != None, 1)
+  counter.describeTest("t.getValueBClass() -> expect a 2 returned")
+  counter.evalTest(t.getValueBClass(bc) == 2, 1)
+  
+  # 2-argument tests
+  counter.describeTest("t.getValueDoubleInt() -> expect success")
+  counter.evalTest(t.getValueDoubleInt(d1, i1) == did, 1)
+  counter.describeTest("t.getValueIntDouble() -> expect success")
+  counter.evalTest(t.getValueIntDouble(i1, d1) == did, 1)
+
+  # 3-argument tests
+  counter.describeTest("t.getValueDoubleIntFloat() -> expect success")
+  counter.evalTest(t.getValueDoubleIntFloat(d1, i1, f1) == didf, 1)
+  counter.describeTest("t.getValueIntDoubleFloat() -> expect success")
+  counter.evalTest(t.getValueIntDoubleFloat(i1, d1, f1) == didf, 1)
+
+  counter.describeTest("t.getValueDoubleFloatInt() -> expect success")
+  counter.evalTest(t.getValueDoubleFloatInt(d1, f1, i1) == didf, 1)
+  counter.describeTest("t.getValueIntFloatDouble() -> expect success")
+  counter.evalTest(t.getValueIntFloatDouble(i1, f1, d1) == didf, 1)
+
+  counter.describeTest("t.getValueFloatDoubleInt() -> expect success")
+  counter.evalTest(t.getValueFloatDoubleInt(f1, d1, i1) == didf, 1)
+  counter.describeTest("t.getValueFloatIntDouble() -> expect success")
+  counter.evalTest(t.getValueFloatIntDouble(f1, i1, d1) == didf, 1)
+
+  counter.finish()
+0

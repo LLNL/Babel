@@ -1,0 +1,47 @@
+#! /bin/sh
+## File:        javacc
+## Package:     Babel binary
+## Copyright:   (c) 2000-2001 Lawrence Livermore National Security, LLC
+## Revision:    $Revision: 6171 $
+## Modified:    $Date: 2007-10-08 16:39:28 -0700 (Mon, 08 Oct 2007) $
+## Description: script to run JavaCC compiler to generate parser
+##
+
+DIR=`dirname "$0"`
+LIB=`cd "$DIR/../lib" && pwd`
+
+#
+# Check if we are running in the cygwin environment
+#
+case "`uname`" in
+  CYGWIN*) cygwin=true;;
+  *) cygwin=false;;
+esac
+
+#
+# Remove ./path and path1/./path2 from non-arguments for AIX JVM
+#
+args=""
+for a in $@; do
+  case "$a" in
+    -*) ;;
+    *) a=`echo $a | sed -e 's,^\./,,g' -e 's,/\./,,g'` ;;
+  esac
+  args="$args $a"
+done
+
+#
+# Calculate the classpath and modify it if CYGWIN
+#
+
+CLASSPATH=${LIB}/javaCC-1.1.zip
+if $cygwin; then
+  CLASSPATH=`cygpath --path --windows "${CLASSPATH}"`
+fi
+
+#
+# Run the Babel java code
+#
+
+echo java -classpath "$CLASSPATH" COM.sun.labs.javacc.Main "$@"
+java -classpath "$CLASSPATH" COM.sun.labs.javacc.Main "$@"

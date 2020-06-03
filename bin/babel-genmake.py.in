@@ -1,0 +1,260 @@
+#
+# This script generates a Makfile_Impl which may be helpful
+# for beginning Babel users
+#
+
+import sys
+
+usage="""
+Usage:
+  babel-genmake 
+
+"""
+
+header="""
+# This is a boilerplate Makefile for Babel code created by 'babel-genmake'.
+# 'babel-genmake' is experimental:
+# Its intent is to do 90\% of the tedious stuff.
+# Some customization is inevitable.
+
+include babel.make
+
+"""
+
+user_defined="""
+############################################################
+#
+# User Defined Stuff
+#
+# Most of the customizations should appear here
+#
+
+LIBNAME= #add the name of the library (sans .a or .so suffix)
+SIDLFILE= #add the name(s) of the sidl SOURCE FILE
+BABELOPTS= #add additional flags to Babel here
+"""
+
+Settings = r"""
+############################################################
+#
+# These are all settings determined at configure time
+#
+PACKAGE="@PACKAGE@"
+VERSION="@VERSION@"
+CONFIGPATH="@PATH@"
+
+builddir="@builddir@"
+top_builddir="@topbuilddir@"
+abs_builddir="@abs_builddir@"
+abs_top_builddir="@abs_top_builddir@"
+
+srcdir="@srcdir@"
+top_srcdir="@topsrcdir@"
+abs_srcdir="@abs_srcdir@"
+abs_top_srcdir="@abs_top_srcdir@"
+
+prefix="@prefix@"
+exec_prefix="@exec_prefix@"
+bindir="@bindir@"
+libdir="@libdir@"
+sbindir="@sbindir@"
+libexecdir="@libexecdir@"
+datarootdir="@datarootdir@"
+datadir="@datadir@"
+sysconfdir="@sysconfdir@"
+sharedstatedir="@sharedstatedir@"
+localstatedir="@localstatedir@"
+includedir="@includedir@"
+jardir="${prefix}/lib"
+repodir="${datadir}/${PACKAGE}-${VERSION}/repository"
+
+build="@build@"
+build_cpu="@build_cpu@"
+build_vendor="@build_vendor@"
+build_os="@build_os@"
+host="@host@"
+host_cpu="@host_cpu@"
+host_vendor="@host_vendor@"
+host_os="@host_os@"
+target="@target@"
+target_cpu="@target_cpu@"
+target_vendor="@target_vendor@"
+target_os="@target_os@"
+
+INSTALL="@INSTALL@"
+INSTALL_PROGRAM="@INSTALL_PROGRAM@"
+INSTALL_SCRIPT="@INSTALL_SCRIPT@"
+INSTALL_DATA="@INSTALL_DATA@"
+
+EXEEXT="@EXEEXT@"
+OBJEXT="@OBJEXT@"
+LIBS="@LIBS@"
+
+CC="@CC@"
+WHICH_CC="@WHICH_CC@"
+CFLAGS="@CFLAGS@"
+CPPFLAGS="@CPPFLAGS@"
+LDFLAGS="@LDFLAGS@"
+SHARED_LIB_VAR="@SHARED_LIB_VAR@"
+
+@SUPPORT_FORTRAN77_TRUE@  SUPPORT_FORTRAN77="true"
+@SUPPORT_FORTRAN77_FALSE@ SUPPORT_FORTRAN77="false"
+F77="@F77@"
+WHICH_F77="@WHICH_F77@"
+FFLAGS="@FFLAGS@"
+FLIBS="@FLIBS@"
+FMAIN="@FMAIN@"
+
+@SUPPORT_CXX_TRUE@  SUPPORT_CXX="true"
+@SUPPORT_CXX_FALSE@ SUPPORT_CXX="false"
+CXX="@CXX@"
+WHICH_CXX="@WHICH_CXX@"
+CXXFLAGS="@CXXFLAGS@"
+CXXLIBS="@CXXLIBS@"
+
+@SUPPORT_JAVA_TRUE@  SUPPORT_JAVA="true"
+@SUPPORT_JAVA_FALSE@ SUPPORT_JAVA="false"
+JAVA="@JAVA@"
+WHICH_JAVA="@WHICH_JAVA@"
+JAVAC="@JAVAC@"
+WHICH_JAVAC="@WHICH_JAVAC@"
+JAR="@JAR@"
+WHICH_JAR="@WHICH_JAR@"
+JAVAH="@JAVAH@"
+WHICH_JAVAH="@WHICH_JAVAH@"
+JAVAPREFIX="@JAVAPREFIX@"
+JAVAFLAGS="@JAVAFLAGS@"
+JAVACFLAGS="@JAVACFLAGS@"
+JNI_INCLUDES="@JNI_INCLUDES@"
+
+@SUPPORT_PYTHON_TRUE@  SUPPORT_PYTHON="true"
+@SUPPORT_PYTHON_FALSE@ SUPPORT_PYTHON="false"
+@SERVER_PYTHON_TRUE@  SERVER_PYTHON="true"
+@SERVER_PYTHON_FALSE@ SERVER_PYTHON="false"
+PYTHON="@PYTHON@"
+WHICH_PYTHON="@WHICH_PYTHON@"
+PYTHON_VERSION="@PYTHON_VERSION@"
+PYTHONINC="@PYTHONINC@"
+PYTHONLIB="@PYTHONLIB@"
+PYTHON_SHARED_LIBRARY="@PYTHON_SHARED_LIBRARY@"
+PYTHON_SHARED_LIBRARY_DIR="@PYTHON_SHARED_LIBRARY_DIR@"
+
+@SUPPORT_FORTRAN90_TRUE@  SUPPORT_FORTRAN90="true"
+@SUPPORT_FORTRAN90_FALSE@ SUPPORT_FORTRAN90="false"
+F90="@F90@"
+WHICH_F90="@WHICH_F90@"
+F90FLAGS="@F90FLAGS@"
+F90LIBS="@F90LIBS@"
+F90MAIN="@F90MAIN@"
+
+@SUPPORT_STATIC_TRUE@  SUPPORT_STATIC="true"
+@SUPPORT_STATIC_FALSE@ SUPPORT_STATIC="false"
+@SUPPORT_SHARED_TRUE@  SUPPORT_SHARED="true"
+@SUPPORT_SHARED_FALSE@ SUPPORT_SHARED="false"
+
+"""    
+
+c_server = """
+############################################################
+#
+# Rules and dependencies specific to --server=C
+#
+IOROBJS  = $(IORSRCS:.c=.o)
+STUBOBJS = $(STUBSRCS:.c=.o)
+SKELOBJS = $(SKELSRCS:.c=.o)
+IMPLOBJS = $(IMPLSRCS:.c=.o)
+
+ALLHDRS = $(IORHDRS) $(STUBHDRS) $(IMPLHDRS)
+ALLSRCS = $(IORSRCS) $(STUBSRCS) $(SKELSRCS) $(IMPLSRCS)
+ALLOBJS = $(IOROBJS) $(STUBOBJS) $(SKELOBJS) $(IMPLOBJS)
+ALLDOCS = 
+
+$(ALLOBJS) : babel-stamp
+
+babel-stamp: $(SIDLFILE)
+	$(BABELCOMMAND) --server=C $(SIDLFILE)
+        touch babel-stamp
+"""
+
+c_client="""
+############################################################
+#
+# Rules and dependencies specific to --client=C
+#
+STUBOBJS = $(STUBSRCS:.c=.o)
+
+ALLHDRS = $(IORHDRS) $(STUBHDRS) 
+ALLSRCS = $(IORSRCS) $(STUBSRCS) 
+ALLOBJS = $(STUBOBJS)
+ALLDOCS = 
+
+$(ALLOBJS) : babel-stamp
+
+babel-stamp: $(SIDLFILE)
+	$(BABELCOMMAND) --client=C $(SIDLFILE)
+        touch babel-stamp
+"""
+
+
+cxx_server = """
+############################################################
+#
+# Rules and dependencies specific to --server=C
+#
+IOROBJS  = $(IORSRCS:.c=.o)
+STUBOBJS = $(STUBSRCS:.cc=.o)
+SKELOBJS = $(SKELSRCS:.cc=.o)
+IMPLOBJS = $(IMPLSRCS:.cc=.o)
+
+ALLHDRS = $(IORHDRS) $(STUBHDRS) $(IMPLHDRS)
+ALLSRCS = $(IORSRCS) $(STUBSRCS) $(SKELSRCS) $(IMPLSRCS)
+ALLOBJS = $(IOROBJS) $(STUBOBJS) $(SKELOBJS) $(IMPLOBJS)
+ALLDOCS =
+
+$(ALLOBJS) : babel-stamp
+
+babel-stamp: $(SIDLFILE)
+	$(BABELCOMMAND) --server=C++ $(SIDLFILE)
+        touch babel-stamp
+"""
+
+cxx_client="""
+############################################################
+#
+# Rules and dependencies specific to --client=C
+#
+STUBOBJS = $(STUBSRCS:.cc=.o)
+
+ALLHDRS = $(IORHDRS) $(STUBHDRS) 
+ALLSRCS = $(IORSRCS) $(STUBSRCS) 
+ALLOBJS = $(STUBOBJS)
+ALLDOCS =
+
+$(ALLOBJS) : babel-stamp
+
+babel-stamp: $(SIDLFILE)
+	$(BABELCOMMAND) --client=C++ $(SIDLFILE)
+        touch babel-stamp
+"""
+
+suffix_rules = """
+"""
+
+clean = """
+clean:
+	rm -f babel-stamp *.a *.so
+        rm -f $(ALLSRCS) $(ALLOBJS)
+"""
+
+def confirm_args():
+    if len(sys.argv) != 1:
+        print usage
+
+def config_settings(f):
+    f.write(settings)
+    f.flush()
+    
+if __name__=='__main__':
+    confirm_args()
+    f=open("Makefile.Impl",'w')
+    config_settings(f)

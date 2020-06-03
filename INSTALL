@@ -1,0 +1,398 @@
+                                                        -*- markdown -*-
+                             BABEL 2.0.0 INSTALLATION
+
+
+Contents
+========
+
+  Introduction
+  Requirements
+  Overview for the Impatient
+  Basic Installation
+  Compilers and Options
+  Compiling with the Intel Compiler Suite on GNU/Linux
+  Compiling for Multiple Architectures
+  Installation Names
+  Optional Features
+  Specifying the System Type
+  Showing Defaults
+  Operation Controls
+
+
+Introduction
+============
+
+  This document is a slightly expanded GNU Install file.  In
+addition to the generic GNU installation instructions, we have
+included the software requirements for building the Babel 
+toolkit.  For more information about this distribution, Babel,
+and contacting the developers, refer to the README.md file contained 
+in this directory.
+
+
+Requirements
+============
+
+  Below is a list of language and make requirements for building
+the Babel toolkit.  When multiple compilers are listed (e.g., 
+Fortran), only one version for the specified platform is necessary.
+
+  o  Languages
+     C:         Any recent version of the standard 
+                (Technically any ISO/IEC 9899;1999 compatible 
+                should work.)
+     C++:       GCC Version 3.2 or higher
+     Fortran 77: g77 3.2 (or higher)
+                 f77 Sun WorkShop Compilers 5.0 (Solaris 2.7)
+	        (use --disable-fortran77 if no f77 compiler)
+     Fortran 90: Intel 7.0, Lahey, GNU gfortran, PathScale, or Absoft
+		(most compilers supported by libchasmlite)
+		(use --disable-fortran90 if no F90 compiler)
+		You may need to specify the Fortran compiler
+		vendor name with --with-F90-vendor=<name> where
+		name is Absoft, Alpha, Cray, GNU, G95, IBMXL,
+		Intel, Intel_7, Lahey, MIPSpro, NAG, PGI, or
+		SUNWspro.
+     Fortran 2003: GCC 4.6.1 or later, Intel 12.1.233 or later
+     Java:      Sun Version 1.4 or higher.
+	        Make sure your java bin directory occurs early
+	        in your path.
+		The combination of 
+		Kaffe Version 1.1.5 (a Java-like virtual machine), 
+		Jikes 1.22 (A Java compiler), and gjdoc (0.7.4)
+		works (at least on a Debian system).
+		(use --disable-java if you don't want Java)
+
+  o  Make
+     GNU make version 3.74 or above
+
+  Babel now bundles CHASM-lite as part of the distribution.  CHASM
+is a tool developed at LANL by Craig Rasmussen to provide Fortran
+interoperability, and Babel uses it to access Fortran array
+descriptors.  CHASM-lite is a small subset of the complete CHASM,
+so if you want to explore the full chasm see 
+http://chasm-interop.sourceforge.net/.
+
+  In addition, the following are required to build the testing
+framework:
+
+     python:     (Needed only for the testing framework)
+
+
+  Finally, if you want to build the Python tools and tests, you will
+also need the specified version of Python.  If it is not found on
+your system, the build process will skip the Python sections.
+
+     Python:            Version 2.2 or higher
+     NumPy:  		Version 1.0.4 or higher
+
+Babel Runtime
+=============
+
+  Babel's runtime library can be downloaded, configured and installed
+separately. Its configuration does not require Java. This is useful
+in situation where you want to distribute pregenerated stubs with
+your package.
+
+Overview for the Impatient
+==========================
+
+  Assuming you are currently at the root of the package
+directory and you have the necessary software and environment, 
+simply type the following:
+
+    $ ./configure --prefix=<InstallDir>
+    $ make
+    $ make install
+
+where <InstallDir> is the directory into which you want the babel 
+tool installed.  It is necessary to use the prefix option if you 
+are not going to be installing Babel in the standard default 
+location (i.e., /usr/local).  For example, given a subdirectory of
+$HOME called "babel", the installation steps are:
+
+    $ ./configure --prefix=$HOME/babel
+    $ make
+    $ make install
+
+For more information on the prefix option, refer to the section
+"Installation Names" below.
+
+Note: If you are installing Babel directly from the SVN repository,
+      you may also have to generate the 'configure' script, by running
+ 
+      $ ./autotool_rebuild.sh 
+
+   in the package root directory.
+
+If you have trouble with the Java configuration, make sure your Java
+bin directory is early in your path (e.g., before /usr/bin).
+
+Basic Installation 
+==================
+
+  These are generic installation instructions.
+
+  The `configure' shell script attempts to guess correct values for
+various system-dependent variables used during compilation.  It uses
+those values to create a `Makefile' in each directory of the package.
+It may also create one or more `.h' files containing system-dependent
+definitions.  Finally, it creates a shell script `config.status' that
+you can run in the future to recreate the current configuration, a 
+file `config.cache' that saves the results of its tests to speed up
+reconfiguring, and a file `config.log' containing compiler output
+(useful mainly for debugging `configure').
+
+  If you need to do unusual things to compile the package, please try
+to figure out how `configure' could check whether to do them, and mail
+diffs or instructions to the address given in the `README.md' so they can
+be considered for the next release.  If at some point `config.cache'
+contains results you don't want to keep, you may remove or edit it.
+
+  The file `configure.in' is used to create `configure' by a program
+called `autoconf'.  You only need `configure.in' if you want to change
+it or regenerate `configure' using a newer version of `autoconf'.
+
+  The simplest way to compile this package is:
+
+  1. `cd' to the directory containing the package's source code and type
+     `./configure' to configure the package for your system.  If you're
+     using `csh' on an old version of System V, you might need to type
+     `sh ./configure' instead to prevent `csh' from trying to execute
+     `configure' itself.
+
+     Running `configure' takes awhile.  While running, it prints some
+     messages telling which features it is checking for.
+
+  2. Type `make' to compile the package.
+
+  3. Optionally, type `make check' to run any self-tests that come with
+     the package.
+
+  4. Type `make install' to install the programs and any data files and
+     documentation.
+
+  5. You can remove the program binaries and object files from the
+     source code directory by typing `make clean'.  To also remove the
+     files that `configure' created (so you can compile the package for
+     a different kind of computer), type `make distclean'.  There is
+     also a `make maintainer-clean' target, but that is intended mainly
+     for the package's developers.  If you use it, you may have to get
+     all sorts of other programs in order to regenerate files that came
+     with the distribution.
+
+
+Compilers and Options
+=====================
+
+  Some systems require unusual options for compilation or linking that
+the `configure' script does not know about.  You can give `configure'
+initial values for variables by setting them in the environment.  Using
+a Bourne-compatible shell, you can do that on the command line like
+this:
+
+    CC=c89 CFLAGS=-O2 LIBS=-lposix ./configure
+
+Or on systems that have the `env' program, you can do it like this:
+
+    env CPPFLAGS=-I/usr/local/include LDFLAGS=-s ./configure
+
+Compiling with the Intel Compiler Suite on GNU/Linux
+====================================================
+
+  Babel can work with the Intel Compiler Suite version 7.0, but you
+need to use the Intel Compiler Suite for everything (i.e., C, C++ and
+F90). The only exception is G77 which seems to work fine with the
+Intel Compiler Suite. If you want Python support, you need to compile
+Python and Numeric Python with the Intel C compiler "icc -c99". To do
+this correctly, you have to hack the Python build to produce a
+libpython shared library (.so).
+
+  Once you have a working Python compiled with icc, you can configure
+Babel as follows (assuming the Intel compilers are in your path).
+
+    CC="icc -c99" CXX=icpc F90='ifc -Vaxlib -C90' ./configure
+
+  Some of our tests fail when we use ifc with g++ 2.96.
+
+  If you use C++ and exceptions, you need to use CXXFLAGS=-cxxlib-icc
+when you configure. We do not set this as the default because it breaks
+Java interoperability.
+
+Compiling Babel on AIX
+======================
+Here are the settings we use.compiler/
+
+    #! /bin/sh
+    JNI_INCLUDES=/usr/java140/include FC=newxlf90 \
+    FCFLAGS='-qsuffix=f=f90 -qsuffix=cpp=F90' PYTHON=python2.2 \
+    TEST=/usr/local/gnu/bin/test CC=newcc CFLAGS='-g' CXX=newxlC \
+    CXXFLAGS='-g -qstaticinline -qrtti=all -qalias=noansi' F77=newf77 FFLAGS=-g \
+    ../babel/configure $@
+
+Expect the server side python to fail.
+
+If you're compiling with the MPI compilers, the nopoe script in the
+contrib directory may be helpful.
+
+    #! /bin/sh
+    JNI_INCLUDES=/usr/java140/include FC=mpxlf90 \
+    FCFLAGS='-qsuffix=f=f90 -qsuffix=cpp=F90 -Wl,-bbigtoc' PYTHON=python \
+    TEST=/usr/local/gnu/bin/test CC=mpcc CFLAGS='-g' CXX=mpCC \
+    CXXFLAGS='-g -qstaticinline -qrtti=all -qalias=noansi' F77=mpf77 FFLAGS=-g \
+    ../babel/contrib/nopoe ../babel/configure 
+
+Compiling Babel with PGI's compilers
+====================================
+
+If you are getting an error message like 
+
+    relocation R_X86_64_PC32 against `syscall@@GLIBC_2.2.5' 
+	can not be used when making a shared object; recompile with -fPIC 
+
+or
+
+    undefined reference to `__gcc_personality_v0' 
+
+try to compile (but not configure!) Babel by running
+
+    make LDFLAGS="-Wc,-nomp -Wl,-lgcc_eh"
+
+this will pass the appropriate flags to the linker. You can't pass the
+same flags to configure, because this will make tests for static
+(non-libtool) linking fail.
+
+Compiling Babel on Mac OSX
+==========================
+Mac OSX isn't a fully supported platform yet, but everything but
+server side Python works in our testing.  We use gfortran 
+and g77 from fink (see fink.sourceforge.net).
+
+Compiling Babel on Solaris
+==========================
+You may need to set the SHELL environment to /bin/ksh if you see
+error messages like 
+	test: argument expected
+when running Babel.
+
+Compiling For Multiple Architectures
+====================================
+
+  You can compile the package for more than one kind of computer at the
+same time, by placing the object files for each architecture in their
+own directory.  To do this, you must use a version of `make' that
+supports the `VPATH' variable, such as GNU `make'.  `cd' to the
+directory where you want the object files and executables to go and run
+the `configure' script.  `configure' automatically checks for the
+source code in the directory that `configure' is in and in `..'.
+
+  If you have to use a `make' that does not supports the `VPATH'
+variable, you have to compile the package for one architecture at 
+a time in the source code directory.  After you have installed the 
+package for one architecture, use `make distclean' before reconfiguring 
+for another architecture.
+
+
+Installation Names
+==================
+
+  By default, `make install' will install the package's files in
+`/usr/local/bin', `/usr/local/man', etc.  You can specify an
+installation prefix other than `/usr/local' by giving `configure' 
+the option `--prefix=PATH'.
+
+  You can specify separate installation prefixes for architecture-
+specific files and architecture-independent files.  If you give 
+`configure' the option `--exec-prefix=PATH', the package will use
+PATH as the prefix for installing programs and libraries.
+Documentation and other data files will still use the regular prefix.
+
+  In addition, if you use an unusual directory layout you can give
+options like `--bindir=PATH' to specify different values for particular
+kinds of files.  Run `configure --help' for a list of the directories
+you can set and what kinds of files go in them.
+
+  If the package supports it, you can cause programs to be installed
+with an extra prefix or suffix on their names by giving `configure' the
+option `--program-prefix=PREFIX' or `--program-suffix=SUFFIX'.
+
+
+Optional Features
+=================
+
+  Some packages pay attention to `--enable-FEATURE' options to
+`configure', where FEATURE indicates an optional part of the package.
+They may also pay attention to `--with-PACKAGE' options, where PACKAGE
+is something like `gnu-as' or `x' (for the X Window System).  The
+`README.md' should mention any `--enable-' and `--with-' options that the
+package recognizes.
+
+  For packages that use the X Window System, `configure' can usually
+find the X include and library files automatically, but if it doesn't,
+you can use the `configure' options `--x-includes=DIR' and
+`--x-libraries=DIR' to specify their locations.
+
+
+Specifying the System Type
+==========================
+
+  There may be some features `configure' can not figure out
+automatically, but needs to determine by the type of host the package
+will run on.  Usually `configure' can figure that out, but if it prints
+a message saying it can not guess the host type, give it the
+`--host=TYPE' option.  TYPE can either be a short name for the system
+type, such as `sun4', or a canonical name with three fields:
+     CPU-COMPANY-SYSTEM
+
+See the file `config.sub' for the possible values of each field.  If
+`config.sub' isn't included in this package, then this package doesn't
+need to know the host type.
+
+  If you are building compiler tools for cross-compiling, you can also
+use the `--target=TYPE' option to select the type of system they will
+produce code for and the `--build=TYPE' option to select the type of
+system on which you are compiling the package.
+
+
+Sharing Defaults
+================
+
+  If you want to set default values for `configure' scripts to share,
+you can create a site shell script called `config.site' that gives
+default values for variables like `CC', `cache_file', and `prefix'.
+`configure' looks for `PREFIX/share/config.site' if it exists, then
+`PREFIX/etc/config.site' if it exists.  Or, you can set the
+`CONFIG_SITE' environment variable to the location of the site script.
+A warning: not all `configure' scripts look for a site script.
+
+
+Operation Controls
+==================
+
+  `configure' recognizes the following options to control how it
+operates.
+
+`--cache-file=FILE'
+     Use and save the results of the tests in FILE instead of
+     `./config.cache'.  Set FILE to `/dev/null' to disable caching, for
+     debugging `configure'.
+
+`--help'
+     Print a summary of the options to `configure', and exit.
+
+`--quiet'
+`--silent'
+`-q'
+     Do not print messages saying which checks are being made.  To
+     suppress all normal output, redirect it to `/dev/null' (any error
+     messages will still be shown).
+
+`--srcdir=DIR'
+     Look for the package's source code in directory DIR.  Usually
+     `configure' can determine that directory automatically.
+
+`--version'
+     Print the version of Autoconf used to generate the `configure'
+     script, and exit.
+
+`configure' also accepts some other, not widely useful, options.

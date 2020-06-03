@@ -1,0 +1,878 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN"
+            "http://www.w3.org/TR/REC-html40/loose.dtd">
+<HTML>
+<HEAD>
+
+<META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<META name="GENERATOR" content="hevea 1.10">
+<LINK rel="stylesheet" type="text/css" href="index.css">
+<TITLE>Hello World Tutorial</TITLE>
+</HEAD>
+<BODY >
+<A HREF="index006.html"><IMG SRC="previous_motif.gif" ALT="Previous"></A>
+<A HREF="index-multipage.html"><IMG SRC="contents_motif.gif" ALT="Up"></A>
+<A HREF="index008.html"><IMG SRC="next_motif.gif" ALT="Next"></A>
+<HR>
+<H1 CLASS="chapter"><A NAME="htoc16">Chapter 5</A>  Hello World Tutorial</H1><UL>
+<LI><A HREF="index007.html#toc18">Introduction</A>
+</LI><LI><A HREF="index007.html#toc19">Minimal Makefiles</A>
+</LI><LI><A HREF="index007.html#toc20">Portable Makefiles: using <TT>babel-config</TT></A>
+</LI><LI><A HREF="index007.html#toc21">Final Remarks</A>
+</LI></UL>
+<P><A NAME="c:helloworld"></A><A NAME="@default84"></A></P><BLOCKQUOTE CLASS="quote">
+<EM>For the things we have to learn before we can do them, 
+we learn by doing them.</EM><BR>
+— Aristotle (384 BCE – 322 BCE)
+</BLOCKQUOTE><P><BR>
+</P><H2 CLASS="section"><A NAME="toc18"></A><A NAME="htoc17">5.1</A>  Introduction</H2><P>
+This tutorial guides you through the process of writing the classic
+“Hello World!” example using the Babel tools. 
+In the process, you will learn that the most vexing problem is
+getting the compiler and linker flags set up properly.
+Closely followed by the hassles of encoding this information
+in portable Makefiles.</P><P>This section offers a spectrum of possible solutions, from 
+the minimalist but not portable, to the very robust and portable
+but not trivial, and a few options in between. The following 
+sections start from the simplest setup, and work up in terms
+of complexity and features.</P><P>Assuming Babel is built, installed and your PATH environment
+variable has been set, we need to set up a few directories
+for this exercise. 
+One can verify it was built and installed properly by 
+going to the directory where it was built and typing
+<TT>make installcheck</TT>. (Warning: It can take
+a few hours on a good workstation for Babel’s exhaustive tests to complete.)
+To verify Babel is in your path, simply try running it with the 
+<TT>--version</TT> or <TT>--help</TT> option.
+Now pick a starting directory and issue
+the following commands to create some directories
+</P><BLOCKQUOTE CLASS="quotation"><TT>
+% <B>mkdir -p hello/minimal/libCxx</B><BR>
+% <B>mkdir -p hello/minimal/libF90</B><BR>
+% <B>cd hello</B><BR>
+</TT></BLOCKQUOTE><P>Now we write a SIDL file to describe the calling interface.
+It will be used by the Babel tools to generate glue code that 
+hooks together different programming languages. 
+A complete description of SIDL can be found in Chapter <A HREF="index008.html#c:basics">6</A>.
+We will use the same SIDL file for several different coding exercises
+and Makefile setups, so the SIDL file need not be large or complex
+for our purposes.</P><P>For this particular application, we will write a SIDL file 
+that contains a class World in a package Hello. 
+Method getMsg() in class World returns a string containing 
+the traditional computer greeting. 
+Using your favorite text editor, create a file called 
+hello.sidl in the hello/ directory containing the following:</P><DIV CLASS="flushright"><SPAN CLASS="textboxed"><FONT COLOR=purple><B>SIDL</B></FONT></SPAN></DIV><TABLE CLASS="lstframe" STYLE="padding:1ex;border-style:solid;"><TR><TD CLASS="lstlisting"> <FONT COLOR=maroon><I>   1 <B>package</B> Hello <B>version</B> 1.0 {
+    2   <B>class</B> World {
+    3     <B>string</B> getMsg();
+    4   }
+    5 }</I></FONT></TD></TR>
+</TABLE><P>The package statement provides a scope (or namespace) for class
+World, which contains only one method, getMsg(). The version clause of the
+statement identifies this as version 1.0 of the Hello package. </P><H2 CLASS="section"><A NAME="toc19"></A><A NAME="htoc18">5.2</A>  Minimal Makefiles</H2><P>Babel has the ability to generate simple, minimal GNU Makefiles using the
+<CODE>--</CODE><TT>makefile</TT> command-line option. The generated GNU Makefiles
+require GNU <TT>make</TT> and are intended primarily as an aid to get you
+started. They assume that <TT>babel</TT> and <TT>babel-config</TT> are in your
+path.</P><H3 CLASS="subsection">5.2.1  Writing the C++ Implementation</H3><P><A NAME="@default85"></A></P><P>We will write the C++ implementation in the minimal/libCxx/ subdirectory of hello/. 
+The first step is to run the Babel code generator on the SIDL file and have
+it generate the appropriate code.<A NAME="@default86"></A> 
+The simplified command to generate the Babel library code (assuming Babel is in 
+your PATH) is <SUP><A NAME="text5" HREF="#note5">1</A></SUP>: </P><BLOCKQUOTE CLASS="quotation"><TT>
+% <B>cd minimal/libCxx</B><BR>
+% <B>babel -sC++ –makefile ../../hello.sidl</B><BR>
+</TT></BLOCKQUOTE><P>In this Babel command, the “<TT>-sC++</TT>” flag, or its long form 
+“<TT>--server=C++</TT>”, indicates that we wish to generate C++
+bindings for an implementation<SUP><A NAME="text6" HREF="#note6">2</A></SUP>. 
+This command will generate a large number of C and C++ header 
+and source files. It is often surprising to newcomers just how
+much code is generated by Babel. Rest assured, each file
+has a purpose and there is a lot of important things being
+done as efficiently as possible under the hood.</P><P>Files are named after the fully-qualified
+class-name. For instance, a package <FONT COLOR=maroon><I><TT>Hello</TT></I></FONT> and class
+<FONT COLOR=maroon><I><TT>World</TT></I></FONT> would have a fully qualified name (in SIDL) as
+<FONT COLOR=maroon><I><TT>Hello.World</TT></I></FONT>. This corresponds to file names
+beginning with <TT>Hello_World</TT><SUP><A NAME="text7" HREF="#note7">3</A></SUP>. For each class, 
+there will be files with <TT>_IOR</TT>, 
+<TT>_Skel</TT>, or <TT>_Impl</TT> appended after the
+fully qualified name. 
+Stubs often go without the <TT>_Stub</TT> suffix.
+<EM>IOR files</EM><A NAME="@default87"></A> are always in ANSI C (source and headers), 
+containing Babel’s Intermediate Object Representation.
+<EM>Impl files</EM><A NAME="@default88"></A> contain the actual implementation, and 
+can be in any language that Babel supports, in this 
+case, they’re C++ files. Impl files are the only files
+that a developer need look at or touch after generating
+code from the SIDL source. 
+<EM>Skel files</EM><A NAME="@default89"></A> perform translations
+between the IORs and the Impls. 
+In some cases (like Fortran)
+the Skels are split into a few files: some in C, some in 
+the Impl language. 
+In the case of C++, the Skels are pure
+C++ code wrapped in <TT>extern "C" {}</TT> declarations.
+If the file is neither an IOR, Skel, nor Impl, then it
+is likely a <EM>Stub</EM><A NAME="@default90"></A>. Stubs are the proxy classes
+of Babel, performing translations
+between the caller language and the IOR. 
+Finally, the file <TT>babel.make</TT> is a Makefile fragment that is used by
+<TT>GNUmakefile</TT> or to simplify making your own custom build.
+You may ignore the babel.make file if you wish. 
+There are also babel.make.depends and babel.make.package files.
+These were added by external contributors, and we will ignore
+them in this document.</P><P>The only files that should be modified by the developer
+(that’s you since you’re implementing Hello World)
+are the “Impls”, which are in this case
+files ending with <TT>_Impl.hxx</TT> or <TT>_Impl.cxx</TT>
+Babel generates these implementation files as a starting 
+point for developers. 
+These files will contain the implementation of the Hello library.
+Every implementation file contains many pairs of comment “splicer”
+lines<A NAME="@default91"></A> 
+such lines 4 and 6 in the following sample:</P><DIV CLASS="flushright"><SPAN CLASS="textboxed"><FONT COLOR=purple><B>C++</B></FONT></SPAN></DIV><TABLE CLASS="lstframe" STYLE="padding:1ex;border-style:solid;"><TR><TD CLASS="lstlisting">    1 ::std::string
+    2 Hello::World_impl::getMsg_impl ()
+    3 {
+    4   // DO-NOT-DELETE splicer.begin(Hello.World.getMsg)
+    5   // Insert-Code-Here {Hello.World.getMsg} (getMsg method)
+    6   // DO-NOT-DELETE splicer.end(Hello.World.getMsg)
+    7 }</TD></TR>
+</TABLE><P>Any modifications between these splicer lines will be
+saved after subsequent invocations of the Babel tool. 
+Any changes outside the splicer lines will be lost. 
+This splicer feature was developed to make it
+easy to do incremental development using Babel.
+By keeping your edits within the splicer blocks, 
+you can add new methods to the hello.sidl file
+and rerun Babel without the loss of your previous 
+method implementations. You shouldn’t ever need to edit the file
+outside the splicer blocks.</P><P>For our hello application, the implementation is trivial. 
+Add the following return statement between the splicer lines 
+in the <TT>lib/Hello_World_Impl.cxx</TT> file:</P><DIV CLASS="flushright"><SPAN CLASS="textboxed"><FONT COLOR=purple><B>C++</B></FONT></SPAN></DIV><TABLE CLASS="lstframe" STYLE="padding:1ex;border-style:solid;"><TR><TD CLASS="lstlisting">::std::string
+Hello::World_impl::getMsg_impl ()
+{
+  // DO-NOT-DELETE splicer.begin(Hello.World.getMsg)
+  return "Hello from C++!";
+  // DO-NOT-DELETE splicer.end(Hello.World.getMsg)
+}</TD></TR>
+</TABLE><P>The following is a listing of the generated GNUmakefile
+<A NAME="@default92"></A> excluding the boilerplate copyright
+notice. It uses some of the tools installed along with Babel to
+automated generating a static and shared library provided that the
+machine supports both. The <TT>babel-config</TT> provides information
+about which compilers and compiler flags to use, and
+<TT>babel-libtool</TT> manages the building of object files and
+libraries.</P><DIV CLASS="flushright"><SPAN CLASS="textboxed"><FONT COLOR=purple><B>make</B></FONT></SPAN></DIV><TABLE CLASS="lstframe" STYLE="padding:1ex;border-style:solid;"><TR><TD CLASS="lstlisting">    1 include babel.make
+    2 <FONT COLOR="blue"><I># please name the server library here</I></FONT>
+    3 LIBNAME=hello
+    4 <FONT COLOR="blue"><I># please name the SIDL file here</I></FONT>
+    5 SIDLFILE=../../hello.sidl
+    6 <FONT COLOR="blue"><I># extra include/compile flags </I></FONT>
+    7 EXTRAFLAGS=
+    8 <FONT COLOR="blue"><I># extra librarys that the implementation needs to link against</I></FONT>
+    9 EXTRALIBS=
+   10 <FONT COLOR="blue"><I># library version number</I></FONT>
+   11 VERSION=0.1.1
+   12 <FONT COLOR="blue"><I># PREFIX specifies the top of the installation directory</I></FONT>
+   13 PREFIX=/usr/local
+   14 <FONT COLOR="blue"><I># the default installation installs the .la and .scl (if any) into the</I></FONT>
+   15 <FONT COLOR="blue"><I># LIBDIR</I></FONT>
+   16 LIBDIR=$(PREFIX)/lib
+   17 <FONT COLOR="blue"><I># the default installation installs the stub header and IOR header files</I></FONT>
+   18 <FONT COLOR="blue"><I># in INCLDIR</I></FONT>
+   19 INCLDIR=$(PREFIX)/include
+   20 
+   21 <FONT COLOR="blue"><I># most of the rest of the file should not require editing</I></FONT>
+   22 
+   23 ifeq ($(IMPLSRCS),)
+   24   SCLFILE=
+   25   BABELFLAG=--client=cxx
+   26   MODFLAG=
+   27 else
+   28   SCLFILE=lib$(LIBNAME).scl
+   29   BABELFLAG=--server=cxx
+   30   MODFLAG=-module
+   31 endif
+   32 
+   33 all : lib$(LIBNAME).la $(SCLFILE)
+   34 
+   35 CC=`babel-config --query-var=CC`
+   36 CXX=`babel-config --query-var=CXX`
+   37 INCLUDES=`babel-config --includes-cxx`
+   38 CFLAGS=`babel-config --flags-c`
+   39 CXXFLAGS=`babel-config --flags-cxx`
+   40 LIBS=`babel-config --libs-cxx-client`
+   41 
+   42 STUBOBJS=$(STUBSRCS:.cxx=.lo)
+   43 IOROBJS=$(IORSRCS:.c=.lo)
+   44 SKELOBJS=$(SKELSRCS:.cxx=.lo)
+   45 IMPLOBJS=$(IMPLSRCS:.cxx=.lo)
+   46 
+   47 PUREBABELGEN=$(IORHDRS) $(IORSRCS) $(STUBSRCS) $(STUBHDRS) $(SKELSRCS)
+   48 BABELGEN=$(IMPLHDRS) $(IMPLSRCS)
+   49 
+   50 $(IMPLOBJS) : $(STUBHDRS) $(IORHDRS) $(IMPLHDRS)
+   51 
+   52 lib$(LIBNAME).la : $(STUBOBJS) $(IOROBJS) $(IMPLOBJS) $(SKELOBJS)
+   53         babel-libtool --mode=link --tag=CXX $(CXX) -o lib$(LIBNAME).la \
+   54           -rpath $(LIBDIR) -release $(VERSION) \
+   55           -no-undefined $(MODFLAG) \
+   56           $(CXXFLAGS) $(EXTRAFLAGS) $^ $(LIBS) \
+   57           $(EXTRALIBS)
+   58 
+   59 $(PUREBABELGEN) $(BABELGEN) : babel-stamp
+   60         @if test -f <B>$@</B>; then \
+   61             touch <B>$@</B>; \
+   62         else \
+   63             rm -f babel-stamp ; \
+   64             $(<B>MAKE</B>) babel-stamp; \
+   65         fi
+   66 
+   67 babel-stamp: $(SIDLFILE)
+   68         @rm -f babel-temp
+   69         @touch babel-temp
+   70         babel $(BABELFLAG) $(SIDLFILE)
+   71         @mv -f babel-temp <B>$@</B>
+   72 
+   73 lib$(LIBNAME).scl : $(IORSRCS)
+   74 ifeq ($(IORSRCS),)
+   75         echo "lib$(LIBNAME).scl is not needed for client-side C bindings."
+   76 else
+   77         -rm -f <B>$@</B>
+   78         echo '&lt;?xml version="1.0" ?&gt;' &gt; <B>$@</B>
+   79         echo '&lt;scl&gt;' &gt;&gt; <B>$@</B>
+   80         if test `uname` = "Darwin"; then scope="global"; else scope="local"; \
+   81            fi ; \
+   82           echo ' &lt;library uri="'`pwd`/lib$(LIBNAME).la'" scope="'"$$scope"'" resolution="lazy" &gt;' &gt;&gt; <B>$@</B>
+   83         grep __set_epv $^ /dev/null | awk 'BEGIN {FS=":"} { print $$1}' | sort -u | sed -e 's/_IOR.c//g' -e 's/_/./g' | awk ' { printf "    &lt;class name=\"%s\" desc=\"ior/impl\" /&gt;\n", $$1 }' &gt;&gt;<B>$@</B>
+   84         echo "  &lt;/library&gt;" &gt;&gt;<B>$@</B>
+   85         echo "&lt;/scl&gt;" &gt;&gt;<B>$@</B>
+   86 endif
+   87 
+   88 .SUFFIXES: .lo .cxx .c
+   89 
+   90 .c.lo:
+   91         babel-libtool --mode=compile --tag=CC $(CC) $(INCLUDES) $(CFLAGS) $(EXTRAFLAGS) -c -o <B>$@</B> $&lt;
+   92 
+   93 .cxx.lo:
+   94         babel-libtool --mode=compile --tag=CXX $(CXX) $(INCLUDES) $(CXXFLAGS) $(EXTRAFLAGS) -c -o <B>$@</B> $&lt;
+   95 
+   96 clean :
+   97         -rm -f $(PUREBABELGEN) babel-temp babel-stamp *.o *.lo
+   98 
+   99 realclean : clean
+  100         -rm -f lib$(LIBNAME).la lib$(LIBNAME).scl
+  101         -rm -rf .libs
+  102 
+  103 install : install-libs install-headers install-scl
+  104 
+  105 
+  106 install-libs : lib$(LIBNAME).la
+  107         -mkdir -p $(LIBDIR)
+  108         babel-libtool --mode=install install -c lib$(LIBNAME).la \
+  109           $(LIBDIR)/lib$(LIBNAME).la
+  110 
+  111 install-scl : $(SCLFILE)
+  112 ifneq ($(IORSRCS),)
+  113         -rm -f $(LIBDIR)/lib$(LIBNAME).scl
+  114         -mkdir -p $(LIBDIR)
+  115         echo '&lt;?xml version="1.0" ?&gt;' &gt; $(LIBDIR)/lib$(LIBNAME).scl
+  116         echo '&lt;scl&gt;' &gt;&gt; $(LIBDIR)/lib$(LIBNAME).scl
+  117         if test `uname` = "Darwin"; then scope="global"; else scope="local"; \
+  118            fi ; \
+  119           echo ' &lt;library uri="'$(LIBDIR)/lib$(LIBNAME).la'" scope="'"$$scope"'" resolution="lazy" &gt;' &gt;&gt; $(LIBDIR)/lib$(LIBNAME).scl
+  120         grep __set_epv $^ /dev/null | awk 'BEGIN {FS=":"} { print $$1}' | sort -u | sed -e 's/_IOR.c//g' -e 's/_/./g' | awk ' { printf "    &lt;class name=\"%s\" desc=\"ior/impl\" /&gt;\n", $$1 }' &gt;&gt;$(LIBDIR)/lib$(LIBNAME).scl
+  121         echo "  &lt;/library&gt;" &gt;&gt;$(LIBDIR)/lib$(LIBNAME).scl
+  122         echo "&lt;/scl&gt;" &gt;&gt;$(LIBDIR)/lib$(LIBNAME).scl
+  123 endif
+  124 
+  125 install-headers : $(IORHDRS) $(STUBHDRS)
+  126         -mkdir -p $(INCLDIR)
+  127         for i in $^ ; do \
+  128           babel-libtool --mode=install cp $$i $(INCLDIR)/$$i ; \
+  129         done
+  130 
+  131 .PHONY: all clean realclean install install-libs install-headers install-scl</TD></TR>
+</TABLE><P>The details of this makefile deserve careful explanation.
+</P><BLOCKQUOTE CLASS="quote">
+<DL CLASS="description"><DT CLASS="dt-description">
+<B>line 1:</B></DT><DD CLASS="dd-description"> <TT>babel.make</TT> is a file that Babel generates when it
+generates code. It defines some standard names so our makefiles
+don’t have to know every SIDL type declared in the file.
+</DD><DT CLASS="dt-description"><B>line 3:</B></DT><DD CLASS="dd-description"> <TT>LIBNAME</TT> defines the name of the library file
+that will be generated. <EM>This is the only line that I had to
+edit in the babel-generated GNUmakefile.</EM>
+</DD><DT CLASS="dt-description"><B>line 7:</B></DT><DD CLASS="dd-description"> Use <TT>EXTRAFLAGS</TT> to define additional compile flags
+to be used when compiling files. For this example, it should be empty.
+</DD><DT CLASS="dt-description"><B>line 9:</B></DT><DD CLASS="dd-description"> <TT>EXTRALIBS</TT> should hold any extra libraries
+needed for your application. For this example, it should be empty.
+</DD><DT CLASS="dt-description"><B>line 11:</B></DT><DD CLASS="dd-description"> The <TT>VERSION</TT> should be three numbers separated
+by periods.
+</DD><DT CLASS="dt-description"><B>line 13:</B></DT><DD CLASS="dd-description"> The <TT>PREFIX</TT> is for libraries that will be
+installed.
+</DD><DT CLASS="dt-description"><B>line 21–end:</B></DT><DD CLASS="dd-description"> This part of the <TT>GNUmakefile</TT> works from
+the definitions above and usually does not require changes unless
+you are incorporating it into a more complex build system.
+</DD><DT CLASS="dt-description"><B>line 33:</B></DT><DD CLASS="dd-description"> The first build target in a Makefile is also the default target.
+Common convention is to make this target’s name “all.”
+</DD><DT CLASS="dt-description"><B>lines 35–40:</B></DT><DD CLASS="dd-description"> Note that we use a script called <TT>babel-config</TT> to
+hand us some information. This tool is very useful for getting the same
+information that Babel’s configure script was given as Babel configuring
+itself.
+Increasingly, it is being used to also get information about tools and 
+flags used in Babel’s makefiles, and its utility for getting at this level
+of information is limited…mostly because we rely on a multilayered stack
+of tools and some are less forthcoming than others.
+</DD><DT CLASS="dt-description"><B>lines 42–45:</B></DT><DD CLASS="dd-description"> Here you see some of the variables defined in <TT>babel.make</TT>
+and some fancy suffix substitution to define <TT>STUBOBJS</TT>,
+<TT>IOROBJS</TT>, <TT>SKELOBJS</TT>, and <TT>IMPLOBJS</TT>.
+</DD><DT CLASS="dt-description"><B>lines 53:</B></DT><DD CLASS="dd-description"> This is the rule to combine the <TT>.o</TT> files into
+a static and dynamic library using <TT>babel-libtool</TT>.
+</DD><DT CLASS="dt-description"><B>line 88:</B></DT><DD CLASS="dd-description"> This is a often misunderstood detail. To override the default
+suffix rules, one must give the list of new suffices to consider.
+</DD><DT CLASS="dt-description"><B>line 90–94:</B></DT><DD CLASS="dd-description"> Here we start to override make’s default suffix rules for
+converting C and C++ sourcecode into <TT>.o</TT> files.
+</DD><DT CLASS="dt-description"><B>lines 96 &amp; 99:</B></DT><DD CLASS="dd-description"> How you go about various levels of cleanliness in your
+makefiles largely depends on matters of taste. The important point here
+is what is <EM>not</EM> removed. One thing not cleaned up is <TT>babel.make</TT>
+it is generated by Babel, but the makefile won’t work without the file
+present because of the include in line 5. Another important thing to 
+<EM>not</EM> remove is the Impl files, since they have hand-edited regions
+in the generated file.
+</DD><DT CLASS="dt-description"><B>line 103–129:</B></DT><DD CLASS="dd-description"> Here we define some simple rules for installing
+libraries into standard system locations.
+</DD><DT CLASS="dt-description"><B>line 131:</B></DT><DD CLASS="dd-description"> Technically, any phony targets like “clean” and “new” are
+supposed to be listed in this variable. Many makefile implementations will
+work well if you skip this line, but.
+</DD></DL>
+</BLOCKQUOTE><P>With the GNUmakefile in place we can simply go to that directory and build
+everything by typing make.</P><H3 CLASS="subsection">5.2.2  Writing the Fortran 90/95 Implementation</H3><P><A NAME="@default93"></A></P><P>Before writing the client, let’s generate a Fortran implementation as well.
+It is highly instructive to see how the makefiles differ between 
+the different language bindings. From within the <TT>minimal/libCxx</TT>
+directory we do.</P><BLOCKQUOTE CLASS="quotation"><TT>
+% <B>cd ../libF90</B><BR>
+% <B>babel –makefile -sF90 ../../hello.sidl</B><BR>
+</TT></BLOCKQUOTE><P>This time there’s even more files generated (Fortran 90/95 bindings are harder
+after all), and we need to add our implementation to the <TT>Hello_World_Impl.F90</TT> file.
+The modified code will look like this.</P><DIV CLASS="flushright"><SPAN CLASS="textboxed"><FONT COLOR=purple><B>Fortran 90/95</B></FONT></SPAN></DIV><TABLE CLASS="lstframe" STYLE="padding:1ex;border-style:solid;"><TR><TD CLASS="lstlisting">    1 <FONT COLOR="blue"><I>!</I></FONT>
+    2 <FONT COLOR="blue"><I>! Method:  getMsg[]</I></FONT>
+    3 <FONT COLOR="blue"><I>!</I></FONT>
+    4 
+    5 <B>recursive</B> subroutine Hello_World_getMsg_mi(self, retval, exception)
+    6   <B>use</B> sidl
+    7   <B>use</B> sidl_BaseInterface
+    8   <B>use</B> sidl_RuntimeException
+    9   <B>use</B> Hello_World
+   10   <B>use</B> Hello_World_impl
+   11   <FONT COLOR="blue"><I>! DO-NOT-DELETE splicer.begin(Hello.World.getMsg.use)</I></FONT>
+   12   <FONT COLOR="blue"><I>! Insert-Code-Here {Hello.World.getMsg.use} (use statements)</I></FONT>
+   13   <FONT COLOR="blue"><I>! DO-NOT-DELETE splicer.end(Hello.World.getMsg.use)</I></FONT>
+   14   implicit <B>none</B>
+   15   type(Hello_World_t) :: self <FONT COLOR="blue"><I>! in</I></FONT>
+   16   character (<B>len</B>=*) :: retval <FONT COLOR="blue"><I>! out</I></FONT>
+   17   type(sidl_BaseInterface_t) :: exception <FONT COLOR="blue"><I>! out</I></FONT>
+   18 
+   19 <FONT COLOR="blue"><I>! DO-NOT-DELETE splicer.begin(Hello.World.getMsg)</I></FONT>
+   20 retval='Hello from Fortran 90<FONT COLOR="blue"><I>!'</I></FONT>
+   21 <FONT COLOR="blue"><I>! DO-NOT-DELETE splicer.end(Hello.World.getMsg)</I></FONT>
+   22 end subroutine Hello_World_getMsg_mi</TD></TR>
+</TABLE><P>Note that the C function appears as a subroutine in Fortran. 
+What was the return value appears here as the argument <TT>retval</TT> (line 5). 
+For Fortran 90/95 there are also two splicer blocks per subroutine, 
+one for use statements (lines 11–13) and another for the actual
+implementation (lines 19–21). This is where we put our implementation
+by setting <TT>retval</TT> to the string we want.</P><P>There are important differences in this Makefile from the C++ 
+implementation, so we reproduce it in its entirety here.</P><DIV CLASS="flushright"><SPAN CLASS="textboxed"><FONT COLOR=purple><B>make</B></FONT></SPAN></DIV><TABLE CLASS="lstframe" STYLE="padding:1ex;border-style:solid;"><TR><TD CLASS="lstlisting">    1 include babel.make
+    2 <FONT COLOR="blue"><I># please name the server library here</I></FONT>
+    3 LIBNAME=hello
+    4 <FONT COLOR="blue"><I># please name the SIDL file here</I></FONT>
+    5 SIDLFILE=../../hello.sidl
+    6 <FONT COLOR="blue"><I># extra include/compile flags </I></FONT>
+    7 EXTRAFLAGS=
+    8 <FONT COLOR="blue"><I># extra librarys that the implementation needs to link against</I></FONT>
+    9 EXTRALIBS=
+   10 <FONT COLOR="blue"><I># library version number</I></FONT>
+   11 VERSION=0.1.1
+   12 <FONT COLOR="blue"><I># PREFIX specifies the top of the installation directory</I></FONT>
+   13 PREFIX=/usr/local
+   14 <FONT COLOR="blue"><I># the default installation installs the .la and .scl (if any) into the</I></FONT>
+   15 <FONT COLOR="blue"><I># LIBDIR</I></FONT>
+   16 LIBDIR=$(PREFIX)/lib
+   17 <FONT COLOR="blue"><I># the default installation installs the stub header and IOR header files</I></FONT>
+   18 <FONT COLOR="blue"><I># in INCLDIR</I></FONT>
+   19 INCLDIR=$(PREFIX)/include
+   20 
+   21 <FONT COLOR="blue"><I># most of the rest of the file should not require editing</I></FONT>
+   22 
+   23 ifeq ($(IMPLSRCS),)
+   24   SCLFILE=
+   25   BABELFLAG=--client=f90
+   26   MODFLAG=
+   27 else
+   28   SCLFILE=lib$(LIBNAME).scl
+   29   BABELFLAG=--server=f90
+   30   MODFLAG=-module
+   31 endif
+   32 
+   33 all : lib$(LIBNAME).la $(SCLFILE)
+   34 
+   35 CC=`babel-config --query-var=CC`
+   36 CPP=`babel-config --query-var=CPP`
+   37 FC=`babel-config --query-var=FC`
+   38 INCLUDES=`babel-config --includes` `babel-config --includes-f90`
+   39 CFLAGS=`babel-config --flags-c`
+   40 FCFLAGS=`babel-config --flags-f90`
+   41 MODINCLUDES=`babel-config --includes-f90-mod`
+   42 LIBS=`babel-config --libs-f90-client`
+   43 F90CPPSUFFIX=`babel-config --query-var=F90CPPSUFFIX`
+   44 
+   45 STUBOBJS=$(STUBSRCS:.c=.lo)
+   46 STUBMODULEOBJS=$(STUBMODULESRCS:.F90=.lo)
+   47 TYPEMODULEOBJS=$(TYPEMODULESRCS:.F90=.lo)
+   48 IOROBJS=$(IORSRCS:.c=.lo)
+   49 SKELOBJS=$(SKELSRCS:.c=.lo)
+   50 IMPLOBJS=$(IMPLSRCS:.F90=.lo)
+   51 IMPLMODULEOBJS=$(IMPLMODULESRCS:.F90=.lo)
+   52 BASICMODULEOBJ=$(BASICMODULESRC:.F90=.lo)
+   53 ARRAYMODULEOBJS=$(ARRAYMODULESRCS:.F90=.lo)
+   54 ALLOBJS=$(STUBOBJS) $(STUBMODULEOBJS) $(TYPEMODULEOBJS) $(IOROBJS) \
+   55         $(SKELOBJS) $(IMPLOBJS) $(IMPLMODULEOBJS) $(BASICMODULEOBJ) \
+   56         $(ARRAYMODULEOBJS)
+   57 
+   58 PUREBABELGEN=$(ARRAYMODULESRCS) $(BASICMODULESRC) $(STUBMODULESRCS) \
+   59         $(TYPEMODULESRCS) \
+   60         $(IORHDRS) $(IORSRCS) $(STUBSRCS) $(STUBHDRS) $(SKELSRCS)
+   61 BABELGEN=$(IMPLSRCS) $(IMPLMODULESRCS)
+   62 
+   63 $(TYPEMODULEOBJS)  : $(BASICMODULEOBJ)
+   64 $(ARRAYMODULEOBJS)  : $(TYPEMODULEOBJS)
+   65 $(STUBMODULEOBJS) : $(ARRAYMODULEOBJS) $(TYPEMODULEOBJS)
+   66 $(IMPLMODULEOBJS) : $(STUBMODULEOBJS)
+   67 $(IMPLOBJS) : $(IMPLMODULEOBJS) $(STUBMODULEOBJS) \
+   68 
+   69 lib$(LIBNAME).la : $(ALLOBJS)
+   70         babel-libtool --mode=link --tag=FC $(FC) -o lib$(LIBNAME).la \
+   71           -rpath $(LIBDIR) -release $(VERSION) \
+   72           -no-undefined $(MODFLAG) \
+   73           $(FCFLAGS) $(EXTRAFLAGS) $^ $(LIBS) \
+   74           $(EXTRALIBS)
+   75 
+   76 $(PUREBABELGEN) $(BABELGEN) : babel-stamp
+   77         @if test -f <B>$@</B>; then \
+   78             touch <B>$@</B>; \
+   79         else \
+   80             rm -f babel-stamp ; \
+   81             $(<B>MAKE</B>) babel-stamp; \
+   82         fi
+   83 
+   84 babel-stamp: $(SIDLFILE)
+   85         @rm -f babel-temp
+   86         @touch babel-temp
+   87         babel $(BABELFLAG) $(SIDLFILE)
+   88         @mv -f babel-temp <B>$@</B>
+   89 
+   90 lib$(LIBNAME).scl : $(IORSRCS)
+   91 ifeq ($(IORSRCS),)
+   92         echo "lib$(LIBNAME).scl is not needed for client-side C bindings."
+   93 else
+   94         -rm -f <B>$@</B>
+   95         echo '&lt;?xml version="1.0" ?&gt;' &gt; <B>$@</B>
+   96         echo '&lt;scl&gt;' &gt;&gt; <B>$@</B>
+   97         if test `uname` = "Darwin"; then scope="global"; else scope="local"; \
+   98            fi ; \
+   99           echo ' &lt;library uri="'`pwd`/lib$(LIBNAME).la'" scope="'"$$scope"'" resolution="lazy" &gt;' &gt;&gt; <B>$@</B>
+  100         grep __set_epv $^ /dev/null | awk 'BEGIN {FS=":"} { print $$1}' | sort -u | sed -e 's/_IOR.c//g' -e 's/_/./g' | awk ' { printf "    &lt;class name=\"%s\" desc=\"ior/impl\" /&gt;\n", $$1 }' &gt;&gt;<B>$@</B>
+  101         echo "  &lt;/library&gt;" &gt;&gt;<B>$@</B>
+  102         echo "&lt;/scl&gt;" &gt;&gt;<B>$@</B>
+  103 endif
+  104 
+  105 .SUFFIXES: .lo .F90 .c
+  106 
+  107 .c.lo:
+  108         babel-libtool --mode=compile --tag=CC $(CC) $(INCLUDES) $(CFLAGS) $(EXTRAFLAGS) -c -o <B>$@</B> $&lt;
+  109 
+  110 .F90.lo:
+  111         $(CPP) -traditional $(INCLUDES) -P -o $(@:.lo=.tmp) -x c $&lt;
+  112         sed -e 's/^<FONT COLOR="blue"><I>#pragma.*$$//' &lt; $(@:.lo=.tmp) &gt; $(@:.lo=$(F90CPPSUFFIX))</I></FONT>
+  113         babel-libtool --mode=compile --tag=FC $(FC) $(MODINCLUDES) $(FCFLAGS) -c -o <B>$@</B> $(@:.lo=$(F90CPPSUFFIX))
+  114         rm -f $(@:.lo=$(F90CPPSUFFIX)) $(@:.lo=.tmp)
+  115 
+  116 clean :
+  117         -rm -f $(PUREBABELGEN) babel-temp babel-stamp *.o *.lo *.mod
+  118 
+  119 realclean : clean
+  120         -rm -f lib$(LIBNAME).la lib$(LIBNAME).scl
+  121         -rm -rf .libs
+  122 
+  123 install : install-libs install-headers install-scl
+  124 
+  125 
+  126 install-libs : lib$(LIBNAME).la
+  127         -mkdir -p $(LIBDIR)
+  128         babel-libtool --mode=install install -c lib$(LIBNAME).la \
+  129           $(LIBDIR)/lib$(LIBNAME).la
+  130 
+  131 install-scl : $(SCLFILE)
+  132 ifneq ($(IORSRCS),)
+  133         -mkdir -p $(LIBDIR)
+  134         -rm -f $(LIBDIR)/lib$(LIBNAME).scl
+  135         echo '&lt;?xml version="1.0" ?&gt;' &gt; $(LIBDIR)/lib$(LIBNAME).scl
+  136         echo '&lt;scl&gt;' &gt;&gt; $(LIBDIR)/lib$(LIBNAME).scl
+  137         if test `uname` = "Darwin"; then scope="global"; else scope="local"; \
+  138            fi ; \
+  139           echo ' &lt;library uri="'$(LIBDIR)/lib$(LIBNAME).la'" scope="'"$$scope"'" resolution="lazy" &gt;' &gt;&gt; $(LIBDIR)/lib$(LIBNAME).scl
+  140         grep __set_epv $^ /dev/null | awk 'BEGIN {FS=":"} { print $$1}' | sort -u | sed -e 's/_IOR.c//g' -e 's/_/./g' | awk ' { printf "    &lt;class name=\"%s\" desc=\"ior/impl\" /&gt;\n", $$1 }' &gt;&gt;$(LIBDIR)/lib$(LIBNAME).scl
+  141         echo "  &lt;/library&gt;" &gt;&gt;$(LIBDIR)/lib$(LIBNAME).scl
+  142         echo "&lt;/scl&gt;" &gt;&gt;$(LIBDIR)/lib$(LIBNAME).scl
+  143 endif
+  144 
+  145 install-headers : $(IORHDRS) $(STUBHDRS) $(STUBDOCS)
+  146         -mkdir -p $(INCLDIR)
+  147         for i in $^ ; do \
+  148           babel-libtool --mode=install cp $$i $(INCLDIR)/$$i ; \
+  149         done
+  150 
+  151 .PHONY: all clean realclean install install-libs install-headers install-scl</TD></TR>
+</TABLE><BLOCKQUOTE CLASS="quote">
+<DL CLASS="description"><DT CLASS="dt-description">
+<B>line 1:</B></DT><DD CLASS="dd-description"> Again Babel will generate a <TT>babel.make</TT> file, but we 
+will see that its contents are different.
+</DD><DT CLASS="dt-description"><B>line 3:</B></DT><DD CLASS="dd-description"> The name of the library will be <TT>libhello.la</TT>
+again. <EM>This is the only line that I had to edit in the
+babel-generated GNUmakefile.</EM>
+</DD><DT CLASS="dt-description"><B>lines 7–19:</B></DT><DD CLASS="dd-description"> These variables have the same meanings as above.
+<TT>EXTRAFLAGS</TT> are extra compile flags, and <TT>EXTRALIBS</TT>
+defines extra libraries to list when linkings. <TT>PREFIX</TT> defines
+where the library should be installed.
+</DD><DT CLASS="dt-description"><B>lines 35–43:</B></DT><DD CLASS="dd-description"> Note that we use <TT>babel-config</TT> to generate
+the proper flag for the preprocessor to find the Babel Fortran headers, 
+and the compiler to find the Babel MOD files.
+</DD><DT CLASS="dt-description"><B>lines 45–56:</B></DT><DD CLASS="dd-description"> Are building a <TT>$(OBJS)</TT> variable like before, 
+but this time we see suffix substitutions for more kinds of files.
+</DD><DT CLASS="dt-description"><B>lines 63–67:</B></DT><DD CLASS="dd-description"> The order that files are compiled is important
+because Fortran 90/95’s use of MOD files<SUP><A NAME="text8" HREF="#note8">4</A></SUP> makes the ordering of these items
+very important. 
+(Not Babel’s fault, blame the Fortran 90/95 language designers.)
+C/C++ has no such constraint on the order that 
+individual units of compilation are performed. 
+As long as Fortran 90/95 programmers stick with the ordering shown
+in these lines, they should not encounter compiler complaints about 
+dependent MOD files not found.
+</DD><DT CLASS="dt-description"><B>lines 110–114:</B></DT><DD CLASS="dd-description"> This bit of code admittedly looks very strange, 
+but the explanation is simple. 
+We preprocess our Fortran 90/95 source to workaround the 31 character
+limit specified in the language.
+Check out Chapter <A HREF="index013.html#c:f90">11</A> for more details about this issue.
+</DD></DL>
+</BLOCKQUOTE><P>Again, we simply type make, and should end up with another <TT>libhello.la</TT>
+file.</P><H3 CLASS="subsection">5.2.3  Writing the C Client</H3><P><A NAME="@default94"></A></P><P>Now, finally, we are ready to write a client. For this
+exercise, we wrote our driver in C and built two executables; 
+each one linking in one of the two implementation libraries.
+We will put our driver in the <TT>minimal/</TT> directory
+(which happens to be the parent directory of where the 
+C++ and Fortran 90/95 implementations are, though this detail
+is only relevant to makefile construction).
+From our Fortran 90/95 subdirectory, we go up one and 
+generate the client-side C bindings.</P><BLOCKQUOTE CLASS="quotation"><TT>
+% <B>cd ..</B><BR>
+% <B>babel –makefile -cC ../hello.sidl</B><BR>
+</TT></BLOCKQUOTE><P>The “<TT>-cC</TT>” flag,
+or its equivalent long-form “<TT>--client=C</TT>”, tells the 
+Babel code generator to create only the C stub calling code, 
+not the entire library implementation. </P><P>There are a few details worth noting here. The C bindings
+generate function names by combining packages, classes, and method names 
+with underscores (e. g. <TT>Hello_World_getMsg()</TT>. Whenever you 
+see double underscores<A NAME="@default95"></A> in Babel generated symbols, they indicate something
+built-in to (and sometimes specific to) the language binding. 
+The <TT>_create()</TT> method is built-in to every instantiatable class 
+defined in SIDL, triggering the creation of Babel internal data structures
+as well as the constructor of the actual object implementation.</P><P>The code listing below shows a well crafted driver
+with full error checking. To try this example, use your favorite text
+editor to copy this text into a file named <TT>main.c</TT>.</P><DIV CLASS="flushright"><SPAN CLASS="textboxed"><FONT COLOR=purple><B>ANSI C</B></FONT></SPAN></DIV><TABLE CLASS="lstframe" STYLE="padding:1ex;border-style:solid;"><TR><TD CLASS="lstlisting">    1 <B>#include</B> &lt;stdio.h&gt;
+    2 <B>#include</B> "Hello_World.h"
+    3 <B>#include</B> "sidl_BaseInterface.h"
+    4 <B>#include</B> "sidl_Exception.h"
+    5 <B>#include</B> "sidl_String.h"
+    6 
+    7 <B>int</B> main() {
+    8   Hello_World h;
+    9   sidl_BaseInterface ex;
+   10   <B>char</B> * msg;
+   11 
+   12   <FONT COLOR="blue"><I>/* create instance of Hello World */</I></FONT>
+   13   h = Hello_World__create(&amp;ex); SIDL_CHECK(ex);
+   14   <B>if</B> ( h == NULL ) {
+   15     fprintf(stderr,"%s:%d Failed to create an instance of Hello_World!\n",
+   16             __FILE__,__LINE__);
+   17     <B>return</B> 2;
+   18   }
+   19 
+   20   <FONT COLOR="blue"><I>/* get the message from the object */</I></FONT>
+   21   msg = Hello_World_getMsg(h, &amp;ex); SIDL_CHECK(ex);
+   22   <B>if</B> ( msg == NULL ) {
+   23     fprintf(stderr, "%s:%d Hello_World_getMsg() returned a NULL instead "
+   24                     "of a string!\n",__FILE__,__LINE__);
+   25     <B>return</B> 3;
+   26   }
+   27 
+   28   <FONT COLOR="blue"><I>/* done with object so we can release it */</I></FONT>
+   29   Hello_World_deleteRef(h,&amp;ex); SIDL_CHECK(ex);
+   30 
+   31   <FONT COLOR="blue"><I>/* print the string */</I></FONT>
+   32   printf("%s\n",msg);
+   33 
+   34   <FONT COLOR="blue"><I>/* release the string */</I></FONT>
+   35   sidl_String_free(msg);
+   36 
+   37   <B>return</B> 0;
+   38 
+   39  EXIT: <FONT COLOR="blue"><I>/* this is error handling code for any exceptions that were thrown */</I></FONT>
+   40   {
+   41     fprintf(stderr,"%s:%d: Error, exception caught\n",__FILE__,__LINE__);
+   42     sidl_BaseInterface ignore = NULL;
+   43     sidl_BaseException be = sidl_BaseException__cast(ex,&amp;ignore);
+   44 
+   45     msg = sidl_BaseException_getNote(be, &amp;ignore);
+   46     fprintf(stderr,"%s\n",msg);
+   47     sidl_String_free(msg);
+   48 
+   49     msg = sidl_BaseException_getTrace(be, &amp;ignore);
+   50     fprintf(stderr,"%s\n",msg);
+   51     sidl_String_free(msg);
+   52 
+   53     sidl_BaseException_deleteRef(be, &amp;ignore);
+   54     SIDL_CLEAR(ex);
+   55     <B>return</B> 1;
+   56   }
+   57 }</TD></TR>
+</TABLE><P>As with other examples, we will go through this one
+line by line. It is important to note that nowhere
+in this file is any indication of what language the
+Babel object is implemented in. When you see the makefile, 
+we will show that this code can be linked against multiple
+implementations in different languages.
+</P><BLOCKQUOTE CLASS="quote">
+<DL CLASS="description"><DT CLASS="dt-description">
+<B>line 2:</B></DT><DD CLASS="dd-description"> This line includes the C stub for the <FONT COLOR=maroon><I><TT>Hello.World</TT></I></FONT> type.
+</DD><DT CLASS="dt-description"><B>line 3:</B></DT><DD CLASS="dd-description"> We also include the C stub for the <FONT COLOR=maroon><I><TT>sidl.BaseInterface</TT></I></FONT> type
+which all classes and interfaces ultimately inherit from. In C, we often
+use this type to hold the exception argument.
+</DD><DT CLASS="dt-description"><B>line 4:</B></DT><DD CLASS="dd-description"> There is no <FONT COLOR=maroon><I><TT>sidl.Exception</TT></I></FONT> type. This header actually 
+introduces some useful macros for dealing with exception handling in C.
+</DD><DT CLASS="dt-description"><B>line 13:</B></DT><DD CLASS="dd-description"> This is where the object is <TT>_create()</TT>’ed. Note
+that the creation may fail, so we use the <TT>SIDL_CHECK</TT> macro 
+introduced from <TT>sidl_Exception.h</TT> to test the exception and 
+goto <TT>EXIT</TT> (line 39), if necessary.
+</DD><DT CLASS="dt-description"><B>line 21:</B></DT><DD CLASS="dd-description"> With a live reference to the object, we now try to 
+get the message out of it. Note that we check if the exception is thrown
+<EM>and</EM> if the string is <TT>NULL</TT>.
+</DD><DT CLASS="dt-description"><B>line 29:</B></DT><DD CLASS="dd-description"> Once we have the message, we can dispose of our reference
+to the object.
+</DD><DT CLASS="dt-description"><B>line 32:</B></DT><DD CLASS="dd-description"> Print the message
+</DD><DT CLASS="dt-description"><B>line 35:</B></DT><DD CLASS="dd-description"> Free the string. Return values have the same semantics as
+out parameters which is the caller always recieves a reference count and
+is obligied to dispose of it when done.
+</DD><DT CLASS="dt-description"><B>line 37:</B></DT><DD CLASS="dd-description"> Normal termination. 
+</DD><DT CLASS="dt-description"><B>lines 39–56:</B></DT><DD CLASS="dd-description"> This is exception handling code. Its hard to imagine
+so many possibilities for failure in our little example, but it
+is useful to see how exception classes can be cast to appropriate 
+types (line 43), and be queried for both original error message and
+the trace of the call stack from which it was thrown.
+</DD><DT CLASS="dt-description"><B>line 42:</B></DT><DD CLASS="dd-description"> Note that Babel generated methods always throw exceptions, 
+but in exception handling code, we often ignore them. Do not call
+<TT>SIDL_CHECK</TT> after the <TT>EXIT</TT> as this can easily result
+in an infinite loop.
+</DD></DL>
+</BLOCKQUOTE><P>Now we need to edit the GNUmakefile that builds the code in
+this directory and links it with the C++ or Fortran 90/95 
+implementations in the two subdirectories. This case requires
+more editing that the previous two examples.</P><DIV CLASS="flushright"><SPAN CLASS="textboxed"><FONT COLOR=purple><B>make</B></FONT></SPAN></DIV><TABLE CLASS="lstframe" STYLE="padding:1ex;border-style:solid;"><TR><TD CLASS="lstlisting">    1 include babel.make
+    2 <FONT COLOR="blue"><I># please name the server library here</I></FONT>
+    3 LIBNAME=client
+    4 <FONT COLOR="blue"><I># please name the SIDL file here</I></FONT>
+    5 SIDLFILE=../hello.sidl
+    6 <FONT COLOR="blue"><I># extra include/compile flags </I></FONT>
+    7 EXTRAFLAGS=
+    8 <FONT COLOR="blue"><I># extra libraries that the implementation needs to link against</I></FONT>
+    9 EXTRALIBS=
+   10 <FONT COLOR="blue"><I># library version number</I></FONT>
+   11 VERSION=0.1.1
+   12 <FONT COLOR="blue"><I># PREFIX specifies the top of the installation directory</I></FONT>
+   13 PREFIX=/usr/local
+   14 <FONT COLOR="blue"><I># the default installation installs the .la and .scl (if any) into the</I></FONT>
+   15 <FONT COLOR="blue"><I># LIBDIR</I></FONT>
+   16 LIBDIR=$(PREFIX)/lib
+   17 <FONT COLOR="blue"><I># the default installation installs the stub header and IOR header files</I></FONT>
+   18 <FONT COLOR="blue"><I># in INCLDIR</I></FONT>
+   19 INCLDIR=$(PREFIX)/include
+   20 
+   21 
+   22 <FONT COLOR="blue"><I># most of the rest of the file should not require editing</I></FONT>
+   23 
+   24 ifeq ($(IMPLSRCS),)
+   25   SCLFILE=
+   26   BABELFLAG=--client=c
+   27   MODFLAG=
+   28 else
+   29   SCLFILE=lib$(LIBNAME).scl
+   30   BABELFLAG=--server=c
+   31   MODFLAG=-module
+   32 endif
+   33 
+   34 all : lib$(LIBNAME).la $(SCLFILE) runC2Cxx runC2F90
+   35 
+   36 CXX=`babel-config --query-var=CXX`
+   37 runC2Cxx: lib$(LIBNAME).la libCxx/libhello.la main.lo
+   38         babel-libtool --mode=link --tag=CXX $(CXX) -static main.lo \
+   39             lib$(LIBNAME).la libCxx/libhello.la -o runC2Cxx
+   40 
+   41 runC2F90: lib$(LIBNAME).la libF90/libhello.la main.lo
+   42         babel-libtool --mode=link --tag=CC $(CC) -static main.lo  \
+   43             lib$(LIBNAME).la libF90/libhello.la -o runC2F90
+   44 
+   45 CC=`babel-config --query-var=CC`
+   46 INCLUDES=`babel-config --includes`
+   47 CFLAGS=`babel-config --flags-c`
+   48 LIBS=`babel-config --libs-c-client`
+   49 
+   50 STUBOBJS=$(STUBSRCS:.c=.lo)
+   51 IOROBJS=$(IORSRCS:.c=.lo)
+   52 SKELOBJS=$(SKELSRCS:.c=.lo)
+   53 IMPLOBJS=$(IMPLSRCS:.c=.lo)
+   54 
+   55 PUREBABELGEN=$(IORHDRS) $(IORSRCS) $(STUBSRCS) $(STUBHDRS) $(SKELSRCS)
+   56 BABELGEN=$(IMPLHDRS) $(IMPLSRCS)
+   57 
+   58 $(IMPLOBJS) : $(STUBHDRS) $(IORHDRS) $(IMPLHDRS)
+   59 
+   60 lib$(LIBNAME).la : $(STUBOBJS) $(IOROBJS) $(IMPLOBJS) $(SKELOBJS)
+   61         babel-libtool --mode=link --tag=CC $(CC) -o lib$(LIBNAME).la \
+   62           -rpath $(LIBDIR) -release $(VERSION) \
+   63           -no-undefined $(MODFLAG) \
+   64           $(CFLAGS) $(EXTRAFLAGS) $^ $(LIBS) \
+   65           $(EXTRALIBS)
+   66 
+   67 $(PUREBABELGEN) $(BABELGEN) : babel-stamp
+   68         @if test -f <B>$@</B>; then \
+   69             touch <B>$@</B>; \
+   70         else \
+   71             rm -f babel-stamp ; \
+   72             $(<B>MAKE</B>) babel-stamp; \
+   73         fi
+   74 
+   75 babel-stamp: $(SIDLFILE)
+   76         @rm -f babel-temp
+   77         @touch babel-temp
+   78         babel $(BABELFLAG) $(SIDLFILE)
+   79         @mv -f babel-temp <B>$@</B>
+   80 
+   81 lib$(LIBNAME).scl : $(IORSRCS)
+   82 ifeq ($(IORSRCS),)
+   83         echo "lib$(LIBNAME).scl is not needed for client-side C bindings."
+   84 else
+   85         -rm -f <B>$@</B>
+   86         echo '&lt;?xml version="1.0" ?&gt;' &gt; <B>$@</B>
+   87         echo '&lt;scl&gt;' &gt;&gt; <B>$@</B>
+   88         if test `uname` = "Darwin"; then scope="global"; else scope="local"; \
+   89            fi ; \
+   90           echo '  &lt;library uri="'`pwd`/lib$(LIBNAME).la'" scope="'"$$scope"'" resolution="lazy" &gt;' &gt;&gt; <B>$@</B>
+   91         grep __set_epv $^ /dev/null | awk 'BEGIN {FS=":"} { print $$1}' | sort -u | sed -e 's/_IOR.c//g' -e 's/_/./g' | awk ' { printf "    &lt;class name=\"%s\" desc=\"ior/impl\" /&gt;\n", $$1 }' &gt;&gt;<B>$@</B>
+   92         echo "  &lt;/library&gt;" &gt;&gt;<B>$@</B>
+   93         echo "&lt;/scl&gt;" &gt;&gt;<B>$@</B>
+   94 endif
+   95 
+   96 .SUFFIXES: .lo
+   97 
+   98 .c.lo:
+   99         babel-libtool --mode=compile --tag=CC $(CC) $(INCLUDES) $(CFLAGS) $(EXTRAFLAGS) -c -o <B>$@</B> $&lt;
+  100 
+  101 clean :
+  102         -rm -f $(PUREBABELGEN) babel-temp babel-stamp *.o *.lo
+  103 
+  104 realclean : clean
+  105         -rm -f lib$(LIBNAME).la lib$(LIBNAME).scl
+  106         -rm -rf .libs
+  107 
+  108 install : install-libs install-headers install-scl
+  109 
+  110 
+  111 install-libs : lib$(LIBNAME).la
+  112         -mkdir -p $(LIBDIR)
+  113         babel-libtool --mode=install install -c lib$(LIBNAME).la \
+  114           $(LIBDIR)/lib$(LIBNAME).la
+  115 
+  116 install-scl : $(SCLFILE)
+  117 ifneq ($(IORSRCS),)
+  118         -rm -f $(LIBDIR)/lib$(LIBNAME).scl
+  119         -mkdir -p $(LIBDIR)
+  120         echo '&lt;?xml version="1.0" ?&gt;' &gt; $(LIBDIR)/lib$(LIBNAME).scl
+  121         echo '&lt;scl&gt;' &gt;&gt; $(LIBDIR)/lib$(LIBNAME).scl
+  122         if test `uname` = "Darwin"; then scope="global"; else scope="local"; \
+  123            fi ; \
+  124           echo '  &lt;library uri="'$(LIBDIR)/lib$(LIBNAME).la'" scope="'"$$scope"'" resolution="lazy" &gt;' &gt;&gt; $(LIBDIR)/lib$(LIBNAME).scl
+  125         grep __set_epv $^ /dev/null | awk 'BEGIN {FS=":"} { print $$1}' | sort -u | sed -e 's/_IOR.c//g' -e 's/_/./g' | awk ' { printf "    &lt;class name=\"%s\" desc=\"ior/impl\" /&gt;\n", $$1 }' &gt;&gt;$(LIBDIR)/lib$(LIBNAME).scl
+  126         echo "  &lt;/library&gt;" &gt;&gt;$(LIBDIR)/lib$(LIBNAME).scl
+  127         echo "&lt;/scl&gt;" &gt;&gt;$(LIBDIR)/lib$(LIBNAME).scl
+  128 endif
+  129 
+  130 install-headers : $(IORHDRS) $(STUBHDRS)
+  131         -mkdir -p $(INCLDIR)
+  132         for i in $^ ; do \
+  133           babel-libtool --mode=install cp $$i $(INCLDIR)/$$i ; \
+  134         done
+  135 
+  136 .PHONY: all clean realclean install install-libs install-headers install-scl</TD></TR>
+</TABLE><BLOCKQUOTE CLASS="quote">
+<DL CLASS="description"><DT CLASS="dt-description">
+<B>line 1:</B></DT><DD CLASS="dd-description"> Again we include the Babel-generated makefile fragment.
+Again we see that its contents depend on the language being generated.
+</DD><DT CLASS="dt-description"><B>line 3:</B></DT><DD CLASS="dd-description"> Here we edit the name to be <TT>client</TT>.
+</DD><DT CLASS="dt-description"><B>lines 5–19:</B></DT><DD CLASS="dd-description"> These have the same meanings as in the examples
+above.
+</DD><DT CLASS="dt-description"><B>lines 34–43:</B></DT><DD CLASS="dd-description"> Here we must modify the <TT>all</TT> target
+definition and add lines to link <TT>runC2Cxx</TT> and
+<TT>runC2F90</TT>. Note that when linking C to C++, we must use the
+C++ compiler.
+</DD></DL>
+</BLOCKQUOTE><P>At last, we can make the two executables and run them.
+</P><BLOCKQUOTE CLASS="quotation"><TT>
+% <B>make all</B><BR>
+% <B>./runC2Cxx</B><BR>
+Hello from C++!<BR>
+% <B>./runC2F90</B><BR>
+Hello from Fortran 90/95!
+</TT></BLOCKQUOTE><H2 CLASS="section"><A NAME="toc20"></A><A NAME="htoc19">5.3</A>  Portable Makefiles: using <TT>babel-config</TT></H2><P><A NAME="sec:static-miniconfig"></A></P><P>Since Babelized software must be built the same way
+that Babel itself was configured, it seems reasonable
+to lean on <TT>babel-config</TT> quite heavily.
+By now you are probably wondering how many 
+secrets <TT>babel-config</TT> holds and can provide on request.
+The simplest way to find out is to ask it. (Though you
+may get a slightly different result than what is shown
+here depending on the version of Babel.)
+</P><BLOCKQUOTE CLASS="quotation"><TT>
+% <B>babel-config --dump-vars | wc -l</B><BR>
+128
+</TT></BLOCKQUOTE><P><TT>babel-config</TT> can provide a wealth of information determined by
+Babel during its configuration and installation. Even if you do not
+use the GNUmakefile’s that Babel can generate, you will likely end up
+using <TT>babel-config</TT> to determine important information about
+Babel’s installation</P><H2 CLASS="section"><A NAME="toc21"></A><A NAME="htoc20">5.4</A>  Final Remarks</H2><P>
+Congratulations! You are now ready to develop a parallel 
+scalable linear solver package. </P><P>The preceding process may seem to be the most complicated way to write
+the world’s simplest program but, of course, the same process will
+also work for significantly more complex applications. “Hello
+World” is small enough to experiment with in the language of your
+choice. Parallel, multithreaded, scientific simulation codes are
+another matter entirely.
+</P><HR CLASS="footnoterule"><DL CLASS="thefootnotes"><DT CLASS="dt-thefootnotes">
+<A NAME="note5" HREF="#text5">1</A></DT><DD CLASS="dd-thefootnotes">For information on additional command line options, 
+refer to Section <A HREF="index006.html#s:basics_commandline">4.2</A>.
+</DD><DT CLASS="dt-thefootnotes"><A NAME="note6" HREF="#text6">2</A></DT><DD CLASS="dd-thefootnotes">You can also try the “<TT>--help</TT>” flag 
+to list all of the Babel command-line options.
+</DD><DT CLASS="dt-thefootnotes"><A NAME="note7" HREF="#text7">3</A></DT><DD CLASS="dd-thefootnotes">Note: dots are
+converted to underscores for file naming.
+</DD><DT CLASS="dt-thefootnotes"><A NAME="note8" HREF="#text8">4</A></DT><DD CLASS="dd-thefootnotes">A
+kind of precompiled header.
+</DD></DL>
+<HR>
+<A HREF="index006.html"><IMG SRC="previous_motif.gif" ALT="Previous"></A>
+<A HREF="index-multipage.html"><IMG SRC="contents_motif.gif" ALT="Up"></A>
+<A HREF="index008.html"><IMG SRC="next_motif.gif" ALT="Next"></A>
+</BODY>
+</HTML>

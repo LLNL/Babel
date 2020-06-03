@@ -1,0 +1,56 @@
+# IORHDRS dependencies.
+hooks_Basics_IOR.h:                                                           \
+  /home/epperly/current/babel_fix_hooks/regression/hooks/runCxx/../hooks.sidl
+hooks_Basics_IOR.h: sidl_header.h
+hooks_Basics_IOR.h: sidl_BaseClass_IOR.h
+
+hooks_IOR.h:                                                                  \
+  /home/epperly/current/babel_fix_hooks/regression/hooks/runCxx/../hooks.sidl
+hooks_IOR.h: hooks_Basics_IOR.h
+
+
+# STUBHDRS dependencies.
+hooks.hxx:                                                                    \
+  /home/epperly/current/babel_fix_hooks/regression/hooks/runCxx/../hooks.sidl
+hooks.hxx: hooks_Basics.hxx
+
+hooks_Basics.hxx:                                                             \
+  /home/epperly/current/babel_fix_hooks/regression/hooks/runCxx/../hooks.sidl
+hooks_Basics.hxx: sidl_cxx.hxx
+hooks_Basics.hxx: sidl_cxx.hxx
+hooks_Basics.hxx: hooks_Basics_IOR.h
+hooks_Basics.hxx: sidl_BaseClass.hxx
+
+
+# STUBSRCS dependencies.
+hooks_Basics.cxx:                                                             \
+  /home/epperly/current/babel_fix_hooks/regression/hooks/runCxx/../hooks.sidl
+hooks_Basics.cxx: hooks_Basics.hxx
+hooks_Basics.cxx: sidl_BaseInterface.hxx
+hooks_Basics.cxx: sidl_BaseClass.hxx
+hooks_Basics.cxx: sidl_BaseException.hxx
+hooks_Basics.cxx: sidl_LangSpecificException.hxx
+hooks_Basics.cxx: sidl_RuntimeException.hxx
+hooks_Basics.cxx: sidl_rmi_Call.hxx
+hooks_Basics.cxx: sidl_rmi_Return.hxx
+hooks_Basics.cxx: sidl_rmi_Ticket.hxx
+hooks_Basics.cxx: sidl_rmi_InstanceHandle.hxx
+hooks_Basics.cxx: sidl_String.h
+hooks_Basics.cxx: sidl_rmi_ConnectRegistry.h
+hooks_Basics.cxx: babel_config.h
+hooks_Basics.cxx: sidl_Loader.hxx
+hooks_Basics.cxx: sidl_DLL.hxx
+hooks_Basics.cxx: sidl_BaseInterface.hxx
+hooks_Basics.cxx: sidl_ClassInfo.hxx
+hooks_Basics.cxx: sidl_BaseClass.h
+hooks_Basics.cxx: sidl_ClassInfo.h
+hooks_Basics.cxx: sidl_rmi_ProtocolFactory.h
+hooks_Basics.cxx: sidl_rmi_InstanceRegistry.h
+hooks_Basics.cxx: sidl_rmi_InstanceHandle.h
+hooks_Basics.cxx: sidl_rmi_Invocation.h
+hooks_Basics.cxx: sidl_rmi_Response.h
+hooks_Basics.cxx: sidl_rmi_ServerRegistry.h
+hooks_Basics.cxx: sidl_rmi_ConnectRegistry.h
+hooks_Basics.cxx: sidl_io_Serializable.h
+
+

@@ -1,0 +1,16 @@
+README.Babel for Parsifal
+=========================
+
+This is a stripped down version of the libparsifal-1.0 release.
+The parsifal_babel_patch has been applied.
+
+configure/Makefile.in files have been regenerated using a consistent
+version of autotools.
+
+The following directories have been deleted:
+	doc		the developer documentation
+	samples		the examples directory
+
+Files in these directories have been deleted:
+	win32/lib/	the precompiled library has been removed
+	win32/bin/	the precompiled DLL has been removed

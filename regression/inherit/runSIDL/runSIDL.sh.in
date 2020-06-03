@@ -1,0 +1,148 @@
+#!/bin/bash
+## File:        runSIDL.sh
+## Package:     Babel regression driver
+## Revision:    $Revision: 7188 $
+## Modified:    $Date: 2011-09-27 11:38:42 -0700 (Tue, 27 Sep 2011) $
+## Description: regression driver for sidl generation tests
+##
+## Copyright (c) 2003, The Regents of the University of Calfornia.
+## Produced at the Lawrence Livermore National Laboratory.
+## Written by the Components Team <components@llnl.gov>
+## UCRL-CODE-2002-054
+## All rights reserved.
+##
+## This file is part of Babel. For more information, see
+## http:##www.llnl.gov/CASC/components/. Please read the COPYRIGHT file
+## for Our Notice and the LICENSE file for the GNU Lesser General Public
+## License.
+##
+## This program is free software; you can redistribute it and/or modify it
+## under the terms of the GNU Lesser General Public License (as published by
+## the Free Software Foundation) version 2.1 dated February 1999.
+##
+## This program is distributed in the hope that it will be useful, but
+## WITHOUT ANY WARRANTY; without even the IMPLIED WARRANTY OF
+## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the terms and
+## conditions of the GNU Lesser General Public License for more details.
+##
+## You should have received a copy of the GNU Lesser General Public License
+## along with this program; if not, write to the Free Software Foundation,
+## Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+
+
+#
+# Run the tests
+#
+
+echo "TEST_BEGIN 1 Inherit.sidl->sidl"
+echo "PART 1"
+diff ./sidl/Inherit.sidl ./xml/Inherit.sidl > /dev/null \
+     && (echo "RESULT 1 PASS" && echo "TEST_RESULT PASS") \
+     || (echo "RESULT 1 FAIL" && echo "TEST_RESULT FAIL") 
+
+echo
+echo "TEST_BEGIN 1 Inherit.A.XML->XML"
+echo "PART 1"
+grep -v Metadata ./xml/Inherit.A-*.xml > temp
+grep -v Metadata ./xml2/Inherit.A-*.xml > temp2
+diff temp temp2 > /dev/null \
+     && (echo "RESULT 1 PASS" && echo "TEST_RESULT PASS") \
+     || (echo "RESULT 1 FAIL" && echo "TEST_RESULT FAIL") 
+echo 
+echo "TEST_BEGIN 1 Inherit.B.XML->XML"
+echo "PART 1"
+grep -v Metadata ./xml/Inherit.B-*.xml > temp
+grep -v Metadata ./xml2/Inherit.B-*.xml > temp2
+diff temp temp2 > /dev/null \
+     && (echo "RESULT 1 PASS" && echo "TEST_RESULT PASS") \
+     || (echo "RESULT 1 FAIL" && echo "TEST_RESULT FAIL") 
+echo 
+echo "TEST_BEGIN 1 Inerit.C.XML->XML"
+echo "PART 1"
+grep -v Metadata ./xml/Inherit.C-*.xml > temp
+grep -v Metadata ./xml2/Inherit.C-*.xml > temp2
+diff temp temp2 > /dev/null \
+     && (echo "RESULT 1 PASS" && echo "TEST_RESULT PASS") \
+     || (echo "RESULT 1 FAIL" && echo "TEST_RESULT FAIL") 
+echo 
+echo "TEST_BEGIN 1 Inherit.D.XML->XML"
+echo "PART 1"
+grep -v Metadata ./xml/Inherit.D-*.xml > temp
+grep -v Metadata ./xml2/Inherit.D-*.xml > temp2
+diff temp temp2 > /dev/null \
+     && (echo "RESULT 1 PASS" && echo "TEST_RESULT PASS") \
+     || (echo "RESULT 1 FAIL" && echo "TEST_RESULT FAIL") 
+echo
+echo "TEST_BEGIN 1 Inherit.E.XML->XML"
+echo "PART 1"
+grep -v Metadata ./xml/Inherit.E-*.xml > temp
+grep -v Metadata ./xml2/Inherit.E-*.xml > temp2
+diff temp temp2 > /dev/null \
+     && (echo "RESULT 1 PASS" && echo "TEST_RESULT PASS") \
+     || (echo "RESULT 1 FAIL" && echo "TEST_RESULT FAIL") 
+echo 
+echo "TEST_BEGIN 1 Inherit.E2.XML->XML"
+echo "PART 1"
+grep -v Metadata ./xml/Inherit.E2-*.xml > temp
+grep -v Metadata ./xml2/Inherit.E2-*.xml > temp2
+diff temp temp2 > /dev/null \
+     && (echo "RESULT 1 PASS" && echo "TEST_RESULT PASS") \
+     || (echo "RESULT 1 FAIL" && echo "TEST_RESULT FAIL") 
+echo
+echo "TEST_BEGIN 1 Inherit.F.XML->XML"
+echo "PART 1"
+grep -v Metadata ./xml/Inherit.F-*.xml > temp
+grep -v Metadata ./xml2/Inherit.F-*.xml > temp2
+diff temp temp2 > /dev/null \
+     && (echo "RESULT 1 PASS" && echo "TEST_RESULT PASS") \
+     || (echo "RESULT 1 FAIL" && echo "TEST_RESULT FAIL") 
+echo
+echo "TEST_BEGIN 1 Inherit.F2.XML->XML"
+echo "PART 1"
+grep -v Metadata ./xml/Inherit.F2-*.xml > temp
+grep -v Metadata ./xml2/Inherit.F2-*.xml > temp2
+diff temp temp2 > /dev/null \
+     && (echo "RESULT 1 PASS" && echo "TEST_RESULT PASS") \
+     || (echo "RESULT 1 FAIL" && echo "TEST_RESULT FAIL") 
+echo
+echo "TEST_BEGIN 1 Inherit.G.XML->XML"
+echo "PART 1"
+grep -v Metadata ./xml/Inherit.G-*.xml > temp
+grep -v Metadata ./xml2/Inherit.G-*.xml > temp2
+diff temp temp2 > /dev/null \
+     && (echo "RESULT 1 PASS" && echo "TEST_RESULT PASS") \
+     || (echo "RESULT 1 FAIL" && echo "TEST_RESULT FAIL") 
+echo
+echo "TEST_BEGIN 1 Inherit.G2.XML->XML"
+echo "PART 1"
+grep -v Metadata ./xml/Inherit.G2-*.xml > temp
+grep -v Metadata ./xml2/Inherit.G2-*.xml > temp2
+diff temp temp2 > /dev/null \
+     && (echo "RESULT 1 PASS" && echo "TEST_RESULT PASS") \
+     || (echo "RESULT 1 FAIL" && echo "TEST_RESULT FAIL") 
+echo 
+echo "TEST_BEGIN 1 Inherit.H.XML->XML"
+echo "PART 1"
+grep -v Metadata ./xml/Inherit.H-*.xml > temp
+grep -v Metadata ./xml2/Inherit.H-*.xml > temp2
+diff temp temp2 > /dev/null \
+     && (echo "RESULT 1 PASS" && echo "TEST_RESULT PASS") \
+     || (echo "RESULT 1 FAIL" && echo "TEST_RESULT FAIL") 
+echo 
+echo "TEST_BEGIN 1 Inherit.I.XML->XML"
+echo "PART 1"
+grep -v Metadata ./xml/Inherit.I-*.xml > temp
+grep -v Metadata ./xml2/Inherit.I-*.xml > temp2
+diff temp temp2 > /dev/null \
+     && (echo "RESULT 1 PASS" && echo "TEST_RESULT PASS") \
+     || (echo "RESULT 1 FAIL" && echo "TEST_RESULT FAIL") 
+echo
+echo "TEST_BEGIN 1 Inherit.XML->XML"
+echo "PART 1"
+grep -v Metadata ./xml/Inherit-*.xml > temp
+grep -v Metadata ./xml2/Inherit-*.xml > temp2
+diff temp temp2 > /dev/null \
+     && (echo "RESULT 1 PASS" && echo "TEST_RESULT PASS") \
+     || (echo "RESULT 1 FAIL" && echo "TEST_RESULT FAIL") 
+
+rm -rf temp temp2

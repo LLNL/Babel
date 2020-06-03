@@ -1,0 +1,68 @@
+#!/usr/local/bin/python
+#
+# File:        argstest
+# Copyright:   (c) 2001 Lawrence Livermore National Security, LLC
+# Revision:    @(#) $Revision: 4767 $
+# Date:        $Date: 2005-07-26 13:45:06 -0700 (Tue, 26 Jul 2005) $
+# Description: Exercise every kind of argument
+#
+# Try to exercise everything possible in Python.
+
+import wrapper.User
+import wrapper.Data
+import wrapper.Data_Impl
+from synch.ResultType import *
+from synch import RegOut
+
+class TestCounter:
+
+  def __init__(self, numparts = -1):
+    self.tracker = RegOut.RegOut()
+    self.partno = 0
+    self.tracker.setExpectations(numparts)
+
+  def describeTest(self, description):
+    self.partno = self.partno + 1
+    self.tracker.startPart(self.partno)
+    self.tracker.writeComment(description)
+
+  def evalTest(self, result, expected=1):
+    if (result):
+      if (expected):
+        self.tracker.endPart(self.partno, PASS)
+      else:
+        self.tracker.endPart(self.partno, XPASS)
+    else:
+      if (expected):
+        self.tracker.endPart(self.partno, FAIL)
+      else:
+        self.tracker.endPart(self.partno, XFAIL)
+        
+  def finish(self):
+    self.tracker.close()
+      
+
+if __name__ == '__main__':
+  counter = TestCounter()
+
+  user = wrapper.User.User()
+  counter.describeTest('user = wrapper.User.User()')
+  counter.evalTest(user != None)
+
+  data = wrapper.Data_Impl.Data()
+  counter.describeTest('data = wrapper.Data_Impl.Data()')
+  counter.evalTest(data != None)
+
+  counter.describeTest('data.d_ctortest = "ctor was run"')
+  counter.evalTest(data.d_ctortest == "ctor was run")
+  
+  user.accept(data._getStub())
+
+  counter.describeTest('data.d_string == "Hello World!"')
+  counter.evalTest(data.d_string == "Hello World!")
+
+  counter.describeTest('data.d_int == 3')
+  counter.evalTest(data.d_int == 3)
+  
+  counter.finish()
+0

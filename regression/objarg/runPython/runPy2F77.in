@@ -1,0 +1,3 @@
+#!/bin/bash
+# There is no Py2F77 regression test
+exit 0

@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+   File:        metadata.dtd
+   Package:     configuration database
+   Copyright:   (c) 2000 Lawrence Livermore National Security, LLC
+   Revision:    @(#) $Id: metadata.dtd 6171 2007-10-08 23:39:28Z epperly $
+   Description: DTD option metadata for the machine configuration database
+
+   This file defines the DTD that describes the options metadata for the
+   machine configuration database.  The Babel machine configuration database
+   architecture consists of four definition files:
+
+      metadata.xml metadata file that describes valid configuration options
+      metadata.dtd DTD for the metadata.xml file
+      config.xml   configurations for different compilers and architectures
+      config.dtd   DTD for the config.xml file
+
+   The metadata and configuration XML descriptions have been separated to
+   simplify the creation of configuration web pages by automated tools.
+
+   To validate a config.xml file, the parser must first validate it against
+   config.dtd and then validate the options and parameters using metadata.xml.
+
+   The root symbol is <ConfigurationMetadata>.
+-->
+
+<!--
+   ConfigurationMetadata Element
+
+   ConfigurationMetadata is the root element for the configuraiton metadata
+   XML schema.  ConfigurationMetadata contains a list of languages supported
+   by the Babel compiler.
+-->
+
+<!ELEMENT ConfigurationMetadata (Language)+>
+
+<!--
+   Language Element
+
+   Each language supported by the Babel compiler is defined by a Language
+   element in the metadata XML.  The Language element gives the name for
+   the language (e.g., "C++" or "Fortran 77") along with a collection of
+   configuration options.
+-->
+
+<!ELEMENT Language (Option)*>
+<!ATTLIST Language name CDATA #REQUIRED>
+
+<!--
+   Option and Parameter Elements
+
+   Each language supports a set of configuration options that may be set to
+   guide code generation in the Babel compiler.  Each Option element has a
+   unique option name, an HTML comment description, and a collection of
+   choices.  The choices are represented by Parameter elements.
+-->
+
+<!ELEMENT Option (Comment, (Parameter)+)>
+<!ATTLIST Option name CDATA #REQUIRED>
+
+<!ELEMENT Parameter EMPTY>
+<!ATTLIST Parameter choice CDATA #REQUIRED>
+
+<!--
+   Comment Element
+
+   Comment elements must include a short summary description of the option
+   and may include a longer HTML description of the option.  This element
+   uses the html-lite.dtd HTML subset.
+-->
+
+<!ENTITY % html-lite SYSTEM "html-lite.dtd">
+%html-lite;
+
+<!ELEMENT Comment %html-block;>
+<!ATTLIST Comment summary CDATA #REQUIRED>

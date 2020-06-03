@@ -1,0 +1,95 @@
+<?xml version='1.0' encoding='us-ascii'?>
+<!--
+   File:        config.xml
+   Package:     configuration database
+   Copyright:   (c) 2000 Lawrence Livermore National Security, LLC
+   Revision:    @(#) $Id: config.xml 6171 2007-10-08 23:39:28Z epperly $
+   Description: XML description of machine configuration profiles
+
+   This file defines the default machine configurations for the Babel
+   compiler.  To add a new configuration, create a Language element,
+   define a Profile name, and add the appropriate configuration selections
+   in the Options element.
+-->
+
+<!DOCTYPE Configuration SYSTEM "config.dtd">
+
+<Configuration>
+
+   <!--
+      The following defines configurations for the generation of C stubs
+      and skeletons in the Babel compiler.
+   -->
+
+   <Language name="C"/>
+
+   <!--
+      The following defines configurations for the generation of C++ stubs
+      and skeletons in the Babel compiler.
+   -->
+
+   <Language name="C++">
+
+      <Profile name="ANSI/ISO C++">
+         <Description summary="generate code for ANSI/ISO C++ compilers">
+         </Description>
+      </Profile>
+
+      <Options>
+         <Selection option = "use namespaces"
+                    value  = "true"/>
+         <Selection option = "have reinterpret cast"
+                    value  = "true"/>
+      </Options>
+
+   </Language>
+
+   <!--
+      The following defines configurations for the generation of Fortran 77
+      stubs and skeletons in the Babel compiler.
+   -->
+
+   <Language name="Fortran77">
+
+      <Profile name="SunOS Fortran 77">
+         <Description summary="generate code for the SunOS f77 compiler">
+         </Description>
+         <Architecture cpu="sparc" os="SunOS"/>
+         <Compiler name="f77"/>
+      </Profile>
+
+      <Options>
+         <Selection option = "mangling"
+                    value  = "to lower case"/>
+         <Selection option = "underscore"
+                    value  = "one"/>
+         <Selection option = "string arguments"
+                    value  = "length at end of argument list"/>
+         <Selection option = "string return"
+                    value  = "argument with string first"/>
+      </Options>
+
+   </Language>
+
+   <Language name="Fortran77">
+
+      <Profile name="GNU Fortran 77">
+         <Description summary="generate code for the GNU g77 compiler">
+         </Description>
+         <Compiler name="g77"/>
+      </Profile>
+
+      <Options>
+         <Selection option = "mangling"
+                    value  = "to lower case"/>
+         <Selection option = "underscore"
+                    value  = "two"/>
+         <Selection option = "string arguments"
+                    value  = "length at end of argument list"/>
+         <Selection option = "string return"
+                    value  = "argument with string first"/>
+      </Options>
+
+   </Language>
+
+</Configuration>

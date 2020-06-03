@@ -1,0 +1,26 @@
+#!/bin/bash
+# File:        runPy2C
+# Copyright:   (c) 2001 Lawrence Livermore National Security, LLC
+# Description: Set environment variables and run python
+# Revision:    $Revision: 7054 $
+# Date:        $Date: 2011-01-25 10:48:21 -0800 (Tue, 25 Jan 2011) $
+#
+
+PYTHON=PYTHONEXEC
+EXTRA_PYTHON=EXTRAPYTHON
+case "`uname`" in
+  CYGWIN*) cygwin=true;;
+  *) cygwin=false;;
+esac
+
+PYTHONPATH=PYTHONDIR:../../libPython:../../../../runtime/python:${EXTRA_PYTHON}
+SIDL_DLL_PATH="../../libPython/libImpl.scl;../../libPython/libImplPy.scl;../../../../runtime/sidl/libImpl.scl"
+SHARED_LIB_VAR=PYTHONLIB:${SHARED_LIB_VAR}
+export PYTHONPATH SIDL_DLL_PATH SHARED_LIB_VAR 
+
+if $cygwin; then
+  PATH=$PATH:PYTHONLIB:PYTHONLIB/../bin
+  export PATH
+fi
+
+$PYTHON overloadtest

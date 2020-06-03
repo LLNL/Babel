@@ -1,0 +1,305 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html>
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="GENERATOR" content="Mozilla/4.78 [en] (X11; U; Linux 2.4.18-c0smp i686) [Netscape]">
+   <title>HYPRE Sample SIDL File</title>
+</head>
+<body bgcolor="#FFFFFF">
+
+<h1>
+HYPRE Sample SIDL File</h1>
+This is a sample SIDL file from an experimental version of the <i>hypre</i>
+scalable linear solvers library.&nbsp; Note that this file does not use
+exceptions or enumerate types.&nbsp; For more information, see the <a href="../papers/siam-pp-2001.pdf">2001
+SIAM Parallel Processing paper</a> in the documentation directory of the
+<b>Babel</b>
+distribution..
+<pre>/*
+&nbsp;* This is the HYPRE SIDL interface description file.&nbsp; It is an example of a
+&nbsp;* SIDL description file.&nbsp; This work was presented at the 2001 SIAM Parallel
+&nbsp;* Processing conference.&nbsp; The authors are Andy Cleary, Jeff Painter, and Cal
+&nbsp;* Ribbens (from HYPRE) and Scott Kohn and Gary Kumfert (from Components).
+&nbsp;*
+&nbsp;* Questions about the syntax of this file should be directed to either Scott
+&nbsp;* or Gary at components@llnl.gov.
+&nbsp;*/
+
+/*
+&nbsp;* Many files will contain one or more import statements.&nbsp; These import
+&nbsp;* statements are similar to Java in that they add the imported symbol name
+&nbsp;* to the default resolution path.&nbsp; Since this SIDL file does not reference
+&nbsp;* any other packages, it does not contain an explicit version statement.
+&nbsp;* However, if it did want to reference the ESI specification, then it could
+&nbsp;* import the ESI as shown below.
+&nbsp;*/
+// import ESI;
+
+/**
+&nbsp;* The &lt;code>Hypre&lt;/code> package defines interfaces for an experimental
+&nbsp;* version of the HYPRE software package that used SIDL and Babel to generate
+&nbsp;* foreign language bindings.&nbsp; Note that this is a &lt;em>documentation&lt;/em>
+&nbsp;* comment.&nbsp; As in Java, any symbol may be preceeded by a documentation
+&nbsp;* comment that is stored in the intermediate XML representation with that
+&nbsp;* symbol.&nbsp; Babel tools automatically generate on-line documentation from
+&nbsp;* these comment descriptions (similar to &lt;code>Javadoc&lt;/code>).&nbsp; All SIDL
+&nbsp;* descriptions must begin with a &lt;code>package&lt;/code> statement.
+&nbsp;*/
+package Hypre version 0.1.0 {
+
+&nbsp;&nbsp; /*
+&nbsp;&nbsp;&nbsp; * Note that this simple description does not contain any enumerated
+&nbsp;&nbsp;&nbsp; * types, exception objects, or parallel method directives.&nbsp; Please
+&nbsp;&nbsp;&nbsp; * contact the components project at components@llnl.gov for more
+&nbsp;&nbsp;&nbsp; * information about these SIDL features.
+&nbsp;&nbsp;&nbsp; */
+
+&nbsp;&nbsp; /**
+&nbsp;&nbsp;&nbsp; * Wrap up the MPI communicator type in a class.&nbsp; This should probably
+&nbsp;&nbsp;&nbsp; * be replaced with a long or opaque data type.
+&nbsp;&nbsp;&nbsp; */
+&nbsp;&nbsp; class MPI_Comm {
+&nbsp;&nbsp; }
+
+&nbsp;&nbsp; /**
+&nbsp;&nbsp;&nbsp; * Define a structured stencil for a structured problem description.
+&nbsp;&nbsp;&nbsp; */
+&nbsp;&nbsp; class StructStencil {
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; /**
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; * This is an example of method documentation.&nbsp; Only a few methods
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; * are documented in this file.
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; */
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; int SetDimension (in int dim);
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; int SetSize (in int size);
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; int SetElement (in int index, in array&lt;int> offset);
+&nbsp;&nbsp; }
+
+&nbsp;&nbsp; /**
+&nbsp;&nbsp;&nbsp; * Define a structured grid object.
+&nbsp;&nbsp;&nbsp; */
+&nbsp;&nbsp; class StructGrid {
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; int SetCommunicator (in MPI_Comm comm);
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; int SetDimension (in int dim);
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; int SetExtents (in array&lt;int> ilower, in array&lt;int> iupper);
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; int SetPeriodic(in array&lt;int> periodic);
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; int Assemble();
+&nbsp;&nbsp; }
+
+//
+// -------------------------- Interfaces ---------------------------
+//
+
+&nbsp;&nbsp; interface Object {
+&nbsp;&nbsp; }
+
+&nbsp;&nbsp; /**
+&nbsp;&nbsp;&nbsp; * Note the &lt;code>extends&lt;/code> keyword that operates as in Java.
+&nbsp;&nbsp;&nbsp; */
+&nbsp;&nbsp; interface Vector extends Object {
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; /**
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; * y &lt;- 0 (where y=self)
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; */
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; int Clear ();
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; /**
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; * y &lt;- x
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; */
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; int Copy (in Vector x);
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; /**
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; * create an x compatible with y
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; */
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; int Clone (out Vector x);
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; /**
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; * y &lt;- a*y
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; */
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; int Scale (in double a);
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; /**
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; * d &lt;- (y,x)
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; */
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; int Dot (in Vector x, out double d);
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; /**
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; * y &lt;- a*x + y
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; */
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; int Axpy (in double a, in Vector x);
+&nbsp;&nbsp; }
+
+&nbsp;&nbsp; /**
+&nbsp;&nbsp;&nbsp; * &lt;p>The purpose of a ProblemDefinitionInterface is to:&lt;/p>
+&nbsp;&nbsp;&nbsp; * &lt;ul>
+&nbsp;&nbsp;&nbsp; * &lt;li>present the user with a particular view of how to define
+&nbsp;&nbsp;&nbsp; *&nbsp;&nbsp;&nbsp;&nbsp; a problem&lt;/li>
+&nbsp;&nbsp;&nbsp; * &lt;li>construct and return a "problem object"&lt;/li>
+&nbsp;&nbsp;&nbsp; * &lt;/ul>
+&nbsp;&nbsp;&nbsp; *
+&nbsp;&nbsp;&nbsp; * &lt;p>A "problem object" is an intentionally vague term that corresponds
+&nbsp;&nbsp;&nbsp; * to any useful object used to define a problem.&nbsp; Prime examples are:&lt;/p>
+&nbsp;&nbsp;&nbsp; * &lt;ul>
+&nbsp;&nbsp;&nbsp; * &lt;li>a LinearOperator object, i.e., something with a matvec&lt;/li>
+&nbsp;&nbsp;&nbsp; * &lt;li>a MatrixAccess object, i.e., something with a getrow&lt;/li>
+&nbsp;&nbsp;&nbsp; * &lt;li>a Vector, i.e., something with a dot, axpy, ...&lt;/li>
+&nbsp;&nbsp;&nbsp; * &lt;/ul>
+&nbsp;&nbsp;&nbsp; *
+&nbsp;&nbsp;&nbsp; * &lt;p>Note that the terms "Initialize" and "Assemble" are reserved here
+&nbsp;&nbsp;&nbsp; * for defining problem objects through a particular user interface.&lt;/p>
+&nbsp;&nbsp;&nbsp; */
+&nbsp;&nbsp; interface ProblemDefinitionInterface extends Object {
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; int SetCommunicator (in MPI_Comm comm);
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; int Initialize ();&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; // "get ready to accept new values"
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; int Assemble ();&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; // "done accepting new values"
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; int GetConstructedObject (out Object A);
+&nbsp;&nbsp; }
+
+&nbsp;&nbsp; interface StructuredGridMatrixInterface extends ProblemDefinitionInterface {
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; StructuredGridMatrixInterface New();
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; int SetGrid (in StructGrid grid );
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; int SetStencil (in StructStencil stencil );
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; int SetValues (in array&lt;int> index,
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; in int num_stencil_indices,
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; in array&lt;int> stencil_indices,
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; in array&lt;double> values);
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; int SetBoxValues (in array&lt;int> ilower,
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; in array&lt;int> iupper,
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; in int num_stencil_indices,
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; in array&lt;int> stencil_indices,
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; in array&lt;double> values);
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; int SetNumGhost (in array&lt;int> num_ghost);
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; int SetSymmetric (in int symmetric);
+&nbsp;&nbsp; }
+
+&nbsp;&nbsp; interface StructuredGridVectorInterface extends ProblemDefinitionInterface {
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; StructuredGridVectorInterface New();
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; int SetGrid (in StructGrid grid );
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; int SetStencil (in StructStencil stencil );&nbsp;&nbsp; // really needed?
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; int SetValue (in array&lt;int> grid_index, in double value);
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; int SetBoxValues (in array&lt;int> ilower,
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; in array&lt;int> iupper,
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; in array&lt;double> values);
+&nbsp;&nbsp; }
+
+&nbsp;&nbsp; interface IJMatrixInterface extends ProblemDefinitionInterface {
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; IJMatrixInterface New();
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; int SetGlobalSize (in int m, in int n);
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; int SetLocalSize (in int m, in int n);
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; int SetRowSizes (in array&lt;int> sizes);
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; int SetDiagRowSizes (in array&lt;int> sizes);
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; int SetOffDiagRowSizes (in array&lt;int> sizes);
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; int InsertRow(in int n, in int row, in array&lt;int> cols,
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; in array&lt;double> values);
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; int AddToRow(in int n, in int row, in array&lt;int> cols,
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; in array&lt;double> values);
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; int InsertBlock (in int m, in int n, in array&lt;int> rows,
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; in array&lt;int> cols, in array&lt;double> values);
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; int AddtoBlock(in int m, in int n,
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; in array&lt;int> rows, in array&lt;int> cols,
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; in array&lt;double> values);
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; int GetRowPartitioning (out array&lt;int> partitioning);
+&nbsp; }
+
+&nbsp; interface IJVectorInterface extends ProblemDefinitionInterface {
+&nbsp;&nbsp;&nbsp;&nbsp; IJVectorInterface New();
+&nbsp;&nbsp;&nbsp;&nbsp; int SetGlobalSize (in int n);
+&nbsp;&nbsp;&nbsp;&nbsp; int SetPartitioning (in array&lt;int> partitioning);
+&nbsp;&nbsp;&nbsp;&nbsp; int SetLocalComponents (in int num_values,
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; in array&lt;int> glob_vec_indices,
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; in array&lt;int> value_indices,
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; in array&lt;double> values);
+&nbsp;&nbsp;&nbsp;&nbsp; int AddtoLocalComponents (in int num_values,
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; in array&lt;int> glob_vec_indices,
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; in array&lt;int> value_indices,
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; in array&lt;double> values);
+&nbsp;&nbsp;&nbsp;&nbsp; int SetLocalComponentsInBlock (in int glob_vec_index_start,
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; in int glob_vec_index_stop,
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; in array&lt;int> value_indices,
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; in array&lt;double> values);
+&nbsp;&nbsp;&nbsp;&nbsp; int AddToLocalComponentsInBlock (in int glob_vec_index_start,
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; in int glob_vec_index_stop,
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; in array&lt;int> value_indices,
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; in array&lt;double> values);
+&nbsp; }
+
+&nbsp; /**
+&nbsp;&nbsp; * An Operator is anything that maps one Vector to another.
+&nbsp;&nbsp; * The terms "Setup" and "Apply" are reserved for Operators.
+&nbsp;&nbsp; */
+&nbsp; interface Operator extends Object {
+&nbsp;&nbsp;&nbsp;&nbsp; int SetCommunicator (in MPI_Comm comm);
+&nbsp;&nbsp;&nbsp;&nbsp; int SetParameter (in string name, in double value);
+&nbsp;&nbsp;&nbsp;&nbsp; int Setup ();
+&nbsp;&nbsp;&nbsp;&nbsp; int Apply (in Vector x, out Vector y);
+&nbsp; }
+
+&nbsp; interface Solver extends Operator {
+&nbsp;&nbsp;&nbsp;&nbsp; Solver New();
+&nbsp;&nbsp;&nbsp;&nbsp; int SetOperator (in Object A);
+&nbsp;&nbsp;&nbsp;&nbsp; int GetResidual (out Vector r);
+&nbsp; }
+
+&nbsp; interface PreconditionedSolver extends Solver {
+&nbsp;&nbsp;&nbsp;&nbsp; Solver New();&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; // ok to over-ride new?
+&nbsp;&nbsp;&nbsp;&nbsp; int SetPreconditioner (in Solver s);
+&nbsp;&nbsp;&nbsp;&nbsp; int GetPreconditionedResidual (out Vector r);
+&nbsp; }
+
+&nbsp; interface MatrixAccess extends Object {
+&nbsp;&nbsp;&nbsp;&nbsp; int GetRow (in int row,
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; out int size,
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; out array&lt;int> col_ind,&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; // inout?
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; out array&lt;double> values);
+&nbsp; }
+
+//
+// -------------------------- Classes ---------------------------
+//
+
+&nbsp; /**
+&nbsp;&nbsp; * The &lt;code>implements-all&lt;/code> keyword is equivalent to the Java
+&nbsp;&nbsp; * &lt;code>implements&lt;/code> keyword except that it also implicitly defines
+&nbsp;&nbsp; * all of the methods within the specified interface.&nbsp; For example, the
+&nbsp;&nbsp; * following statement means that the structured matrix class implements
+&nbsp;&nbsp; * all of the methods in the structured grid matrix interface.&nbsp; This form
+&nbsp;&nbsp; * is shorthand for using &lt;code>implements&lt;/code> and then copying all of
+&nbsp;&nbsp; * the methods form the interface body into the class body.
+&nbsp;&nbsp; */
+&nbsp; class StructMatrixInterface implements-all StructuredGridMatrixInterface { }
+&nbsp; class StructVectorInterface implements-all StructuredGridVectorInterface { }
+&nbsp; class StructMatrix implements-all Operator { }
+&nbsp; class StructVector implements-all Vector {
+&nbsp;&nbsp;&nbsp;&nbsp; static void fooit();
+&nbsp; }
+
+&nbsp; class ParCSRMatrixInterface implements-all IJMatrixInterface { }
+&nbsp; class ParCSRVectorInterface implements-all IJVectorInterface { }
+&nbsp; class ParCSRMatrix implements-all Operator, MatrixAccess { }
+&nbsp; class ParCSRVector implements-all Vector { }
+
+&nbsp; /**
+&nbsp;&nbsp; * This class implements the StructuredGrid user interface, but builds
+&nbsp;&nbsp; * an unstructured matrix behind the curtain.&nbsp; It does this by using
+&nbsp;&nbsp; * an IJMatrixBuilder (e.g., ParCSRMatrixBuilder, PETScMatrixBuilder, ...)
+&nbsp;&nbsp; * specified by the user with an extra method ...
+&nbsp;&nbsp; */
+&nbsp; class StructToIJMatrixInterface implements-all StructuredGridMatrixInterface {
+&nbsp;&nbsp;&nbsp;&nbsp; int SetIJMatrixInterface (in IJMatrixInterface I);
+&nbsp; }
+
+&nbsp; class StructToIJVectorInterface implements-all StructuredGridVectorInterface {
+&nbsp;&nbsp;&nbsp;&nbsp; int SetIJVectorInterface (in IJVectorInterface I);
+&nbsp; }
+
+&nbsp; class StructSMG implements-all Solver { }
+
+&nbsp; class ParAMG implements-all Solver { }
+
+&nbsp; class Pilut implements-all Solver { }
+
+&nbsp; class PCG implements-all PreconditionedSolver { }
+
+&nbsp; class GMRES implements-all PreconditionedSolver { }
+}</pre>
+
+</body>
+</html>

@@ -1,0 +1,347 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN"
+            "http://www.w3.org/TR/REC-html40/loose.dtd">
+<HTML>
+<HEAD>
+
+<META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<META name="GENERATOR" content="hevea 1.10">
+<LINK rel="stylesheet" type="text/css" href="index.css">
+<TITLE>Building Portable Polyglot Software</TITLE>
+</HEAD>
+<BODY >
+<A HREF="index020.html"><IMG SRC="previous_motif.gif" ALT="Previous"></A>
+<A HREF="index-multipage.html"><IMG SRC="contents_motif.gif" ALT="Up"></A>
+<A HREF="index022.html"><IMG SRC="next_motif.gif" ALT="Next"></A>
+<HR>
+<H1 CLASS="chapter"><A NAME="htoc88">Chapter 19</A>  Building Portable Polyglot Software</H1><UL>
+<LI><A HREF="index021.html#toc74">Layout of Generated Files</A>
+</LI><LI><A HREF="index021.html#toc75">Grouping compiled assets into Libraries</A>
+</LI><LI><A HREF="index021.html#toc76">Dynamic vs. Static Linking</A>
+</LI><LI><A HREF="index021.html#toc77">SIDL Library Issues</A>
+</LI><LI><A HREF="index021.html#toc78">Language Bindings for the <TT>sidl</TT> Package</A>
+</LI><LI><A HREF="index021.html#toc79">SCL Files for Dynamic Loading</A>
+</LI><LI><A HREF="index021.html#toc80">Deployment of Babel-Enabled Libraries</A>
+</LI></UL>
+<P><A NAME="c:build"></A></P><P><EM>Babel generates very portable source code for multilingual programing.
+There is also an art and science to transforming the source code to 
+binary assets without breaking the language encapsulation Babel is
+trying to create. This chapter discusses the details: from the mundane
+issues of file layout, to the arcana of linker and loader flags.
+</EM></P><P><BR>
+</P><H2 CLASS="section"><A NAME="toc74"></A><A NAME="htoc89">19.1</A>  Layout of Generated Files</H2><P><A NAME="s:filelayout"></A>
+<A NAME="@default1891"></A>
+Babel generates a lot of files. Many of these files you never have to 
+look at in an editor, but they must all be compiled and properly linked
+into an application (see Section <A HREF="#s:libgrouping">19.2</A>). 
+In this section we discuss several flags that can affect where
+files are generated.
+</P><UL CLASS="itemize"><LI CLASS="li-itemize">
+<B><TT><CODE>--</CODE>output-directory<CODE>=</CODE></TT></B><FONT COLOR=maroon><I>path</I></FONT><BR>
+This sets the root directory of where your files will be generated.
+The path can be absolute, or relative to the current working directory.</LI><LI CLASS="li-itemize"><B><TT><CODE>--</CODE>generate-subdirs</TT></B><BR>
+This option forces files to be laid out in a directory hierarchy 
+following the package hierarchy in the SIDL file. This arrangement
+is required for the Java and Python languages, so those generators
+force this option on and allow no means to turn it off.
+For C, C++, <SPAN STYLE="font-variant:small-caps">fortran 77</SPAN>, and Fortran 90/95, the default is that all files are
+generated in the single output directory with no package-named
+subdirectories.</LI><LI CLASS="li-itemize"><B><TT><CODE>--</CODE>language-subdir</TT></B><BR>
+This option was contributed by a user. This option appends a 
+language-specific subdirectory (e. g. c, python, f77) to the end
+of the path.</LI><LI CLASS="li-itemize"><B><TT><CODE>--</CODE>hide-glue</TT></B><BR>
+This option was contributed by a user. The intent here is to separate
+the Impl files (which must be modified) from all other files.
+If this flag is set, then wherever an Impl file gets generated, 
+all the corresponding Skels, Stubs, IORs, etc get generated in
+a subdirectory named <CODE>glue</CODE>.
+</LI></UL><P>Arbitrary combinations of the above flags are allowed. Regardless
+of the order they appear in the commandline, they are applied to the
+resulting path in the order they are presented above. For example
+if a SIDL file <TT>pkg.sidl</TT> defines a <FONT COLOR=maroon><I><TT>Cls</TT></I></FONT> class in the <FONT COLOR=maroon><I><TT>pkg</TT></I></FONT> package, 
+and the user runs Babel as follows:
+</P><BLOCKQUOTE CLASS="quotation"><TT>
+% <B>babel -lugo there -sc</B><BR>
+</TT></BLOCKQUOTE><P>
+Then the majority of the sources will be generated in the <TT>there/pkg/c/glue/</TT> directory
+(except the Impl files which will occur one directory up in <TT>there/pkg/c/</TT>).
+Note the use of equivalent short-form commands in this example.
+If readers wish to review long and short forms of command line arguments, 
+see Table <A HREF="index006.html#tbl:basics_commandline_args">4.1</A> on page <A HREF="index006.html#tbl:basics_commandline_args">??</A>. </P><P>Note that many of these options were contributed by users and are not
+employed in Babel’s own build. Instead, we tend to put a SIDL file in
+a directory and then generate client-side or server-side bindings in 
+either <TT>runXXX/</TT> or <TT>libXXX/</TT> subdirectories, respectively (where <TT>XXX</TT> 
+is a language name).
+We don’t use the <B><TT><CODE>--</CODE>generate-subdirs</TT></B> or <B><TT><CODE>--</CODE>hide-glue</TT></B>
+flags because they place source files that belong in the same library in different
+directories. Automake, which Babel uses as part of its build system, works much more
+reliably when all the sources that go into a library appear in the same directory
+as the library to be. The <B><TT><CODE>--</CODE>language-subdir</TT></B> has a similar effect
+to what we do manually, but doesn’t capture if it was client-side or server-side.
+In our tests and demos, we tend to build these separately because we want to exercise
+different drivers with different implementations.</P><P>The GNUmakefile generated by the <CODE>--</CODE><TT>makefile</TT> command line
+option does not attempt to address all the possible combination of
+flags affecting the layout of generated files. It assumes that you
+generate files in the default locations.</P><H2 CLASS="section"><A NAME="toc75"></A><A NAME="htoc90">19.2</A>  Grouping compiled assets into Libraries</H2><P><A NAME="s:libgrouping"></A></P><P>Babel enables one to completely encapsulate language dependencies inside
+a static or dynamically loaded library. This means that one can take
+a SIDL file and a compiled library, generate the bindings they want in 
+their language of choice from the SIDL file, link against the library, 
+and use it never knowing what the original implementation language was.</P><H3 CLASS="subsection">19.2.1  Basics of Compilation and Linkage</H3><P><A NAME="ss:compilebootcamp"></A></P><P>What we generally think of as a compiler is really an ensemble of related
+tools. Generally there is a preprocessing step where very simple transformations
+occur (e. g. #define, #include directives and others). Next, the compiler
+proper executes and typically transforms your sourcecode into assembler or
+some other intermediate form. Optimizers work on this intermediate form and
+do perform additional transformations. Most big vendors of C, C++, and Fortran
+compilers have a common optimizer for all languages. Next, assemblers transform
+the optimized codes into platform-specific binaries. But this is not the end.
+The binaries may be linked together into libraries or programs. Libraries can 
+be linked against other libraries, and eventually multiple programs. 
+The main difference is that a program has additional instructions to bootstrap 
+itself, do some interaction with the operating system, receive an argument list, 
+and call <TT>main()</TT>. To see all this in action, try building a “hello world”
+type program in your favorite language, and run the “compiler” with an additional
+flag such as <B><TT>-v</TT></B>, <B><TT><CODE>--</CODE>verbose</TT></B>, or whatever.</P><P>For example, this is what I get from a g77 compiler.
+</P><BLOCKQUOTE CLASS="quotation"><TT>
+% <B>g77 hello_world.f</B><BR>
+% <B>./a.out</B><BR>
+Hello World!
+% <B>g77 -v hello_world.f</B><BR>
+Driving: g77 -v hello_world.f -lfrtbegin -lg2c -lm -shared-libgcc<BR>
+Reading specs from /usr/local/gcc/3.2/lib/gcc-lib/i686-pc-linux-gnu/3.2/specs<BR>
+Configured with: ../gcc-3.2/configure --prefix=/usr/local/gcc/3.2<BR>
+Thread model: posix<BR>
+gcc version 3.2<BR>
+ /usr/local/gcc/3.2/lib/gcc-lib/i686-pc-linux-gnu/3.2/f771 hello_world.f -quiet -dumpbase hello_world.f -version -o /tmp/ccp2GBGE.s<BR>
+GNU F77 version 3.2 (i686-pc-linux-gnu)<BR>
+	compiled by GNU C version 3.2.<BR>
+ as --traditional-format -V -Qy -o /tmp/ccEiIsHc.o /tmp/ccp2GBGE.s<BR>
+GNU assembler version 2.11.90.0.8 (i386-redhat-linux) using BFD version 2.11.90.0.8<BR>
+ /usr/local/gcc/3.2/lib/gcc-lib/i686-pc-linux-gnu/3.2/collect2 -m elf_i386 -dynamic-linker /lib/ld-linux.so.2 /usr/lib/crt1.o /usr/lib/crti.o /usr/local/gcc/3.2/lib/gcc-lib/i686-pc-linux-gnu/3.2/crtbegin.o -L/usr/local/gcc/3.2/lib/gcc-lib/i686-pc-linux-gnu/3.2 -L/usr/local/gcc/3.2/lib/gcc-lib/i686-pc-linux-gnu/3.2/../../.. /tmp/ccEiIsHc.o -lfrtbegin -lg2c -lm -lgcc_s -lgcc -lc -lgcc_s -lgcc /usr/local/gcc/3.2/lib/gcc-lib/i686-pc-linux-gnu/3.2/crtend.o /usr/lib/crtn.o<BR>
+</TT></BLOCKQUOTE><P>For the purposes of this discussion, we will make a distinction between 
+linking to build a library and linking to build an executable. Even though
+these processes have similar names, they perform very different kinds
+of code transformations.</P><H3 CLASS="subsection">19.2.2  Circular Dependencies and Single-Pass Linkers</H3><P>
+<A NAME="@default1892"></A><A NAME="@default1893"></A>
+<A NAME="@default1894"></A></P><P>Almost all linkers are single pass. This means that when linking an executable, 
+linkers will run through the list of libraries exactly once trying to resolve symbols
+Ever get libraries listed in the wrong order and an executable wouldn’t get built?
+Ever have to list the same libraries over and over again to build an executable?
+These are both side-effects of single pass linkers. The symbols in question
+are essentially jumps in the instruction code corresponding to subroutines that
+are defined elsewhere. When linking a final executable, all these symbols
+need to be resolved. When linking libraries, multiple undefined symbols
+are commonplace.</P><P>Having to list libraries over and over again in the link line when compiling
+the final executable typically indicates a circular dependency between libraries.
+Circular dependencies are much better kept within a single library.
+Even though linkers are single-pass between libraries, they exhaustively search within them.</P><P>This is important because all the files generated by Babel have a circular dependency 
+in each Babel type. The stub makes calls on the IOR, the IOR calls the Skel, the Skel 
+calls the Impl, but the Impl also may make calls on a Stub. Just like C++ has a <TT>this</TT>
+object, and Python has a <TT>self</TT>, Babel objects have a stub for them to 
+call methods on themselves and dispatch properly through Babel’s IOR layer.</P><H3 CLASS="subsection">19.2.3  IOR as single point of access</H3><P><A NAME="ss:IORsinglepointaccess"></A></P><P>When building a Babelized library, it’s important to note if your code has 
+dependencies to other Babel types not in your library. These types often appear as
+base classes, argument types, or even exception types. Your library will need
+stubs corresponding to all these types, so it is best to put these in your library
+as well. We call these external stubs. </P><P>Many have tried to minimize replication of Babel stubs by removing the external stubs
+and letting the library link directly against the stubs in an external library. 
+This is a mistake because the external library may be implemented in a different
+language, and the stubs may be for a different language binding. By bundling 
+the external stubs specific to your implementation with the implementation’s library, 
+you are ensuring that the only access your library has with any other Babelized library
+is through the IOR. This is a good thing. The Babel IOR is the same for all language
+bindings and essentially forms the binary interface by which all Babel objects interact.</P><H2 CLASS="section"><A NAME="toc76"></A><A NAME="htoc91">19.3</A>  Dynamic vs. Static Linking</H2><P><A NAME="s:linking"></A>
+<A NAME="@default1895"></A><A NAME="@default1896"></A></P><P>Most UNIX users are very comfortable with statically linked libraries
+(e. g. <TT>libXXX.a</TT>). Most are aware of “shared object files” in 
+UNIX (with the form <TT>libXXX.so</TT>) though few actually build them. 
+Even fewer still are familiar with dynamically linked libraries, 
+called DLL’s in Microsoft (after the common <TT>.dll</TT> suffix), which involve
+actually selecting and loading dynamic libraries at run time based on their 
+string name. MacOSX uses the novel suffix <TT>libXXX.dynlib</TT>.
+(In most UNIX systems, including Linux and Solaris, .so “shared object files” are actually
+dynamically linked libraries.) This section serves as a quick overview of how Babel handles 
+both static and dynamic libraries, including runtime loading.</P><H3 CLASS="subsection">19.3.1  Linkers and Position Independent Code (PIC)</H3><P><A NAME="ss:pic"></A>
+<A NAME="@default1897"></A>
+In a static library, the linker simply copies needed compilation units 
+from the library to the executable. The static library can subsequently
+be deleted with no adverse affects to the executable. This also causes
+common libraries to be duplicated in every executable that links against
+it, and for the resulting executables to be quite large.</P><P>In a shared library, the linker simply inserts in the executable enough
+information to find the library and load it when the executable is invoked.
+This typically happens before the program ever gets to <TT>main()</TT>.
+This keeps executables small and allows commonly used libraries to be
+reused without copying, but it also means that the executable can fail
+if the library is renamed, moved, deleted, or even if the user’s
+environment changes sufficiently. </P><P>A necessary (but not sufficient) condition for shared libraries to
+work is that all the compilation units (<TT>*.o</TT>) contained must be
+explicitly compiled as <EM>position independent code</EM> (PIC).
+Position independent code has an added level of indirection in
+critical areas since details (such as addresses to jump to in
+subroutine calls) are not known until runtime. Even though shared
+libraries are very useful, PIC causes a small but measurable
+degradation in performance, making static linked libraries with
+non-PIC code a viable option for performance-critical situations.</P><P>A dynamic-linked library is a shared library with one added feature, 
+it can be loaded explicitly by the user at runtime by passing the string
+name into <TT>dlopen()</TT>. Dynamic-linked libraries (DLL’s) also require
+compilation as PIC, though many compilers (including GCC) have special 
+commands for each<SUP><A NAME="text27" HREF="#note27">1</A></SUP>.</P><H3 CLASS="subsection">19.3.2  Tracking Down Problems</H3><P>
+<A NAME="@default1898"></A><A NAME="@default1899"></A></P><P>When tracking down problems with Babel libraries, to UNIX tools <B><TT>nm</TT></B> and
+<B><TT>ldd</TT></B> are your friends. <B><TT>nm</TT></B> will print the list of linker symbols
+in a file, including details such as whether the symbol is defined or not.
+<B><TT>ldd</TT></B> lists dynamic dependencies of a shared libraries or executables, indicating
+where it will look for these symbols when loaded.</P><P>Recall the Fortran hello world example in section <A HREF="#ss:compilebootcamp">19.2.1</A>. Even though
+we may think this is all done with static linking, using these tools we find out the truth.</P><BLOCKQUOTE CLASS="quotation"><TT>
+% <B>ldd a.out</B><BR>
+        libg2c.so.0 =&gt; /usr/local/gcc/3.2/lib/libg2c.so.0 (0x400180000)<BR>
+        libm.so.6 =&gt; /lib/i686/libm.so.6 (0x4004a000)<BR>
+        libgcc_s.so.1 =&gt; //usr/local/gcc/3.2/lib/libgcc_s.so.1 (0x4006d000)<BR>
+        libc.so.6 =&gt; /lib/i686/libc.so.6 (0x40076000)<BR>
+        /lib/ld-linux.so.2 =&gt; /lib/ld-linux.so.2 (0x40000000)<BR>
+</TT></BLOCKQUOTE><P>Here, we clearly see that five libraries are shared libraries that will be loaded
+after the executable is invoked, but before we get to the main program.
+Some of these libraries make sense: <TT>libg2c</TT> is a Fortran to C support library, 
+<TT>libc</TT> is the C standard library, but why is <TT>libm</TT> listed... its a
+library of transcendental functions (e. g. sin(), cos()) why would it be included?
+The answer becomes obvious when using ldd on <TT>libg2c</TT>. The Fortran support
+library has dependencies on the math library, so our Fortran executable inherits 
+that dependency too.</P><BLOCKQUOTE CLASS="quotation"><TT>
+% <B>nm a.out | grep ’ U ’</B><BR>
+        U __cxa_atexit@@GLIBC_2.1.3<BR>
+        U __libc_start_main@@GLIBC_2.0<BR>
+        U do_lio<BR>
+        U e_wsle<BR>
+        U exit@@GLIBC_2.0<BR>
+        U f_exit<BR>
+        U f_init<BR>
+        U f_setarg<BR>
+        U f_setsig<BR>
+        U s_stop<BR>
+        U s_wsle
+</TT></BLOCKQUOTE><P><B><TT>nm</TT></B> (and grep) shows us 11 symbols that are were left undefined in our
+final hello world application. A little more nm|greping about will help us find that 
+symbols starting with <TT>f_</TT> are defined in libg2c.</P><H2 CLASS="section"><A NAME="toc77"></A><A NAME="htoc92">19.4</A>  SIDL Library Issues</H2><P><A NAME="s:sidl_lib"></A></P><P>As mentioned in Section <A HREF="index008.html#s:sidl_runtime">6.6</A>, the Babel toolkit includes the
+SIDL runtime library. The library provides a base interface, class,
+and exception as the foundation. This is how Babel provides object-oriented
+features to non-object-oriented languages. In order to support the runtime
+system and build the SIDL library, it also provides DLL and Loader classes.</P><P><A NAME="@default1900"></A>Babel generated code depends critically on <TT>babel_config.h</TT> to correctly
+define a lot of platform specific details. One detail that changes too 
+frequently to encode in <TT>babel_config.h</TT> is whether or not the software 
+is being compiled is position independent code (PIC). This detail is commonly 
+added to the compilation instruction using the flags (e. g. <TT>-fPIC -DPIC</TT>
+<SUP><A NAME="text28" HREF="#note28">2</A></SUP>). The first flag tells the compiler to generate position independent 
+code. The second defines the preprocessor macro <TT>PIC</TT>. Looking now at 
+<TT>babel_config.h</TT>, we see that either <TT>SIDL_DYNAMIC_LIBRARY</TT> or 
+<TT>SIDL_STATIC_LIBRARY</TT> are defined depending on whether or not <TT>PIC</TT> 
+is defined.</P><P>As described in Section <A HREF="#ss:pic">19.3.1</A>, Babel tends to focus on static libraries 
+and dynamic linked libraries; not worrying much about <A NAME="@default1901"></A>shared libraries. The 
+main reason is that for every last drop of performance, people would want 
+static libraries. To support Java and Python (and the CCA model) dynamic 
+loading is required. There’s no real benefit to doing shared libraries that 
+can’t be dynamically loaded, so in developing Babel, we focus on the other two 
+linkage situations.</P><H2 CLASS="section"><A NAME="toc78"></A><A NAME="htoc93">19.5</A>  Language Bindings for the <TT>sidl</TT> Package</H2><P>The implementation and C stubs for the <TT>sidl</TT> package are stored
+in <TT>libsidl.so</TT> and <TT>libsidl.a</TT>, shared and static libraries
+that are installed when you install babel. You can determine the
+directory where these libraries are stored by running
+<TT>babel-config --libdir</TT>. Normally, running <TT>babel-config
+--libdir</TT> will yield something like <TT>/usr/lib</TT> or
+<TT>/usr/local/lib</TT>; however, your system administrator may have
+chosen a different directory by specifying a <TT>--prefix</TT> when they
+configured Babel (see Section <A HREF="index005.html#s:configure">3.1.1</A>). The IOR header files
+and C stub header files are installed in the directory shown by
+<TT>babel-config --includedir</TT>.</P><P>Babel also provides precompiled stubs for the <TT>sidl</TT> package for
+the C++, F77, F90, Java and UC++ language bindings. These libraries are
+also installed in <TT>babel-config --libdir</TT>, and they are named
+<TT>libsidlstubs_cxx.so</TT>, <TT>libsidlstubs_ucxx.so</TT>,
+Codelibsidlstubs_f77.so, and <TT>libsidlstubs_f90.so</TT>. 
+Similarly named static archives and libtool <TT>.la</TT> files are also
+inalled in <TT>babel-config --libdirst</TT>. The header files for these
+languages are installed in subdirectories of <TT>babel-config
+--includedir</TT> named <TT>Cxx</TT>, <TT>F77</TT>, <TT>F90</TT>, and
+<TT>UCxx</TT>.</P><H2 CLASS="section"><A NAME="toc79"></A><A NAME="htoc94">19.6</A>  SCL Files for Dynamic Loading</H2><P>
+<A NAME="@default1902"></A></P><P>If you generate a dynamic-linked library containing implementations of
+SIDL classes, you must also generate a SIDL Class List file (SCL
+file). An SCL file contains metadata about zero or more dynamic-linked
+libraries; for each dynamic-linked library, the SCL file has the list
+of SIDL classes implemented in that library. The
+<TT>sidl.Loader.findLibrary</TT> method searches SCL files when trying
+to find the implementation (or some other aspect) of a SIDL class.</P><P>The SCL file is an XML file with three kinds of elements. The top
+level element is <TT>scl</TT> which contains zero or more <TT>library</TT>
+elements. The <TT>library</TT> element has several attributes, and it
+contains zero or more <TT>class</TT> elements. The <TT>library</TT>
+element has three required attributes, <TT>uri</TT>, <TT>scope</TT> and
+<TT>resolution</TT>, and two optional attributes, <TT>md5</TT> and
+<TT>sha1</TT>. The <TT>uri</TT> is a local filename including path or a
+network <TT>url</TT> indicating where the library is stored. The
+<TT>scope</TT> attribute allows developers to suggest whether the
+library should be loaded in a <TT>local</TT> or the <TT>global</TT>
+namespace. The developer can suggest <TT>lazy</TT> or <TT>now</TT> symbol
+resolution using the <TT>scope</TT> attribute. The <TT>md5</TT> and
+<TT>sha1</TT> are optional message digests to confirm that the library
+has not been modified or replaced. The <TT>class</TT> element has two
+required elements, <TT>name</TT> and <TT>desc</TT>. The <TT>name</TT> field
+is the name of the class, and <TT>desc</TT> indicates what kind of
+information is held in the library. Each class contained in the
+dynamic-linked library should be listed in the SCL file. For now, the
+only <TT>desc</TT> values with standardized meanings of <TT>ior/impl</TT>,
+<TT>java</TT> and <TT>python/impl</TT>. <TT>ior/impl</TT> indicates the
+dynamic-linked library contains the IOR object and implementation for
+the class, and <TT>java</TT> indicates that the library has the Java JNI
+wrapper object code. <TT>python/impl</TT> has the Python skeletons and
+implementation libraries.</P><P>Here is an the SCL file for the SIDL runtime library installed in
+<TT>/usr/local</TT>.
+</P><DIV CLASS="flushright"><SPAN CLASS="textboxed"><FONT COLOR=purple><B>XML</B></FONT></SPAN></DIV><TABLE CLASS="lstframe" STYLE="padding:1ex;border-style:solid;"><TR><TD CLASS="lstlisting">&lt;?xml version="1.0" ?&gt;
+&lt;scl&gt;
+  &lt;library uri="/usr/local/lib/libsidl.la" scope="global" resolution="now" &gt;
+    &lt;class name="SIDL.BaseClass" desc="ior/impl" /&gt;
+    &lt;class name="SIDL.ClassInfoI" desc="ior/impl" /&gt;
+    &lt;class name="SIDL.DLL" desc="ior/impl" /&gt;
+    &lt;class name="SIDL.Loader" desc="ior/impl" /&gt;
+    &lt;class name="SIDL.Boolean" desc="java" /&gt;
+    &lt;class name="SIDL.Character" desc="java" /&gt;
+    &lt;class name="SIDL.DoubleComplex" desc="java" /&gt;
+    &lt;class name="SIDL.Double" desc="java" /&gt;
+    &lt;class name="SIDL.FloatComplex" desc="java" /&gt;
+    &lt;class name="SIDL.Float" desc="java" /&gt;
+    &lt;class name="SIDL.Integer" desc="java" /&gt;
+    &lt;class name="SIDL.Long" desc="java" /&gt;
+    &lt;class name="SIDL.Opaque" desc="java" /&gt;
+    &lt;class name="SIDL.SIDLException" desc="ior/impl" /&gt;
+    &lt;class name="SIDL.String" desc="java" /&gt;
+  &lt;/library&gt;
+&lt;/scl&gt;</TD></TR>
+</TABLE><P>
+It’s worth noting that the <TT>uri</TT> can be a libtool metadata file 
+(<TT>.la</TT>) when the library is located on the local file system or a
+dynamic-linked library file (<TT>.so</TT> or another machine dependent
+suffix). You cannot have a libtool <TT>.la</TT> when the library is
+remote (e.g., <TT>ftp:</TT> or <TT>http:</TT>) because libtool expects the
+files references in the <TT>.la</TT> file to be local and in particular
+directories.</P><P>The GNUmakefile generated with the <CODE>--</CODE><TT>makefile</TT> Babel
+option contains rules to automatically generate .scl files for each of
+the supported Babel languages.</P><H2 CLASS="section"><A NAME="toc80"></A><A NAME="htoc95">19.7</A>  Deployment of Babel-Enabled Libraries</H2><P>
+<A NAME="@default1903"></A></P><P>At this point, there is no standard — or even recommended — model for 
+deploying Babel enabled libraries. Below are a few examples of how our
+developers are currently packaging their code.</P><DL CLASS="description"><DT CLASS="dt-description">
+<B>Server Source Only</B></DT><DD CLASS="dd-description">
+With this option your users are expected to have Babel installed on their 
+system. In this mode, developers simply include a SIDL file and their 
+corresponding implementation files. The user in this case must build the 
+software, call Babel to generate the client bindings in the language of 
+choice, and link it all together into a final application.</DD><DT CLASS="dt-description"><B>Client and Server Source</B></DT><DD CLASS="dd-description">
+This option tries to hide Babel as much as possible. In this mode, the 
+developer pre-generates many different client language bindings and 
+distributes them along with their code and the sources for the Babel 
+runtime library. Then the user has a “batteries included” package 
+that’s ready to run out of the box. The user may not even be aware that 
+Babel has been used unless they pay careful attention to how the package 
+was built.</DD><DT CLASS="dt-description"><B>Server Libraries Only</B></DT><DD CLASS="dd-description">
+Finally, in this mode only the SIDL file and the precompiled shared library 
+files are distributed. This is not an open-source solution, though users 
+still need to build the language bindings to access the shared library.</DD></DL><HR CLASS="footnoterule"><DL CLASS="thefootnotes"><DT CLASS="dt-thefootnotes">
+<A NAME="note27" HREF="#text27">1</A></DT><DD CLASS="dd-thefootnotes"><TT>-fpic</TT> for SO’s, <TT>-fPIC</TT> for DLL’s
+</DD><DT CLASS="dt-thefootnotes"><A NAME="note28" HREF="#text28">2</A></DT><DD CLASS="dd-thefootnotes">The actual command to the compiler varies, <TT>-fPIC</TT> is understood 
+by GCC
+</DD></DL>
+<HR>
+<A HREF="index020.html"><IMG SRC="previous_motif.gif" ALT="Previous"></A>
+<A HREF="index-multipage.html"><IMG SRC="contents_motif.gif" ALT="Up"></A>
+<A HREF="index022.html"><IMG SRC="next_motif.gif" ALT="Next"></A>
+</BODY>
+</HTML>

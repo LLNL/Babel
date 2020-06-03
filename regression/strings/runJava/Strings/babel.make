@@ -1,0 +1,1 @@
+STUBJAVA = Cstring.java

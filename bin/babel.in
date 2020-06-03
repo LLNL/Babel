@@ -1,0 +1,285 @@
+#! @SHELL@
+## File:        babel
+## Package:     Babel binary
+## Copyright:   (c) 2000-2007 Lawrence Livermore National Security, LLC
+## Revision:    $Revision: 6849 $
+## Modified:    $Date: 2010-04-29 14:29:53 -0700 (Thu, 29 Apr 2010) $
+## Description: main babel run script
+##
+
+# 
+# This whole script exists to hide the fact that the babel
+# compiler is written in java.  It launches the babel-x.x.x.jar
+# file with a java virtual machine, sets the classpaths, and 
+# usually also adds the default repository (unless specifically excluded
+# by a commandline option).
+# 
+
+#
+# Settings determined at configure time.
+#
+VERSION="@VERSION@"
+PACKAGE="@PACKAGE@"
+prefix="@prefix@"
+exec_prefix="@exec_prefix@"
+datarootdir="@datarootdir@"
+datadir="@datadir@"
+bindir="@bindir@"
+JAVA="@JAVA@"
+JAVAFLAGS="@JAVAFLAGS@"
+TEST_EF="@TEST_EF@"
+abs_top_builddir="@abs_top_builddir@"
+python="@PYTHON@"
+program_transform_name="@program_transform_name@"
+babel_source_dir="@abs_top_srcdir@/compiler"
+
+samefile() 
+{
+  # returns 0 if first two arguments are files with the same inode
+  # returns 1 if less than two arguments, or either are not found, 
+  #           or they are not the same inode
+  if test "$TEST_EF" = "None"; then
+    if $verbose; then 
+      echo "samefile() using $python"
+    fi
+    if test -e "$1"; then 
+      if test -e "$2"; then 
+        return `$python -c "import os.path; print int( not os.path.samefile(\"$1\",\"$2\"))"`
+      fi
+    fi
+    return 1;
+  else
+    if $verbose; then 
+      echo "samefile() using $TEST_EF";
+    fi
+    $TEST_EF "$1" -ef "$2"
+    return $?
+  fi;
+}
+
+#
+# Remove ./path and path1/./path2 from non-arguments for AIX JVM.  
+# Also detect if we are debugging or need extra verbiage.
+#
+args=""
+debug=false;
+emacs_gud=false;
+emacs_jde=false;
+verbose=false;
+quiet=true;
+default_repo=true;
+override_installpath=false;
+for a in $@; do
+  skip=false
+  case "$a" in
+    --debug) debug=true; a=;;
+    --debug-gud) emacs_gud=true; debug=true; skip=true; ;;
+    --debug-jde) emacs_jde=true; debug=true; skip=true; ;;
+    --verbose) verbose=true; quiet=false;;
+    --noquiet) quiet=false; a=;;
+    --override-installpath) override_installpath=true; a=;;
+    -*) ;;
+    *) a=`echo $a | sed -e 's,^\./,,g' -e 's,/\./,/,g'`;;
+  esac
+  if test $skip = false; then
+      args="$args $a"
+  fi
+done
+
+#
+# make sure user's environment isn't incompatible with installation
+#
+THIS_JAVA="${JAVA}"
+THIS_JDB="jdb"
+base_java=`basename "${JAVA}"`
+my_java=`which "$base_java"`
+java_found=$?
+if test "x${my_java}" != "x${THIS_JAVA}"; then
+  if samefile ${my_java} ${THIS_JAVA}; then 
+    :
+  else
+    if test "$override_installpath" = "false"; then
+      echo "warning: Babel configured for ${JAVA},"
+      echo "         your environment set up for ${my_java}."
+      echo "         Babel will use what it was configured for,"
+      echo "         You can override with the --override-installpath option"
+    else
+      THIS_JAVA="$JAVA"
+    fi;
+  fi;
+fi; 
+
+#
+# Test if we are running under cywin.
+#
+case "`uname`" in
+  CYGWIN*) cygwin=true;;
+  *) cygwin=false;;
+esac
+
+
+#
+# Now we need to determine where the jar-files are.
+#
+
+#test if $0 is the same inode as where babel script is installed.
+path2me=$0
+myname=`echo babel | sed "$program_transform_name"`
+is_installed="false"
+if samefile ${bindir}/${myname} $path2me; then 
+  is_installed="true"
+  if $verbose; then 
+     echo "Just use paths determined at configure time to find jar files..."
+  fi
+else
+  if $verbose; then 
+     echo "Make a best effort to chase down symbolic links to find the jar files..."
+  fi
+  # 
+  PWD_SAVE=`pwd`
+  done="false"
+  while test $done = "false"; do
+    if $verbose; then 
+       echo "loop: path2me = "$path2me
+    fi
+    # first chase down symbolic links in directories
+    cd `dirname $path2me`                      # cd to the directory where I exist
+    mydir=`pwd`
+    myname=`basename $path2me`
+    newpath2me="$mydir/$myname"                # get new path2me from current working directory
+    # next chase down symbolic links in files
+    for i in `ls -l $newpath2me`; do
+      :
+    done
+    if test "$i" = "$path2me"; then
+      done="true"
+    fi
+    path2me=$i
+  done
+  mypath=`dirname $path2me`
+  cd "$mypath/.."
+  exec_prefix=`pwd`
+  if test -e ${exec_prefix}/lib/${PACKAGE}-${VERSION}.jar; then
+    prefix=${exec_prefix}
+  elif test -e ${exec_prefix}/../lib/${PACKAGE}-${VERSION}.jar; then
+    prefix=`(cd ${exec_prefix} && pwd)`
+  else
+    echo "ERROR: $0 " >&2
+    echo "    This script to launch Babel is not located in installation directory" >&2 
+    echo "    (as set by configure).  It tried to find the required JAR files based" >&2
+    echo "    its the location (chasing down links, if necessary), but failed." >&2
+    echo "    Has this script been separated from the rest of the Babel package?" >&2
+    exit -1 
+  fi 
+  cd $PWD_SAVE
+fi
+if $verbose; then 
+  echo "  prefix=\"${prefix}\""
+  echo "  exec_prefix=\"${exec_prefix}\""
+  echo "  is_installed=\"${is_installed}\""
+fi
+
+#
+# Set the CLASSPATH based on the BABEL home directory
+#
+if test -e ${prefix}/lib/${PACKAGE}-${VERSION}.jar; then
+  if $verbose; then
+    echo "Looking for jar files in \"${prefix}/lib\"...";
+  fi
+else 
+  echo "ERROR: $0 " >&2
+  echo "   Expected to find ${prefix}/lib/${PACKAGE}-${VERSION}.jar" >&2
+  exit 1
+fi
+
+BABELCP=${prefix}/lib/${PACKAGE}-${VERSION}.jar:${prefix}/lib/java-getopt-1.0.7.jar:${prefix}/lib/xerces-2.9.1.jar:${prefix}/lib/xml-apis.jar
+if test "X$CLASSPATH" = "X"; then
+  CLASSPATH=${BABELCP}
+else
+  CLASSPATH=${BABELCP}:${CLASSPATH}
+fi
+unset BABELCP
+
+#
+# If the SIDL repository exists, then add it to the default repository path.
+#
+
+REPOSITORY=
+REPOSITORY_PATH=
+if $default_repo; then
+  if test $is_installed = "true"; then 
+    REPOSITORY="${datadir}/${PACKAGE}-${VERSION}/repository"
+  else
+    REPOSITORY="${abs_top_builddir}/share/repository"
+  fi
+  if $verbose; then 
+    echo "Looking for SIDL XMLs in \"${REPOSITORY}\"...";
+  fi 
+  if $cygwin; then
+    REPOSITORY=`cygpath --path --windows "${REPOSITORY}"`
+    REPOSITORY_PATH="--default-repository-path=\"${REPOSITORY}\""
+  else 
+    REPOSITORY_PATH="--default-repository-path=${REPOSITORY}"
+  fi
+fi
+
+#
+# Modify other paths for Cygwin if necessary.
+#
+if $cygwin; then
+  exec_prefix=`cygpath --path --windows "${exec_prefix}"`
+  prefix=`cygpath --path --windows "${prefix}"`
+  CLASSPATH=`cygpath --path --windows "${CLASSPATH}"`
+fi
+
+#
+# Run the babel command line driver
+#
+if $debug; then
+  THIS_JAVA=$THIS_JDB
+fi
+
+entry="gov.llnl.babel.CommandLineDriver"
+if test $quiet = false; then 
+  echo "CLASSPATH = ${CLASSPATH}"
+  echo ${THIS_JAVA} ${JAVAFLAGS} $entry ${REPOSITORY_PATH} ${args}
+fi;
+export CLASSPATH
+
+if $emacs_gud; then
+    #use the default gud support for jdb
+    gdbinitdir=/tmp/.gdbinit.$$
+    gdbinit=$gdbinitdir/init
+    mkdir $gdbinitdir || echo "can't create $$gdbinitdir"
+    echo "sourcepath $babel_source_dir" > $gdbinit
+    echo "stop in $entry.main" >> $gdbinit
+    echo "run $entry ${REPOSITORY_PATH} ${args}" >> $gdbinit
+    exec emacs -eval "(progn (jdb \"jdb\") (gud-call \"read $gdbinit\"))"
+    rm -rf /tmp/.gdbinit.$$
+elif $emacs_jde; then
+    #use the jde development environment
+    elisp="/tmp/.jdeinit.$$"
+    rm -rf $elisp
+    echo "(progn " > $elisp
+    echo "   (setq jde-run-application-class \"$entry\")" >> $elisp
+    dbargs=""
+    for a in ${REPOSITORY_PATH} ${args}; do
+        dbargs+=" \"$a\""
+    done
+    echo "   (setq jde-db-option-application-args (quote ($dbargs)))" >> $elisp
+    echo "   (setq jde-sourcepath (quote (\".\" \"$babel_source_dir\" \"\")))" >> $elisp    
+    echo "   (jde-debug)" >> $elisp
+    echo ") " >> $elisp
+    exec emacs -load $elisp
+    rm -rf $elisp
+else
+    #run normally
+    ${THIS_JAVA} ${JAVAFLAGS} $entry ${REPOSITORY_PATH} ${args}
+fi
+
+exitstat=$?
+if test $quiet = false; then
+  echo exit status = $exitstat
+fi;
+
+exit $exitstat

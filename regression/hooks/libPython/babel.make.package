@@ -1,0 +1,4 @@
+BABEL_MAKEFILE_NAME = babel.make
+IOR_SRC_DIRS = .
+PYTHON_SETUP_NAME = setup.py
+PYSETUP_DIRS = ./

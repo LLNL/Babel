@@ -1,0 +1,435 @@
+#!/bin/sh
+
+#=============================================================================
+#
+# cylp.psub
+#
+# Bourne Shell script to be used when submitting a run script as a psub batch
+# job, e.g., psub cylp.psub.  Note that you need to submit this script from
+# the directory that the run will be done in.
+#
+#=============================================================================
+
+#PSUB -eo
+#PSUB -mb
+#PSUB -me
+#PSUB -nr
+#PSUB -b science
+#PSUB -o alltests.log
+#PSUB -ro
+
+#!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+# Common items to modify for tests:
+#
+# -ln is the number of nodes needed for test; this setting MUST match nNodes
+# in the run script.
+#
+# -tM is the maximum CPU time per task; the notation 3:00 means 3 hours.
+# -tW is the maximum elapsed run time (i.e., the wall clock time).
+#!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+#PSUB -ln 32
+#PSUB -tM 0:40
+
+
+umask  007
+ulimit -c512
+
+
+echo ""
+echo "PATH: $PATH"
+echo ""
+echo "PSUB_HOST:   $PSUB_HOST"
+echo "PSUB_SUBDIR: $PSUB_SUBDIR"
+echo "PSUB_JOBID:  $PSUB_JOBID"
+
+
+cd $PSUB_SUBDIR
+echo ""
+echo "pwd: "`pwd`
+echo ""
+
+echo ${HOME}/current/ubgl/examples/hello/runC/runC2C
+mpirun -np 1 ${HOME}/current/ubgl/examples/hello/runC/runC2C
+echo ${HOME}/current/ubgl/examples/hello/runC/runC2Cxx
+mpirun -np 1 ${HOME}/current/ubgl/examples/hello/runC/runC2Cxx
+echo ${HOME}/current/ubgl/examples/hello/runC/runC2F77
+mpirun -np 1 ${HOME}/current/ubgl/examples/hello/runC/runC2F77
+echo ${HOME}/current/ubgl/examples/hello/runCxx/runCxx2C
+mpirun -np 1 ${HOME}/current/ubgl/examples/hello/runCxx/runCxx2C
+echo ${HOME}/current/ubgl/examples/hello/runCxx/runCxx2Cxx
+mpirun -np 1 ${HOME}/current/ubgl/examples/hello/runCxx/runCxx2Cxx
+echo ${HOME}/current/ubgl/examples/hello/runCxx/runCxx2F77
+mpirun -np 1 ${HOME}/current/ubgl/examples/hello/runCxx/runCxx2F77
+echo ${HOME}/current/ubgl/examples/hello/runF77/runF772C
+mpirun -np 1 ${HOME}/current/ubgl/examples/hello/runF77/runF772C
+echo ${HOME}/current/ubgl/examples/hello/runF77/runF772Cxx
+mpirun -np 1 ${HOME}/current/ubgl/examples/hello/runF77/runF772Cxx
+echo ${HOME}/current/ubgl/examples/hello/runF77/runF772F77
+mpirun -np 1 ${HOME}/current/ubgl/examples/hello/runF77/runF772F77
+echo ${HOME}/current/ubgl/regression/args/runC/runC2C
+mpirun -np 1 ${HOME}/current/ubgl/regression/args/runC/runC2C
+echo ${HOME}/current/ubgl/regression/args/runC/runC2Cxx
+mpirun -np 1 ${HOME}/current/ubgl/regression/args/runC/runC2Cxx
+echo ${HOME}/current/ubgl/regression/args/runC/runC2F77
+mpirun -np 1 ${HOME}/current/ubgl/regression/args/runC/runC2F77
+echo ${HOME}/current/ubgl/regression/args/runC/runC2F90
+mpirun -np 1 ${HOME}/current/ubgl/regression/args/runC/runC2F90
+echo ${HOME}/current/ubgl/regression/args/runCxx/runCxx2C
+mpirun -np 1 ${HOME}/current/ubgl/regression/args/runCxx/runCxx2C
+echo ${HOME}/current/ubgl/regression/args/runCxx/runCxx2Cxx
+mpirun -np 1 ${HOME}/current/ubgl/regression/args/runCxx/runCxx2Cxx
+echo ${HOME}/current/ubgl/regression/args/runCxx/runCxx2F77
+mpirun -np 1 ${HOME}/current/ubgl/regression/args/runCxx/runCxx2F77
+echo ${HOME}/current/ubgl/regression/args/runCxx/runCxx2F90
+mpirun -np 1 ${HOME}/current/ubgl/regression/args/runCxx/runCxx2F90
+echo ${HOME}/current/ubgl/regression/args/runF77/runF772C
+mpirun -np 1 ${HOME}/current/ubgl/regression/args/runF77/runF772C
+echo ${HOME}/current/ubgl/regression/args/runF77/runF772Cxx
+mpirun -np 1 ${HOME}/current/ubgl/regression/args/runF77/runF772Cxx
+echo ${HOME}/current/ubgl/regression/args/runF77/runF772F77
+mpirun -np 1 ${HOME}/current/ubgl/regression/args/runF77/runF772F77
+echo ${HOME}/current/ubgl/regression/args/runF77/runF772F90
+mpirun -np 1 ${HOME}/current/ubgl/regression/args/runF77/runF772F90
+echo ${HOME}/current/ubgl/regression/args/runF90/runF902C
+mpirun -np 1 ${HOME}/current/ubgl/regression/args/runF90/runF902C
+echo ${HOME}/current/ubgl/regression/args/runF90/runF902Cxx
+mpirun -np 1 ${HOME}/current/ubgl/regression/args/runF90/runF902Cxx
+echo ${HOME}/current/ubgl/regression/args/runF90/runF902F77
+mpirun -np 1 ${HOME}/current/ubgl/regression/args/runF90/runF902F77
+echo ${HOME}/current/ubgl/regression/args/runF90/runF902F90
+mpirun -np 1 ${HOME}/current/ubgl/regression/args/runF90/runF902F90
+echo ${HOME}/current/ubgl/regression/arrays/runC/runC2C
+mpirun -np 1 ${HOME}/current/ubgl/regression/arrays/runC/runC2C
+echo ${HOME}/current/ubgl/regression/arrays/runC/runC2Cxx
+mpirun -np 1 ${HOME}/current/ubgl/regression/arrays/runC/runC2Cxx
+echo ${HOME}/current/ubgl/regression/arrays/runC/runC2F77
+mpirun -np 1 ${HOME}/current/ubgl/regression/arrays/runC/runC2F77
+echo ${HOME}/current/ubgl/regression/arrays/runC/runC2F90
+mpirun -np 1 ${HOME}/current/ubgl/regression/arrays/runC/runC2F90
+echo ${HOME}/current/ubgl/regression/arrays/runCxx/runCxx2C
+mpirun -np 1 ${HOME}/current/ubgl/regression/arrays/runCxx/runCxx2C
+echo ${HOME}/current/ubgl/regression/arrays/runCxx/runCxx2Cxx
+mpirun -np 1 ${HOME}/current/ubgl/regression/arrays/runCxx/runCxx2Cxx
+echo ${HOME}/current/ubgl/regression/arrays/runCxx/runCxx2F77
+mpirun -np 1 ${HOME}/current/ubgl/regression/arrays/runCxx/runCxx2F77
+echo ${HOME}/current/ubgl/regression/arrays/runCxx/runCxx2F90
+mpirun -np 1 ${HOME}/current/ubgl/regression/arrays/runCxx/runCxx2F90
+echo ${HOME}/current/ubgl/regression/arrays/runF77/runF772C
+mpirun -np 1 ${HOME}/current/ubgl/regression/arrays/runF77/runF772C
+echo ${HOME}/current/ubgl/regression/arrays/runF77/runF772Cxx
+mpirun -np 1 ${HOME}/current/ubgl/regression/arrays/runF77/runF772Cxx
+echo ${HOME}/current/ubgl/regression/arrays/runF77/runF772F77
+mpirun -np 1 ${HOME}/current/ubgl/regression/arrays/runF77/runF772F77
+echo ${HOME}/current/ubgl/regression/arrays/runF77/runF772F90
+mpirun -np 1 ${HOME}/current/ubgl/regression/arrays/runF77/runF772F90
+echo ${HOME}/current/ubgl/regression/arrays/runF90/runF902C
+mpirun -np 1 ${HOME}/current/ubgl/regression/arrays/runF90/runF902C
+echo ${HOME}/current/ubgl/regression/arrays/runF90/runF902Cxx
+mpirun -np 1 ${HOME}/current/ubgl/regression/arrays/runF90/runF902Cxx
+echo ${HOME}/current/ubgl/regression/arrays/runF90/runF902F77
+mpirun -np 1 ${HOME}/current/ubgl/regression/arrays/runF90/runF902F77
+echo ${HOME}/current/ubgl/regression/arrays/runF90/runF902F90
+mpirun -np 1 ${HOME}/current/ubgl/regression/arrays/runF90/runF902F90
+echo ${HOME}/current/ubgl/regression/contracts/runC/runC2C
+mpirun -np 1 ${HOME}/current/ubgl/regression/contracts/runC/runC2C
+echo ${HOME}/current/ubgl/regression/contracts/runC/runC2Cxx
+mpirun -np 1 ${HOME}/current/ubgl/regression/contracts/runC/runC2Cxx
+echo ${HOME}/current/ubgl/regression/contracts/runC/runC2F77
+mpirun -np 1 ${HOME}/current/ubgl/regression/contracts/runC/runC2F77
+echo ${HOME}/current/ubgl/regression/contracts/runC/runC2F90
+mpirun -np 1 ${HOME}/current/ubgl/regression/contracts/runC/runC2F90
+echo ${HOME}/current/ubgl/regression/contracts/runCxx/runCxx2C
+mpirun -np 1 ${HOME}/current/ubgl/regression/contracts/runCxx/runCxx2C
+echo ${HOME}/current/ubgl/regression/contracts/runCxx/runCxx2Cxx
+mpirun -np 1 ${HOME}/current/ubgl/regression/contracts/runCxx/runCxx2Cxx
+echo ${HOME}/current/ubgl/regression/contracts/runCxx/runCxx2F77
+mpirun -np 1 ${HOME}/current/ubgl/regression/contracts/runCxx/runCxx2F77
+echo ${HOME}/current/ubgl/regression/contracts/runCxx/runCxx2F90
+mpirun -np 1 ${HOME}/current/ubgl/regression/contracts/runCxx/runCxx2F90
+echo ${HOME}/current/ubgl/regression/contracts/runF77/runF772C
+mpirun -np 1 ${HOME}/current/ubgl/regression/contracts/runF77/runF772C
+echo ${HOME}/current/ubgl/regression/contracts/runF77/runF772Cxx
+mpirun -np 1 ${HOME}/current/ubgl/regression/contracts/runF77/runF772Cxx
+echo ${HOME}/current/ubgl/regression/contracts/runF77/runF772F77
+mpirun -np 1 ${HOME}/current/ubgl/regression/contracts/runF77/runF772F77
+echo ${HOME}/current/ubgl/regression/contracts/runF77/runF772F90
+mpirun -np 1 ${HOME}/current/ubgl/regression/contracts/runF77/runF772F90
+echo ${HOME}/current/ubgl/regression/contracts/runF90/runF902C
+mpirun -np 1 ${HOME}/current/ubgl/regression/contracts/runF90/runF902C
+echo ${HOME}/current/ubgl/regression/contracts/runF90/runF902Cxx
+mpirun -np 1 ${HOME}/current/ubgl/regression/contracts/runF90/runF902Cxx
+echo ${HOME}/current/ubgl/regression/contracts/runF90/runF902F77
+mpirun -np 1 ${HOME}/current/ubgl/regression/contracts/runF90/runF902F77
+echo ${HOME}/current/ubgl/regression/contracts/runF90/runF902F90
+mpirun -np 1 ${HOME}/current/ubgl/regression/contracts/runF90/runF902F90
+echo ${HOME}/current/ubgl/regression/enums/runC/runC2C
+mpirun -np 1 ${HOME}/current/ubgl/regression/enums/runC/runC2C
+echo ${HOME}/current/ubgl/regression/enums/runC/runC2Cxx
+mpirun -np 1 ${HOME}/current/ubgl/regression/enums/runC/runC2Cxx
+echo ${HOME}/current/ubgl/regression/enums/runC/runC2F77
+mpirun -np 1 ${HOME}/current/ubgl/regression/enums/runC/runC2F77
+echo ${HOME}/current/ubgl/regression/enums/runC/runC2F90
+mpirun -np 1 ${HOME}/current/ubgl/regression/enums/runC/runC2F90
+echo ${HOME}/current/ubgl/regression/enums/runCxx/runCxx2C
+mpirun -np 1 ${HOME}/current/ubgl/regression/enums/runCxx/runCxx2C
+echo ${HOME}/current/ubgl/regression/enums/runCxx/runCxx2Cxx
+mpirun -np 1 ${HOME}/current/ubgl/regression/enums/runCxx/runCxx2Cxx
+echo ${HOME}/current/ubgl/regression/enums/runCxx/runCxx2F77
+mpirun -np 1 ${HOME}/current/ubgl/regression/enums/runCxx/runCxx2F77
+echo ${HOME}/current/ubgl/regression/enums/runCxx/runCxx2F90
+mpirun -np 1 ${HOME}/current/ubgl/regression/enums/runCxx/runCxx2F90
+echo ${HOME}/current/ubgl/regression/exceptions/runC/runC2C
+mpirun -np 1 ${HOME}/current/ubgl/regression/exceptions/runC/runC2C
+echo ${HOME}/current/ubgl/regression/exceptions/runC/runC2Cxx
+mpirun -np 1 ${HOME}/current/ubgl/regression/exceptions/runC/runC2Cxx
+echo ${HOME}/current/ubgl/regression/exceptions/runC/runC2F77
+mpirun -np 1 ${HOME}/current/ubgl/regression/exceptions/runC/runC2F77
+echo ${HOME}/current/ubgl/regression/exceptions/runC/runC2F90
+mpirun -np 1 ${HOME}/current/ubgl/regression/exceptions/runC/runC2F90
+echo ${HOME}/current/ubgl/regression/exceptions/runCxx/runCxx2C
+mpirun -np 1 ${HOME}/current/ubgl/regression/exceptions/runCxx/runCxx2C
+echo ${HOME}/current/ubgl/regression/exceptions/runCxx/runCxx2Cxx
+mpirun -np 1 ${HOME}/current/ubgl/regression/exceptions/runCxx/runCxx2Cxx
+echo ${HOME}/current/ubgl/regression/exceptions/runCxx/runCxx2F77
+mpirun -np 1 ${HOME}/current/ubgl/regression/exceptions/runCxx/runCxx2F77
+echo ${HOME}/current/ubgl/regression/exceptions/runCxx/runCxx2F90
+mpirun -np 1 ${HOME}/current/ubgl/regression/exceptions/runCxx/runCxx2F90
+echo ${HOME}/current/ubgl/regression/exceptions/runF77/runF772C
+mpirun -np 1 ${HOME}/current/ubgl/regression/exceptions/runF77/runF772C
+echo ${HOME}/current/ubgl/regression/exceptions/runF77/runF772Cxx
+mpirun -np 1 ${HOME}/current/ubgl/regression/exceptions/runF77/runF772Cxx
+echo ${HOME}/current/ubgl/regression/exceptions/runF77/runF772F77
+mpirun -np 1 ${HOME}/current/ubgl/regression/exceptions/runF77/runF772F77
+echo ${HOME}/current/ubgl/regression/exceptions/runF77/runF772F90
+mpirun -np 1 ${HOME}/current/ubgl/regression/exceptions/runF77/runF772F90
+echo ${HOME}/current/ubgl/regression/exceptions/runF90/runF902C
+mpirun -np 1 ${HOME}/current/ubgl/regression/exceptions/runF90/runF902C
+echo ${HOME}/current/ubgl/regression/exceptions/runF90/runF902Cxx
+mpirun -np 1 ${HOME}/current/ubgl/regression/exceptions/runF90/runF902Cxx
+echo ${HOME}/current/ubgl/regression/exceptions/runF90/runF902F77
+mpirun -np 1 ${HOME}/current/ubgl/regression/exceptions/runF90/runF902F77
+echo ${HOME}/current/ubgl/regression/exceptions/runF90/runF902F90
+mpirun -np 1 ${HOME}/current/ubgl/regression/exceptions/runF90/runF902F90
+echo ${HOME}/current/ubgl/regression/hooks/runC/runC2C
+mpirun -np 1 ${HOME}/current/ubgl/regression/hooks/runC/runC2C
+echo ${HOME}/current/ubgl/regression/hooks/runC/runC2Cxx
+mpirun -np 1 ${HOME}/current/ubgl/regression/hooks/runC/runC2Cxx
+echo ${HOME}/current/ubgl/regression/hooks/runC/runC2F77
+mpirun -np 1 ${HOME}/current/ubgl/regression/hooks/runC/runC2F77
+echo ${HOME}/current/ubgl/regression/hooks/runC/runC2F90
+mpirun -np 1 ${HOME}/current/ubgl/regression/hooks/runC/runC2F90
+echo ${HOME}/current/ubgl/regression/hooks/runCxx/runCxx2C
+mpirun -np 1 ${HOME}/current/ubgl/regression/hooks/runCxx/runCxx2C
+echo ${HOME}/current/ubgl/regression/hooks/runCxx/runCxx2Cxx
+mpirun -np 1 ${HOME}/current/ubgl/regression/hooks/runCxx/runCxx2Cxx
+echo ${HOME}/current/ubgl/regression/hooks/runCxx/runCxx2F77
+mpirun -np 1 ${HOME}/current/ubgl/regression/hooks/runCxx/runCxx2F77
+echo ${HOME}/current/ubgl/regression/hooks/runCxx/runCxx2F90
+mpirun -np 1 ${HOME}/current/ubgl/regression/hooks/runCxx/runCxx2F90
+echo ${HOME}/current/ubgl/regression/hooks/runF77/runF772C
+mpirun -np 1 ${HOME}/current/ubgl/regression/hooks/runF77/runF772C
+echo ${HOME}/current/ubgl/regression/hooks/runF77/runF772Cxx
+mpirun -np 1 ${HOME}/current/ubgl/regression/hooks/runF77/runF772Cxx
+echo ${HOME}/current/ubgl/regression/hooks/runF77/runF772F77
+mpirun -np 1 ${HOME}/current/ubgl/regression/hooks/runF77/runF772F77
+echo ${HOME}/current/ubgl/regression/hooks/runF77/runF772F90
+mpirun -np 1 ${HOME}/current/ubgl/regression/hooks/runF77/runF772F90
+echo ${HOME}/current/ubgl/regression/hooks/runF90/runF902C
+mpirun -np 1 ${HOME}/current/ubgl/regression/hooks/runF90/runF902C
+echo ${HOME}/current/ubgl/regression/hooks/runF90/runF902Cxx
+mpirun -np 1 ${HOME}/current/ubgl/regression/hooks/runF90/runF902Cxx
+echo ${HOME}/current/ubgl/regression/hooks/runF90/runF902F77
+mpirun -np 1 ${HOME}/current/ubgl/regression/hooks/runF90/runF902F77
+echo ${HOME}/current/ubgl/regression/hooks/runF90/runF902F90
+mpirun -np 1 ${HOME}/current/ubgl/regression/hooks/runF90/runF902F90
+echo ${HOME}/current/ubgl/regression/inherit/runC/runC2C
+mpirun -np 1 ${HOME}/current/ubgl/regression/inherit/runC/runC2C
+echo ${HOME}/current/ubgl/regression/inherit/runC/runC2Cxx
+mpirun -np 1 ${HOME}/current/ubgl/regression/inherit/runC/runC2Cxx
+echo ${HOME}/current/ubgl/regression/inherit/runC/runC2F77
+mpirun -np 1 ${HOME}/current/ubgl/regression/inherit/runC/runC2F77
+echo ${HOME}/current/ubgl/regression/inherit/runC/runC2F90
+mpirun -np 1 ${HOME}/current/ubgl/regression/inherit/runC/runC2F90
+echo ${HOME}/current/ubgl/regression/inherit/runCxx/runCxx2C
+mpirun -np 1 ${HOME}/current/ubgl/regression/inherit/runCxx/runCxx2C
+echo ${HOME}/current/ubgl/regression/inherit/runCxx/runCxx2Cxx
+mpirun -np 1 ${HOME}/current/ubgl/regression/inherit/runCxx/runCxx2Cxx
+echo ${HOME}/current/ubgl/regression/inherit/runCxx/runCxx2F77
+mpirun -np 1 ${HOME}/current/ubgl/regression/inherit/runCxx/runCxx2F77
+echo ${HOME}/current/ubgl/regression/inherit/runCxx/runCxx2F90
+mpirun -np 1 ${HOME}/current/ubgl/regression/inherit/runCxx/runCxx2F90
+echo ${HOME}/current/ubgl/regression/inherit/runF77/runF772C
+mpirun -np 1 ${HOME}/current/ubgl/regression/inherit/runF77/runF772C
+echo ${HOME}/current/ubgl/regression/inherit/runF77/runF772Cxx
+mpirun -np 1 ${HOME}/current/ubgl/regression/inherit/runF77/runF772Cxx
+echo ${HOME}/current/ubgl/regression/inherit/runF77/runF772F77
+mpirun -np 1 ${HOME}/current/ubgl/regression/inherit/runF77/runF772F77
+echo ${HOME}/current/ubgl/regression/inherit/runF77/runF772F90
+mpirun -np 1 ${HOME}/current/ubgl/regression/inherit/runF77/runF772F90
+echo ${HOME}/current/ubgl/regression/inherit/runF90/runF902C
+mpirun -np 1 ${HOME}/current/ubgl/regression/inherit/runF90/runF902C
+echo ${HOME}/current/ubgl/regression/inherit/runF90/runF902Cxx
+mpirun -np 1 ${HOME}/current/ubgl/regression/inherit/runF90/runF902Cxx
+echo ${HOME}/current/ubgl/regression/inherit/runF90/runF902F77
+mpirun -np 1 ${HOME}/current/ubgl/regression/inherit/runF90/runF902F77
+echo ${HOME}/current/ubgl/regression/inherit/runF90/runF902F90
+mpirun -np 1 ${HOME}/current/ubgl/regression/inherit/runF90/runF902F90
+echo ${HOME}/current/ubgl/regression/objarg/runC/runC2C
+mpirun -np 1 ${HOME}/current/ubgl/regression/objarg/runC/runC2C
+echo ${HOME}/current/ubgl/regression/objarg/runC/runC2Cxx
+mpirun -np 1 ${HOME}/current/ubgl/regression/objarg/runC/runC2Cxx
+echo ${HOME}/current/ubgl/regression/objarg/runC/runC2F90
+mpirun -np 1 ${HOME}/current/ubgl/regression/objarg/runC/runC2F90
+echo ${HOME}/current/ubgl/regression/objarg/runCxx/runCxx2C
+mpirun -np 1 ${HOME}/current/ubgl/regression/objarg/runCxx/runCxx2C
+echo ${HOME}/current/ubgl/regression/objarg/runCxx/runCxx2Cxx
+mpirun -np 1 ${HOME}/current/ubgl/regression/objarg/runCxx/runCxx2Cxx
+echo ${HOME}/current/ubgl/regression/objarg/runCxx/runCxx2F90
+mpirun -np 1 ${HOME}/current/ubgl/regression/objarg/runCxx/runCxx2F90
+echo ${HOME}/current/ubgl/regression/ordering/runC/runC2C
+mpirun -np 1 ${HOME}/current/ubgl/regression/ordering/runC/runC2C
+echo ${HOME}/current/ubgl/regression/ordering/runC/runC2Cxx
+mpirun -np 1 ${HOME}/current/ubgl/regression/ordering/runC/runC2Cxx
+echo ${HOME}/current/ubgl/regression/ordering/runC/runC2F77
+mpirun -np 1 ${HOME}/current/ubgl/regression/ordering/runC/runC2F77
+echo ${HOME}/current/ubgl/regression/ordering/runC/runC2F90
+mpirun -np 1 ${HOME}/current/ubgl/regression/ordering/runC/runC2F90
+echo ${HOME}/current/ubgl/regression/ordering/runCxx/runCxx2C
+mpirun -np 1 ${HOME}/current/ubgl/regression/ordering/runCxx/runCxx2C
+echo ${HOME}/current/ubgl/regression/ordering/runCxx/runCxx2Cxx
+mpirun -np 1 ${HOME}/current/ubgl/regression/ordering/runCxx/runCxx2Cxx
+echo ${HOME}/current/ubgl/regression/ordering/runCxx/runCxx2F77
+mpirun -np 1 ${HOME}/current/ubgl/regression/ordering/runCxx/runCxx2F77
+echo ${HOME}/current/ubgl/regression/ordering/runCxx/runCxx2F90
+mpirun -np 1 ${HOME}/current/ubgl/regression/ordering/runCxx/runCxx2F90
+echo ${HOME}/current/ubgl/regression/overload/runC/runC2C
+mpirun -np 1 ${HOME}/current/ubgl/regression/overload/runC/runC2C
+echo ${HOME}/current/ubgl/regression/overload/runC/runC2Cxx
+mpirun -np 1 ${HOME}/current/ubgl/regression/overload/runC/runC2Cxx
+echo ${HOME}/current/ubgl/regression/overload/runC/runC2F77
+mpirun -np 1 ${HOME}/current/ubgl/regression/overload/runC/runC2F77
+echo ${HOME}/current/ubgl/regression/overload/runC/runC2F90
+mpirun -np 1 ${HOME}/current/ubgl/regression/overload/runC/runC2F90
+echo ${HOME}/current/ubgl/regression/overload/runCxx/runCxx2C
+mpirun -np 1 ${HOME}/current/ubgl/regression/overload/runCxx/runCxx2C
+echo ${HOME}/current/ubgl/regression/overload/runCxx/runCxx2Cxx
+mpirun -np 1 ${HOME}/current/ubgl/regression/overload/runCxx/runCxx2Cxx
+echo ${HOME}/current/ubgl/regression/overload/runCxx/runCxx2F77
+mpirun -np 1 ${HOME}/current/ubgl/regression/overload/runCxx/runCxx2F77
+echo ${HOME}/current/ubgl/regression/overload/runCxx/runCxx2F90
+mpirun -np 1 ${HOME}/current/ubgl/regression/overload/runCxx/runCxx2F90
+echo ${HOME}/current/ubgl/regression/overload/runF77/runF772C
+mpirun -np 1 ${HOME}/current/ubgl/regression/overload/runF77/runF772C
+echo ${HOME}/current/ubgl/regression/overload/runF77/runF772Cxx
+mpirun -np 1 ${HOME}/current/ubgl/regression/overload/runF77/runF772Cxx
+echo ${HOME}/current/ubgl/regression/overload/runF77/runF772F77
+mpirun -np 1 ${HOME}/current/ubgl/regression/overload/runF77/runF772F77
+echo ${HOME}/current/ubgl/regression/overload/runF77/runF772F90
+mpirun -np 1 ${HOME}/current/ubgl/regression/overload/runF77/runF772F90
+echo ${HOME}/current/ubgl/regression/overload/runF90/runF902C
+mpirun -np 1 ${HOME}/current/ubgl/regression/overload/runF90/runF902C
+echo ${HOME}/current/ubgl/regression/overload/runF90/runF902Cxx
+mpirun -np 1 ${HOME}/current/ubgl/regression/overload/runF90/runF902Cxx
+echo ${HOME}/current/ubgl/regression/overload/runF90/runF902F77
+mpirun -np 1 ${HOME}/current/ubgl/regression/overload/runF90/runF902F77
+echo ${HOME}/current/ubgl/regression/overload/runF90/runF902F90
+mpirun -np 1 ${HOME}/current/ubgl/regression/overload/runF90/runF902F90
+echo ${HOME}/current/ubgl/regression/sort/runC/runC2C
+mpirun -np 1 ${HOME}/current/ubgl/regression/sort/runC/runC2C
+echo ${HOME}/current/ubgl/regression/sort/runC/runC2Cxx
+mpirun -np 1 ${HOME}/current/ubgl/regression/sort/runC/runC2Cxx
+echo ${HOME}/current/ubgl/regression/sort/runC/runC2F77
+mpirun -np 1 ${HOME}/current/ubgl/regression/sort/runC/runC2F77
+echo ${HOME}/current/ubgl/regression/sort/runC/runC2F90
+mpirun -np 1 ${HOME}/current/ubgl/regression/sort/runC/runC2F90
+echo ${HOME}/current/ubgl/regression/sort/runCxx/runCxx2C
+mpirun -np 1 ${HOME}/current/ubgl/regression/sort/runCxx/runCxx2C
+echo ${HOME}/current/ubgl/regression/sort/runCxx/runCxx2Cxx
+mpirun -np 1 ${HOME}/current/ubgl/regression/sort/runCxx/runCxx2Cxx
+echo ${HOME}/current/ubgl/regression/sort/runCxx/runCxx2F77
+mpirun -np 1 ${HOME}/current/ubgl/regression/sort/runCxx/runCxx2F77
+echo ${HOME}/current/ubgl/regression/sort/runCxx/runCxx2F90
+mpirun -np 1 ${HOME}/current/ubgl/regression/sort/runCxx/runCxx2F90
+echo ${HOME}/current/ubgl/regression/sort/runF77/runF772C
+mpirun -np 1 ${HOME}/current/ubgl/regression/sort/runF77/runF772C
+echo ${HOME}/current/ubgl/regression/sort/runF77/runF772Cxx
+mpirun -np 1 ${HOME}/current/ubgl/regression/sort/runF77/runF772Cxx
+echo ${HOME}/current/ubgl/regression/sort/runF77/runF772F77
+mpirun -np 1 ${HOME}/current/ubgl/regression/sort/runF77/runF772F77
+echo ${HOME}/current/ubgl/regression/sort/runF77/runF772F90
+mpirun -np 1 ${HOME}/current/ubgl/regression/sort/runF77/runF772F90
+echo ${HOME}/current/ubgl/regression/sort/runF90/runF902C
+mpirun -np 1 ${HOME}/current/ubgl/regression/sort/runF90/runF902C
+echo ${HOME}/current/ubgl/regression/sort/runF90/runF902Cxx
+mpirun -np 1 ${HOME}/current/ubgl/regression/sort/runF90/runF902Cxx
+echo ${HOME}/current/ubgl/regression/sort/runF90/runF902F77
+mpirun -np 1 ${HOME}/current/ubgl/regression/sort/runF90/runF902F77
+echo ${HOME}/current/ubgl/regression/sort/runF90/runF902F90
+mpirun -np 1 ${HOME}/current/ubgl/regression/sort/runF90/runF902F90
+echo ${HOME}/current/ubgl/regression/strings/runC/runC2C
+mpirun -np 1 ${HOME}/current/ubgl/regression/strings/runC/runC2C
+echo ${HOME}/current/ubgl/regression/strings/runC/runC2Cxx
+mpirun -np 1 ${HOME}/current/ubgl/regression/strings/runC/runC2Cxx
+echo ${HOME}/current/ubgl/regression/strings/runC/runC2F77
+mpirun -np 1 ${HOME}/current/ubgl/regression/strings/runC/runC2F77
+echo ${HOME}/current/ubgl/regression/strings/runC/runC2F90
+mpirun -np 1 ${HOME}/current/ubgl/regression/strings/runC/runC2F90
+echo ${HOME}/current/ubgl/regression/strings/runCxx/runCxx2C
+mpirun -np 1 ${HOME}/current/ubgl/regression/strings/runCxx/runCxx2C
+echo ${HOME}/current/ubgl/regression/strings/runCxx/runCxx2Cxx
+mpirun -np 1 ${HOME}/current/ubgl/regression/strings/runCxx/runCxx2Cxx
+echo ${HOME}/current/ubgl/regression/strings/runCxx/runCxx2F77
+mpirun -np 1 ${HOME}/current/ubgl/regression/strings/runCxx/runCxx2F77
+echo ${HOME}/current/ubgl/regression/strings/runCxx/runCxx2F90
+mpirun -np 1 ${HOME}/current/ubgl/regression/strings/runCxx/runCxx2F90
+echo ${HOME}/current/ubgl/regression/strings/runF77/runF772C
+mpirun -np 1 ${HOME}/current/ubgl/regression/strings/runF77/runF772C
+echo ${HOME}/current/ubgl/regression/strings/runF77/runF772Cxx
+mpirun -np 1 ${HOME}/current/ubgl/regression/strings/runF77/runF772Cxx
+echo ${HOME}/current/ubgl/regression/strings/runF77/runF772F77
+mpirun -np 1 ${HOME}/current/ubgl/regression/strings/runF77/runF772F77
+echo ${HOME}/current/ubgl/regression/strings/runF77/runF772F90
+mpirun -np 1 ${HOME}/current/ubgl/regression/strings/runF77/runF772F90
+echo ${HOME}/current/ubgl/regression/strings/runF90/runF902C
+mpirun -np 1 ${HOME}/current/ubgl/regression/strings/runF90/runF902C
+echo ${HOME}/current/ubgl/regression/strings/runF90/runF902Cxx
+mpirun -np 1 ${HOME}/current/ubgl/regression/strings/runF90/runF902Cxx
+echo ${HOME}/current/ubgl/regression/strings/runF90/runF902F77
+mpirun -np 1 ${HOME}/current/ubgl/regression/strings/runF90/runF902F77
+echo ${HOME}/current/ubgl/regression/strings/runF90/runF902F90
+mpirun -np 1 ${HOME}/current/ubgl/regression/strings/runF90/runF902F90
+echo ${HOME}/current/ubgl/regression/wrapper/runC/runC2C
+mpirun -np 1 ${HOME}/current/ubgl/regression/wrapper/runC/runC2C
+echo ${HOME}/current/ubgl/regression/wrapper/runC/runC2Cxx
+mpirun -np 1 ${HOME}/current/ubgl/regression/wrapper/runC/runC2Cxx
+echo ${HOME}/current/ubgl/regression/wrapper/runC/runC2F77
+mpirun -np 1 ${HOME}/current/ubgl/regression/wrapper/runC/runC2F77
+echo ${HOME}/current/ubgl/regression/wrapper/runC/runC2F90
+mpirun -np 1 ${HOME}/current/ubgl/regression/wrapper/runC/runC2F90
+echo ${HOME}/current/ubgl/regression/wrapper/runCxx/runCxx2C
+mpirun -np 1 ${HOME}/current/ubgl/regression/wrapper/runCxx/runCxx2C
+echo ${HOME}/current/ubgl/regression/wrapper/runCxx/runCxx2Cxx
+mpirun -np 1 ${HOME}/current/ubgl/regression/wrapper/runCxx/runCxx2Cxx
+echo ${HOME}/current/ubgl/regression/wrapper/runCxx/runCxx2F77
+mpirun -np 1 ${HOME}/current/ubgl/regression/wrapper/runCxx/runCxx2F77
+echo ${HOME}/current/ubgl/regression/wrapper/runCxx/runCxx2F90
+mpirun -np 1 ${HOME}/current/ubgl/regression/wrapper/runCxx/runCxx2F90
+echo ${HOME}/current/ubgl/regression/wrapper/runF77/runF772C
+mpirun -np 1 ${HOME}/current/ubgl/regression/wrapper/runF77/runF772C
+echo ${HOME}/current/ubgl/regression/wrapper/runF77/runF772Cxx
+mpirun -np 1 ${HOME}/current/ubgl/regression/wrapper/runF77/runF772Cxx
+echo ${HOME}/current/ubgl/regression/wrapper/runF77/runF772F77
+mpirun -np 1 ${HOME}/current/ubgl/regression/wrapper/runF77/runF772F77
+echo ${HOME}/current/ubgl/regression/wrapper/runF77/runF772F90
+mpirun -np 1 ${HOME}/current/ubgl/regression/wrapper/runF77/runF772F90
+echo ${HOME}/current/ubgl/regression/wrapper/runF90/runF902C
+mpirun -np 1 ${HOME}/current/ubgl/regression/wrapper/runF90/runF902C
+echo ${HOME}/current/ubgl/regression/wrapper/runF90/runF902Cxx
+mpirun -np 1 ${HOME}/current/ubgl/regression/wrapper/runF90/runF902Cxx
+echo ${HOME}/current/ubgl/regression/wrapper/runF90/runF902F77
+mpirun -np 1 ${HOME}/current/ubgl/regression/wrapper/runF90/runF902F77
+echo ${HOME}/current/ubgl/regression/wrapper/runF90/runF902F90
+mpirun -np 1 ${HOME}/current/ubgl/regression/wrapper/runF90/runF902F90
+
+exit 0

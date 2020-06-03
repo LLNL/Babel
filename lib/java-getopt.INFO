@@ -1,0 +1,6 @@
+Java-Getopt JAR was downloaded from http://www.urbanophile.com/arenn/hacking/download.html.
+Note that it is licensed under the GNU Library General Public License which is slightly
+different (older) than GNU Lesser General Public License that Babel uses.
+The terms of GNU Library GPL allow binary redistribution with attendant source code,
+but since all we downloaded the JAR directly from the author's website (above), 
+we don't have the source code ourselves.

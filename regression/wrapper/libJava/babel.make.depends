@@ -1,0 +1,68 @@
+# IORHDRS dependencies.
+wrapper_User_IOR.h:                                                           \
+  /home/epperly/current/babel_fix_wrap/regression/wrapper/runSIDL/../wrapper.sidl
+wrapper_User_IOR.h: sidl_header.h
+wrapper_User_IOR.h: sidl_BaseClass_IOR.h
+
+
+# IORSRCS dependencies.
+wrapper_User_IOR.c:                                                           \
+  /home/epperly/current/babel_fix_wrap/regression/wrapper/runSIDL/../wrapper.sidl
+wrapper_User_IOR.c: wrapper_User_IOR.h
+wrapper_User_IOR.c: sidl_BaseClass_Impl.h
+wrapper_User_IOR.c: sidl_BaseClass.h
+wrapper_User_IOR.c: sidl_ClassInfo.h
+wrapper_User_IOR.c: sidl_ClassInfoI.h
+
+
+# SKELSRCS dependencies.
+wrapper_User_jniSkel.c:                                                       \
+  /home/epperly/current/babel_fix_wrap/regression/wrapper/runSIDL/../wrapper.sidl
+wrapper_User_jniSkel.c: sidl_Java.h
+wrapper_User_jniSkel.c: sidl_Loader.h
+wrapper_User_jniSkel.c: sidl_String.h
+wrapper_User_jniSkel.c: wrapper_User_IOR.h
+wrapper_User_jniSkel.c: babel_config.h
+wrapper_User_jniSkel.c: sidl_Exception.h
+wrapper_User_jniSkel.c: sidl_BaseException.h
+wrapper_User_jniSkel.c: sidl_LangSpecificException.h
+wrapper_User_jniSkel.c: sidl_BaseClass_jniStub.h
+wrapper_User_jniSkel.c: sidl_BaseInterface_jniStub.h
+wrapper_User_jniSkel.c: sidl_ClassInfo_jniStub.h
+wrapper_User_jniSkel.c: sidl_RuntimeException_jniStub.h
+wrapper_User_jniSkel.c: wrapper_Data_jniStub.h
+wrapper_User_jniSkel.c: wrapper_User_jniStub.h
+
+
+# STUBHDRS dependencies.
+wrapper_User_jniStub.h:                                                       \
+  /home/epperly/current/babel_fix_wrap/regression/wrapper/runSIDL/../wrapper.sidl
+wrapper_User_jniStub.h: wrapper_User_IOR.h
+
+
+# STUBSRCS dependencies.
+wrapper_User_jniStub.c:                                                       \
+  /home/epperly/current/babel_fix_wrap/regression/wrapper/runSIDL/../wrapper.sidl
+wrapper_User_jniStub.c: sidl_Java.h
+wrapper_User_jniStub.c: sidl_Loader.h
+wrapper_User_jniStub.c: sidl_String.h
+wrapper_User_jniStub.c: wrapper_User_IOR.h
+wrapper_User_jniStub.c: babel_config.h
+wrapper_User_jniStub.c: sidl_BaseClass_jniStub.h
+wrapper_User_jniStub.c: sidl_BaseInterface_jniStub.h
+wrapper_User_jniStub.c: sidl_ClassInfo_jniStub.h
+wrapper_User_jniStub.c: sidl_RuntimeException_jniStub.h
+wrapper_User_jniStub.c: wrapper_Data_jniStub.h
+wrapper_User_jniStub.c: wrapper_User_jniStub.h
+wrapper_User_jniStub.c: sidl_BaseClass.h
+wrapper_User_jniStub.c: sidl_ClassInfo.h
+wrapper_User_jniStub.c: sidl_rmi_ProtocolFactory.h
+wrapper_User_jniStub.c: sidl_rmi_InstanceRegistry.h
+wrapper_User_jniStub.c: sidl_rmi_InstanceHandle.h
+wrapper_User_jniStub.c: sidl_rmi_Invocation.h
+wrapper_User_jniStub.c: sidl_rmi_Response.h
+wrapper_User_jniStub.c: sidl_rmi_ServerRegistry.h
+wrapper_User_jniStub.c: sidl_rmi_ConnectRegistry.h
+wrapper_User_jniStub.c: sidl_io_Serializable.h
+
+

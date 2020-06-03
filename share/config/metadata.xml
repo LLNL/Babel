@@ -1,0 +1,133 @@
+<?xml version='1.0' encoding='us-ascii'?>
+<!--
+   File:        metadata.xml
+   Package:     configuration database
+   Copyright:   (c) 2000 Lawrence Livermore National Security, LLC
+   Revision:    @(#) $Id: metadata.xml 6171 2007-10-08 23:39:28Z epperly $
+   Description: XML description of machine configuration database metadata
+
+   This file defines the languages, options, and valid option choices for
+   the Babel machine configuration database.
+
+   To add a new language to the Babel compiler, you must add a new Language
+   element and provide any necessary configuration options and parameters.
+-->
+
+<!DOCTYPE ConfigurationMetadata SYSTEM "metadata.dtd">
+
+<!--
+   The ConfigurationMetadata element is the root element of the metadata
+   description.  To add support for a new language for the Babel compiler,
+   add a new Language element to ConfigurationMetadata.
+-->
+
+<ConfigurationMetadata>
+
+   <!--
+      The C configuration does not support any options at this time.
+   -->
+
+   <Language name="C">
+   </Language>
+
+   <!--
+      The Babel compiler for C++ supports the following options:
+
+         use namespaces         generate subs/skels with/without namespaces
+         have reinterpret cast  whether compiler supports reinterpret_cast
+   -->
+
+   <Language name="C++">
+
+      <Option name="use namespaces">
+
+         <Comment summary="use C++ namespaces in generated code">
+
+         Option <em>use namespaces</em> determines whether the Babel
+         compiler is allowed to use C++ namespaces in stubs and skeletons
+         to represent sidl packages. Possible choices are <var>true</var>
+         and <var>false</var>.  If <em>use namespaces</em> is <var>true</var>,
+         then the Babel compiler will represent a sidl package named
+         <code>Package.Class</code> as <code>Package::Class</code> in C++;
+         otherwise, an underscore will be used (<code>Package_Class</code>).
+
+         </Comment>
+
+         <Parameter choice="false"/>
+         <Parameter choice="true"/>
+      </Option>
+
+      <Option name="have reinterpret cast">
+
+         <Comment summary="whether C++ compiler supports reinterpret_cast">
+
+         Option <em>have reinterpret cast</em> determines whether the
+         Babel compiler uses the <code>reinterpret_cast</code> run-time
+         type identification feature of C++.  Some C++ compilers do not
+         yet support advanced type identification features.  Valid choices
+         are <var>true</var> and <var>false</var>.
+
+         </Comment>
+
+         <Parameter choice="false"/>
+         <Parameter choice="true"/>
+      </Option>
+
+   </Language>
+
+   <!--
+      The Babel compiler for Fortran 77 supports the following options:
+
+         mangling         how function names are mangled by the compiler
+         underscore       how underscores are added to function names
+         string argments  how strings are passed in an argument list
+         string return    how strings are returned from a function call
+   -->
+
+   <Language name="Fortran77">
+      <Option name="mangling">
+
+         <Comment summary="how names are mangled by the Fortran compiler">
+         </Comment>
+
+         <Parameter choice="no change"/>
+         <Parameter choice="to lower case"/>
+         <Parameter choice="to upper case"/>
+      </Option>
+         
+      <Option name="underscore">
+
+         <Comment summary="how underscores are added by the Fortran compiler">
+         </Comment>
+
+         <Parameter choice="none"/>
+         <Parameter choice="one"/>
+         <Parameter choice="two"/>
+      </Option>
+
+      <Option name="string arguments">
+
+         <Comment summary="how strings are passed in an argument list">
+         </Comment>
+
+         <Parameter choice="length following string"/>
+         <Parameter choice="length at end of argument list"/>
+         <Parameter choice="struct with string first"/>
+         <Parameter choice="struct with length first"/>
+      </Option>
+
+      <Option name="string return">
+
+         <Comment summary="how strings are returned from a function call">
+         </Comment>
+
+         <Parameter choice="argument with string first"/>
+         <Parameter choice="argument with length first"/>
+         <Parameter choice="argument structure with string first"/>
+         <Parameter choice="argument structure with length first"/>
+         <Parameter choice="return structure with string first"/>
+         <Parameter choice="return structure with length first"/>
+      </Option>
+   </Language>
+
+</ConfigurationMetadata>

@@ -1,0 +1,62 @@
+                      README
+
+This directory contains the SIDL "Hello World" example set.
+There are clients and servers for each of several languages.
+The language-to-directory mappings are:
+
+        Language         Client        Server
+        --------         ------        ------
+        C                runC          libC
+        C++              runCxx        libCxx
+        Fortran 77       runF77        libF77
+        Java             runJava       n/a
+        Python           runPython     n/a
+
+Consequently, the following client-server options are available:
+
+    Client       Server       Execution
+    ------       -------      ----------
+    C            C            $ cd ./runC
+                              $ ./runC2C
+  
+    C            C++          $ cd ./runC
+                              $ ./runC2Cxx
+
+    C            Fortran 77   $ cd ./runC
+                              $ ./runC2F77
+
+    C++          C            $ cd ./runCxx
+                              $ ./runCxx2C
+
+    C++          C++          $ cd ./runCxx
+                              $ ./runCxx2Cxx
+
+    C++          Fortran 77   $ cd ./runCxx
+                              $ ./runCxx2F77
+
+    Fortran 77   C            $ cd ./runF77
+                              $ ./runF772C
+
+    Fortran 77   C++          $ cd ./runF77
+                              $ ./runF772Cxx
+
+    Fortran 77   Fortran 77   $ cd ./runF77
+                              $ ./runF772F77
+
+    Java         C            $ cd ./runJava
+                              $ ./runJava2C
+
+    Java         C++          $ cd ./runJava
+                              $ ./runJava2Cxx
+
+    Java         Fortran 77   $ cd ./runJava
+                              $ ./runJava2F77
+
+    Python       C            $ cd ./runPython
+                              $ ./runPy2C
+
+    Python       C++          $ cd ./runPython
+                              $ ./runPy2Cxx
+
+    Python       Fortran 77   $ cd ./runPython
+                              $ ./runPy2F77

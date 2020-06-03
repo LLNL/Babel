@@ -1,0 +1,98 @@
+# IMPLHDRS dependencies.
+hooks_Basics_Impl.hxx:                                                        \
+  /home/epperly/current/babel_fix_hooks/regression/hooks/libCxx/../hooks.sidl
+hooks_Basics_Impl.hxx: sidl_cxx.hxx
+hooks_Basics_Impl.hxx: hooks_Basics_IOR.h
+hooks_Basics_Impl.hxx: hooks_Basics.hxx
+hooks_Basics_Impl.hxx: sidl_BaseClass.hxx
+hooks_Basics_Impl.hxx: sidl_BaseInterface.hxx
+hooks_Basics_Impl.hxx: sidl_ClassInfo.hxx
+
+
+# IMPLSRCS dependencies.
+hooks_Basics_Impl.cxx:                                                        \
+  /home/epperly/current/babel_fix_hooks/regression/hooks/libCxx/../hooks.sidl
+hooks_Basics_Impl.cxx: hooks_Basics_Impl.hxx
+hooks_Basics_Impl.cxx: sidl_BaseInterface.hxx
+hooks_Basics_Impl.cxx: sidl_ClassInfo.hxx
+hooks_Basics_Impl.cxx: sidl_NotImplementedException.hxx
+
+
+# IORHDRS dependencies.
+hooks_Basics_IOR.h:                                                           \
+  /home/epperly/current/babel_fix_hooks/regression/hooks/libCxx/../hooks.sidl
+hooks_Basics_IOR.h: sidl_header.h
+hooks_Basics_IOR.h: sidl_BaseClass_IOR.h
+
+hooks_IOR.h:                                                                  \
+  /home/epperly/current/babel_fix_hooks/regression/hooks/libCxx/../hooks.sidl
+hooks_IOR.h: hooks_Basics_IOR.h
+
+
+# IORSRCS dependencies.
+hooks_Basics_IOR.c:                                                           \
+  /home/epperly/current/babel_fix_hooks/regression/hooks/libCxx/../hooks.sidl
+hooks_Basics_IOR.c: hooks_Basics_IOR.h
+hooks_Basics_IOR.c: sidl_BaseClass_Impl.h
+hooks_Basics_IOR.c: sidl_BaseClass.h
+hooks_Basics_IOR.c: sidl_ClassInfo.h
+hooks_Basics_IOR.c: sidl_ClassInfoI.h
+
+
+# SKELSRCS dependencies.
+hooks_Basics_Skel.cxx:                                                        \
+  /home/epperly/current/babel_fix_hooks/regression/hooks/libCxx/../hooks.sidl
+hooks_Basics_Skel.cxx: hooks_Basics_Impl.hxx
+hooks_Basics_Skel.cxx: hooks_Basics_IOR.h
+hooks_Basics_Skel.cxx: sidl_BaseException.hxx
+hooks_Basics_Skel.cxx: sidl_LangSpecificException.hxx
+hooks_Basics_Skel.cxx: sidl_BaseInterface.hxx
+hooks_Basics_Skel.cxx: sidl_ClassInfo.hxx
+hooks_Basics_Skel.cxx: sidl_String.h
+
+
+# STUBHDRS dependencies.
+hooks.hxx:                                                                    \
+  /home/epperly/current/babel_fix_hooks/regression/hooks/libCxx/../hooks.sidl
+hooks.hxx: hooks_Basics.hxx
+
+hooks_Basics.hxx:                                                             \
+  /home/epperly/current/babel_fix_hooks/regression/hooks/libCxx/../hooks.sidl
+hooks_Basics.hxx: sidl_cxx.hxx
+hooks_Basics.hxx: sidl_cxx.hxx
+hooks_Basics.hxx: hooks_Basics_IOR.h
+hooks_Basics.hxx: sidl_BaseClass.hxx
+
+
+# STUBSRCS dependencies.
+hooks_Basics.cxx:                                                             \
+  /home/epperly/current/babel_fix_hooks/regression/hooks/libCxx/../hooks.sidl
+hooks_Basics.cxx: hooks_Basics.hxx
+hooks_Basics.cxx: sidl_BaseInterface.hxx
+hooks_Basics.cxx: sidl_BaseClass.hxx
+hooks_Basics.cxx: sidl_BaseException.hxx
+hooks_Basics.cxx: sidl_LangSpecificException.hxx
+hooks_Basics.cxx: sidl_RuntimeException.hxx
+hooks_Basics.cxx: sidl_rmi_Call.hxx
+hooks_Basics.cxx: sidl_rmi_Return.hxx
+hooks_Basics.cxx: sidl_rmi_Ticket.hxx
+hooks_Basics.cxx: sidl_rmi_InstanceHandle.hxx
+hooks_Basics.cxx: sidl_String.h
+hooks_Basics.cxx: sidl_rmi_ConnectRegistry.h
+hooks_Basics.cxx: babel_config.h
+hooks_Basics.cxx: sidl_Loader.hxx
+hooks_Basics.cxx: sidl_DLL.hxx
+hooks_Basics.cxx: sidl_BaseInterface.hxx
+hooks_Basics.cxx: sidl_ClassInfo.hxx
+hooks_Basics.cxx: sidl_BaseClass.h
+hooks_Basics.cxx: sidl_ClassInfo.h
+hooks_Basics.cxx: sidl_rmi_ProtocolFactory.h
+hooks_Basics.cxx: sidl_rmi_InstanceRegistry.h
+hooks_Basics.cxx: sidl_rmi_InstanceHandle.h
+hooks_Basics.cxx: sidl_rmi_Invocation.h
+hooks_Basics.cxx: sidl_rmi_Response.h
+hooks_Basics.cxx: sidl_rmi_ServerRegistry.h
+hooks_Basics.cxx: sidl_rmi_ConnectRegistry.h
+hooks_Basics.cxx: sidl_io_Serializable.h
+
+

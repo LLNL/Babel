@@ -1,0 +1,183 @@
+#!/usr/local/bin/python
+#
+# File:        testExceptions
+# Copyright:   (c) 2001 Lawrence Livermore National Security, LLC
+# Revision:    @(#) $Revision: 7451 $
+# Date:        $Date: 2012-04-19 09:33:07 -0700 (Thu, 19 Apr 2012) $
+# Description: Exercise Exceptions
+#
+# Try to exercise everything possible in Python.
+
+import sidlPyArrays
+import Exceptions.Fib
+import Exceptions.FibException
+import Exceptions.NegativeValueException
+import Exceptions.TooDeepException
+import Exceptions.TooBigException
+import sidl.BaseClass
+import sys
+from synch.ResultType import *
+from synch import RegOut
+if sidlPyArrays.type == "numpy":
+ from numpy import zeros, int32
+else:
+ import Numeric
+ int32 = Numeric.Int32
+ zeros = Numeric.zeros
+
+#basic RMI support
+remoteURL = ''
+
+def withRMI():
+  return remoteURL != ''
+
+def makeObject():
+  if withRMI():
+    return Exceptions.Fib.Fib(url=remoteURL)
+  else:
+    return Exceptions.Fib.Fib()
+
+def makeBaseClassObject():
+  if withRMI():
+    return sidl.BaseClass.BaseClass(url=remoteURL)
+  else:
+    return sidl.BaseClass.BaseClass()
+
+class TestCounter:
+
+  def __init__(self, numparts = -1):
+    self.partno = 0
+    self.tracker = RegOut.RegOut()
+    self.tracker.setExpectations(numparts)
+
+  def describeTest(self, description):
+    self.partno = self.partno + 1
+    self.tracker.startPart(self.partno)
+    self.tracker.writeComment(description)
+
+  def fail(self):
+    self.tracker.forceFailure()
+
+  def evalTest(self, result, expected):
+    if (result):
+      if (expected):
+        self.tracker.endPart(self.partno, PASS)
+      else:
+        self.tracker.endPart(self.partno, XPASS)
+    else:
+      if (expected):
+        self.tracker.endPart(self.partno, FAIL)
+      else:
+        self.tracker.endPart(self.partno, XFAIL)
+        
+  def finish(self):
+    self.tracker.close()
+
+def testLeak(fib, counter):
+  counter.describeTest("test for memory leaks and ignored return values")
+  try:
+    (result, a2, a3, r2, c2, c3, s2, s3, o2, o3) = fib.noLeak(
+      zeros((3, 3), int32), zeros((4, 4), int32),
+      zeros((3, 3), int32), zeros((3, 3), int32),
+      zeros((3,), int32), zeros((4, ), int32),
+      "foo", "foo", makeBaseClassObject(), makeBaseClassObject())
+    counter.evalTest(0, 1)
+  except sidl.SIDLException._Exception:
+    counter.evalTest(1, 1)
+  except:
+    (etype, eobj, etb) = sys.exc_info()
+    print etype, eobj
+    counter.evalTest(0, 1)
+
+def driver(counter):
+  counter.describeTest("fib = makeObject()")
+  fib = makeObject();
+  counter.evalTest(fib != None, 1)
+  
+  counter.describeTest("fib.getFib(10, 25, 200, 0) -> no exception expected")
+  try:
+    fib.getFib(10, 25, 200, 0)
+  except:
+    counter.evalTest(0, 1)
+  else:
+    counter.evalTest(1, 1)
+  
+  counter.describeTest(
+  "fib.getFib(-1, 10, 10, 0) -> NegativeValueException expected")
+  try:
+    fib.getFib(-1, 10, 10, 0)
+  except Exceptions.NegativeValueException._Exception:
+    (etype, eobj, etb) = sys.exc_info()
+    if (eobj.exception.isType("Exceptions.NegativeValueException")):
+      counter.evalTest(1, 1)
+    else:
+      counter.evalTest(0, 1)
+  except:
+    print "Wrong exception thrown:", sys.exc_info()
+    counter.evalTest(0, 1)
+  else:
+    print "Unexpected result: No exception thrown\n"
+    counter.evalTest(0, 1)
+
+  counter.describeTest("fib.getFib(10, 1, 1000, 0) -> TooDeepException")
+  try:
+    fib.getFib(10, 1, 1000, 0)
+  except Exceptions.FibException._Exception:
+    (etype, eobj, etb) = sys.exc_info()
+    if (eobj.exception.isType("Exceptions.TooDeepException")):
+      counter.evalTest(1, 1)
+    else:
+      counter.evalTest(0, 1)
+  except:
+    print "Wrong exception thrown:", sys.exc_info()
+    counter.evalTest(0, 1)
+  else:
+    print "Unexpected result: No exception thrown\n"
+    counter.evalTest(0, 1)
+
+  counter.describeTest("fib.getFib(10, 1000, 1, 0) -> TooBigException")
+  try:
+    fib.getFib(10, 1000, 1, 0)
+  except Exceptions.FibException._Exception:
+    (etype, eobj, etb) = sys.exc_info()
+    if (eobj.exception.isType("Exceptions.TooBigException")):
+      counter.evalTest(1, 1)
+    else:
+      counter.evalTest(0, 1)
+  except:
+    print sys.exc_info()
+    counter.evalTest(0, 1)
+  else:
+    print "Unexpected result: No exception thrown\n"
+    counter.evalTest(0, 1)
+  testLeak(fib, counter)
+
+if __name__ == '__main__':
+  import sys
+  counter = TestCounter(6)
+  try:
+    # Parse the command line  to see if we are running RMI tests
+    for arg in sys.argv:
+      if arg.startswith("--url="):
+        remoteURL = arg[6:]
+        remoteURL = counter.tracker.replaceMagicVars(remoteURL, '')
+
+    if withRMI():
+      print 'using remote URL ' + remoteURL
+      
+    # Setup RMI if necessary
+    if withRMI():
+      import sidl.rmi.ProtocolFactory
+      print 'registering RMI protocol simhandle'
+      if not sidl.rmi.ProtocolFactory.addProtocol('simhandle', 'sidlx.rmi.SimHandle'):
+        print('sidl.rmi.ProtocolFactor.addProtocol() failed')
+        sys.exit(2);
+      
+    driver(counter)
+  except:
+    (type, value, trace) = sys.exc_info()
+    counter.fail()
+    import traceback
+    traceback.print_exception(type, value, trace)
+  counter.finish()
+0
