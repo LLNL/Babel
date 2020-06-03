@@ -1,0 +1,155 @@
+Friday, 6 January 2012                       <!-- -*- markdown -*- -->
+
+Announcement
+============
+  The members of the Components Team at Lawrence Livermore
+National Laboratory <components@llnl.gov> are pleased to
+announce Babel 2.0.0, the next major step in Babel research.
+
+What's New
+----------
+  The following features have been added, or completed, in
+this release:
+
+* Struct support is now tested and complete for all supported 
+  languages, including RMI.
+  
+* Mutex-free reference counting for GCC 4.1.2 and higher 
+  on any platform
+
+* Experimental fastcall support. (See --fast-call option)
+
+* F03: Rewrote the Fortran 2003/2008 binding
+  + High performance, comparable to C/C++
+  + Stubs and Skeletons are now implemented in Fortran 2003
+    where possible.
+  + Fully compatible to ISO standard
+  + No longer depending on libchasmlite for r-arrays
+  + Names can be up to 64 chars
+  + Requires GCC >= 4.6.1 (we are using lots of advanced features,
+    including type extensions and C function pointers.
+  + ./configure will automatically detect whether all necessary
+    features are supported buy the specified Fortran compiler.
+  + Please see BUGS for a complete list of supported compilers.
+
+* Python: Added splicer block to inherit from other python classes.
+
+* More testcases.
+
+* Babel now comes with a babel.pc (PKG_CONFIG) file for easier
+  detection by autotools-generated `configure' and friends.
+
+* Many bug fixes, including
+  + Extensive build/runtime/RMI testing with GCC, Intel, Pathscale 
+    and PGI compilers
+  + Improved Python global interpreter lock handling
+
+* Babel now comes with a man page: babel(1)
+
+* Babel 2.0 now includes an experimental version of BRAID, which is an
+  ongoing effort to support PGAS languages such as Chapel, UPC, and X10.
+
+(Also refer to the CHANGES file for more details.)
+
+What Babel Is
+-------------
+  Babel is designed to address problems of language 
+interoperability, particularly in scientific/engineering
+applications.  At the simplest level, Babel generates glue 
+code so that libraries written in one programming language 
+are callable from other programming languages.  Babel
+generates this glue code from an interface description
+written in SIDL, our Scientific Interface Definition 
+Language.  Babel supports full Object-Oriented features
+and exception handling even in non-OO languages such as C
+or FORTRAN 77.
+
+  Babel also addresses platform interoperability through
+its support for Remote Method Invocation (RMI), an
+object-oriented form of remote procedure calls (RPC).
+Babel RMI gives programmers the ability to write
+distributed programs with minimal change to their 
+existing source.
+
+Supported Languages
+-------------------
+  Babel currently supports calling libraries written in C, C++,
+FORTRAN 77, Fortran 90/95, Fortran 2003/2008, Java, or Python from
+drivers written in either C, C++, FORTRAN 77, Fortran 90/95, 
+Fortran 2003/2008, Python or Java.  (Python support also requires the
+Numerical Python set of extensions at http://numpy.sourceforge.net/ ).
+
+  Babel is 100% compatible with BRAID, a related project, which will
+implement support for Chapel, X10 and UPC.  (see
+http://compose-hpc.sourceforge.net/ ).  An experimental version
+supporting Chapel clients is included in the Babel distribution. The
+relevant files including documentation are located in
+
+    contrib/braid/README
+    contrib/braid/braid-0.2.2.tar.gz
+	
+# FAQ: Fortran 2003 finally got native C bindings, why still use Babel? #
+By using Babel you get several advanced features, such as
+object-oriented programming and virtual method calls. You can also
+save time by letting Babel sort out the right type declarations for
+you multi-dimensional arrays. See README for a more complete list of
+features to decide whether Babel is for you.
+
+We also spent a lot of time to figure out the subset of Fortran 2003
+that works on **all** platforms/compilers. It makes it also possible
+to mix Fortran and other languages like Python, Java, or Chapel. Babel
+can even generate the appropriate Makefile for your platform to link
+the two together.
+
+Supported Platforms
+-------------------
+* Linux 
+* IBM BG/L
+* IBM BG/P
+* Jaguar
+* Solaris
+* AIX (except Python server)
+* Mac OS X (not fully supported)
+
+Caveat
+------
+  Babel is research in progress.  This is a release candidate for a
+production release, but it is still supported by a research effort.
+Babel has been used on numerous projects now. Documentation for
+the newest features may not be complete. We suggest checking our
+WWW site for our recent presentations about new features.
+
+Availability
+------------
+  The software is available for free download at
+        https://www.llnl.gov/CASC/components/
+
+LICENSE
+-------
+Babel is released under the GNU Lesser General Public (LGPL) license,
+which is an OSI Certified open source license. It can be freely
+copied, modified, and distributed under the terms of this license.
+
+
+User Resources
+--------------
+  Two email lists have been set up for the Babel community:
+
+        babel-users@llnl.gov    (unmoderated discussions)
+        babel-announce@llnl.gov (announcements only)
+
+  To subscribe to one or both of these email lists, send
+email to <majordomo@lists.llnl.gov> with the text
+"subscribe babel-announce", "subscribe babel-users",
+or both (one per line).  
+
+
+Contacting the Authors
+----------------------
+  If you have any questions or concerns with the installation 
+process or usage of Babel, feel free to contact the project team 
+at components@llnl.gov.  To report bugs or suggest feature 
+enhancements, please submit a report in the bug database at 
+https://www.cca-forum.org/bugs/babel/, or send email to 
+babel-bugs@cca-forum.org.
+

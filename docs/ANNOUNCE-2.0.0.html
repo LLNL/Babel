@@ -1,0 +1,193 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+<title>ANNOUNCE</title>
+
+</head>
+
+<body>
+
+<p>Friday, 6 January 2012                       <!-- -*- markdown -*- --></p>
+
+<h1>Announcement</h1>
+
+<p>The members of the Components Team at Lawrence Livermore
+National Laboratory <a href="&#109;&#x61;&#105;&#x6C;&#116;o:&#99;o&#109;&#112;&#111;&#110;&#x65;&#110;t&#115;&#64;&#108;&#108;&#110;&#108;&#x2E;&#x67;&#x6F;&#x76;">&#99;o&#109;&#112;&#111;&#110;&#x65;&#110;t&#115;&#64;&#108;&#108;&#110;&#108;&#x2E;&#x67;&#x6F;&#x76;</a> are pleased to
+announce Babel 2.0.0, the next major step in Babel research.</p>
+
+<h2>What's New</h2>
+
+<p>The following features have been added, or completed, in
+this release:</p>
+
+<ul>
+<li><p>Struct support is now tested and complete for all supported 
+languages, including RMI.</p></li>
+<li><p>Mutex-free reference counting for GCC 4.1.2 and higher 
+on any platform</p></li>
+<li><p>Experimental fastcall support. (See --fast-call option)</p></li>
+<li><p>F03: Rewrote the Fortran 2003/2008 binding</p>
+
+<ul>
+<li>High performance, comparable to C/C++</li>
+<li>Stubs and Skeletons are now implemented in Fortran 2003
+where possible.</li>
+<li>Fully compatible to ISO standard</li>
+<li>No longer depending on libchasmlite for r-arrays</li>
+<li>Names can be up to 64 chars</li>
+<li>Requires GCC >= 4.6.1 (we are using lots of advanced features,
+including type extensions and C function pointers.</li>
+<li>./configure will automatically detect whether all necessary
+features are supported buy the specified Fortran compiler.</li>
+<li>Please see BUGS for a complete list of supported compilers.</li>
+</ul></li>
+<li><p>Python: Added splicer block to inherit from other python classes.</p></li>
+<li><p>More testcases.</p></li>
+<li><p>Babel now comes with a babel.pc (PKG_CONFIG) file for easier
+detection by autotools-generated `configure' and friends.</p></li>
+<li><p>Many bug fixes, including</p>
+
+<ul>
+<li>Extensive build/runtime/RMI testing with GCC, Intel, Pathscale 
+and PGI compilers</li>
+<li>Improved Python global interpreter lock handling</li>
+</ul></li>
+<li><p>Babel now comes with a man page: babel(1)</p></li>
+<li><p>Babel 2.0 now includes an experimental version of BRAID, which is an
+ongoing effort to support PGAS languages such as Chapel, UPC, and X10.</p></li>
+</ul>
+
+<p>(Also refer to the CHANGES file for more details.)</p>
+
+<h2>What Babel Is</h2>
+
+<p>Babel is designed to address problems of language 
+interoperability, particularly in scientific/engineering
+applications.  At the simplest level, Babel generates glue 
+code so that libraries written in one programming language 
+are callable from other programming languages.  Babel
+generates this glue code from an interface description
+written in SIDL, our Scientific Interface Definition 
+Language.  Babel supports full Object-Oriented features
+and exception handling even in non-OO languages such as C
+or FORTRAN 77.</p>
+
+<p>Babel also addresses platform interoperability through
+its support for Remote Method Invocation (RMI), an
+object-oriented form of remote procedure calls (RPC).
+Babel RMI gives programmers the ability to write
+distributed programs with minimal change to their 
+existing source.</p>
+
+<h2>Supported Languages</h2>
+
+<p>Babel currently supports calling libraries written in C, C++,
+FORTRAN 77, Fortran 90/95, Fortran 2003/2008, Java, or Python from
+drivers written in either C, C++, FORTRAN 77, Fortran 90/95, 
+Fortran 2003/2008, Python or Java.  (Python support also requires the
+Numerical Python set of extensions at http://numpy.sourceforge.net/ ).</p>
+
+<p>Babel is 100% compatible with BRAID, a related project, which will
+implement support for Chapel, X10 and UPC.  (see
+http://compose-hpc.sourceforge.net/ ).  An experimental version
+supporting Chapel clients is included in the Babel distribution. The
+relevant files including documentation are located in</p>
+
+<pre><code>contrib/braid/README
+contrib/braid/braid-0.2.2.tar.gz
+</code></pre>
+
+<h1>FAQ: Fortran 2003 finally got native C bindings, why still use Babel?</h1>
+
+<p>By using Babel you get several advanced features, such as
+object-oriented programming and virtual method calls. You can also
+save time by letting Babel sort out the right type declarations for
+you multi-dimensional arrays. See README for a more complete list of
+features to decide whether Babel is for you.</p>
+
+<p>We also spent a lot of time to figure out the subset of Fortran 2003
+that works on <strong>all</strong> platforms/compilers. It makes it also possible
+to mix Fortran and other languages like Python, Java, or Chapel. Babel
+can even generate the appropriate Makefile for your platform to link
+the two together.</p>
+
+<h2>Supported Platforms</h2>
+
+<ul>
+<li>Linux </li>
+<li>IBM BG/L</li>
+<li>IBM BG/P</li>
+<li>Jaguar</li>
+<li>Solaris</li>
+<li>AIX (except Python server)</li>
+<li>Mac OS X (not fully supported)</li>
+</ul>
+
+<h2>Caveat</h2>
+
+<p>Babel is research in progress.  This is a release candidate for a
+production release, but it is still supported by a research effort.
+Babel has been used on numerous projects now. Documentation for
+the newest features may not be complete. We suggest checking our
+WWW site for our recent presentations about new features.</p>
+
+<h2>Availability</h2>
+
+<p>The software is available for free download at
+        https://www.llnl.gov/CASC/components/</p>
+
+<h2>LICENSE</h2>
+
+<p>Babel is released under the GNU Lesser General Public (LGPL) license,
+which is an OSI Certified open source license. It can be freely
+copied, modified, and distributed under the terms of this license.</p>
+
+<h2>User Resources</h2>
+
+<p>Two email lists have been set up for the Babel community:</p>
+
+<pre><code>    babel-users@llnl.gov    (unmoderated discussions)
+    babel-announce@llnl.gov (announcements only)
+</code></pre>
+
+<p>To subscribe to one or both of these email lists, send
+email to <a href="&#x6D;&#x61;&#105;&#108;&#116;&#111;:&#109;&#97;&#x6A;&#x6F;&#114;&#100;o&#109;&#111;&#64;&#108;&#105;&#x73;&#116;&#x73;&#x2E;&#108;&#x6C;&#x6E;&#108;&#46;&#x67;&#111;&#x76;">&#109;&#97;&#x6A;&#x6F;&#114;&#100;o&#109;&#111;&#64;&#108;&#105;&#x73;&#116;&#x73;&#x2E;&#108;&#x6C;&#x6E;&#108;&#46;&#x67;&#111;&#x76;</a> with the text
+"subscribe babel-announce", "subscribe babel-users",
+or both (one per line).  </p>
+
+<h2>Contacting the Authors</h2>
+
+<p>If you have any questions or concerns with the installation 
+process or usage of Babel, feel free to contact the project team 
+at components@llnl.gov.  To report bugs or suggest feature 
+enhancements, please submit a report in the bug database at 
+https://www.cca-forum.org/bugs/babel/, or send email to 
+babel-bugs@cca-forum.org.</p>
+
+
+
+	<script type="text/javascript" src="../../../project/js/piwik.js"></script>
+	<script type="text/javascript">
+		try {
+			var piwikTracker = Piwik.getTracker("https://analytics.llnl.gov/piwik.php", 148);
+			piwikTracker.trackPageView();
+			piwikTracker.enableLinkTracking();
+		} catch(err) {}
+	</script>
+	<noscript><p><img src="https://analytics.llnl.gov/piwik.php?idsite=148" style="border:0" alt="" /></p></noscript>
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-40890147-1', 'auto');
+  ga('send', 'pageview');
+
+</script>
+</body>
+</html>

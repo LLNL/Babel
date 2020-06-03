@@ -1,0 +1,2223 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>Babel Homepage</title>
+  <link href="resource/tabs.css" rel="stylesheet" type="text/css" />
+</head>
+<body>
+<div><img alt="Babel Logo" src="graphics/logos/BabelLogo-Mono-Dark-250.png" /></div>
+<h2>High-Performance Language Interoperability</h2>
+<ol id="toc">
+    <li><a href="index.html#home"><span>Home</span></a></li>
+    <li><a href="index.html#doc"><span>Documentation</span></a></li>
+    <li><a href="index.html#tutorial"><span>Getting Started</span></a></li>
+    <li><a href="index.html#faq"><span>F.A.Q.</span></a></li>
+    <li><a href="index.html#download"><span>Download</span></a></li>
+    <li><a href="index.html#resources"><span>Resources</span></a></li>
+    <li><a href="index.html#team"><span>Team</span></a></li>
+    <li><a href="index.html#stories"><span>Success Stories</span></a></li>
+</ol>
+
+<!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  -->
+<!-- "Page" Home                                                      -->
+<!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  -->
+<div class="content" id="home">
+    <img alt="Supported Languages" src="graphics/languages.png"
+         style="float:right" />
+    <h2>About Babel</h2>
+    <p>
+      Babel is a high-performance language interoperability tool. The
+      project is mainly developed at the
+      <a href="http://computation.llnl.gov/casc">Center for Applied
+      Scientific Computing (CASC)</a>
+      at <a href="http://www.llnl.gov">Lawrence Livermore National
+      Laboratory (LLNL)</a>. Babel started as an internal Lab Directed
+      Research and Development (LDRD) project in 2000 and has been
+      under constant development since then. It is now funded mainly
+      under the U.S. Department of Energy (DOE) Office of
+      Science's <a href="http://www.er.doe.gov/scidac">SciDAC
+      program</a>.
+    </p>
+    
+    <p> 
+      Babel currently fully supports C, C++, FORTRAN&nbsp;77,
+      Fortran&nbsp;90/95, Fortran&nbsp;2003/2008, Python, and
+      Java. It won a prestigious R&amp;D&nbsp;100 award in 2006 for "<i>The
+      world's most rapid communication among many programming
+      languages in a single application.</i>". 
+    </p>
+
+    <p>
+      Our tool is based on the <b>Scientific Interface Description
+      Language (SIDL)</b>. SIDL is tailored to the needs of the
+      scientific community and features support for complex numbers,
+      structs, and dynamic multidimensional arrays. Babel is a
+      compiler that generates glue code from SIDL interface
+      descriptions. SIDL provides a modern object oriented programming
+      model, even on top of traditional procedural languages. This
+      includes automatic reference counting and resource
+      (de)allocation. Code written in one language can be called from
+      any of the supported languages. 
+    </p>
+
+    <p>
+      Babel focuses on high-performance language interoperability
+      within a single address space. Full support for <b>Remote Method
+      Invocation (RMI)</b> allows for the development of parallel distributed
+      applications.
+    </p>
+    
+    <p>
+      We also provide tools to automatically generate documentation
+      from SIDL descriptions. An
+      equivalent <a href="http://www.w3c.org/XML">XML</a>
+      representation eases development of third-party tools. 
+    </p>
+    
+    <h3>Licensing</h3>
+    <p>
+      Babel is released under
+      the <a href="http://www.gnu.org/licenses/lgpl.html">GNU Lesser
+      General Public (LGPL)</a> license, which is
+      an <a href="http://www.opensource.org/docs/definition.php">OSI
+      Certified</a> open source license. It can be freely copied,
+      modified, and distributed under the terms of this license. 
+    </p>
+
+    <h3>Related Projects</h3>
+    <p>
+      Babel 2.0 also includes an experimental version
+      of <a href="http://compose-hpc.sf.net/">Braid</a>, which is an
+      ongoing effort to support PGAS languages such as
+      <a href="http://chapel.cray.com/">Chapel</a>, 
+      <a href="http://upc.lbl.gov/">UPC</a>, and
+      <a href="http://x10-lang.org/">X10</a>.  See
+      the <a href="docs/BRAID-README-0.2.2.html">release notes</a> for
+      more information on the status of Braid.
+    </p>
+
+    <a href="http://www.rdmag.com">
+      <img alt="R&amp;D 100" src="graphics/rd100.jpg" class="centered"
+      style="border:0px;" /> 
+    </a>
+</div>
+
+<!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  -->
+<!-- "Page" Documentation                                             -->
+<!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  -->
+<div class="content" id="doc">
+  <h2>Manuals</h2>
+  <p>
+    All manuals are evolving documents. Please submit errors to the
+    Babel team via <a href="mailto:components@llnl.gov">e-mail</a> or
+    our <a href="https://www.cca-forum.org/bugs/babel/">bugtracking system</a>.
+    
+    <ul>
+      <li>
+        <p>
+          <span class="bold"><strong>Babel User's Guide</strong></span>
+	  (January 2012)
+          [<a  href="docs/users_guide.ps">PS</a>]
+          [<a  href="docs/users_guide.pdf">PDF</a>]
+          [<a  href="docs/users_guide/index.html">HTML (single page)</a>]
+          [<a  href="docs/users_guide/index-multipage.html">HTML (multiple pages)</a>]
+          [<a  href="docs/users_guide.tar.gz">HTML.tar.gz</a>]
+        </p>
+      </li>
+      
+      <li>
+        <p>
+          <span class="bold"><strong>How to Implement a Protocol for
+          BabelRMI</strong></span> (30 March 2006) 
+          [<a  href="docs/BabelRMIProtocol-20060330.pdf">PDF</a>]
+        </p>
+      </li>
+
+      <li>
+        <p>
+          <span class="bold"><strong>Understanding the CCA
+          Specification Using Decaf</strong></span> (30 April 2003) 
+          [<a  href="docs/decaf.ps">PS</a>]
+          [<a  href="docs/decaf.pdf">PDF</a>]
+        </p>
+      </li>
+    </ul>
+  </p>
+  
+  <h2>Papers</h2>
+  <p>
+    <ul>
+      <li>
+        <p>
+          <a name="pgas11" id="pgas11"></a> 
+	  Adrian Prantl, Thomas G.&thinsp;W. Epperly, Shams Imam,
+	  Vivek Sarkar:
+	  <span class="bold"><strong>Interfacing Chapel with
+	      Traditional HPC Programming Languages
+	    
+	    </strong></span>, 2011, <em>PGAS 2011: Fifth Conference on
+	    Partitioned Global Address Space Programming Models,
+	    October 2011</em>, LLNL-CONF-491213, LLNL-PRES-505696.
+	  [Paper: <a href="docs/2011-pgas.pdf">PDF</a>]
+	  [Slides: <a href="docs/2011-pgas-slides.pdf">PDF</a>]
+        </p>
+      </li>
+      <li>
+        <p>
+          <a name="summary11" id="summary11"></a> 
+	  Thomas G.&thinsp;W. Epperly, Gary Kumfert, Tamara Dahlgren,
+	  Dietmar Ebner, Jim Leek, Adrian Prantl, Scott Kohn,
+	  <span class="bold"><strong>High-performance language
+	    interoperability for scientific computing through
+	    Babel</strong></span>, 2011, <em>International Journal of
+	    High-performance Computing Applications (IJHPCA)</em>,
+            LLNL-JRNL-465223,
+	    DOI: <a href="http://dx.doi.org/10.1177/1094342011414036">
+	    10.1177/1094342011414036</a>. [DRAFT: <a href=
+	    "docs/2011-ijhpca-draft.pdf">PDF</a>]
+        </p>
+      </li>
+      <li>
+        <p>
+          <a name="grid10" id="grid10"></a> 
+	  Dietmar Ebner, Thomas G.&thinsp;W. Epperly,
+	  <span class="bold"><strong>Fast native function calls for
+               the Babel language interoperability
+               framework</strong></span>, 2010, 
+	       2010 Workshop on Component-Based High Performance
+               Computing (CBHPC 2010)
+               <em>Proceedings of the 2010 11th IEEE/ACM International Conference on Grid
+               Computing, Brussels, Belgium, October 25-29, 2010</em>,
+               DOI: <a href="http://dx.doi.org/10.1109/GRID.2010.5698006">
+               10.1109/GRID.2010.5698006</a>, LLNL-CONF-440073. [<a href=
+               "docs/2010-grid.pdf">PDF</a>] 
+        </p>
+      </li>
+      <li>
+        <p>
+          <a name="scidac06" id="scidac06"></a> Gary Kumfert, David
+          E. Bernholdt, Thomas Epperly, James Kohl, Lois Curfman
+          McInnes, Steven Parker, and Jaideep Ray, <span class=
+          "bold"><strong>How the Common Component Architecture
+          Advances Computational Science</strong></span> Proceedings
+          of Scientific Discovery through Advanced Computing
+          (<a  href=
+          "http://www.scidac.org/Conference2006">SciDAC
+          2006</a>), June 2006, in <span class=
+          "emphasis"><em>J. Phys.: Conf. Series.</em></span> (also
+          LLNL Tech Report <a  href=
+          "docs/20060628-scidac-cca-paper.pdf" target=
+          "_top">UCRL-CONF-222279</a>)
+        </p>
+      </li>
+      <li>
+        <p>
+          <a name="acts04" id="acts04"></a>Benjamin A. Allan, Robert
+          Armstrong, David E. Bernholdt, Felipe Bertrand, Kenneth
+          Chiu, Tamara L. Dahlgren, Kostadin Damevski, Wael R.
+          Elwasif, Thomas G. W. Epperly, Madhusudhan Govindaraju,
+          Daniel S. Katz, James A. Kohl, Manoj Krishnan, Gary
+          Kumfert, J. Walter Larson, Sophia Lefantzi, Michael J.
+          Lewis, Allen D. Malony, Lois C. Mclnnes, Jarek Nieplocha,
+          Boyana Norris, Steven G. Parker, Jaideep Ray, Sameer
+          Shende, Theresa L. Windus, Shujia Zhou. <span class=
+          "bold"><strong>A Component Architecture for
+          High-Performance Scientific Computing.</strong></span>
+          <span class="emphasis"><em>Int. J. High Perform. Comput.
+          Appl.</em></span> 20(2). May 2006, pp. 163-202.
+        </p>
+      </li>
+      <li>
+        <p>
+          <a name="concurrency" id="concurrency"></a> Rob Armstrong,
+          Gary Kumfert, Lois Curfman McInnes, Steven Parker, Ben
+          Allan, Matt Sottile, Thomas Epperly, Tamara Dahlgren.
+          <span class="bold"><strong>The CCA component model for
+          high-performance scientific computing.</strong></span>
+          <span class="emphasis"><em>Concurr. Comput. : Pract.
+          Exper.</em></span> 18(2). Feb. 2006, pp. 215-229.
+        </p>
+      </li>
+      <li>
+        <p>
+          <a name="scidac05" id="scidac05"></a> Yuri Alexeev,
+          Benjamin A. Allan, Robert C. Armstrong, David E. Bernholdt,
+          Tamara L. Dahlgren, Dennis Gannon, Curtis L. Janssen,
+          Joseph P. Kenny, Manojkumar Krishnan, James A. Kohl, Gary
+          Kumfert, Lois Curfman McInnes, Jarek Nieplocha, Steven G.
+          Parker, Craig Rasmussen, and Theresa L. Windus,
+          <span class="bold"><strong>Component-Based Software for
+          High-Performance Scientific Computing</strong></span>,
+          SciDAC 2005, Scientific Discovery through Advanced
+          Computing (SciDAC 2005), June 2005, San Francisco, CA, USA,
+          Anthony Mezzacappa, et al., Eds., <span class=
+          "emphasis"><em>J. Phys.: Conf. Series</em></span>, 16, pp.
+          536-540.
+        </p>
+      </li>
+      <li>
+        <p>
+          <a name="meterological04" id="meterological04"></a> J.
+          Walter Larson, Boyana Norris, Everest T. Ong, David E.
+          Bernholdt, John B. Drake, Wael R. Elwasif, Michael Ham,
+          Craig E. Rasmussen, Gary Kumfert, Daniel S. Katz, Shujia
+          Zhou, Cecelia DeLuca, and Nancy s. Collins, <span class=
+          "bold"><strong>Components, The Common Component
+          Architecture, and the Climate/Weather/Ocean
+          Community</strong></span> <a  href=
+          "http://www.ametsoc.org/meet/84annual">84th
+          American Meterological Society Annual Meeting</a>, Seattle,
+          Washington, 2004.
+        </p>
+      </li>
+      <li>
+        <p>
+          <a name="pohll02" id="pohll02"></a>David E. Bernholdt, Wael
+          R. Elwasif, James A. Kohl, and Thomas G. W. Epperly,
+          <span class="bold"><strong>A Component Architecture for
+          High-Performance Computing</strong></span>, in Proceedings
+          of the <a  href=
+          "http://www.ece.lsu.edu/jxr/ics02workshop.html" target=
+          "_top">Workshop on Performance Optimization via High-Level
+          Languages and Libraries (POHLL-02)</a>, New York, NY. 22
+          June 2002. [<a  href="docs/2002-pohll.pdf"
+          >PDF</a>]
+        </p>
+      </li>
+      <li>
+        <p>
+          <a name="2001-siam-pp"></a> Scott Kohn, Gary Kumfert, Jeff
+          Painter, and Cal Ribbens. <span class=
+          "bold"><strong>Divorcing Language Dependencies from a
+          Scientific Software Library.</strong></span> <a class=
+          "ulink" href="http://www.siam.org/meetings/pp01" target=
+          "_top">10th SIAM Conference on Parallel Processing</a>,
+          Portsmouth, VA, March 12-14, 2001. LLNL document
+          UCRL-JC-140349. [<a  href=
+          "docs/2001-siam-pp.ps">PS</a>] [<a class=
+          "ulink" href="docs/2001-siam-pp.pdf">PDF</a>]
+        </p>
+      </li>
+      <li>
+        <p>
+          Tom Epperly, Scott Kohn, and Gary Kumfert. <span class=
+          "bold"><strong>Component Technology for High-Performance
+          Scientific Simulation Software.</strong></span> <a class=
+          "ulink" href=
+          "http://www.nsc.liu.se/%7Eboein/ifip/woco8.html" target=
+          "_top">Working Conference on "Software Architectures for
+          Scientific Computing Applications"</a>, International
+          Federation for Information Processing, Ottowa, Ontario,
+          Canada, October 2-4, 2000. LLNL document UCRL-JC-140549.
+          [<a  href="docs/2000-ifip-sasca.ps" target=
+          "_top">PS</a>] [<a  href=
+          "docs/2000-ifip-sasca.pdf">PDF</a>]
+        </p>
+      </li>
+      <li>
+        <p>
+          Rob Armstrong, Al Geist, Katarzyna Keahey, Scott Kohn, Lois
+          McInnes, Steve Parker, and Brent Smolinski. <span class=
+          "bold"><strong>Toward a Common Component Architecture for
+          High-Performance Scientific Computing.</strong></span>
+          <a  href=
+              "http://www.ece.arizona.edu/%7Ehpdc/hpdc8/" target=
+              "_top">8th IEEE International Symposium on High-Performance
+          Distributed Computing</a>, Redondo Beach, CA, August 3-6,
+          1999. LLNL document UCRL-JC-134475. [<a  href=
+          "docs/1999-hpdc.ps">PS</a>] [<a 
+          href="docs/1999-hpdc.pdf">PDF</a>]
+        </p>
+      </li>
+      <li>
+        <p>
+          Noah Elliott, Scott Kohn, and Brent Smolinski. <span class=
+          "bold"><strong>Language Interoperability for
+          High-Performance Parallel Scientific
+          Components.</strong></span> International Symposium on Computing in
+          Object-Oriented Parallel Environments (ISCOPE '99), San
+          Francisco, CA, September 29-October 2, 1999. LLNL document
+          UCRL-JC-134260. [<a  href=
+          "docs/1999-iscope.ps">PS</a>] [<a class=
+          "ulink" href="docs/1999-iscope.pdf">PDF</a>]
+        </p>
+      </li>
+      <li>
+        <p>
+          Andrew Cleary, Scott Kohn, Steven G. Smith, and Brent
+          Smolinski. <span class="bold"><strong>Language
+          Interoperability Mechanisms for High-Performance Scientific
+          Applications.</strong></span> <a  href=
+          "http://www.siam.org/meetings/oo98">SIAM
+          Workshop on Object-Oriented Methods for Inter-operable
+          Scientific and Engineering Computing</a>, Yorktown Heights,
+          NY, October 21-23, 1998. LLNL document UCRL-JC-131823.
+          [<a  href="docs/1998-siam-ibm.ps" target=
+          "_top">PS</a>] [<a  href=
+          "docs/1998-siam-ibm.pdf">PDF</a>]
+        </p>
+      </li>
+    </ul>
+  </p>
+
+  <h2>Other Slides</h2>
+  <h3>2009</h3>
+  <ul type="disc">
+    <li>
+      <p>Dietmar Ebner, Thomas Epperly. <strong>Multi-Language Struct
+      Support in Babel</strong> CCA Working Group Meeting, Bloomington,
+      IN, October 2009, LLNL-PRES-418054. <a href="docs/StructsOct09.pdf">[PDF]</a></p> 
+    </li>
+  </ul>
+  
+  <h3>2006</h3>
+  <ul type="disc">
+    <li>
+      <p>Gary Kumfert, David E. Bernholdt, Thomas Epperly, James Kohl,
+        Lois Curfman McInnes, Steven Parker, and Jaideep Ray, <strong>How
+          the Common Component Architecture Advances Computational
+          Science</strong> <a href=
+                              "http://www.scidac.org/Conference2006">SciDAC 2006</a>, Denver, CO,
+        June 2006, UCRL-PRES-222508. <a href=
+                      "docs/20060628-scidac-cca-slides.pdf">[PDF]</a></p>
+    </li>
+    <li>
+      <p>Gary Kumfert, James Leek, and Thomas Epperly, <strong>Babel
+          0.99.0 (aka 1.0 rc 1)</strong>, <a href=
+                                             "https://www.cca-forum.org/wiki/tiki-index.php?page=Spring+2006+Agenda">
+          CCA Working Group Meeting, Spring 2006</a>, Bloomington, Indiana,
+        April 2006 LLNL document UCRL-PRES-222291 [<a href=
+                                                      "docs/cca-060427-babel-0.99.pdf">PDF</a>]</p>
+    </li>
+    <li>
+      <p>Gary Kumfert, Tamara Dahlgren, Thomas Epperly and James Leek,
+        <strong>What's new in Babel 0.11</strong>, <a href=
+                                                      "https://www.cca-forum.org/wiki/tiki-index.php?page=Winter+2006+Agenda">
+          CCA Working Group Meeting, Winter 2006</a>, San Francisco, CA,
+        January 2006 LLNL document UCRL-PRES-218376 [<a href=
+                                                        "docs/cca-060126-babel-0.11.pdf">PDF</a>]</p>
+    </li>
+    <li>
+      <p>Jim Leek, <strong>Babel RMI and You</strong>, <a href=
+                                                          "https://www.cca-forum.org/wiki/tiki-index.php?page=Winter+2006+Agenda">
+          CCA Working Group Meeting, Winter 2006</a>, San Francisco, CA,
+        January 2006 LLNL document UCRL-PRES-218401 [<a href=
+                                                        "docs/cca-060126-BabelRMI-intro.pdf">PDF</a>]</p>
+    </li>
+    <li>
+      <p>Tom Epperly, Jim Leek, and Gary Kumfert, <strong>Migrating to
+          the new C++ binding</strong>, <a href=
+                                           "https://www.cca-forum.org/wiki/tiki-index.php?page=Winter+2006+Agenda">
+          CCA Working Group Meeting, Winter 2006</a>, San Francisco, CA,
+        January 2006 LLNL document UCRL-PRES-218377 [<a href=
+                                                        "docs/cca-060126-cxxmigration.pdf">PDF</a>]</p>
+    </li>
+  </ul>
+  <h3>2005</h3>
+  <ul type="disc">
+    <li>
+      <p>Jim Leek, <strong>Babel RMI changes your life! (In some ways you
+          didn't expect)</strong>, <a href=
+                                      "https://www.cca-forum.org/wiki/tiki-index.php?page=July+14-15+Meeting">
+          CCA Working Group Meeting, Summer 2005</a>, Argonne National Lab,
+        Chicago, IL, July 14-15, 2005</p>
+    </li>
+    <li>
+      <p>Tamara Dahlgren, <strong>Adaptive Enforcement of Interface
+          Assertions</strong>, <a href=
+                                  "http://cca-forum.org/meetings/OR-05-04-28/index.html">CCA Working
+          Group Meeting, Spring 2005</a>, Lincoln City, Oregon. April 2005
+        LLNL document UCRL-PRES-211741 [<a href="docs/cca-050428-AdaptEnf.pdf">PDF</a>]</p>
+    </li>
+    <li>
+      <p>Tamara Dahlgren, <strong>Babel Assertion and Method Hook
+          Basics</strong>, <a href=
+                              "http://cca-forum.org/meetings/OR-05-04-28/index.html">CCA Working
+          Group Meeting, Spring 2005</a>, Lincoln City, Oregon. April 2005.
+        LLNL document UCRL-PRES-211708 [<a href="docs/cca-050428-AssertionHooks.pdf">PDF</a>]</p>
+    </li>
+    <li>
+      <p>Thomas Epperly, Gary Kumfert, and Jim Leek. <strong>The New,
+          Fantastic Raw Array</strong> <a href=
+                                          "http://www.cca-forum.org/meetings/GA-05-01-27/index.html">CCA
+          Quarterly Meeting: Winter 05</a> Atlanta, GA. January 27-28, 2005.
+        LLNL document UCRL-PRES-209156 [<a href=
+                                           "docs/cca-050127-rarray.pdf">PDF</a>]</p>
+    </li>
+    <li>
+      <p>Jim Leek, Thomas Epperly, and Gary Kumfert. <strong>UCxx: The
+          Improved C++ Binding for Babel</strong> <a href=
+                                                     "http://www.cca-forum.org/meetings/GA-05-01-27/index.html">CCA
+          Quarterly Meeting: Winter 05</a> Atlanta, GA. January 27-28, 2005.
+        LLNL document UCRL-PRES-209183 [<a href=
+                                           "docs/cca-050127-ucxx.pdf">PDF</a>]</p>
+    </li>
+    <li>
+      <p>Jim Leek, Thomas Epperly, and Gary Kumfert. <strong>Super
+          Methods: Calling up the Evolutionary Tree</strong> <a href=
+                                                                "http://www.cca-forum.org/meetings/GA-05-01-27/index.html">CCA
+          Quarterly Meeting: Winter 05</a> Atlanta, GA. January 27-28, 2005.
+        LLNL document UCRL-PRES-209186 [<a href=
+                                           "docs/cca-050127-supermethods.pdf">PDF</a>]</p>
+    </li>
+    <li>
+      <p>Jim Leek, Thomas Epperly, and Gary Kumfert. <strong>Generic
+          Arrays: An Alternative to the Name Brands</strong> <a href=
+                                                                "http://www.cca-forum.org/meetings/GA-05-01-27/index.html">CCA
+          Quarterly Meeting: Winter 05</a> Atlanta, GA. January 27-28, 2005.
+        LLNL document UCRL-PRES-209185 [<a href=
+                                           "docs/cca-050127-genericarray.pdf">PDF</a>]</p>
+    </li>
+  </ul>
+  <h3>2004</h3>
+  <ul type="disc">
+    <li>
+      <p>Jim Leek <strong>Java Bindings: Available in Babel
+          0.9.4</strong> <a href=
+                            "http://www.cca-forum.org/meetings/UT-04-07-29/index.html">CCA
+          Quarterly Meeting: Summer 04</a> Salt Lake City, UT. July 29-30,
+        2004. LLNL document UCRL-PRES-205496 [<a href=
+                                                 "docs/cca-040729-java.pdf">PDF</a>]</p>
+    </li>
+    <li>
+      <p>Gary Kumfert, Tamara Dahlgren, and Thomas Epperly.
+        <strong>Planning for Polyglot Programming</strong> <a href=
+                                                              "http://hplws.jpl.nasa.gov">HPL Workshop on High-Productivity
+          Programming Langauges and Models</a> Santa Monica, CA. May 18-20,
+        2004. LLNL documents UCRL-PRES-204176 (presentation) and
+        UCRL-ABS-204174 (abstract). [<a href=
+                                        "docs/20040528-darpa-hpcs.pdf">PDF</a>]</p>
+    </li>
+    <li>
+      <p>Gary Kumfert, Tamara Dahlgren, and Thomas Epperly.
+        <strong>Babelized Libraries Make Large-Scale Software Easier to
+          Fabricate, Maintain, and Evolve</strong>. <a href=
+                                                       "http://www.siam.org/meetings/pp04/index.htm">SIAM Parallel
+          Processing.</a> San Francisco, CA. Feb 25-27, 2004. LLNL documents
+        UCRL-PRES-202548 (presentation) and UCRL-ABS-200034 (abstract).
+        [<a href="docs/20040220-siam-pp.pdf">PDF</a>]</p>
+    </li>
+    <li>
+      <p>Gary Kumfert, Tamara Dahlgren, and Thomas Epperly.
+        <strong>Exploring Applicability of CCA to TSI</strong> <a href=
+                                                                  "http://www.phy.ornl.gov/tsi">Terascale Supernova Initiative</a>
+        Meeting. Chapel Hill, NC. Feb 29, 2004. LLNL document
+        UCRL-PRES-203090. [<a href=
+                              "docs/20040209-tsi-visit.pdf">PDF</a>]</p>
+    </li>
+    <li>
+      <p>Thomas G. W. Epperly. <strong>Babel Structs Discussion</strong>
+        CCA Working Group Meeting, Knoxville, TN, January 22-23, 2004. LLNL
+        document UCRL-PRES-201938.</p>
+    </li>
+    <li>
+      <p>Thomas G. W. Epperly, Tamara Dahlgren, and Gary Kumfert.
+        <strong>Babel: Looking Fine With 0.9(.0)</strong> CCA Working Group
+        Meeting, Knoxville, TN, January 22-23, 2004. LLNL document
+        UCRL-PRES-201936.</p>
+    </li>
+    <li>
+      <p>Gary Kumfert, Tamara Dahlgren, and Thomas Epperly <strong>The
+          Babel Language Interoperability Tool, Software Integration, and the
+          Evolution of Large Scale Simulation Codes</strong> Seminar.
+        <a href="http://www.ornl.gov">Oak Ridge National Laborartory</a>.
+        January 20, 2004. LLNL document UCRL-PRES-203091. [<a href=
+                                                              "docs/20040120-ornl-visit.pdf">PDF</a>]</p>
+    </li>
+    <li>
+      <p>Tom Epperly, Tamara Dahlgren, and Gary Kumfert. <strong>Babel
+          Language Interoperability,</strong> Ohio Supercomputing Group visit
+        to LLNL, January 15, 2004. LLNL document UCRL-PRES-201813.</p>
+    </li>
+  </ul>
+  <h3>2003</h3>
+  <ul type="disc">
+    <li>
+      <p>Gary Kumfert, Tamara Dahlgren, and Thomas Epperly. <strong>Babel
+          - A Language Interoperability Tool for Scientific
+          Computing</strong>. IBM System Scientific Computing User Group:
+        <a href="http://www.spscicomp.org">SCICOMP 8</a>, Minneapolis, MN,
+        August 5-8, 2003. LLNL document UCRL-PRES-200005. [<a href=
+                                                              "docs/20030807B-scicomp8.pdf">PDF</a>]</p>
+    </li>
+    <li>
+      <p>Tammy Dahlgren, Tom Epperly and Gary Kumfert. <strong>Babel
+          0.8.4 Release.</strong> Common Component Architecture Forum, Salt
+        Lake City, Utah, April 10-11, 2003. LLNL document UCRL-PRES-152685.
+        [<a href="docs/cca-030410-babel084.pdf">PDF</a>]</p>
+    </li>
+    <li>
+      <p>Tammy Dahlgren, Tom Epperly and Gary Kumfert. <strong>CCA
+          Components in Fortran 90 Using Babel.</strong> Common Component
+        Architecture Forum, Salt Lake City, Utah. April 10-11, 2003. LLNL
+        document UCRL-PRES-152699. [<a href=
+                                       "docs/cca-030410-f90.pdf">PDF</a>]</p>
+    </li>
+    <li>
+      <p>Tammy Dahlgren, Tom Epperly and Gary Kumfert. <strong>Babel/SIDL
+          Design by Contract: Status.</strong> Common Component Architecture
+        Forum, Salt Lake City, Utah. April 10-11, 2003. LLNL document
+        UCRL-PRES-152674. [<a href="docs/cca-030410-dbc1.pdf">PDF</a>]</p>
+    </li>
+    <li>
+      <p>Tammy Dahlgren, Tom Epperly and Gary Kumfert. <strong>Babel
+          0.8.0 Release.</strong> Common Component Architecture Forum,
+        Pasadena, California. January 16-17, 2003. LLNL document
+        UCRL-PRES-151471. [<a href=
+                              "docs/cca-030116-babel080.pdf">PDF</a>]</p>
+    </li>
+  </ul>
+  <h3>2002</h3>
+  <ul type="disc">
+    <li>
+      <p>Tammy Dahlgren, Tom Epperly, Scott Kohn and Gary Kumfert.
+        <strong>Babel Support for FORTRAN 90: Status.</strong> Common
+        Component Architecture Forum, Half Moon Bay, CA. October 3-4, 2002.
+        LLNL document UCRL-PRES-150102. [<a href=
+                                                                                          "docs/cca-021003-f90-status.pdf">PDF</a>]</p>
+    </li>
+    <li>
+      <p>Tammy Dahlgren, Tom Epperly, Scott Kohn and Gary Kumfert.
+        <strong>Overloaded Methods in Babel.</strong> Common Component
+        Architecture Forum, Half Moon Bay, CA. October 3-4, 2002. LLNL
+        document UCRL-PRES-150373. [<a href=
+                                                                                   "docs/cca-021003-overload.pdf">PDF</a>]</p>
+    </li>
+    <li>
+      <p>Tammy Dahlgren, Tom Epperly, Scott Kohn and Gary Kumfert.
+        <strong>Introducing Design by Contract to SIDL/Babel.</strong>
+        Common Component Architecture Forum, Half Moon Bay, CA. October
+        3-4, 2002. LLNL document UCRL-PRES-150101. [<a href=
+                                                                                               "docs/cca-021003-dbc1.pdf">PDF</a>]</p>
+    </li>
+  </ul>
+  <h3>2001</h3>
+  <ul type="disc">
+    <li>
+      <p>Gary Kumfert, Scott Kohn, Tammy Dahlgren, Tom Epperly, Steve
+        Smith, and Bill Bosl. <strong>Introducing Babel Decaf.</strong>
+        Common Component Architecture Forum, Indiana University,
+        Bloomington, IN, October 2-3, 2001. LLNL document UCRL-PRES-145982.
+        [<a href="docs/2001-decaf-intro.ppt">PPT</a>] [<a href=
+                                                          "docs/2001-decaf-intro.pdf">PDF</a>]</p>
+    </li>
+    <li>
+      <p>Scott Kohn, Tammy Dahlgren, Tom Epperly, and Gary Kumfert.
+        <strong>The State of SIDL: Quarterly Status Report.</strong> Common
+        Component Architecture Forum, Indiana University, Bloomington, IN,
+        October 2-3, 2001. LLNL document UCRL-PRES-145981. [<a href=
+                                                                                                  "docs/cca-011001.pdf">PDF</a>]</p>
+    </li>
+    <li>
+      <p>Gary Kumfert, Bill Bosl, Tammy Dahlgren, Tom Epperly, Scott
+        Kohn, and Steve Smith. <strong>Achieving Language Interoperability
+          with Babel</strong> 1st CASC/ISCR Workshop on Object-Oriented and
+        Component Technology for Scientific Computing. Wente Vineyards,
+        Livermore, CA, July 2001. LLNL document UCRL-PRES-144649. [<a href=
+                                                                      "docs/2001-casc-workshop.ppt">PPT</a>] [<a href=
+                                                                                                                 "docs/2001-casc-workshop.pdf">PDF</a>]</p>
+    </li>
+    <li>
+      <p><a name="2001-pict-intro"></a> Gary Kumfert, Steve Smith, Scott
+        Kohn, Tom Epperly, Tammy Dahlgren, and Bill Bosl. <strong>A
+          Pictorial Introduction to Components in Scientific
+          Computing</strong> 10 Minute Talk. LLNL document UCRL-VG-143384.
+        [<a href="docs/2001-pict-intro.ppt">PPT</a>] [<a href=
+                                                         "docs/2001-pict-intro.pdf">PDF</a>]</p>
+    </li>
+    <li>
+      <p>Tammy Dahlgren, Tom Epperly, Scott Kohn and Gary Kumfert.
+        <strong>Babel: Going Parallel Take 2.</strong> Common Component
+        Architecture Forum, Portsmouth, VA. March 15-16, 2001. LLNL
+        document UCRL-VG-143383. [<a href="docs/cca-010315.pdf">PDF</a>]</p>
+    </li>
+    <li>
+      <p>Scott Kohn, Gary Kumfert, Jeff Painter, and Cal Ribbens.
+        <strong>Divorcing Language Dependencies from a Scientific Software
+          Library.</strong> <a href="http://www.siam.org/meetings/pp01">10th
+          SIAM Conference on Parallel Processing</a>, Portsmouth, VA, March
+        12-14, 2001. Lawrence Livermore National Laboratory document
+        UCRL-VG-140349 Rev 1. [<a href="docs/2001-siam-pp.ppt">PPT</a>]
+        [<a href="docs/2001-siam-pp-vg.pdf">PDF</a>]</p>
+    </li>
+  </ul>
+  <h3>20th Century</h3>
+  <ul type="disc">
+    <li>
+      <p>Tammy Dahlgren, Tom Epperly, Scott Kohn and Gary Kumfert.
+        <strong>Babel: Going Parallel.</strong> Common Component
+        Architecture Forum, Oak Ridge National Laboratory, Gatlinburg, TN,
+        December 6-8, 2000. LLNL document UCRL-VG-142096. [<a href=
+                                                                                                 "docs/cca-001208.pdf">PDF</a>]</p>
+    </li>
+    <li>
+      <p>Tamara Dahlgren, Tom Epperly, Scott Kohn, and Gary Kumfert.
+        <strong>Babel v0.6.0: Tutorial</strong>. Internal tutorial
+        presentation. Lawrence Livermore National Laboratory, Livermore,
+        CA, June 22, 2000. LLNL document UCRL-VG-142097. [<a href=
+                                                             "docs/BabelTutorial-0.6.0.ppt">PPT</a>] [<a href=
+                                                                                                         "docs/BabelTutorial-0.6.0.pdf">PDF</a>]</p>
+    </li>
+    <li>
+      <p>Tom Epperly, Scott Kohn, and Gary Kumfert. <strong>Component
+          Technology for High-Performance Scientific Simulation
+          Software.</strong> <a href=
+                                "http://www.nsc.liu.se/%7Eboein/ifip/woco8.html">Working Conference
+          on "Software Architectures for Scientific Computing
+          Applications"</a>, International Federation for Information
+        Processing, Ottowa, Ontario, Canada, October 2-4, 2000. LLNL
+        document UCRL-VG-140549. [<a href=
+                                     "docs/2000-ifip-talk.ppt">PPT</a>] [<a href=
+                                                                            "docs/2000-ifip-talk.pdf">PDF</a>]</p>
+    </li>
+  </ul>
+  
+</div>
+
+<!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  -->
+<!-- "Page" Tutorial                                                  -->
+<!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  -->
+<div class="content" id="tutorial">
+  <p>
+    This page is a quick guide to get you started with Babel. See
+    our <a href="docs/babel_tutorial_sc07.pdf">Supercomputing '07
+    Tutorial [PDF, 6MB]</a> for a more comprehensive resource.
+    You can either copy and paste the code from this website or
+    download a <a href="docs/hello.tar.gz">tar archive</a> with all
+    the necessary files.
+  </p>
+    
+  
+  <h3>Building Babel</h3>
+  <p>
+    If your distribution provides precompiled packages for Babel, you
+    probably want to use those. Otherwise, 
+    make sure your system satisfies Babel's prerequisites. In an ideal
+    world, the following command sequence should give you a working
+    Babel installation. The configure script supports a large number
+    of options; see <span class="command">configure --help</span> for
+    a quick reference. You can change the installation path
+    using <span class="command">--prefix=&lt;path&gt;</span>. Configure
+    will automatically disable languages, if it cannot find the required
+    tools. 
+  </p>
+  
+<pre class="code">
+$ tar -xzf babel-X.Y.Z.tar.gz
+$ cd babel-X.Y.Z
+$ ./configure && make && make install
+</pre>
+
+  <p>
+    It's always a good idea to make sure your installation passes
+    Babel's regression tests. Executing <span class="command">make
+    check</span> should give you something like
+  </p>
+<pre class="code">
+$ make check
+     .
+     .
+     .
+703. struct/runSIDL/runSIDL.sh[s.Simple.XML->XML] ....................   PASS
+704. struct/runSIDL/runSIDL.sh[s.StructTest.XML->XML] ................   PASS
+705. struct/runSIDL/runSIDL.sh[s.XML->XML] ...........................   PASS
+*******************************************************************************
+Tue, 02 Mar 2010  at  17:16:35 
+by user@hostname
+Wallclock Time: 175.499 secs
+            Total      Passed      Xfailed      Failed      Broken
+Tests         705         695           10           0           0
+Parts       25564       25493           71           0
+$
+</pre>
+
+  <h3>"Hello World" in Babel</h3>
+  <p>
+    Next, we need a SIDL file that declares the public interface of
+    our component. Copy and paste the following in a file
+    called <span class="command">greetings.sidl</span>. The example
+    illustrates a small stateful hello world component. 
+  </p>
+
+<pre class="code">
+package greetings version 1.0 {
+  class Hello {
+    void setName(in string name);
+    void sayHello();
+  };
+};
+</pre>
+  
+  <h3>A C++ Implementation</h3>
+  <p>
+    Let's assume we want to
+    implement <span class="command">Hello</span> in C++. Babel can
+    assist you in generating a Makefile and the rough program
+    structure. Execute the following command to do so (make sure Babel
+    is somewhere in your PATH).
+  </p>
+<pre class="code">
+$ mkdir libC++ && cd libC++
+$ babel --makefile --server=C++ ../greetings.sidl
+</pre>
+  <p>
+    This will generate several files. The only files you should ever
+    need to edit are
+    <span class="command">GNUMakefile</span>, <span class="command">greetings_Hello_Impl.hxx</span>
+    and <span class="command">greetings_Hello_Impl.cxx</span>. The
+    Makefile is mostly fine; just replace the line
+    <span class="command">LIBNAME=impl</span>
+    with <span class="command">LIBNAME=greetings</span> near the top
+    of the file. This will produce static and
+    dynamic <span class="command">libtool</span> libraries named 
+    a <span class="command">libgreetings</span>.
+  </p>    
+
+  <p>
+    The remaining files contain the implementation of our class. The
+    generated files contain structured comments, so-called splicer
+    blocks, that specify user-defined sections. Babel will maintain
+    these sections across multiple invocations. Edit these files as
+    outlined below to provide implementations
+    for <span class="command">setName</span>
+    and <span class="command">sayHello</span>. 
+  </p>    
+
+<pre class="code">
+<b>&lt;greetings_Hello_Impl.hxx&gt;</b>
+
+// DO-NOT-DELETE splicer.begin(greetings.Hello._implementation)
+<font color="green">std::string _name;</font>
+// DO-NOT-DELETE splicer.end(greetings.Hello._implementation)
+
+<b>&lt;greetings_Hello_Impl.cxx&gt;</b>
+
+// DO-NOT-DELETE splicer.begin(greetings.Hello._includes)
+<font color="green">#include&lt;iostream&gt;</font>
+// DO-NOT-DELETE splicer.end(greetings.Hello._includes)
+
+
+// user defined constructor
+void greetings::Hello_impl::_ctor() {
+  // DO-NOT-DELETE splicer.begin(greetings.Hello._ctor)
+  <font color="green">name = "Unknown";</font>
+  // DO-NOT-DELETE splicer.end(greetings.Hello._ctor)
+}
+
+/**
+ * Method:  setName[]
+ */
+void
+greetings::Hello_impl::setName_impl (
+  /* in */const ::std::string& name ) 
+{
+  // DO-NOT-DELETE splicer.begin(greetings.Hello.setName)
+  <font color="green">_name = name;</font>
+  // DO-NOT-DELETE splicer.end(greetings.Hello.setName)
+
+/**
+ * Method:  sayHello[]
+ */
+void
+greetings::Hello_impl::sayHello_impl () 
+
+{
+  // DO-NOT-DELETE splicer.begin(greetings.Hello.sayHello)
+  <font color="green">std::cout << "Hello World from " << _name << std::endl;</font>
+  // DO-NOT-DELETE splicer.end(greetings.Hello.sayHello)
+</font>}
+</pre>
+
+  <p>
+    That's it. Run <span class="command">make</span> to get everything
+    built.
+  </p>
+
+  <h3>A Fortran 90 Client</h3>
+  <p>
+    Suppose, you want to use the newly created Babel component in a
+    Fortran 90 application. Again, we use babel to generate an initial
+    Makefile and the necessary glue code.
+  </p>
+<pre class="code">
+$ babel --client=F90 --makefile ./greetings.sidl
+</pre>
+
+  <p>
+    Copy and paste the following little driver program in a file
+    called <span class="command">driver.F90</span>. 
+  </p>
+
+<pre class="code">
+<b>&lt;driver.F90&gt;</b>
+program driver
+  use greetings_Hello
+  implicit none
+  type(greetings_Hello_t)     :: obj
+  type(sidl_BaseInterface_t)  :: ex
+  character(len=20)           :: name
+  
+  name='The Babel Team'
+  call new(obj, ex)
+  call setName(obj, name, ex)
+  call sayHello(obj, ex)
+end program driver
+</pre>
+
+
+  <p>
+    We also need to do some adjustments to the Makefile to get a
+    client library built and link everything together. Make the
+    following modifications to the 
+    pre-generated <span class="command">GNUMakefile</span> file. 
+  </p>
+<pre class="code">
+# please name the server library here
+LIBNAME=<font color="green">client</font>
+
+...
+
+# extra librarys that the implementation needs to link against
+EXTRALIBS=<font color="green">-L./libC++ -lgreetings</font>
+
+...
+
+all : lib$(LIBNAME).la $(SCLFILE) <font color="green">driver</font>
+
+...
+<font color="green">
+driver: lib$(LIBNAME).la driver.lo
+	babel-libtool --mode=link --tag=FC $(FC) -static -o driver \
+        $(FCFLAGS) $(EXTRAFLAGS) $^ $(LIBS) \
+        $(EXTRALIBS)
+</font>
+</pre>
+
+  <p>
+    If everything works as expected,
+    typing <span class="command">make</span> on your command prompt
+    should give you a statically linked executable that produces the
+    following output.
+  </p>
+
+<pre class="code">
+$./driver
+Hello world from The Babel Team
+$
+</pre>
+  
+</div>
+
+<!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  -->
+<!-- "Page" F.A.Q.                                                    -->
+<!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  -->
+<div class="content" id="faq">
+  <ol>
+    <h2><li>Technical Overview</li></h2>
+      <h3>What exactly is Babel's implementation? </h3>
+      <p>
+        Babel has two major parts: a compiler (more precisely a code
+        generator), and a runtime library. The compiler is written in
+        Java, and the runtime library is in ANSI C. Some language
+        bindings also have ancillary runtime libraries which could be
+        in C or other languages. 
+      </p>
+
+      <h3>What do you mean by "front-end" or "back-end" in the context
+        of the Babel compiler?</h3>
+      <p>
+        The front-ends are just parsers. We currently have two: a SIDL
+        parser and an XML parser. There exists at least one case in
+        our user community of a custom front-end as well. The
+        back-ends are the (language specific) code writers. The IOR
+        and XML outputs are also back-ends. Basically front ends
+        assemble the syntax tree, back ends walk the tree and generate
+        output.  
+      </p>
+
+      <h3>What's the difference between the Babel distribution and the
+        Babel-Runtime distribution?</h3>
+      <p>
+        Babel-Runtime is a proper subset of the entire Babel
+        distribution. In fact, we spawn the Babel-Runtime distribution
+        from the main tree by executing the commands <span class="command">cd
+        babel-X.X.X/runtime/; make dist</span>. The entire Babel distribution
+        includes the code generator, regression tests, documentation,
+        and examples. 
+      </p>
+
+      <h3>Who would prefer the Babel-Runtime distribution over the
+        entire Babel distribution?</h3>
+      <p>
+        The Babel-Runtime distribution is the minimal amount of stuff
+        needed for a 3rd party to distribute their Babelized codes to
+        a non Babel-savvy customer. Alternatively, someone who
+        encounters Babelized code and doesn't want to bother with all
+        of Babel, may find just the Babel-Runtime a suitable option.
+      </p>
+
+      <h3>Who would prefer the entire Babel distribution over just the
+        Babel-Runtime distribution?</h3>
+      <p>
+        If you're writing SIDL files or want to generate language
+        bindings, the entire Babel distribution is clearly what you'll
+        want.
+      </p>
+      
+    <h2><li>Babel configure/build</li></h2>
+    
+      <h3>What tools does Babel use for its configuration/build?</h3>
+      <p>
+        GNU make, Autoconf, Automake, Libtool , Python's distutils,
+        custom Autoconf macros (in M4), shell scripts, and python
+        scripts. And plenty of compilers from multiple vendors in a
+        bunch of languages.
+      </p>
+
+      <h3>Must I have all languages covered to configure/build Babel
+        on my platform?</h3>
+      <p>
+        Most languages can be disabled with
+        the <span class="command">--disable-X</span>  flag to the
+        configure script. This includes every language except C, which
+        is mandatory (and C++ which almost always comes with C
+        anyway). For more details, try <span class="command">configure
+        --help</span>. 
+      </p>
+
+      <h3> What tools do I need to configure/build Babel on my platform?</h3>
+      <p>
+        GNU make, Bourne shell, libxml2, a C compiler and Sun's Java
+        Development Kit. You'll also need Python if you
+        do <span class="command">make check</span>. Plus you'll need
+        compilers for any other language bindings you want your
+        installation to support. If you're using Fortran 90, you'll
+        also need Chasm.
+      </p>
+
+      <h3>What tools do I need to configure/build Babel-Runtime on my
+        platform?</h3>
+      <p>
+         GNU make, Bourne shell, libxml, and a C compiler. Java not
+         strictly necessary. Plus you'll need compilers for any other
+         language bindings you want your installation to support. If
+         you're using Fortran 90, you'll also need Chasm.
+      </p>
+
+      <h3>Why is Babel's configure/build so complex?</h3>
+      <p>
+         We're doing something hard and the tools available are not
+         very sophisticated.
+      </p>
+      <p>
+         The nature of the problem Babel is attempting to solve - language
+         interoperabilty - is complex, obscure, and platform
+         specific. For <span class="command">make check</span> to be
+         meaningful, we probe the dark corners of language
+         interoperability issues that most programmmers have learned
+         to avoid (e.g. character strings in Fortran). Additionally,
+         Java and Python have separate build systems (or partial build
+         systems) built into the language itself... which complicates
+         any external build that tries to manage it. Plus we
+         compensate when some languages aren't available on some
+         platforms. 
+      </p>
+      <p>
+        Supporting the build takes an obscenely large percentage of
+        Babel's development effort. We've even published a technical
+        report measuring how much it costs us, and investigated if our
+        costs are commensurate with other projects at LLNL, the DOE,
+        and even a few large academic projects.
+      </p>
+      
+      <h3>Does Babel require me to use its build system in my application?</h3>
+      <p>
+        Absolutely not. Once Babel is installed, You should only need
+        to have the babel script in your path to launch the code
+        generator; have the runtime library headers in your include
+        path for compilation to succeed; and have the runtime
+        libraries in your library search path and add the right
+        libraries on the command line at link time. 
+      </p>
+
+      <h3>If I start using Babel, I'll want to ship Babel in my code
+      bundle. Then do I have to buy into Babel's build?</h3>
+      <p>
+         No. In that case, you can pre-generate the language bindings
+         and only ship the Babel-Runtime. You can redistribute the
+         Babel-Runtime as a subdirectory of your own code, reusing all
+         of our configure scripts and makefiles therein with minimal
+         infection of your own build. Of course, your top-level
+         configure script will have to reference ours, and your
+         top-level makefile will have to propagate
+         the <span class="command">all check clean install </span>
+         targets to our toplevel makefile. To see how this works in
+         action, simply look at the main Babel distribution,
+         the <span class="command">runtime</span> subdirectory is
+         exactly that separable Babel-Runtime distribution.
+      </p>
+
+      <h3>Babel's build has found a lot of useful information that I
+        want to reuse in my software. How do I do it?</h3>
+      <p>
+        We would be very interested in exporting as much knowledge as
+        possible from our build to our customers. The recommended
+        mechanism is to use
+        the <span class="command">babel-config</span> script that gets
+        installed with babel. Type <span class="command">babel-config
+        --help</span> for information on how to use this tool. 
+      </p>
+
+      <h3>Can I use a parallel make?</h3>
+      <p>
+	Starting with Babel 2.0, you can.
+      </p>
+
+      <h3>I typed <span class="command">make check</span> an hour ago
+        and its still going. What's wrong?</h3>
+      <p>
+        Nothing. We do a lot of testing and it can take hours on slow
+        machines.
+      </p>
+
+      <h3>Why does Babel's build insist on a specific version of
+        automake/autoconf/etc.?</h3>
+      <p>
+        Past painful experiences led us to write special autoconf
+        macros to detect and disable regeneration of build files when
+        versions don't match. It only cares if you modified input
+        files to automake or autoconf, and your version of these tools
+        don't match ours. If you must hand modify any build file to
+        get Babel working on your platform, then you've discovered a
+        bug in the build. We strongly encourage you to submit a bug
+        report to us.
+      </p>
+      
+    <h2><li>SIDL</li></h2>
+
+      <h3>Do you have an EBNF spec for the SIDL Grammar?</h3>
+      <p>
+        Yes, its an appendix in the Babel Users' Guide.
+      </p>
+      
+      <h3>The User Guide's treatment of SIDL is pretty fast and
+        furious, got anything kinder or gentiler?</h3>
+      <p>
+        At the time this question was asked, we agreed. Since then,
+        We've restructured the Babel Users' Guide and hope it is more
+        useful now. 
+      </p>
+    
+    <h2><li>Babel Code Generator</li></h2>
+      <h3>How do I run the code generator?</h3>
+      <p>
+        If you downloaded the babel-runtime, then you won't find the
+        code generator. The code generator comes only with the entire
+        package. The entire code generator is compiled into a single
+        JAR file, including the DTDs. Babel should install
+        a <span class="command">babel</span> script which conveniently
+        sets the appropriate CLASSPATH and launches the JAR file. 
+      </p>
+      
+      <h3>What's a <i>"repository"</i> for the code generator?</h3>
+      <p>
+         A repository is a place to store pre-compiled SIDL
+         files. Using the <span class="command">-R</span> option
+         in <span class="command">babel</span> adds directories to the
+         repository search path and functions similar to the way one
+         uses <span class="command">-I</span> to include header files
+         in C/C++. It just so happens that this pre-compiled format is
+         simply XML and can be generated babel using
+         the <span class="command">--text=xml</span>.
+      </p>
+      
+    
+    <h2><li>Language Bindings</li></h2>
+      <h3>Fortran 2003 finally got native C bindings, why still use Babel?</h3>
+      <p>
+         By using Babel you get several advanced features, such as
+         object-oriented programming and virtual method calls. You can
+         also save time by letting Babel sort out the right type
+         declarations for you multi-dimensional
+         arrays. See <a href="https://computing.llnl.gov/projects/babel-high-performance-language-interoperability/docs/README-2.0.html">README</a> for a more
+         complete list of features to decide whether Babel is for you.
+
+         We also spent a lot of time to figure out the subset of
+	 Fortran 2003 that works on <span class="emphasis"><em>
+	 all</em></span> platforms/compilers. It makes it also
+	 possible to mix Fortran and other languages like Python,
+	 Java, or Chapel. Babel can even generate the appropriate
+	 Makefile for your platform to link the two together.
+      </p>
+      <h3>Why aren't there (Language X) bindings?</h3>
+      <p>
+         Just because we don't advertise bindings for your
+         favorite language, does not necessarily mean they don't
+         exist. Babel's user community has grown to the point where
+         there are "unofficial" language bindings in the works.
+      </p>
+  </ol>
+  
+</div>
+
+
+<!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  -->
+<!-- "Page" Download                                                  -->
+<!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  -->
+<div class="content" id="download">
+  <div class="block">
+    <div class="category">Latest Release</div>
+    <div class="subblock">
+
+      <p>
+        Users' Guide: [<a href="docs/users_guide.ps">PS</a>]
+        [<a href="docs/users_guide.pdf">PDF</a>]
+        [<a href="docs/users_guide/index.html">HTML (single page)</a>]
+        [<a href="docs/users_guide/index-multipage.html">HTML (multiple pages)</a>]
+        [<a href="docs/users_guide.tar.gz">HTML.tar.gz</a>]
+      </p>
+      Source Code:
+
+      <table border="1" cellspacing="0" cellpadding="3px">
+        <tbody>
+          <tr>
+            <td align="center">Version</td>
+            <td align="center">Date</td>
+            <td align="center" colspan="2">Announce</td>
+            <td align="center" colspan="2">Readme</td>
+            <td align="center" colspan="3">Complete archive</td>
+          </tr>
+
+          <tr>
+            <td align="center"><strong>2.0.0 (latest release)</strong></td>
+            <td align="center">2012-01-06</td>
+            <td align="center">[<a href="docs/ANNOUNCE-2.0.0.txt" target="_top">TXT</a>]</td>
+            <td align="center">[<a href="docs/ANNOUNCE-2.0.0.html" target="_top">HTML</a>]</td>
+            <td align="center">[<a href="docs/README-2.0.0.txt" target="_top">TXT</a>]</td>
+            <td align="center">[<a href="docs/README-2.0.0.html" target="_top">HTML</a>]</td>
+            <td align="center">[<a href="docs/babel-2.0.0.tar.gz" target="_top">GZIP</a>]</td>
+            <td align="center">[<a href="docs/babel-2.0.0.tar.bz2" target="_top">BZIP2</a>]</td>
+            <td align="center">[<a href="docs/babel-2.0.0.tar.xz"  target="_top">XZ</a>]</td>
+          </tr>
+        </tbody>
+      </table>
+      
+      
+    </div>
+  </div>
+
+  <p>A list of available patches to official Babel releases is available at the <a class=
+  "ulink" href="https://www.cca-forum.org/wiki/tiki-index.php?page=Babel+Patches" target=
+  "_top">Babel patches</a> node of the <a href=
+  "https://www.cca-forum.org/wiki/">CCA Forum wiki</a>. All software is released under
+  the <a href="http://www.gnu.org/licenses/lgpl.html">GNU Lesser
+  General Public (LGPL)</a> license. 
+  </p>
+
+  <br /><br /><br />
+  <h2>Older Releases</h2>
+  <table border="1" cellspacing="0" cellpadding="3px">
+    <tbody>
+      <tr>
+        <td align="center">Version</td>
+        <td align="center">Date</td>
+        <td align="center">Announce</td>
+        <td align="center">Complete</td>
+        <td align="center">Runtime Only</td>
+      </tr>
+
+      <tr>
+        <td align="center">1.4.0</td>
+        <td align="center">2008-11-11</td>
+        <td align="center">[<a href="docs/ANNOUNCE-1.4.0.txt" target="_top">text</a>]</td>
+        <td align="center">[<a href="docs/babel-1.4.0.tar.gz" target= "_top">TAR</a>]</td>
+        <td align="center">[<a href="docs/babel-runtime-1.4.0.tar.gz">TAR</a>]</td>
+      </tr>
+      <tr>
+        <td align="center">1.2.0</td>
+        <td align="center">2007-11-1</td>
+        <td align="center">[<a href="docs/ANNOUNCE-1.2.0.txt">text</a>]</td>
+        <td align="center">[<a href="docs/babel-1.2.0.tar.gz">TAR</a>]</td>
+        <td align="center">[<a href="docs/babel-runtime-1.2.0.tar.gz">TAR</a>]</td>
+      </tr>
+
+      <tr>
+        <td align="center">1.1.0</td>
+        <td align="center">2007-3-26</td>
+        <td align="center">[<a href="docs/ANNOUNCE-1.1.0.txt">text</a>]</td>
+        <td align="center">[<a href="docs/babel-1.1.0.tar.gz">TAR</a>]</td>
+        <td align="center">[<a href="docs/babel-runtime-1.1.0.tar.gz">TAR</a>]</td>
+      </tr>
+
+      <tr>
+        <td align="center">1.0.8</td>
+        <td align="center">2007-11-11</td>
+        <td align="center">[<a href="docs/ANNOUNCE-1.0.8.txt">text</a>]</td>
+        <td align="center">[<a href="docs/babel-1.0.8.tar.gz">TAR</a>]</td>
+        <td align="center">[<a href="docs/babel-runtime-1.0.8.tar.gz">TAR</a>]</td>
+      </tr>
+      
+      <tr>
+        <td align="center">1.0.4</td>
+        <td align="center">2007-03-1</td>
+        <td align="center">[<a href="docs/ANNOUNCE-1.0.4.txt">text</a>]</td>
+        <td align="center">[<a href="docs/babel-1.0.4.tar.gz">TAR</a>]</td>
+        <td align="center">[<a href="docs/babel-runtime-1.0.4.tar.gz">TAR</a>]</td>
+      </tr>
+
+      <tr>
+        <td align="center">1.0.2</td>
+        <td align="center">2006-11-13</td>
+        <td align="center">[<a href="docs/ANNOUNCE-1.0.2.txt">text</a>]</td>
+        <td align="center">[<a href="docs/babel-1.0.2.tar.gz">TAR</a>]</td>
+        <td align="center">[<a href="docs/babel-runtime-1.0.2.tar.gz">TAR</a>]</td>
+      </tr>
+
+      <tr>
+        <td align="center">1.0.0</td>
+        <td align="center">2006-7-21</td>
+        <td align="center">[<a href="docs/ANNOUNCE-1.0.0.txt">text</a>]</td>
+        <td align="center">[<a href="docs/babel-1.0.0.tar.gz">TAR</a>]</td>
+        <td align="center">[<a href="docs/babel-runtime-1.0.0.tar.gz">TAR</a>]</td>
+      </tr>
+
+      <tr>
+        <td align="center">0.99.2 (1.0 rc2)</td>
+        <td align="center">2006-6-28</td>
+        <td align="center">[<a href="docs/ANNOUNCE-0.99.2.txt">text</a>]</td>
+        <td align="center">[<a href="docs/babel-0.99.2.tar.gz">TAR</a>]</td>
+        <td align="center">[<a href="docs/babel-runtime-0.99.2.tar.gz">TAR</a>]</td>
+      </tr>
+
+      <tr>
+        <td align="center">0.99.0 (1.0 rc1)</td>
+        <td align="center">2006-4-24</td>
+        <td align="center">[<a href="docs/ANNOUNCE-0.99.0.txt">text</a>]</td>
+        <td align="center">[<a href="docs/babel-0.99.0.tar.gz">TAR</a>]</td>
+        <td align="center">[<a href="docs/babel-runtime-0.99.0.tar.gz">TAR</a>]</td>
+      </tr>
+
+      <tr>
+        <td align="center">0.11.2</td>
+        <td align="center">2006-4-24</td>
+        <td align="center">[<a href="docs/ANNOUNCE-0.11.2.txt">text</a>]</td>
+        <td align="center">[<a href="docs/babel-0.11.2.tar.gz">TAR</a>]</td>
+        <td align="center">[<a href="docs/babel-runtime-0.11.2.tar.gz">TAR</a>]</td>
+      </tr>
+
+      <tr>
+        <td align="center">0.11.0</td>
+        <td align="center">2005-12-23</td>
+        <td align="center">[<a href="docs/ANNOUNCE-0.11.0.txt">text</a>]</td>
+        <td align="center">[<a href="docs/babel-0.11.0.tar.gz">TAR</a>]</td>
+        <td align="center">[<a href="docs/babel-runtime-0.11.0.tar.gz">TAR</a>]</td>
+      </tr>
+
+      <tr>
+        <td align="center">0.10.12</td>
+        <td align="center">2005-11-10</td>
+        <td align="center">[<a href="docs/ANNOUNCE-0.10.12.txt">text</a>]</td>
+        <td align="center">[<a href="docs/babel-0.10.12.tar.gz">TAR</a>]</td>
+        <td align="center">[<a href="docs/babel-runtime-0.10.12.tar.gz">TAR</a>]</td>
+      </tr>
+
+      <tr>
+        <td align="center">0.10.10</td>
+        <td align="center">2005-8-19</td>
+        <td align="center">[<a href="docs/ANNOUNCE-0.10.10.txt">text</a>]</td>
+        <td align="center">[<a href="docs/babel-0.10.10.tar.gz">TAR</a>]</td>
+        <td align="center">[<a href="docs/babel-runtime-0.10.10.tar.gz">TAR</a>]</td>
+      </tr>
+
+      <tr>
+        <td align="center">0.10.8</td>
+        <td align="center">2005-7-29</td>
+        <td align="center">[<a href="docs/ANNOUNCE-0.10.8.txt">text</a>]</td>
+        <td align="center">[<a href="docs/babel-0.10.8.tar.gz">TAR</a>]</td>
+        <td align="center">[<a href="docs/babel-runtime-0.10.8.tar.gz">TAR</a>]</td>
+      </tr>
+
+      <tr>
+        <td align="center">0.10.6</td>
+        <td align="center">2005-6-17</td>
+        <td align="center">[<a href="docs/ANNOUNCE-0.10.6.txt">text</a>]</td>
+        <td align="center">[<a href="docs/babel-0.10.6.tar.gz">TAR</a>]</td>
+        <td align="center">[<a href="docs/babel-runtime-0.10.6.tar.gz">TAR</a>]</td>
+      </tr>
+
+      <tr>
+        <td align="center">0.10.4</td>
+        <td align="center">2005-6-14</td>
+        <td align="center">[<a href="docs/ANNOUNCE-0.10.4.txt">text</a>]</td>
+        <td align="center">[<a href="docs/babel-0.10.4.tar.gz">TAR</a>]</td>
+        <td align="center">[<a href="docs/babel-runtime-0.10.4.tar.gz">TAR</a>]</td>
+      </tr>
+
+      <tr>
+        <td align="center">0.10.2</td>
+        <td align="center">2005-3-28</td>
+        <td align="center">[<a href="docs/ANNOUNCE-0.10.2.txt">text</a>]</td>
+        <td align="center">[<a href="docs/babel-0.10.2.tar.gz">TAR</a>]</td>
+        <td align="center">[<a href="docs/babel-runtime-0.10.2.tar.gz">TAR</a>]</td>
+      </tr>
+
+      <tr>
+        <td align="center">0.10.0</td>
+        <td align="center">2005-1-26</td>
+        <td align="center">[<a href="docs/ANNOUNCE-0.10.0.txt">text</a>]</td>
+        <td align="center">[<a href="docs/babel-0.10.0.tar.gz">TAR</a>]</td>
+        <td align="center">[<a href="docs/babel-runtime-0.10.0.tar.gz">TAR</a>]</td>
+      </tr>
+
+      <tr>
+        <td align="center">0.9.8</td>
+        <td align="center">2004-10-26</td>
+        <td align="center">[<a href="docs/ANNOUNCE-0.9.8.txt">text</a>]</td>
+        <td align="center">[<a href="docs/babel-0.9.8.tar.gz">TAR</a>]</td>
+        <td align="center">[<a href="docs/babel-runtime-0.9.8.tar.gz">TAR</a>]</td>
+      </tr>
+
+      <tr>
+        <td align="center">0.9.6</td>
+        <td align="center">2004-9-9</td>
+        <td align="center">[<a href="docs/ANNOUNCE-0.9.6.txt">text</a>]</td>
+        <td align="center">[<a href="docs/babel-0.9.6.tar.gz">TAR</a>]</td>
+        <td align="center">[<a href="docs/babel-runtime-0.9.6.tar.gz">TAR</a>]</td>
+      </tr>
+
+      <tr>
+        <td align="center">0.9.4</td>
+        <td align="center">2004-8-19</td>
+        <td align="center">[<a href="docs/ANNOUNCE-0.9.4.txt">text</a>]</td>
+        <td align="center">[<a href="docs/babel-0.9.4.tar.gz">TAR</a>]</td>
+        <td align="center">[<a href="docs/babel-runtime-0.9.4.tar.gz">TAR</a>]</td>
+      </tr>
+
+      <tr>
+        <td align="center">0.9.2</td>
+        <td align="center">2004-5-5</td>
+        <td align="center">[<a href="docs/ANNOUNCE-0.9.2.txt">text</a>]</td>
+        <td align="center">[<a href="docs/babel-0.9.2.tar.gz">TAR</a>]</td>
+        <td align="center">[<a href="docs/babel-runtime-0.9.2.tar.gz">TAR</a>]</td>
+      </tr>
+
+      <tr>
+        <td align="center">0.9.0</td>
+        <td align="center">2004-2-1</td>
+        <td align="center">[<a href="docs/ANNOUNCE-0.9.0.txt">text</a>]</td>
+        <td align="center">[<a href="docs/babel-0.9.0.tar.gz">TAR</a>]</td>
+        <td align="center">[<a href="docs/babel-runtime-0.9.0.tar.gz">TAR</a>]</td>
+      </tr>
+
+      <tr>
+        <td align="center">0.8.8</td>
+        <td align="center">2003-10-29</td>
+        <td align="center">[<a href="docs/ANNOUNCE-0.8.8.txt">text</a>]</td>
+        <td align="center">[<a href="docs/babel-0.8.8.tar.gz">TAR</a>]</td>
+        <td align="center">[<a href="docs/babel-runtime-0.8.8.tar.gz">TAR</a>]</td>
+      </tr>
+
+      <tr>
+        <td align="center">0.8.6</td>
+        <td align="center">2003-07-23</td>
+        <td align="center">[<a href="docs/ANNOUNCE-0.8.6.txt">text</a>]</td>
+        <td align="center">[<a href="docs/babel-0.8.6.tar.gz">TAR</a>]</td>
+        <td align="center">[<a href="docs/babel-runtime-0.8.6.tar.gz">TAR</a>]</td>
+      </tr>
+
+      <tr>
+        <td align="center">0.8.4</td>
+        <td align="center">2003-04-07</td>
+        <td align="center">[<a href="docs/ANNOUNCE-0.8.4.txt">text</a>]</td>
+        <td align="center">[<a href="docs/babel-0.8.4.tar.gz">TAR</a>]</td>
+        <td align="center">[<a href="docs/babel-runtime-0.8.4.tar.gz">TAR</a>]</td>
+      </tr>
+
+      <tr>
+        <td align="center">0.8.2</td>
+        <td align="center">2003-03-28</td>
+        <td align="center">[<a href="docs/ANNOUNCE-0.8.2.txt">text</a>]</td>
+        <td align="center">[<a href="docs/babel-0.8.2.tar.gz">TAR</a>]</td>
+        <td align="center">[<a href="docs/babel-runtime-0.8.2.tar.gz">TAR</a>]</td>
+      </tr>
+
+      <tr>
+        <td align="center">0.8.0</td>
+        <td align="center">2003-01-13</td>
+        <td align="center">[<a href="docs/ANNOUNCE-0.8.0.txt">text</a>]</td>
+        <td align="center">[<a href="docs/babel-0.8.0.tar.gz">TAR</a>]</td>
+        <td align="center">[<a href="docs/babel-runtime-0.8.0.tar.gz">TAR</a>]</td>
+      </tr>
+
+      <tr>
+        <td align="center">0.7.4</td>
+        <td align="center">2002-08-21</td>
+        <td align="center">[<a href="docs/ANNOUNCE-0.7.4.txt">text</a>]</td>
+        <td align="center">[<a href="docs/babel-0.7.4.tar.gz">TAR</a>]</td>
+        <td>&nbsp;</td>
+      </tr>
+
+      <tr>
+        <td align="center">0.7.2</td>
+        <td align="center">2002-08-09</td>
+        <td align="center">[<a href="docs/ANNOUNCE-0.7.2.txt">text</a>]</td>
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
+      </tr>
+
+      <tr>
+        <td align="center">0.7.0</td>
+        <td align="center">2002-05-07</td>
+        <td align="center">[<a href="docs/ANNOUNCE-0.7.0.txt">text</a>]</td>
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
+      </tr>
+
+      <tr>
+        <td align="center">0.6.3</td>
+        <td align="center">2002-01-23</td>
+        <td align="center">[<a href="docs/ANNOUNCE-0.6.3.txt">text</a>]</td>
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
+      </tr>
+
+      <tr>
+        <td align="center">0.6.2</td>
+        <td align="center">2002-01-04</td>
+        <td align="center">[<a href="docs/ANNOUNCE-0.6.2.txt">text</a>]</td>
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
+      </tr>
+
+      <tr>
+        <td align="center">0.6.1</td>
+        <td align="center">2001-12-07</td>
+        <td align="center">[<a href="docs/ANNOUNCE-0.6.1.txt">text</a>]</td>
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
+      </tr>
+
+      <tr>
+        <td align="center">0.6.0</td>
+        <td align="center">2001-10-19</td>
+        <td align="center">[<a href="docs/ANNOUNCE-0.6.0.txt">text</a>]</td>
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
+      </tr>
+
+      <tr>
+        <td align="center">0.5.1</td>
+        <td align="center">2001-08-10</td>
+        <td align="center">[<a href="docs/ANNOUNCE-0.5.1.txt">text</a>]</td>
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
+      </tr>
+
+      <tr>
+        <td align="center">0.5.0</td>
+        <td align="center">2001-07-30</td>
+        <td align="center">[<a href="docs/ANNOUNCE-0.5.0.txt">text</a>]</td>
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
+      </tr>
+    </tbody>
+  </table>   
+</div>
+
+
+<!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  -->
+<!-- "Page" Resources                                                 -->
+<!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  -->
+<div class="content" id="resources">
+    <h2>Subversion (svn) Access</h2>
+    <p>
+      Our subversion repository is on svn.cca-forum.gov; contact
+      <a href="mailto:components@llnl.gov">components@llnl.gov</a> to
+      request an account. Anonymous SVN access is currently not
+      available due to security concerns. Our regression testing
+      produces nightly snapshots. We're happy to provide those on
+      request as well. 
+    </p>
+
+    <h2>Bugtracking</h2>
+    <p>
+      We use <a href="https://www.cca-forum.org/bugs/babel/">Roundup</a>
+      for bugtracking. 
+    </p>
+
+    <p>
+      Bugs can also be submitted vie e-mail
+      to <a href="mailto:babel-bugs@cca-forum.org">babel-bugs@cca-forum.org</a>. Please
+      make reasonable effort to insure its a novel bug in our
+      database. Also include as much information about platform,
+      configuration information (e.g. attach config.status file), and
+      details about what happens and what you expected to happen. 
+    </p>
+
+    <h2>Mailing Lists</h2>
+    <p>
+      <ul>
+        <li>
+          <p><code class="email">&lt;<a class="email"
+          href="mailto:babel-announce@llnl.gov">babel-announce@llnl.gov</a>&gt;</code>
+          Our low-volume, moderated list for announcements of new releases, etc.</p>
+        </li>
+
+        <li>
+          <p><code class="email">&lt;<a class="email"
+          href="mailto:babel-users@llnl.gov">babel-users@llnl.gov</a>&gt;</code>
+          Our unmoderated discussion group for user-user and user-developer discussions.</p>
+        </li>
+
+        <li>
+          <p>
+            To subscribe to either of the above lists, send email to
+            the address <code class="email">&lt;<a class="email"
+            href="mailto:majordomo@lists.llnl.gov">majordomo@lists.llnl.gov</a>&gt;</code>.
+	    In the body of your email enter the command(s)
+          <pre>subscribe babel-announce
+subscribe babel-users</pre>
+          </p>
+	</li>
+        <li>
+          <p><code class="email">&lt;<a class="email"
+            href="mailto:babel-dev@llnl.gov">babel-dev@llnl.gov</a>&gt;</code>
+            Our high-volume developers forum. Developers outside LLNL with
+            svn write access to Babel are subscribed to this
+            address. SVN commit logs get emailed to this
+            address. Users and general inquiries should send to
+            to <code class="email">&lt;<a class="email"
+            href="mailto:babel-users@llnl.gov">babel-users@llnl.gov</a>&gt;</code>.</p> 
+        </li>
+      </ul>
+    </p>
+    
+</div>
+
+
+<!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  -->
+<!-- "Page" Resources                                                 -->
+<!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  -->
+<div class="content" id="team">
+    <h2>Active Members</h2>
+    <ul>
+      <li><a href="http://people.llnl.gov/epperly2">Tom Epperly (PL)</a></li>
+      <li><a href="http://people.llnl.gov/dahlgren1">Tamara Dahlgren</a></li>
+      <li><a href="http://people.llnl.gov/prantl1">Adrian Prantl</a></li>
+    </ul>
+
+    <h2>Alumni</h2>
+    <ul>
+      <li>Bill Bosl</li>
+      <li><a href="http://people.llnl.gov/durrenberger1">Kevin Durrenberger</a></li>
+      <li>Nathan Dykman</li>
+      <li><a href="http://www.complang.tuwien.ac.at/cd/ebner/">Dietmar Ebner</a></li>
+      <li><a href="http://people.llnl.gov/kohn1">Scott Kohn</a></li>
+      <li>Gary Kumfert</li>
+      <li><a href="http://people.llnl.gov/leek2">James Leek</a></li>
+      <li><a href="http://people.llnl.gov/smith84">Steve Smith</a></li>
+      <li>Brent Smolinsky</li>
+    </ul>
+
+    <h2>Summer Interns</h2>
+    <ul>
+      <li>Irina Abramova, USC (Summer 2009)</li>
+      <li>Jewel Watts, NCAT (Summer 2009)</li>
+      <li>Monica Porsche, Central State University (Summer 2008)</li>
+      <li>Nija Shi, UC Davis (Summer/Fall 2004)</li>
+      <li>Kirk Kelsey (Summer 2004)</li>
+      <li>Sarah Knoop, UW Madison (Summer 2003)</li>
+      <li>Melvina Blackgoat, NAU (Summer 2001)</li>
+    </ul>
+</div>
+
+
+<!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  -->
+<!-- "Page" Success Stories                                           -->
+<!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  -->
+<div class="content" id="stories">
+  <div class="block">
+    <div class="category">Component Frameworks</div>
+    <div class="subblock">
+      <table border="0" width="100%">
+        <tr>
+          <td><a href="http://www.cca-forum.org"><img alt="CCA Form"
+          src="graphics/cca_forum.gif" style="border:0px;" /></a></td> 
+          <td>
+            <p>
+              Babel has been an active member of CCA from the
+              beginning. The CCA specification is written in SIDL. Point
+              of Contact:  Rob Armstrong, Sandia National Lab
+            </p>
+          </td>
+        </tr>
+
+        <tr><td colspan="2"><hr /></td></tr>
+          
+        <tr>
+          <td>
+            <a href="https://computation.llnl.gov/casc/coopParallelism/"><img alt="CASC
+            Logo" src="graphics/casc.gif" style="border:0px;" /></a> 
+            </td>
+          <td>
+            <p>
+              The <a href="https://computation.llnl.gov/casc/coopParallelism/">Cooperative
+                Parallelism Project (COOP)</a> uses Babel RMI to let
+              applications manage and distribute their work in
+              flexible ways. COOP is a Multiple Program, Multiple Data
+              (MPMD) model, so different parts of a parallel
+              application can run different executables.
+            </p>
+            <p>
+            This project has contributed resources to accellerate
+            Babel RMI development and develop nonblocking RMI. Point
+            of Contact: David Jefferson, Lawrence Livermore National
+            Lab 
+            </p>
+          </td>
+        </tr>
+          
+        <tr><td colspan="2"><hr /></td></tr>
+
+        <tr>
+          <td>
+            <a href="http://software.sci.utah.edu/scirun.html"><img alt="SCIRUN"
+            src="graphics/scirun.jpg" style="border:0px;" /></a> 
+            </td>
+          <td>
+            <p>
+              SCIRun2 uses Babel RMI for their distributed
+              communication fabric. This group also heavily
+              contributed to our current C++ binding. Point of
+              Contact:  Steve Parker, University Utah.
+            </p>
+          </td>
+        </tr>
+          
+      </table>
+    </div>
+  </div>
+
+  <br />
+        
+  <div class="block">
+    <div class="category">Chemistry</div>
+    <div class="subblock">
+      <table border="0" width="100%">
+        <tr>
+          <td>
+            <a href="http://www.emsl.pnl.gov/capabilities/computing/nwchem"><img alt="NWCHEM"
+            src="graphics/nwchem.png" style="border:0px;" /></a>
+          </td>
+          <td>
+            <p>
+              NWChem uses MPI processor groups, Global Arrays, and
+              CCA (w/ Babel) to increase
+              parallelism
+              <a href="http://portal.acm.org/citation.cfm?id=1105760.1105788">[KAWN05]</a>.
+              Point of Contact:  Theresa Windus, Pacific Northwest National Lab 
+            </p>
+          </td>
+        </tr>
+
+        <tr><td colspan="2"><hr /></td></tr>
+
+        <tr>
+          <td>
+            <a href="http://www.mpqc.org"><img alt="MPQC"
+            src="graphics/mpqc.png" style="border:0px;" /></a>
+          </td>
+          <td>
+            <p>
+              MPQC used CCA (/w Babel) to combine their quantum
+              chemistry models and decouple the chemistry from the optimization.
+              Then they employed
+              the <a href="http://www.mcs.anl.gov/tao">TAO</a>
+              optimization package,
+              with <a href="http://www.mcs.anl.gov/petsc">PETSc</a>
+              and <a href="http://www.emsl.pnl.gov/docs/global/">Global
+              Arrays</a> for linear solves.  This led to a net
+              reduction of required iterations for overall solution. 
+              <a href="http://www3.interscience.wiley.com/cgi-bin/fulltext/109585504/PDFSTART"
+              target="_top">[KBASJMKNJFW04]</a> 
+              Point of Contact: Curtis Janssen: Sandia National Lab
+            </p>
+          </td>
+        </tr>
+      </table>
+    </div>
+  </div>
+
+
+  <br />
+        
+  <div class="block">
+    <div class="category">Electron Effects in Heavy Ion Accelerators</div>
+    <div class="subblock">
+      <table border="0" width="100%">
+        <tr>
+          <td>
+            <a href="http://www.txcorp.com"><img alt=""
+            src="graphics/techx.png" style="border:0px;" /></a>
+          </td>
+          <td>
+            <p>
+              The Computational Models for Electron Effects (CMEE)
+              takes widely-used physics routines for modeling electron effects like gas
+              ionization and secondary electron emission from metals 
+              and uses Babel to make them widely available.  The resulting
+              code is used in applications such as accelerator physics and
+              plasma drives for satellites.  In addition to having legacy codes
+              in Fortran 77, they also report integrating new codes in 
+              Fortran 90, C, and Python.
+            </p>
+            <p>
+              Before incorporating Babel, this project 
+              had used combinations of <a href="http://pyfortran.sourceforge.net">Pyfort</a>
+              and <a href="http://www.swig.org">SWIG</a>
+              or <a href="http://cens.ioc.ee/projects/f2py2e">f2py</a> 
+              and <a href="http://www.swig.org">SWIG</a>, which
+              reportedly gave them 90% of what they wanted.  
+              However, a new customer (U.S. Air Force) added the 
+              requirement of Java interfaces.  
+              Rather than discard their substantial investment in 
+              Python-based string parsing code, they replaced all 
+              other point-to-point language tools with SIDL/Babel.  
+              This is the first known case of a Babel customer 
+              having a critical need for Java calling Python.
+              They report taking a half-person day to demonstrate
+              Java calling Python in their own code.
+              Point of Contact: Peter Stoltz, Tech-X
+            </p>
+          </td>
+        </tr>
+      </table>
+    </div>
+  </div>
+
+  <br />
+        
+  <div class="block">
+    <div class="category">Cell Biology</div>
+    <div class="subblock">
+      <table border="0" width="100%">
+        <tr>
+          <td>
+            <a href="http://www.emsl.pnl.gov/nwgrid"><img alt="TSTT"
+            src="graphics/tstt.jpg" style="border:0px;" /></a> 
+          </td>
+          <td>
+            <p>
+              PNNL scientists are using TSTT tools to build the
+              Virtual Microbial Cell Simulation (VMCS) to solve DOE
+              heavy metal waste bioremediation problems. The VMCS is a
+              general biological application that couples individual
+              microbes, each modeled as its own genome-scale metabolic
+              network, into a larger, self-organizing spatial
+              network. The communication between the organisms is
+              provided by multi-dimensional flow and transport
+              models. TSTT mesh generation, mesh quality improvement,
+              and discretization tools developed at different sites,
+              and written in different languages, are used in concert
+              through the SIDL-based TSTT interfaces. The VCMS has
+              been used to study the flocculation behavior of
+              communities of Shewanella microbes in oxygen rich
+              environments. These simulations confirmed that there is
+              an oxygen gradient from the edges of the floc into the
+              center and provided new insight into the behavior of
+              these microbes. Point of Contact:  Harold Trease,
+              Pacific Northwest National Lab 
+            </p>
+          </td>
+        </tr>
+      </table>
+    </div>
+  </div>
+
+  <br />
+        
+  <div class="block">
+    <div class="category">Material Science</div>
+    <div class="subblock">
+      <table border="0" width="100%">
+        <tr>
+          <td>
+            <a href="http://www.llnl.gov/"><img alt="LLNL"
+            src="graphics/llnl.png" style="border:0px;" /></a> 
+          </td>
+          <td>
+            <p>
+              Material scientists at Lawrence Livermore National Laboratory are
+              using PSI (which uses Babel RMI) to couple multiscale material science
+              applications. Point of Contact: Rich Becker, Lawrence Livermore
+              National Laboratory 
+            </p>
+          </td>
+        </tr>
+      </table>
+    </div>
+  </div>
+
+  <br />
+        
+  <div class="block">
+    <div class="category">Fusion</div>
+    <div class="subblock">
+      <table border="0" width="100%">
+        <tr>
+          <td>
+            <a href="http://www.txcorp.com"><img alt=""
+            src="graphics/techx.png" style="border:0px;" /></a>
+          </td>
+          <td>
+            <p>
+              The Framework for Modernization and Componentization of
+              Fusion Modules (FMCFM) is developing SIDL interfaces for
+              legacy codes, particularly in the subareas of
+              equilibrium and transport. Based on the Fortran-centric
+              APIs from the European Integrated Tokamak Modeling Task
+              Force (ITM-TF), this project is actively brokering a
+              compromise position that involves SIDL as a secondary
+              interface to the native Fortran 90 on one hand, and
+              working technically with the Babel team to pursue the
+              inclusion of structs (derived types) and optional
+              arguments in a future release. Point of Contact: Johann
+              Carlsson, Tech-X Corp
+            </p>
+          </td>
+        </tr>
+      </table>
+    </div>
+  </div>
+
+  <br />
+        
+  <div class="block">
+    <div class="category">Subsurface Transport</div>
+    <div class="subblock">
+      <table border="0" width="100%">
+        <tr>
+          <td>
+            <a href="http://www.cs.unc.edu/"><img alt="UNCCH"
+            src="graphics/uncch.jpg" style="border:0px;" /></a> 
+          </td>
+          <td>
+            <p>
+              Researchers at the Center for Advanced Study of the
+              Environment (CASE), University of North Carolina, Chapel
+              Hill, are applying CCA tools and technology in their
+              problem solving environment (PSE) for subsurface flow
+              and transport
+              phenomena <a href="http://www.cs.unc.edu/~prins/Publications/cmwr04-a.pdf">[CMWR04]</a>
+              Using LaTeX as a specification language for sets of
+              differential equations, their PSE compiler translates a
+              symbolic flow/transport problem into a component-based
+              simulation. A variety of externally developed solver,
+              integrator, and utility components have been identified
+              and coordinated through a shared knowledge base to
+              satisfy the needs of the simulation along with a simple
+              Babel-wrapped component description of the model
+              itself. The resulting component-based program is then
+              submitted for parallel execution using the Ccaffeine CCA
+              framework. 
+            </p>
+            <p>
+              This team reports several benefits of the CCA
+              approach. The component-based paradigm enables isolated
+              unit testing of various solver/integrator components and
+              provides a flexible platform for experimentation, where
+              users can swap key portions of the component network
+              without requiring full knowledge of the overall
+              algorithms and internal organization. The high-level
+              structure of the component-based representation
+              encourages an intuitive understanding of the overall
+              solver organization for users, versus traditional
+              monolithic codes. The well-defined SIDL component
+              interfaces also alleviate complexity in the design of
+              the PSE compiler, abstracting the functional
+              relationships among components and hiding specific
+              implementation details that are not directly relevant at
+              the PSE compiler level Point of Contact: Jans Prins,
+              UNC
+            </p>
+          </td>
+        </tr>
+      </table>
+    </div>
+  </div>
+
+  <br />
+        
+  <div class="block">
+    <div class="category">Training Simulators: Nuclear Power Plant</div>
+    <div class="subblock">
+      <p>
+        Researchers in University of Malaga, Spain used CCA (/w Babel)
+        along with Real-Time CORBA
+        (<a href="http://doi.ieeecomputersociety.org/10.1109/2.846319">RT-CORBA</a>)
+        to create a nuclear power plant simulator to train
+        operators <a href="http://www.actapress.com/PaperInfo.aspx?PaperID=20867">[DGRRST05]</a>. They
+        chose to use RT-CORBA for the user interface and data logging
+        subsystems where predictable response time is required. They
+        use CCA for the simulator kernel where high performance and
+        support for Fortran are needed. 
+      </p>
+      <p>
+        This team started with a software system where data was shared
+        among software subsystems using global variables. Using the
+        CCA, they created a loosely coupled simulator kernel, where
+        each component has a well defined interface indicating what
+        data it requires and provides. During the configuration phase,
+        the simulator kernel defines a communication schedule to
+        satisfy the data dependencies among models. By componentizing
+        the simulator, they lowered their development costs and
+        produced a more flexible simulator. 
+      </p>
+    </div>
+  </div>
+
+  <br />
+        
+  <div class="block">
+    <div class="category">Radio Astronomy</div>
+    <div class="subblock">
+      <table border="0" width="100%">
+        <tr>
+          <td>
+            <a href="http://www.ncsa.uiuc.edu/AboutUs/People/contact.php?id=182"><img alt="NCSA"
+            src="graphics/ncsa.gif" style="border:0px;" /></a> 
+          </td>
+          <td>
+            <p>
+              The eMiriad project at UIUC is developing a
+              domain-specific component framework based on Babel to
+              integrate several legacy libraries to make a radio
+              astronomy application. This project will make a variety
+              of tools available to scientists through common
+              interfaces. In particular, they are integrating AIPS,
+              MIRIAD, and AIPS++, which together represent
+              approximately 480 FTE-years of effort [in review]. They
+              chose Babel as their middleware because it is
+              particularly well suited to their domain, radio
+              astronomy imaging. The support for multi-dimensional
+              arrays, Fortran, good interoperability with parallel
+              computing, and the quality of peer-to-peer language
+              bindings were leading factors in choosing Babel. Babel's
+              language interoperability capabilities enable developers
+              to work in their most effective programming language and
+              provide a general scripting interface for the integrated
+              system using Python. Point of Contact:  Athol Kemball,
+              UIUC 
+            </p>
+          </td>
+        </tr>
+      </table>
+    </div>
+  </div>
+
+
+  <br />
+        
+  <div class="block">
+    <div class="category">Solvers</div>
+    <div class="subblock">
+      <table border="0" width="100%">
+        <tr>
+          <td>
+            <a href="http://www.llnl.gov/casc/linear_solvers"><img alt="hypre"
+            src="graphics/hypre.gif" style="border:0px;" /></a> 
+          </td>
+          <td>
+            <p>
+              <b>Scalable Linear Solvers</b>. The <i>hypre</i> library
+              of scalable solvers and
+              preconditioners <a href="http://portal.acm.org/citation.cfm?id=645459.653635">[FY02]</a>
+              was the first tester of SIDL/Babel. Written mostly in
+              ANSI C, the hypre team's original intention was to throw
+              away the four hand-written, non-portable, partial
+              Fortran wrappers and use Babel as the binding for all
+              languages other than the core C interface. After years
+              of experience, performance studies showing the Babel
+              overhead to be unmeasurable in large parallel
+              jobs <a href="https://computation.llnl.gov/casc/components/docs/2001-siam-pp.pdf">[KKPR01]</a>
+              and the benefits of polymorphism, the long-range plan
+              has shifted to Babel being the only interface published
+              to customers. Point of Contact:  Jeff Painter, LLNL 
+            </p>
+          </td>
+        </tr>
+
+        <tr><td colspan="2"><hr /></td></tr>
+
+        <tr>
+          <td>
+            <a href="http://www.scl.ameslab.gov/~masha/Research/Sparskit-CCA/"><img alt="Sparskit"
+            src="graphics/ames.gif" style="border:0px;" /></a> 
+          </td>
+          <td>
+            <p>
+              <b>Sparse Linear Algebra</b>  Sparskit is a basic
+              toolkit (written in F77) for sparse linear algebra, with
+              a significant portion (80%) now componentized for the
+              CCA toolkit. The Sparskit components are also being
+              integrated into the Terascale Optimal PDE Simulation
+              (TOPS) center's solver component. New algebraic multilevel methods (in C),
+              from
+              the <a href="http://www-users.cs.umn.edu/~saad/software/ITSOL">Itsol</a>
+              package - a library of iterative solvers for general
+              sparse linear systems of equations, an extension of
+              Sparskit - have now been merged as components into the
+              CCA Toolkit. TAU's component-based performance analysis
+              tools have been applied to the Sparskit linear algebra
+              components. This study found that components of a fine
+              granularity, like those in Sparskit, still execute with
+              acceptable overheads rates of less than 3.4% in common
+              application usage. Point of Contact:  Masha Sosonkina,
+              Ames Lab 
+            </p>
+          </td>
+        </tr>
+      </table>
+    </div>
+  </div>
+
+  <br />
+        
+  <div class="block">
+    <div class="category">Meshing</div>
+    <div class="subblock">
+      <table border="0" width="100%">
+        <tr>
+          <td>
+            <a href="http://www.tstt-scidac.org/"><img alt=""
+            src="graphics/tstt.gif" style="border:0px;" /></a> 
+          </td>
+          <td>
+            <p>
+              TSTT SciDAC ISIC Point of Contact:  Lori Diachin,
+              Lawrence Livermore National Laboratory
+            </p>
+          </td>
+        </tr>
+      </table>
+    </div>
+  </div>
+
+  <br />
+        
+  <div class="block">
+    <div class="category">Computer-Assisted Source Refactoring</div>
+    <div class="subblock">
+      <p>
+        Researchers at LLNL are developing a methodology to analyze and
+        refactor large amounts of sourcecode. Applications include
+        finding/breaking cyclic dependencies, removing blacklisted
+        programming constructs, automatic wrapping in Babel, and possibly
+        even semi-automated componentization
+        <a href="http://www.research.ibm.com/arl/pphec/P-PHEC-2005.html">[QYKEDSW05]</a>
+        The CCA itself is developing a simple but effective scripted
+        approach to automated conversion from a language-specific
+        CCA-Lite form to full Babel/SIDL based on
+        <a href="http://chasm-interop.sourceforge.net">Chasm</a>
+        <a href="http://portal.acm.org/citation.cfm?id=1107430.1107432">[RSSM06]</a>
+        By comparison, the LLNL project is larger and more general. It
+        employs the <a href="http://www.llnl.gov/CASC/projects/rose">Rose
+          Compiler Framework</a>, the <a href="https://computing.llnl.gov/projects/babel-high-performance-language-interoperability/www.eclipse.org">Eclipse
+          IDE</a>, and the <a href=
+                              "http://www.arisa.se/VA.html">VizzAnalyzer</a> software
+        visualization tool to manipulate the entire C, C++, or Fortran
+        source in memory with as much detail as a commercial compiler.
+        This project uses Babel to connect Rose (implemented in C++) to
+        Eclipse and VizzAnalyzer, which are both implemented in Java.
+        This project also motivated and developed the <em>back-door
+          initializer</em> feature in Babel to wrap native objects in a
+        temporary Babel veneer. Point of Contact: Thomas Epperly, LLNL 
+      </p>
+    </div>
+  </div>
+
+  <br />
+        
+  <div class="block">
+    <div class="category">Performance Monitoring &amp; Tuning</div>
+    <div class="subblock">
+      TAU is a robust and portable measurement interface and system
+      for software performance evaluation. Using SIDL to describe
+      TAU's measurement API, full support was enabled across
+      applications written in Fortran, C++, C, Java, and
+      Python. Without such support, the API for each new target
+      language would be independently developed and maintained. Such a
+      complex task becomes even more difficult given the ongoing
+      sequence of extensions evolving in the TAU measurement
+      API. Babel helps the TAU team focus on improving the quality of
+      performance measurement and analysis tools, instead of dealing
+      with low-level language compatibility. CCA/Babel has also
+      enabled incorporation of dynamic selection of measurement
+      options into the TAU performance evaluation tools. Users can
+      choose from a variety of measurement options interactively at
+      runtime, without re-compilation of applications. Proxy
+      components are automatically generated to mirror a component's
+      interface, allowing dynamic interposition of proxies between
+      callers and callees, via hooks into the intermediate Babel
+      communication layer. Such inter-component interaction
+      measurements can correlate performance to application
+      parameters, used for constructing more sophisticated performance
+      models. Point of Contact:  Sameer Shende, University of Oregon 
+    </div>
+  </div>
+        
+</div>
+    
+     
+<!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  -->
+<!-- Common Footer                                                    -->
+<!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  -->
+<script src="resource/activatables.js" type="text/javascript"></script>
+<script type="text/javascript">
+activatables('page', ['home', 'doc', 'tutorial', 'faq', 'download',
+                      'resources', 'team', 'stories']);
+</script>
+
+<hr />
+  <table border="0" width="100%">
+    <tr>
+      <td align="left">Last Modified: 01/2012, LLNL-AM-426190</td>
+      <td align="center">
+        <a href="http://www.llnl.gov/CASC">[CASC]</a>
+        &nbsp;&nbsp;
+        <a href="http://www.llnl.gov">[LLNL]</a>        
+        &nbsp;&nbsp;
+        <a href="http://www.cca-forum.org">[CCA]</a>        
+      </td>
+      <td align="right">
+        <a href="http://www.llnl.gov/disclaimer.html">LLNL Privacy and
+        Legal Notice</a> 
+      </td>
+    </tr>
+  </table>
+
+
+
+	<script type="text/javascript" src="../../project/js/piwik.js"></script>
+	<script type="text/javascript">
+		try {
+			var piwikTracker = Piwik.getTracker("https://analytics.llnl.gov/piwik.php", 148);
+			piwikTracker.trackPageView();
+			piwikTracker.enableLinkTracking();
+		} catch(err) {}
+	</script>
+	<noscript><p><img src="https://analytics.llnl.gov/piwik.php?idsite=148" style="border:0" alt="" /></p></noscript>
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-40890147-1', 'auto');
+  ga('send', 'pageview');
+
+</script>
+</body>
+</html>

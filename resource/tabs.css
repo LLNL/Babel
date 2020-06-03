@@ -1,0 +1,125 @@
+div.content {
+    clear: left;
+    padding: 1em;
+}
+
+span.command {
+    font-family: monospace;
+    font-weight: bold;
+}
+
+div.content.inactive {
+    display: none;
+}
+
+ol#toc {
+    background: #353535;
+    font-size: 10pt;
+    height: 2.5em;
+    left: -25px;
+    list-style: none;
+    margin: 1em 0 1em;
+    min-width: 100%;
+    overflow: hidden;
+    padding: 0 60px 0 25px;
+    position: relative;
+    right: -85px;
+    width: auto;
+}
+
+ol#toc a {
+    background: #9b9b9b url(tabs.gif);
+    color: #444;
+    display: block;
+    float: left;
+    height: 2.5em;
+    padding-left: 5px;
+    text-decoration: none;
+}
+
+ol#toc a:hover {
+    background-color: #dadadas;
+    background-position: 0 -120px;
+    color: #666;
+}
+
+ol#toc a:hover span {
+    background-position: 100% -120px;
+}
+
+ol#toc li {
+    float: left;
+    margin: 0 1px 0 0;
+}
+
+ol#toc li a.active {
+    background-color: #f8f8f8;
+    background-position: 0 -60px;
+    color: #222;
+}
+
+ol#toc li a.active span {
+    background-position: 100% -60px;
+}
+
+ol#toc span {
+    background: url(tabs.gif) 100% 0;
+    cursor: pointer;
+    display: block;
+    float: left;
+    line-height: 2em;
+    padding: .5em 5px 0 0;
+    
+}
+
+hr {
+    border: 1px solid #353535;
+}
+
+h3 {
+    font-size:12pt;
+    font-weight: bold;
+}
+
+div.category {
+    font-size:24px;
+    font-weight:bold;
+    font-family:monospace;
+    color: white;
+    background: #353535;
+    padding:10px;    
+}
+
+div.block {
+    margin:0;
+    padding-top:0;
+    border: #353535 solid 5px;
+}
+
+div.subblock {
+    padding:20px;    
+}
+
+img.centered {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+table {
+} 
+
+td {
+}
+
+pre.code {
+    margin-left: 1.5em;
+    margin-right: 1.5em;
+    border: 1px dotted;
+    padding-top: 5px;
+    padding-left: 5px;
+    padding-bottom: 5px;
+    background-color: #f8f8f8;
+    font-family: monospace;
+    font-size: 12pt;
+}

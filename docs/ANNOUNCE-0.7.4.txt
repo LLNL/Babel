@@ -1,0 +1,109 @@
+Wednesday, 21 August 2002
+
+Announcement
+============
+  The members of the Components Team at Lawrence Livermore
+National Laboratory <components@llnl.gov> are pleased to
+announce the beta release of Babel, version 0.7.4.
+
+************************* NOTICE *************************
+Changes related to support for Python 2.2 have resulted in 
+the requirement that distutils be installed to use the 
+Python bindings.  Python 1.6 and higher have distutils
+built in; however, we have only used Python 2.0 and higher.
+************************* NOTICE *************************
+
+
+What's New
+==========
+  The following features have been added, or completed, in
+this minor release:
+
+  + Fix build problem in 0.7.2 release
+  + Improve support for arrays of long in Python
+  + Release under LGPL with LLNL preamble (required by DOE contract)
+
+  From 0.7.2
+  + Added --exclude=<regex> command line option to exclude
+    code generation for all symbols matching the regular 
+    expression (see bugs #369 and #425 for more)
+  + Made C++ array set method argument ordering consistent 
+    with C, F77, etc.
+  + Completed support for overloaded functions based on
+    an exact match of the arguments
+  + Added Python Distutils to support Python 2.2
+  + Removed support for Python builds using Makefile.pre.in 
+    approach
+  + Closed 20 bug reports (see below for list)
+
+(Also refer to the CHANGES file for more details.)
+
+What Babel Is
+=============
+  Babel is designed to address problems of language 
+interoperability, particularly in scientific/engineering
+applications.  At the simplest level, Babel generates glue 
+code so that libraries written in one programming language 
+are callable from other programming languages.  Babel
+generates this glue code from an interface description
+written in SIDL, our Scientific Interface Definition 
+Language.  Babel supports full Object-Oriented features
+and exception handling even in non-OO languages such as C
+or Fortran77.
+
+
+Supported Languages
+===================
+  Babel currently supports calling libraries written in 
+C, C++, F77, or Python from drivers written in either C, 
+C++, F77, Python or Java.  (Python support also requires 
+the Numerical Python set of extensions at 
+http://numpy.sourceforge.net)
+
+
+Supported Platforms
+===================
+Linux 
+Solaris
+Cygwin
+
+(More expected in next few months.)
+
+
+Caveat
+======
+  Babel is research in progress.  This is a beta release 
+looking for more friendly users and now some power users.  
+Babel has been used on a few real projects now, there
+are still too few examples, but the documentation is 
+improving.
+
+
+Availability
+============
+  The software is available for free download at
+	http://www.llnl.gov/CASC/components
+
+
+User Resources
+==============
+  Two email lists have been set up for the Babel community:
+
+	babel-users@llnl.gov  (unmoderated discussions)
+	babel-announce@llnl.gov (announcements only)
+
+To subscribe to one or both of these email lists, send
+email to <majordomo@lists.llnl.gov> with the text
+"subscribe babel-announce", "subscribe babel-users",
+or both (one per line).  
+
+
+Contacting the Authors
+======================
+  If you have any questions or concerns with the installation 
+process or usage of Babel, feel free to contact the project team 
+at components@llnl.gov.  To report bugs or suggest feature 
+enhancements, please submit a report in the bug database at 
+http://www-casc.llnl.gov/bugs/.
+
+$Id: ANNOUNCE-0.7.4.txt 687 2002-08-21 15:04:12Z epperly $

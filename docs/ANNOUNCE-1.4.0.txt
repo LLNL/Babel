@@ -1,0 +1,101 @@
+Monday, 20 October 2008
+
+Announcement
+============
+  The members of the Components Team at Lawrence Livermore
+National Laboratory <components@llnl.gov> are pleased to
+announce Babel 1.4.0, the next major step in Babel research.
+
+What's New
+==========
+  The following features have been added, or completed, in
+this release:
+
+  + Babel now includes CHASM-lite as part of the distribution, so you
+    no longer should pre-install CHASM (since 1.0).
+  + Major autotools upgrade
+  + New --makefile option for basic GNU Makefile generation
+  + Support for PathScale compilers
+  + Lots of little fixes and portability improvements
+  + Bundle libparsifal instead of using libxml2 (since 1.0)
+  + Experimental struct support in C, C++, and Python
+  + F2003 binding includes experimental struct support
+  + Latest interface contract enforcement support (beta)
+
+(Also refer to the CHANGES file for more details.)
+
+What Babel Is
+=============
+  Babel is designed to address problems of language 
+interoperability, particularly in scientific/engineering
+applications.  At the simplest level, Babel generates glue 
+code so that libraries written in one programming language 
+are callable from other programming languages.  Babel
+generates this glue code from an interface description
+written in SIDL, our Scientific Interface Definition 
+Language.  Babel supports full Object-Oriented features
+and exception handling even in non-OO languages such as C
+or Fortran77.
+
+  Babel also addresses platform interoperability through
+its support for Remote Method Invocation (RMI), an
+object-oriented form of remote procedure calls (RPC).
+Babel RMI gives programmers the ability to write
+distributed programs with minimal change to their 
+existing source.
+
+Supported Languages
+===================
+  Babel currently supports calling libraries written in 
+C, C++, Fortran77, Fortran90, Java, or Python from drivers written 
+in either C, C++, Fortran77, Fortran90, Python or Java.  (Python 
+support also requires the Numerical Python set of extensions at 
+http://numpy.sourceforge.net/ ).
+
+
+Supported Platforms
+===================
+Linux 
+IBM BG/L
+Jaguar
+Solaris
+AIX (except Python server)
+Mac OSX (not fully supported)
+
+Caveat
+======
+  Babel is research in progress.  This is a release candidate for a
+production release, but it is still supported by a research effort.
+Babel has been used on numerous projects now. Documentation for
+the newest features may not be complete. We suggest checking our
+WWW site for our recent presentations about new features.
+
+Availability
+============
+  The software is available for free download at
+        http://www.llnl.gov/CASC/components
+
+
+User Resources
+==============
+  Two email lists have been set up for the Babel community:
+
+        babel-users@llnl.gov  (unmoderated discussions)
+        babel-announce@llnl.gov (announcements only)
+
+To subscribe to one or both of these email lists, send
+email to <majordomo@lists.llnl.gov> with the text
+"subscribe babel-announce", "subscribe babel-users",
+or both (one per line).  
+
+
+Contacting the Authors
+======================
+  If you have any questions or concerns with the installation 
+process or usage of Babel, feel free to contact the project team 
+at components@llnl.gov.  To report bugs or suggest feature 
+enhancements, please submit a report in the bug database at 
+https://www.cca-forum.org/bugs/babel/, or send email to 
+babel-bugs@cca-forum.org.
+
+$Id: ANNOUNCE 6548 2008-10-10 17:14:08Z epperly $

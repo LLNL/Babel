@@ -1,0 +1,122 @@
+
+Thursday, 7 May 2002
+
+Announcement
+============
+  The members of the Components Team at Lawrence Livermore
+National Laboratory <components@llnl.gov> are pleased to
+announce the beta release of Babel, version 0.7.0.  We've
+designated this as a 0.7 release due to the change in the
+array API and the change in SIDL.BaseException.
+
+************************ NOTICE ************************
+In transitioning to support specification of array ordering
+we have modified the SIDL DTD resulting in changes to the XML
+format.  If using XML features, you'll need to regenerate your 
+XML; otherwise, the parser will be unable to recognize your
+old-style XML.
+************************ NOTICE ************************
+
+What's New
+==========
+ + new FORTRAN Interface File (.fif) documents FORTRAN stub
+ + new array API (see users guide for API description)
+ + new array ordering constructs in the SIDL language
+ + rewrite CCA decaf example to track the emerging CCA standard
+   (in particular BuilderServices and ConnectionEventServices)
+ + add array ordering regression test
+ + SIDL.BaseException.getStackTrace renamed to SIDL.BaseException.getTrace.
+ + change C++ array dim to dimen() (to get the dimension)
+ + initial code work on overloaded functions (not complete)
+ + fix reference counting issue with interfaces in C++
+ + Add Python calling Python regression tests
+
+Bug's fixed (taken from http://www-casc.llnl.gov/bugs/)
+=======================================================
+ 234 Method ordering in SIDL file is preserved
+ 269 Preserve non-referenced splicer block sections
+ 281 configure --without-fortran to build without a F77 compiler
+ 305 bool array (C++ destructor) problem fixed
+ 328 boolean in documentation changed to bool where appropriate
+ 359 Fix line break in #include problem.
+ 365 Sun's SDK 1.4.0 compatibility
+ 368 Sun's SDK 1.4.0 compatibility
+ 380 Wrong signature for borrow in SIDL_cxx.h
+ 381 Better array usability (borrowing in particular)
+ 388 name space conflict for enums in C
+ 393 forward decls in C++ stubs to fix mutual include problem
+ 400 Fixed Python stub namespace problem
+ 412 generate FORTRAN 77 API (human readable)
+ 422 better documentation of FORTRAN array alignment problem
+ 423 babel errors identified with "babel:"
+ 424 Better Python error message
+ 428 Added pass in Python splicer blocks
+
+
+What Babel Is
+=============
+  Babel is designed to address problems of language 
+interoperability, particularly in scientific/engineering
+applications.  At the simplest level, Babel generates glue 
+code so that libraries written in one programming language 
+are callable from other programming languages.  Babel
+generates this glue code from an interface description
+written in SIDL, our Scientific Interface Definition 
+Language.  Babel supports full Object-Oriented features
+and exception handling even in non-OO languages such as C
+or Fortran77.
+
+
+Supported Languages
+===================
+  Babel currently supports calling libraries written in 
+C, C++, F77, or Python from drivers written in either C, 
+C++, F77, Python or Java.  (Python support also requires 
+the Numerical Python set of extensions at 
+http://numpy.sourceforge.net)
+
+
+Supported Platforms
+===================
+Linux 
+Solaris
+Cygwin
+
+(More expected in next few months.)
+
+
+Caveat
+======
+  Babel is research in progress.  This is a beta release 
+looking for more friendly users and now some power users.  
+Babel has been used on a few real projects now, there
+are still too few examples, but the documentation is 
+improving.
+
+
+Availability
+============
+  The software is available for free download at
+	http://www.llnl.gov/CASC/components
+
+User Resources
+==============
+  Two email lists have been set up for the Babel community
+
+	babel-users@llnl.gov  (unmoderated discussions)
+	babel-announce@llnl.gov (announcements only)
+
+To subscribe to one or both of these email lists, send
+email to <majordomo@lists.llnl.gov> with the text
+"subscribe babel-announce", "subscribe babel-users",
+or both (one per line).  
+
+Contacting the Authors
+======================
+  If you have any questions or concerns with the installation 
+process or usage of Babel, feel free to contact the project team 
+at components@llnl.gov.  To report bugs or suggest feature 
+enhancements, please submit a report in the bug database at 
+http://www-casc.llnl.gov/bugs/.
+
+$Id: ANNOUNCE-0.7.0.txt 685 2002-08-20 22:06:19Z epperly $

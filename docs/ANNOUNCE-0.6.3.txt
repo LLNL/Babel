@@ -1,0 +1,82 @@
+
+Friday, 23 January 2002
+
+Announcement
+============
+  The members of the Components Team at Lawrence Livermore
+National Laboratory <components@llnl.gov> are pleased to
+announce the beta release of Babel, version 0.6.3.
+
+What's New
+==========
+Bugfix release: 0.6.3
+ + add two missing Java source files from examples/hello/runJava
+   and examples/cca/runJava to distribution.
+ + no other other changes
+
+(See CHANGES for more details)
+
+What Babel Is
+=============
+  Babel is designed to address problems of language 
+interoperability, particularly in scientific/engineering
+applications.  At the simplest level, Babel generates glue 
+code so that libraries written in one programming language 
+are callable from other programming languages.  Babel
+generates this glue code from an interface description
+written in SIDL, our Scientific Interface Definition 
+Language.  Babel supports full Object-Oriented features
+and exception handling even in non-OO languages such as C
+or Fortran77.
+
+Supported Languages
+===================
+  Babel currently supports calling libraries written in 
+C, C++, F77, or Python from drivers written in either C, 
+C++, F77, Python or Java.  (Python support also requires 
+the Numerical Python set of extensions at 
+http://numpy.sourceforge.net)
+
+Supported Platforms
+===================
+Linux 
+Solaris
+Cygwin
+
+(More expected in next few months.)
+
+Caveat
+======
+  Babel is research in progress.  This is a beta release 
+looking for more friendly users and now some power users.  
+Babel has been used on a few real projects now, there
+are still too few examples, but the documentation is 
+improving.
+
+
+Availability
+============
+  The software is available for free download at
+	http://www.llnl.gov/CASC/components
+
+User Resources
+==============
+  Two email lists have been set up for the Babel community
+
+	babel-users@llnl.gov  (unmoderated discussions)
+	babel-announce@llnl.gov (announcements only)
+
+To subscribe to one or both of these email lists, send
+email to <majordomo@lists.llnl.gov> with the text
+"subscribe babel-announce", "subscribe babel-users",
+or both (one per line).  
+
+Contacting the Authors
+======================
+  If you have any questions or concerns with the installation 
+process or usage of Babel, feel free to contact the project team 
+at components@llnl.gov.  To report bugs or suggest feature 
+enhancements, please submit a report in the bug database at 
+http://www-casc.llnl.gov/bugs/.
+
+$Id: ANNOUNCE-0.6.3.txt 685 2002-08-20 22:06:19Z epperly $
