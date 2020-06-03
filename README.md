@@ -106,13 +106,10 @@ Linux             | PGI 10.9
 Linux             | PathScale 3.2.99
 Linux             | IBM XL Fortran Advanced Edition for Blue Gene/L, V11.1
 Linux             | IBM XL Fortran Advanced Edition for Blue Gene/P, V11.1
-                  |
 Linux             | GCC & Absoft F90
 Linux             | GCC & Lahey F90
-                  |
 AIX               | GCC
 AIX               | IBM compiler suite
-
 Sparc-Solaris2.9  | gcc 3.1 or higher (use SHELL=/bin/ksh )
 Sparc-Solaris2.9  | g77 3.1 or higher (use SHELL=/bin/ksh )
 Sparc-Solaris2.9  | f77 (Sun WorkShop 5.0)  (use SHELL=/bin/ksh )
